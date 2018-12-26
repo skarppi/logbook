@@ -1,7 +1,7 @@
 {
-  "name": "fullstack-typescript",
+  "name": "opentx-logbook",
   "version": "1.0.0",
-  "description": "",
+  "description": "Flight logbook from OpenTX logs",
   "main": "index.js",
   "engines": {
     "node": ">=6.9.5"
@@ -30,10 +30,10 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/gilamran/fullstack-typescript.git"
+    "url": "https://github.com/skarppi/opentx-logbook.git"
   },
   "license": "MIT",
-  "author": "Gil Amran",
+  "author": "Juho Kolehmainen",
   "dependencies": {
     "@material-ui/core": "^1.2.1",
     "axios": "^0.18.0",
