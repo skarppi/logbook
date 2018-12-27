@@ -1,9 +1,9 @@
 import Segment from "./segment";
 import { duration, formatDuration } from "../utils/date";
-import { IFlySession } from "../../shared/IFlySession";
+import { IFlight } from "../../shared/IFlight";
 
-export default class FlySession implements IFlySession {
-  name: string;
+export default class Flight implements IFlight {
+  id: string;
   plane: string;
   startDate: Date;
   endDate?: Date;
@@ -11,8 +11,8 @@ export default class FlySession implements IFlySession {
   segment: Segment;
   duration: number;
 
-  constructor(name: string, plane: string, startDate: Date) {
-    this.name = name;
+  constructor(id: string, plane: string, startDate: Date) {
+    this.id = id;
     this.plane = plane;
     this.startDate = startDate;
   }
@@ -51,7 +51,7 @@ export default class FlySession implements IFlySession {
   }
 
   toString() {
-    return `fly session ${this.name} [
+    return `fly session ${this.id} [
         log start ${this.startDate}
         log end ${this.endDate}
         log duration ${formatDuration(this.duration)}

@@ -1,5 +1,5 @@
-export interface IFlySession {
-  name: string;
+export interface IFlight {
+  id: string;
   plane: string;
   startDate: Date;
   endDate?: Date;
