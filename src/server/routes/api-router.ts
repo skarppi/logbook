@@ -2,23 +2,31 @@ import * as bodyParser from "body-parser";
 import { Router } from "express";
 import { IFlight } from "../../shared/IFlight";
 import parse from "../parser";
-
-const flights: IFlight[] = [];
+import Flight from "../model/flight";
 
 export function apiRouter() {
   const router = Router();
   router.use(bodyParser.json());
 
   router.get("/api/flights", (req, res) => {
-    parse("TWR-2018-12-21.csv").then(flights => res.json(flights));
+    Flight.list()
+      .then(flights => res.json(flights))
+      .catch(err => {
+        console.log(err, err.stack);
+        res.sendStatus(503);
+      });
   });
 
   router.get("/api/flights/:id", (req, res) => {
     const id = req.params.id;
-    parse("TWR-2018-12-21.csv").then(flights => {
-      const flight: IFlight = flights.find(flight => flight.id === id);
-      res.json(flight);
-    });
+    Flight.find(id)
+      .then(flight => {
+        res.json(flight);
+      })
+      .catch(err => {
+        console.log(err, err.stack);
+        res.sendStatus(503);
+      });
   });
 
   router.post("/api/flights", (req, res) => {

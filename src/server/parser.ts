@@ -34,6 +34,7 @@ function logDuration(startDate: Date, endDate: Date) {
 }
 
 interface ParserState {
+  startIndex: number;
   session: FlySession;
   sessions: FlySession[];
   last?: Date;
@@ -52,7 +53,7 @@ export default function parse(filename: string): Promise<IFlight[]> {
     const plane = filename.split("-")[0];
 
     const summary = results.reduce<ParserState>(
-      (state: ParserState, row) => {
+      (state: ParserState, row, index) => {
         const now: Date = timestamp(row);
 
         if (armed(row)) {
@@ -63,6 +64,7 @@ export default function parse(filename: string): Promise<IFlight[]> {
             }
 
             state.session = new FlySession(name, plane, now);
+            state.startIndex = index;
           }
 
           state.session.startTimer(now, flying(row));
@@ -77,24 +79,31 @@ export default function parse(filename: string): Promise<IFlight[]> {
 
           if (state.session) {
             console.log("Paused but still fly session open");
+            state.session.raw = results.slice(state.startIndex, index);
             state.sessions.push(state.session.endSession());
             state.session = undefined;
+            state.startIndex = index;
           }
         }
 
         state.last = now;
         return state;
       },
-      { session: undefined, sessions: [] }
+      { startIndex: 0, session: undefined, sessions: [] }
     );
 
     if (summary.session) {
       console.log("Finished but still fly session open");
+      summary.session.raw = results.slice(summary.startIndex);
       summary.sessions.push(summary.session.endSession());
     }
 
     console.log(String(summary.sessions));
     console.log(summary);
-    return summary.sessions;
+    return Promise.all(
+      summary.sessions.map(session => {
+        return session.save();
+      })
+    );
   });
 }

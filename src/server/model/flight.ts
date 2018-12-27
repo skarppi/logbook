@@ -1,6 +1,7 @@
 import Segment from "./segment";
 import { duration, formatDuration } from "../utils/date";
 import { IFlight } from "../../shared/IFlight";
+import { db } from "../db";
 
 export default class Flight implements IFlight {
   id: string;
@@ -10,6 +11,7 @@ export default class Flight implements IFlight {
   flightTime: number = 0;
   segment: Segment;
   duration: number;
+  raw: object[];
 
   constructor(id: string, plane: string, startDate: Date) {
     this.id = id;
@@ -48,6 +50,32 @@ export default class Flight implements IFlight {
     console.log(this.toString());
 
     return this;
+  }
+
+  static list(): Promise<Flight[]> {
+    return db.manyOrNone(
+      "SELECT id, plane, startDate, endDate,  duration, flightTime FROM flights"
+    );
+  }
+
+  static find(id: string): Promise<Flight> {
+    return db.oneOrNone("SELECT * FROM flights" + "WHERE id = $1", id);
+  }
+
+  save(): Promise<Flight> {
+    return db.one(
+      "INSERT INTO flights (id, plane, startDate, endDate,  duration, flightTime, raw) " +
+        "VALUES (${id}, ${plane}, ${startDate}, ${endDate}, ${duration}, ${flightTime}, ${raw:json}) " +
+        "ON CONFLICT (id) DO UPDATE SET " +
+        " plane = ${plane}," +
+        " startDate = ${startDate}," +
+        " endDate = ${endDate}," +
+        " duration = ${duration}," +
+        " flightTime = ${flightTime}," +
+        " raw = ${raw:json} " +
+        "RETURNING *",
+      this
+    );
   }
 
   toString() {
