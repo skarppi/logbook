@@ -41,7 +41,7 @@ interface ParserState {
 }
 
 export default function parse(filename: string): Promise<IFlight[]> {
-  return csv(`${config.CSV_FOLDER}/${filename}`).then(results => {
+  return csv(`${config.CSV_FOLDER}${filename}`).then(results => {
     const first = results[0];
     const last = results[results.length - 1];
 

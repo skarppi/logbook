@@ -1,8 +1,9 @@
 import * as bodyParser from "body-parser";
 import { Router } from "express";
-import { IFlight } from "../../shared/IFlight";
-import parse from "../parser";
 import Flight from "../model/flight";
+import config = require("../config");
+import * as multer from "multer";
+import Parser from "../parser";
 
 export function apiRouter() {
   const router = Router();
@@ -13,7 +14,7 @@ export function apiRouter() {
       .then(flights => res.json(flights))
       .catch(err => {
         console.log(err, err.stack);
-        res.sendStatus(503);
+        return res.status(500).send(String(err));
       });
   });
 
@@ -25,12 +26,37 @@ export function apiRouter() {
       })
       .catch(err => {
         console.log(err, err.stack);
-        res.sendStatus(503);
+        return res.status(500).send(String(err));
       });
   });
 
-  router.post("/api/flights", (req, res) => {
-    res.send(`ok`);
+  const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+      cb(null, config.CSV_FOLDER);
+    },
+    filename: (req, file, cb) => {
+      cb(null, file.originalname); // + "-" + Date.now());
+    }
+  });
+
+  const fileFilter = (req, file, cb) => {
+    if (!file.originalname.match(/\.(csv)$/)) {
+      return cb(new Error("Only csv files are allowed!"), false);
+    }
+    cb(null, true);
+  };
+
+  const upload = multer({ storage: storage, fileFilter: fileFilter });
+
+  router.post("/api/flights", upload.array("flight"), (req: any, res) => {
+    console.log(req.files);
+
+    Promise.all(req.files.map(file => Parser(file.originalname)))
+      .then(flights => res.json([].concat(...flights)))
+      .catch(err => {
+        console.log(err, err.stack);
+        res.status(500).send(String(err));
+      });
   });
 
   return router;

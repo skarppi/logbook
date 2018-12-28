@@ -54,7 +54,9 @@ export default class Flight implements IFlight {
 
   static list(): Promise<Flight[]> {
     return db.manyOrNone(
-      "SELECT id, plane, startDate, endDate,  duration, flightTime FROM flights"
+      "SELECT id, plane, startDate, endDate,  duration, flightTime " +
+        "FROM flights " +
+        "ORDER BY startDate desc"
     );
   }
 

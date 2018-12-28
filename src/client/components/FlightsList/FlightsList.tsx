@@ -11,6 +11,7 @@ import { NavLink, Route } from "react-router-dom";
 import { IFlight } from "../../../shared/IFlight";
 import { loadFlightsAPI } from "../../utils/api-facade";
 import { Flight } from "../Flight/Flight";
+import { FlightsUpload } from "./FlightsUpload";
 
 interface IState {
   flights: IFlight[];
@@ -33,6 +34,9 @@ export class FlightsList extends React.Component<any, IState> {
 
     return (
       <>
+        <Grid item xs={12}>
+          <FlightsUpload />
+        </Grid>
         <Grid item xs={12}>
           <Card>
             <CardHeader title="Flights List" />
