@@ -77,13 +77,12 @@ export default function parse(filename: string): Promise<IFlight[]> {
         if (duration(state.last, now) > 30000) {
           // no data past 30 seconds, split session
 
-          if (state.session) {
+          if (state.session && state.session.endDate) {
             console.log("Paused but still fly session open");
             state.session.raw = results.slice(state.startIndex, index);
             state.sessions.push(state.session.endSession());
-            state.session = undefined;
-            state.startIndex = index;
           }
+          state.session = undefined;
         }
 
         state.last = now;
@@ -92,17 +91,21 @@ export default function parse(filename: string): Promise<IFlight[]> {
       { startIndex: 0, session: undefined, sessions: [] }
     );
 
-    if (summary.session) {
+    if (summary.session && summary.session.endDate) {
       console.log("Finished but still fly session open");
       summary.session.raw = results.slice(summary.startIndex);
       summary.sessions.push(summary.session.endSession());
     }
 
     console.log(String(summary.sessions));
-    console.log(summary);
+
     return Promise.all(
       summary.sessions.map(session => {
-        return session.save();
+        return session.save().catch(err => {
+          throw new Error(
+            `Flight ${session.id} starting ${session.startDate} failed ${err}`
+          );
+        });
       })
     );
   });
