@@ -1,8 +1,7 @@
 import axios from "axios";
-import { IFlight } from "../../shared/IFlight";
 
-export function loadFlightsAPI() {
-  return axios.get(`/api/flights`).then(res => res.data as IFlight[]);
+export function getApi<T>(path: string): Promise<T> {
+  return axios.get(`/api/${path}`).then(res => res.data as T);
 }
 
 export function uploadFlightsAPI(

@@ -1,6 +1,6 @@
 import Segment from "./segment";
 import { duration, formatDuration } from "../utils/date";
-import { IFlight } from "../../shared/IFlight";
+import IFlight from "../../shared/IFlight";
 import { db } from "../db";
 
 export default class Flight implements IFlight {

@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, Typography } from "@material-ui/core";
 import * as React from "react";
-import { IFlight } from "../../../shared/IFlight";
+import IFlight from "../../../shared/IFlight";
 
 interface IProps {
   flight: IFlight;

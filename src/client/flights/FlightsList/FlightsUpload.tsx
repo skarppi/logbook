@@ -1,17 +1,25 @@
 import { Card, CardContent, CardHeader } from "@material-ui/core";
 import * as React from "react";
 import { uploadFlightsAPI } from "../../utils/api-facade";
+import { addFlight } from "../actions";
 import classNames from "classnames";
 import Dropzone from "react-dropzone";
+import { RootState } from "../../store";
+import { connect } from "react-redux";
+import { FlightsState } from "../reducer";
+import Flight from "../../../shared/IFlight";
 
 const css = require("./FlightsUpload.css");
 
-interface IState {
+interface LocalState {
   files: File[];
   loaded: number;
 }
 
-export class FlightsUpload extends React.Component<any, IState> {
+class FlightsUpload extends React.Component<
+  typeof mapDispatchToProps,
+  LocalState
+> {
   constructor(props) {
     super(props);
     this.state = {
@@ -82,7 +90,16 @@ export class FlightsUpload extends React.Component<any, IState> {
         loaded: (progressEvent.loaded / progressEvent.total) * 100
       });
     }).then(res => {
-      console.log(res.statusText);
+      this.props.addFlight(res.data as Flight[]);
     });
   }
 }
+
+const mapDispatchToProps = {
+  addFlight: addFlight
+};
+
+export default connect<any, any, any>(
+  null,
+  mapDispatchToProps
+)(FlightsUpload);

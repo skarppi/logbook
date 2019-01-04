@@ -1,7 +1,7 @@
 import csv from "./csv";
 import FlySession from "./model/flight";
 import { duration, formatDuration } from "./utils/date";
-import { IFlight } from "../shared/IFlight";
+import Flight from "../shared/IFlight";
 import * as config from "./config";
 
 // flight timer stops when you disarm, and continues when you arm and apply at least 5% throttle
@@ -40,7 +40,7 @@ interface ParserState {
   last?: Date;
 }
 
-export default function parse(filename: string): Promise<IFlight[]> {
+export default function parse(filename: string): Promise<Flight[]> {
   return csv(`${config.CSV_FOLDER}${filename}`).then(results => {
     const first = results[0];
     const last = results[results.length - 1];

@@ -8,27 +8,20 @@ import {
 } from "@material-ui/core";
 import * as React from "react";
 import { NavLink, Route } from "react-router-dom";
-import { IFlight } from "../../../shared/IFlight";
-import { loadFlightsAPI } from "../../utils/api-facade";
+import { fetchFlights } from "../actions";
 import { Flight } from "../Flight/Flight";
-import { FlightsUpload } from "./FlightsUpload";
+import FlightsUpload from "./FlightsUpload";
+import { FlightsState } from "../reducer";
+import { connect } from "react-redux";
+import { RootState } from "../../store";
 
-interface IState {
-  flights: IFlight[];
-  isLoading: boolean;
-}
-
-export class FlightsList extends React.Component<any, IState> {
-  constructor(props) {
-    super(props);
-    this.state = {
-      flights: [],
-      isLoading: true
-    };
-  }
-
+class FlightsList extends React.Component<
+  FlightsState & typeof mapDispatchToProps
+> {
   public render() {
-    if (this.state.isLoading) {
+    const { flights, isLoading } = this.props;
+
+    if (isLoading) {
       return <div>Loading...</div>;
     }
 
@@ -42,7 +35,7 @@ export class FlightsList extends React.Component<any, IState> {
             <CardHeader title="Flights List" />
             <CardContent>
               <List>
-                {this.state.flights.map(flight => (
+                {flights.map(flight => (
                   <ListItem key={flight.id}>
                     <NavLink to={`/flights/${flight.id}`}>{flight.id}</NavLink>
                   </ListItem>
@@ -65,11 +58,24 @@ export class FlightsList extends React.Component<any, IState> {
   }
 
   public async componentDidMount() {
-    const flights = await loadFlightsAPI();
-    this.setState({ flights, isLoading: false });
+    this.props.fetchFlights();
   }
 
   private getFlightById(id) {
-    return this.state.flights.find(u => u.id === id);
+    return this.props.flights.find(u => u.id === id);
   }
 }
+
+const mapStateToProps = (state: RootState) => ({
+  flights: state.flights.flights,
+  isLoading: state.flights.isLoading
+});
+
+const mapDispatchToProps = {
+  fetchFlights: fetchFlights.request
+};
+
+export default connect<any, any>(
+  mapStateToProps,
+  mapDispatchToProps
+)(FlightsList);

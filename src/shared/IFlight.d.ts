@@ -1,4 +1,4 @@
-export interface IFlight {
+export default interface IFlight {
   id: string;
   plane: string;
   startDate: Date;

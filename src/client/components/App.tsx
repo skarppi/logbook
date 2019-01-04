@@ -2,9 +2,9 @@ import { Grid } from "@material-ui/core";
 import * as React from "react";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 // Pages
-import { Header } from "./components/Header/Header";
-import { Home } from "./components/Home/Home";
-import { FlightsList } from "./components/FlightsList/FlightsList";
+import { Header } from "./Header/Header";
+import { Home } from "./Home/Home";
+import FlightsList from "../flights/FlightsList/FlightsList";
 
 export const App = () => (
   <BrowserRouter>
