@@ -24,7 +24,7 @@ export const flightsReducer = function reducer(
   action: RootAction
 ) {
   switch (action.type) {
-    case getType(actions.addFlight): {
+    case getType(actions.addFlights): {
       const flights = action.payload;
 
       return {

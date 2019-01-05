@@ -5,4 +5,5 @@ export default interface IFlight {
   endDate?: Date;
   flightTime: number;
   duration: number;
+  status?: any;
 }

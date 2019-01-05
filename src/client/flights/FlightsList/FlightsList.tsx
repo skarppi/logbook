@@ -38,6 +38,7 @@ class FlightsList extends React.Component<
                 {flights.map(flight => (
                   <ListItem key={flight.id}>
                     <NavLink to={`/flights/${flight.id}`}>{flight.id}</NavLink>
+                    {flight.status}
                   </ListItem>
                 ))}
               </List>
