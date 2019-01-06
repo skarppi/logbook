@@ -1,5 +1,5 @@
-import Segment from "./segment";
-import { duration, formatDuration } from "../utils/date";
+import Segment, { SegmentType } from "./segment";
+import { duration, formatDuration } from "../../shared/utils/date";
 import IFlight from "../../shared/IFlight";
 import { db } from "../db";
 
@@ -7,56 +7,34 @@ export default class Flight implements IFlight {
   id: string;
   plane: string;
   startDate: Date;
-  endDate?: Date;
-  flightTime: number = 0;
-  segment: Segment;
+  endDate: Date;
   duration: number;
-  raw: object[];
+  readyTime: number;
+  flightTime: number;
+  segments: Segment[];
 
-  constructor(id: string, plane: string, startDate: Date) {
+  constructor(id: string, plane: string, segments: Segment[]) {
     this.id = id;
     this.plane = plane;
-    this.startDate = startDate;
-  }
+    this.segments = segments;
+    this.startDate = segments[0].startDate;
+    this.endDate = segments[segments.length - 1].endDate;
+    this.duration = duration(this.startDate, this.endDate);
 
-  startTimer(now: Date, flying: Boolean) {
-    if (this.segment) {
-      this.segment.update(now);
-    } else if (flying) {
-      this.segment = new Segment(now);
-    }
-  }
+    this.readyTime = this.segments
+      .filter(segment => segment.type === SegmentType.ready)
+      .reduce((sum, segment) => sum + segment.duration, 0);
 
-  stopTimer(now?: Date) {
-    if (this.segment) {
-      if (now) {
-        this.segment.update(now);
-      }
-
-      this.flightTime += this.segment.duration;
-
-      console.log(`${this.segment}`);
-
-      this.endDate = this.segment.end;
-      this.duration = duration(this.startDate, this.endDate);
-
-      this.segment = undefined;
-    }
-  }
-
-  endSession(now?: Date) {
-    this.stopTimer(now);
-
-    console.log(this.toString());
-
-    return this;
+    this.flightTime = this.segments
+      .filter(segment => segment.type === SegmentType.flying)
+      .reduce((sum, segment) => sum + segment.duration, 0);
   }
 
   static list(): Promise<Flight[]> {
     return db.manyOrNone(
-      "SELECT id, plane, startDate, endDate,  duration, flightTime " +
+      "SELECT id, plane, start_date, end_date,  duration, ready_time, flight_time, segments " +
         "FROM flights " +
-        "ORDER BY startDate desc"
+        "ORDER BY start_date desc"
     );
   }
 
@@ -66,26 +44,28 @@ export default class Flight implements IFlight {
 
   save(): Promise<Flight> {
     return db.one(
-      "INSERT INTO flights (id, plane, startDate, endDate,  duration, flightTime, raw) " +
-        "VALUES (${id}, ${plane}, ${startDate}, ${endDate}, ${duration}, ${flightTime}, ${raw:json}) " +
+      "INSERT INTO flights (id, plane, start_date, end_date,  duration, ready_time, flight_time, segments) " +
+        "VALUES (${id}, ${plane}, ${startDate}, ${endDate}, ${duration}, ${readyTime}, ${flightTime}, ${segments:json}) " +
         "ON CONFLICT (id) DO UPDATE SET " +
         " plane = ${plane}," +
-        " startDate = ${startDate}," +
-        " endDate = ${endDate}," +
+        " start_date = ${startDate}," +
+        " end_date = ${endDate}," +
         " duration = ${duration}," +
-        " flightTime = ${flightTime}," +
-        " raw = ${raw:json} " +
+        " ready_time = ${readyTime}," +
+        " flight_time = ${flightTime}," +
+        " segments = ${segments:json} " +
         "RETURNING *",
       this
     );
   }
 
   toString() {
-    return `fly session ${this.id} [
-        log start ${this.startDate}
-        log end ${this.endDate}
-        log duration ${formatDuration(this.duration)}
-        flight duration ${formatDuration(this.flightTime)}
+    return `flight ${this.id} [
+        flight start ${this.startDate}
+        flight end ${this.endDate}
+        duration ${formatDuration(this.duration)}
+        ready time ${formatDuration(this.readyTime)}
+        flight time ${formatDuration(this.flightTime)}
 ]`;
   }
 }
