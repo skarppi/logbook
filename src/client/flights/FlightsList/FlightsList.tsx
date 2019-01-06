@@ -4,7 +4,12 @@ import {
   CardHeader,
   Grid,
   List,
-  ListItem
+  ListItem,
+  Table,
+  TableRow,
+  TableCell,
+  TableHead,
+  TableBody
 } from "@material-ui/core";
 import * as React from "react";
 import { NavLink, Route } from "react-router-dom";
@@ -14,6 +19,7 @@ import FlightsUpload from "./FlightsUpload";
 import { FlightsState } from "../reducer";
 import { connect } from "react-redux";
 import { RootState } from "../../store";
+import { formatDuration, formatDateTime } from "../../../shared/utils/date";
 
 class FlightsList extends React.Component<
   FlightsState & typeof mapDispatchToProps
@@ -34,14 +40,30 @@ class FlightsList extends React.Component<
           <Card>
             <CardHeader title="Flights List" />
             <CardContent>
-              <List>
-                {flights.map(flight => (
-                  <ListItem key={flight.id}>
-                    <NavLink to={`/flights/${flight.id}`}>{flight.id}</NavLink>
-                    {flight.status}
-                  </ListItem>
-                ))}
-              </List>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Date</TableCell>
+                    <TableCell>Plane</TableCell>
+                    <TableCell>Flight Time</TableCell>
+                    <TableCell>Status</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {flights.map(flight => (
+                    <TableRow key={flight.id}>
+                      <TableCell>
+                        <NavLink to={`/flights/${flight.id}`}>
+                          {formatDateTime(flight.startDate)}
+                        </NavLink>
+                      </TableCell>
+                      <TableCell>{flight.plane}</TableCell>
+                      <TableCell>{formatDuration(flight.flightTime)}</TableCell>
+                      <TableCell>{flight.status}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
             </CardContent>
           </Card>
         </Grid>
