@@ -1,6 +1,7 @@
 import * as bodyParser from "body-parser";
 import { Router } from "express";
 import Flight from "../model/flight";
+import Dashboard from "../model/dashboard";
 import config = require("../config");
 import * as multer from "multer";
 import Parser from "../parser";
@@ -8,6 +9,15 @@ import Parser from "../parser";
 export function apiRouter() {
   const router = Router();
   router.use(bodyParser.json());
+
+  router.get("/api", (req, res) => {
+    Dashboard.list()
+      .then(flights => res.json(flights))
+      .catch(err => {
+        console.log(err, err.stack);
+        return res.status(500).send(String(err));
+      });
+  });
 
   router.get("/api/flights", (req, res) => {
     Flight.list()
