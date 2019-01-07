@@ -39,8 +39,8 @@ Just clone this repository into your own project folder. and start working
 ```
 git clone https://github.com/skarppi/opentx-logbook.git <MyProjectName>
 cd <MyProjectName>
-npm install
-npm run dev
+yarn install
+yarn run dev
 ```
 
 If you want to detach from this repository into your own repository do this:
@@ -60,9 +60,9 @@ psql -d logbook -f init.sql
 
 ### Usage
 
-- `npm run dev` - Client and server are in watch mode with source maps, opens [http://localhost:3000](http://localhost:3000)
-- `npm run build` - `dist` folder will include all the needed files, both client (Bundle) and server.
-- `npm start` - Just runs `node ./dist/server/server.js`
+- `yarn run dev` - Client and server are in watch mode with source maps, opens [http://localhost:3000](http://localhost:3000)
+- `yarn run build` - `dist` folder will include all the needed files, both client (Bundle) and server.
+- `yarn start` - Just runs `node ./dist/server/server.js`
 
 ---
 

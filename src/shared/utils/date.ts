@@ -9,8 +9,11 @@ export function duration(from: Date, to?: Date): number {
 }
 
 export function formatDuration(seconds: number): string {
-  const minutes = Math.floor(seconds / 60);
-  return `${minutes}:${seconds % 60}`;
+  const hours = Math.floor(seconds / 3600);
+  const mins = Math.floor(seconds / 60) - hours * 60;
+  const secs = Math.floor(seconds % 60);
+
+  return `${hours}h ${mins}m ${secs}s`.replace("0h ", "");
 }
 
 export function formatDate(

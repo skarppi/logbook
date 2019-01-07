@@ -3,7 +3,7 @@ import * as React from "react";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 // Pages
 import { Header } from "./Header/Header";
-import { Home } from "./Home/Home";
+import Dashboard from "../dashboard/Home/Home";
 import FlightsList from "../flights/FlightsList/FlightsList";
 
 export const App = () => (
@@ -12,7 +12,7 @@ export const App = () => (
       <Grid container spacing={24}>
         <Header />
         <Switch>
-          <Route exact path="/" component={Home} />
+          <Route exact path="/" component={Dashboard} />
           <Route path="/flights" component={FlightsList} />
         </Switch>
       </Grid>
