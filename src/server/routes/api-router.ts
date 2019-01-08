@@ -5,13 +5,27 @@ import Dashboard from "../model/dashboard";
 import config = require("../config");
 import * as multer from "multer";
 import Parser from "../parser";
+import { DashboardUnit } from "../../shared/dashboard";
 
 export function apiRouter() {
   const router = Router();
   router.use(bodyParser.json());
 
-  router.get("/api", (req, res) => {
-    Dashboard.list()
+  router.get("/api/dashboard", (req, res) => {
+    const unit = DashboardUnit[<string>req.query.unit];
+    if (req.query.unit && !unit) {
+      return res
+        .status(400)
+        .send(
+          `Invalid value '${
+            req.query.unit
+          }' for query parameter unit. Must be one of [${Object.keys(
+            DashboardUnit
+          )}]`
+        );
+    }
+
+    Dashboard.list(unit || DashboardUnit.month)
       .then(flights => res.json(flights))
       .catch(err => {
         console.log(err, err.stack);

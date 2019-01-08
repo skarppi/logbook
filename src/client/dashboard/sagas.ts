@@ -2,9 +2,9 @@ import { all, call, fork, put, takeEvery } from "redux-saga/effects";
 import * as actions from "./actions";
 import { getApi } from "../utils/api-facade";
 
-function* handleFetch() {
+function* handleFetch(action) {
   try {
-    const res = yield call(getApi, "");
+    const res = yield call(getApi, "dashboard", { unit: action.payload });
 
     if (res.error) {
       yield put(actions.fetchDashboard.failure(res.error));

@@ -1,37 +1,52 @@
 import { db } from "../db";
 
-import { Dashboard as IDashboard, Dataset } from "../../shared/dashboard";
+import { Dashboard as IDashboard, Dataset } from "../../shared/idashboard";
 
-import { groupBy, flow, unzip, uniq, flatten } from "lodash/fp";
+import { groupBy, flow, unzip, uniq, flatten, sumBy, max } from "lodash/fp";
+import { DashboardUnit } from "../../shared/dashboard";
 const map = require("lodash/fp/map").convert({ cap: false });
-import { addMonths } from "date-fns";
+
+const DATEFORMAT = {
+  day: "YYYY-MM-DD",
+  month: "YYYY-MM-01",
+  year: "YYYY-01-01"
+};
+
+const SECONDS_DIVIDER = 60;
 
 export default class Dashboard {
-  static list(): Promise<IDashboard> {
+  static list(unit: DashboardUnit): Promise<IDashboard> {
     return db
       .manyOrNone(
-        "SELECT to_char(start_date,'YYYY-MM-01') as month," +
+        "SELECT to_char(start_date,$1) as date," +
           " plane," +
           " cast(sum(flight_time) as integer) as time, " +
           " cast(count(*) as integer) as count " +
           "FROM flights " +
           "GROUP BY 1,2 " +
-          "ORDER BY month"
+          "ORDER BY date",
+        DATEFORMAT[unit]
       )
       .then(items => {
-        const months = uniq(items.map(i => i.month));
+        const dates = uniq(items.map(i => i.date));
+        const maxFlightTime =
+          (flow(
+            groupBy(i => i["date"]),
+            map((group, date) => sumBy("time", group)),
+            max
+          )(items) as number) / SECONDS_DIVIDER || 0;
 
         const datasetGroups = ["FlightTime", "Flights"];
 
         const datasets = flow(
           groupBy(i => i["plane"]),
           map((items, plane) => {
-            const sets = months.reduce((sets, month) => {
-              const item = items.find(i => i.month === month) || {
+            const sets = dates.reduce((sets, date) => {
+              const item = items.find(i => i.date === date) || {
                 time: 0,
                 count: 0
               };
-              sets.push([item.time / 60, item.count]);
+              sets.push([item.time / SECONDS_DIVIDER, item.count]);
               return sets;
             }, []);
 
@@ -39,6 +54,7 @@ export default class Dashboard {
               return {
                 label: `${plane} ${datasetGroups[index]}`,
                 type: index === 0 ? "bar" : "line",
+                yAxisID: index === 0 ? "time" : "count",
                 data: set
               };
             });
@@ -47,27 +63,10 @@ export default class Dashboard {
         )(items) as Dataset[];
 
         return {
-          labels: months,
+          labels: dates,
+          max: maxFlightTime,
           datasets: datasets
         };
-
-        // return {
-        //   labels: planes,
-        //   datasets: moi
-        // };
-        // .map((month, items) => {
-        //   return items;
-        // });
-
-        // const planes = _(items).reduce(
-        //   (planes, item) =>
-        //     planes.indexOf(item.plane) !== -1 ? planes : [...planes, item.plane],
-        //   []
-
-        // return items.reduce((grouped, item) => {
-        //   grouped[item.plane];
-        //   return grouped;
-        // }, []);
       });
   }
 }

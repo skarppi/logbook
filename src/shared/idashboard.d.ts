@@ -5,5 +5,6 @@ export interface Dataset {
 
 export interface Dashboard {
   labels: string[];
+  max: number;
   datasets: Dataset[];
 }
