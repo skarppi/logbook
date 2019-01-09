@@ -3,8 +3,6 @@ import {
   CardContent,
   CardHeader,
   Grid,
-  List,
-  ListItem,
   Table,
   TableRow,
   TableCell,
@@ -14,12 +12,13 @@ import {
 import * as React from "react";
 import { NavLink, Route } from "react-router-dom";
 import { fetchFlights } from "../actions";
-import { Flight } from "../Flight/Flight";
 import FlightsUpload from "./FlightsUpload";
 import { FlightsState } from "../reducer";
 import { connect } from "react-redux";
 import { RootState } from "../../store";
-import { formatDuration, formatDateTime } from "../../../shared/utils/date";
+import { formatDuration, formatDate } from "../../../shared/utils/date";
+
+import { FlightsOfTheDay } from "./FlightsOfTheDay";
 
 class FlightsList extends React.Component<
   FlightsState & typeof mapDispatchToProps
@@ -44,37 +43,59 @@ class FlightsList extends React.Component<
                 <TableHead>
                   <TableRow>
                     <TableCell>Date</TableCell>
+                    <TableCell>#</TableCell>
                     <TableCell>Plane</TableCell>
                     <TableCell>Flight Time</TableCell>
                     <TableCell>Status</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {flights.map(flight => (
-                    <TableRow key={flight.id}>
-                      <TableCell>
-                        <NavLink to={`/flights/${flight.id}`}>
-                          {formatDateTime(flight.startDate)}
-                        </NavLink>
-                      </TableCell>
-                      <TableCell>{flight.plane}</TableCell>
+                  {Object.keys(flights).map(date => (
+                    <>
+                      <TableRow key={date}>
+                        <TableCell>
+                          <NavLink to={`/flights/${date}`}>
+                            {date === "upload"
+                              ? "Uploaded"
+                              : formatDate(new Date(date))}
+                          </NavLink>
+                        </TableCell>
+                        <TableCell>{flights[date].length}</TableCell>
+                        <TableCell>
+                          {new Set(flights[date].map(flight => flight.plane))}
+                        </TableCell>
+                        <TableCell>
+                          {formatDuration(
+                            flights[date].reduce(
+                              (time, flight) => time + flight.flightTime,
+                              0
+                            )
+                          )}
+                        </TableCell>
+                        <TableCell />
+
+                        {/* <TableCell>{flight.plane}</TableCell>
                       <TableCell>{formatDuration(flight.flightTime)}</TableCell>
-                      <TableCell>{flight.status}</TableCell>
-                    </TableRow>
+                      <TableCell>{flight.status}</TableCell> */}
+                      </TableRow>
+                      <Route
+                        key={date + "-flights"}
+                        path={"/flights/" + date}
+                        render={props => (
+                          <TableRow>
+                            <TableCell
+                              colSpan={5}
+                              children={FlightsOfTheDay(date, flights[date])}
+                            />
+                          </TableRow>
+                        )}
+                      />
+                    </>
                   ))}
                 </TableBody>
               </Table>
             </CardContent>
           </Card>
-        </Grid>
-        <Grid item xs={12}>
-          <Route
-            exact
-            path="/flights/:id"
-            render={props => (
-              <Flight flight={this.getFlightById(props.match.params.id)} />
-            )}
-          />
         </Grid>
       </>
     );
@@ -82,10 +103,6 @@ class FlightsList extends React.Component<
 
   public async componentDidMount() {
     this.props.fetchFlights();
-  }
-
-  private getFlightById(id) {
-    return this.props.flights.find(u => u.id === id);
   }
 }
 

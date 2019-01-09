@@ -5,12 +5,12 @@ import * as actions from "./actions";
 import { RootAction } from "../store";
 
 export type FlightsState = Readonly<{
-  flights: Flight[];
+  flights: { [key: string]: Flight[] };
   isLoading: false;
 }>;
 
 const initialState: FlightsState = {
-  flights: [],
+  flights: {},
   isLoading: false
 };
 
@@ -25,16 +25,17 @@ export const flightsReducer = function reducer(
 ) {
   switch (action.type) {
     case getType(actions.addFlights): {
-      const flights = action.payload;
+      const newFlights = action.payload;
+
+      const oldFlights = state.flights;
+      delete oldFlights["upload"];
 
       return {
         ...state,
-        flights: [
-          ...flights,
-          ...state.flights.filter(
-            existing => !flights.find(uploaded => uploaded.id === existing.id)
-          )
-        ]
+        flights: {
+          upload: newFlights,
+          ...oldFlights
+        }
       };
     }
 

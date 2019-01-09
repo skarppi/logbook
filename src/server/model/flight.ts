@@ -2,6 +2,7 @@ import Segment, { SegmentType } from "./segment";
 import { duration, formatDuration } from "../../shared/utils/date";
 import IFlight from "../../shared/IFlight";
 import { db } from "../db";
+import { groupBy } from "lodash/fp";
 
 export default class Flight implements IFlight {
   id: string;
@@ -30,12 +31,21 @@ export default class Flight implements IFlight {
       .reduce((sum, segment) => sum + segment.duration, 0);
   }
 
-  static list(): Promise<Flight[]> {
-    return db.manyOrNone(
-      "SELECT id, plane, start_date, end_date,  duration, ready_time, flight_time, segments " +
-        "FROM flights " +
-        "ORDER BY start_date desc"
-    );
+  static list(): Promise<any> {
+    return db
+      .manyOrNone(
+        "SELECT id, plane, start_date, end_date, " +
+          " duration, ready_time, flight_time, " +
+          " to_char(start_date, 'YYYY-MM-DD') as day " +
+          "FROM flights " +
+          "ORDER BY start_date desc"
+      )
+      .then(flights => {
+        return flights.reduce((res, flight) => {
+          res[flight.day] = [...(res[flight.day] || []), flight];
+          return res;
+        }, {});
+      });
   }
 
   static find(id: string): Promise<Flight> {
