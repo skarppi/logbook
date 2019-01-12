@@ -1,6 +1,6 @@
 import { db } from "../db";
 
-import { Dashboard as IDashboard, Dataset } from "../../shared/idashboard";
+import { Dashboard as IDashboard, Dataset } from "../../shared/dashboard/types";
 
 import { groupBy, flow, unzip, uniq, flatten, sumBy, max } from "lodash/fp";
 import { DashboardUnit } from "../../shared/dashboard";

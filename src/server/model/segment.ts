@@ -1,4 +1,4 @@
-import { duration, formatDuration } from "../../shared/utils/date";
+import { durationInSeconds, formatDuration } from "../../shared/utils/date";
 import SegmentItem from "./segmentitem";
 
 export enum SegmentType {
@@ -20,7 +20,7 @@ export default class Segment {
 
     this.startDate = this.first.timestamp;
     this.endDate = this.last.timestamp;
-    this.duration = duration(this.startDate, this.endDate);
+    this.duration = durationInSeconds(this.startDate, this.endDate);
   }
 
   private get first(): SegmentItem {

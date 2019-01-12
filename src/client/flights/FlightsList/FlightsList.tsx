@@ -18,17 +18,49 @@ import { connect } from "react-redux";
 import { RootState } from "../../store";
 import { formatDuration, formatDate } from "../../../shared/utils/date";
 
-import { FlightsOfTheDay } from "./FlightsOfTheDay";
+import FlightsOfTheDay from "./FlightsOfTheDay";
 
 class FlightsList extends React.Component<
   FlightsState & typeof mapDispatchToProps
 > {
   public render() {
-    const { flights, isLoading } = this.props;
+    const { flightDays, isLoadingFlightDays } = this.props;
 
-    if (isLoading) {
+    if (isLoadingFlightDays) {
       return <div>Loading...</div>;
     }
+
+    const rows = flightDays.map(flightDay => {
+      const dayRow = (
+        <TableRow key={String(flightDay.date)}>
+          <TableCell>
+            <NavLink to={`/flights/${flightDay.date}`}>
+              {flightDay.date}
+            </NavLink>
+          </TableCell>
+          <TableCell>{flightDay.flights}</TableCell>
+          <TableCell>{flightDay.planes}</TableCell>
+          <TableCell>{formatDuration(flightDay.flightTime)}</TableCell>
+          <TableCell />
+        </TableRow>
+      );
+
+      const flightsRow = (
+        <Route
+          key={flightDay.date + "-route"}
+          path={"/flights/:date(" + flightDay.date + ")"}
+          render={props => (
+            <TableRow key={flightDay.date + "-flights"}>
+              <TableCell colSpan={5}>
+                <FlightsOfTheDay {...props} />
+              </TableCell>
+            </TableRow>
+          )}
+        />
+      );
+
+      return [dayRow, flightsRow];
+    });
 
     return (
       <>
@@ -49,50 +81,7 @@ class FlightsList extends React.Component<
                     <TableCell>Status</TableCell>
                   </TableRow>
                 </TableHead>
-                <TableBody>
-                  {Object.keys(flights).map(date => (
-                    <>
-                      <TableRow key={date}>
-                        <TableCell>
-                          <NavLink to={`/flights/${date}`}>
-                            {date === "upload"
-                              ? "Uploaded"
-                              : formatDate(new Date(date))}
-                          </NavLink>
-                        </TableCell>
-                        <TableCell>{flights[date].length}</TableCell>
-                        <TableCell>
-                          {new Set(flights[date].map(flight => flight.plane))}
-                        </TableCell>
-                        <TableCell>
-                          {formatDuration(
-                            flights[date].reduce(
-                              (time, flight) => time + flight.flightTime,
-                              0
-                            )
-                          )}
-                        </TableCell>
-                        <TableCell />
-
-                        {/* <TableCell>{flight.plane}</TableCell>
-                      <TableCell>{formatDuration(flight.flightTime)}</TableCell>
-                      <TableCell>{flight.status}</TableCell> */}
-                      </TableRow>
-                      <Route
-                        key={date + "-flights"}
-                        path={"/flights/" + date}
-                        render={props => (
-                          <TableRow>
-                            <TableCell
-                              colSpan={5}
-                              children={FlightsOfTheDay(date, flights[date])}
-                            />
-                          </TableRow>
-                        )}
-                      />
-                    </>
-                  ))}
-                </TableBody>
+                <TableBody>{rows}</TableBody>
               </Table>
             </CardContent>
           </Card>
@@ -101,14 +90,14 @@ class FlightsList extends React.Component<
     );
   }
 
-  public async componentDidMount() {
+  public async componentWillMount() {
     this.props.fetchFlights();
   }
 }
 
 const mapStateToProps = (state: RootState) => ({
-  flights: state.flights.flights,
-  isLoading: state.flights.isLoading
+  flightDays: state.flights.flightDays,
+  isLoadingFlightDays: state.flights.isLoadingFlightDays
 });
 
 const mapDispatchToProps = {

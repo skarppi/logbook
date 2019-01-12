@@ -1,8 +1,7 @@
 import csv from "./csv";
 import Flight from "../model/flight";
-import { duration, formatDuration } from "../../shared/utils/date";
 import * as config from "../config";
-import Segment, { SegmentType } from "../model/segment";
+import { SegmentType } from "../model/segment";
 import SegmentItem from "../model/segmentitem";
 import FlightParser from "./flightparser";
 

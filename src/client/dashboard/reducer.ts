@@ -2,8 +2,8 @@ import { getType } from "typesafe-actions";
 
 import * as actions from "./actions";
 import { RootAction } from "../store";
-import { Dashboard } from "../../shared/idashboard";
-import { DashboardUnit } from "../../shared/Dashboard";
+import { Dashboard } from "../../shared/dashboard/types";
+import { DashboardUnit } from "../../shared/dashboard";
 
 export type DashboardState = Readonly<{
   graph: Dashboard;

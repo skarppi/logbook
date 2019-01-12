@@ -17,7 +17,7 @@ import { connect } from "react-redux";
 import { defaults, Bar } from "react-chartjs-2";
 import * as Color from "color";
 import { formatDuration } from "../../../shared/utils/date";
-import { DashboardUnit } from "../../../shared/Dashboard";
+import { DashboardUnit } from "../../../shared/dashboard";
 
 const css = require("./Home.css");
 const logoImg = require("../../../../assets/images/logo.png");

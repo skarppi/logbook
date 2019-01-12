@@ -1,10 +1,6 @@
 import { differenceInSeconds, format } from "date-fns";
 
-function leftPad(num: number): string {
-  return ("00" + Math.floor(num)).slice(-2);
-}
-
-export function duration(from: Date, to?: Date): number {
+export function durationInSeconds(from: Date, to?: Date): number {
   return to ? differenceInSeconds(to, from) : 0;
 }
 

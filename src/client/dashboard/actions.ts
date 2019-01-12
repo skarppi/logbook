@@ -1,6 +1,6 @@
 import { createAsyncAction } from "typesafe-actions";
-import { Dashboard } from "../../shared/idashboard";
-import { DashboardUnit } from "../../shared/Dashboard";
+import { Dashboard } from "../../shared/dashboard/types";
+import { DashboardUnit } from "../../shared/dashboard";
 
 export const fetchDashboard = createAsyncAction(
   "FETCH_DASHBOARD_REQUEST",

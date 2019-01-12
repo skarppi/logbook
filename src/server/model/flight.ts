@@ -1,8 +1,7 @@
 import Segment, { SegmentType } from "./segment";
-import { duration, formatDuration } from "../../shared/utils/date";
-import IFlight from "../../shared/IFlight";
+import { durationInSeconds, formatDuration } from "../../shared/utils/date";
+import { Flight as IFlight, FlightDay } from "../../shared/flights/types";
 import { db } from "../db";
-import { groupBy } from "lodash/fp";
 
 export default class Flight implements IFlight {
   id: string;
@@ -20,7 +19,7 @@ export default class Flight implements IFlight {
     this.segments = segments;
     this.startDate = segments[0].startDate;
     this.endDate = segments[segments.length - 1].endDate;
-    this.duration = duration(this.startDate, this.endDate);
+    this.duration = durationInSeconds(this.startDate, this.endDate);
 
     this.readyTime = this.segments
       .filter(segment => segment.type === SegmentType.ready)
@@ -31,25 +30,30 @@ export default class Flight implements IFlight {
       .reduce((sum, segment) => sum + segment.duration, 0);
   }
 
-  static list(): Promise<any> {
-    return db
-      .manyOrNone(
-        "SELECT id, plane, start_date, end_date, " +
-          " duration, ready_time, flight_time, " +
-          " to_char(start_date, 'YYYY-MM-DD') as day " +
-          "FROM flights " +
-          "ORDER BY start_date desc"
-      )
-      .then(flights => {
-        return flights.reduce((res, flight) => {
-          res[flight.day] = [...(res[flight.day] || []), flight];
-          return res;
-        }, {});
-      });
+  static list(): Promise<FlightDay[]> {
+    return db.manyOrNone(
+      "SELECT string_agg(distinct plane, ', ' ORDER BY plane) as planes, " +
+        " sum(duration) as duration, sum(ready_time) as ready_time, sum(flight_time) as flight_time, " +
+        " to_char(start_date, 'YYYY-MM-DD') as date, count(*) as flights " +
+        "FROM flights " +
+        "GROUP BY date, plane " +
+        "ORDER BY date desc"
+    );
+  }
+
+  static listByDay(day: Date): Promise<Flight[]> {
+    return db.manyOrNone(
+      "SELECT id, plane, start_date, end_date, " +
+        " duration, ready_time, flight_time " +
+        "FROM flights " +
+        "WHERE start_date::date = $1" +
+        "ORDER BY start_date desc",
+      day
+    );
   }
 
   static find(id: string): Promise<Flight> {
-    return db.oneOrNone("SELECT * FROM flights" + "WHERE id = $1", id);
+    return db.oneOrNone("SELECT * FROM flights WHERE id = $1", id);
   }
 
   save(): Promise<Flight> {

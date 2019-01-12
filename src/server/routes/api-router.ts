@@ -42,7 +42,19 @@ export function apiRouter() {
       });
   });
 
-  router.get("/api/flights/:id", (req, res) => {
+  router.get("/api/flights/:day", (req, res) => {
+    const day = new Date(req.params.day);
+    Flight.listByDay(day)
+      .then(flight => {
+        res.json(flight);
+      })
+      .catch(err => {
+        console.log(err, err.stack);
+        return res.status(500).send(String(err));
+      });
+  });
+
+  router.get("/api/flights/:day/:id", (req, res) => {
     const id = req.params.id;
     Flight.find(id)
       .then(flight => {

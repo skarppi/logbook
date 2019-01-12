@@ -1,4 +1,4 @@
-import { duration } from "../../shared/utils/date";
+import { durationInSeconds } from "../../shared/utils/date";
 import Segment, { SegmentType } from "../model/segment";
 import SegmentItem from "../model/segmentitem";
 
@@ -18,7 +18,7 @@ export default class SegmentParser {
   }
 
   splitFlightAt(timestamp: Date) {
-    return this.last && duration(this.last.timestamp, timestamp) > 30;
+    return this.last && durationInSeconds(this.last.timestamp, timestamp) > 30;
   }
 
   splitSegment(type: SegmentType) {

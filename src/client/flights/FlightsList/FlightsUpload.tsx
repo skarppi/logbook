@@ -4,7 +4,7 @@ import { addFlights } from "../actions";
 import classNames from "classnames";
 import Dropzone from "react-dropzone";
 import { connect } from "react-redux";
-import Flight from "../../../shared/IFlight";
+import { Flight } from "../../../shared/flights/types";
 import { uploadFlightsAPI } from "../../utils/api-facade";
 
 const css = require("./FlightsUpload.css");

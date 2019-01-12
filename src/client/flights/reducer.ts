@@ -1,17 +1,25 @@
-import Flight from "../../shared/IFlight";
+import { FlightDay, Flight } from "../../shared/flights/types";
 import { getType } from "typesafe-actions";
 
 import * as actions from "./actions";
 import { RootAction } from "../store";
 
 export type FlightsState = Readonly<{
-  flights: { [key: string]: Flight[] };
-  isLoading: false;
+  flightDays: FlightDay[];
+  isLoadingFlightDays: boolean;
+  flightsOfTheDay: Flight[];
+  isLoadingFlightsOfTheDay: boolean;
+  flight: Flight;
+  isLoadingFlightDetails: boolean;
 }>;
 
 const initialState: FlightsState = {
-  flights: {},
-  isLoading: false
+  flightDays: [],
+  isLoadingFlightDays: false,
+  flightsOfTheDay: [],
+  isLoadingFlightsOfTheDay: false,
+  flight: null,
+  isLoadingFlightDetails: false
 };
 
 /*
@@ -25,16 +33,11 @@ export const flightsReducer = function reducer(
 ) {
   switch (action.type) {
     case getType(actions.addFlights): {
-      const newFlights = action.payload;
-
-      const oldFlights = state.flights;
-      delete oldFlights["upload"];
-
       return {
         ...state,
-        flights: {
-          upload: newFlights,
-          ...oldFlights
+        flightDays: {
+          upload: action.payload,
+          ...state.flightDays
         }
       };
     }
@@ -42,21 +45,65 @@ export const flightsReducer = function reducer(
     case getType(actions.fetchFlights.request): {
       return {
         ...state,
-        isLoading: true
+        isLoadingFlightDays: true
       };
     }
     case getType(actions.fetchFlights.success): {
       return {
         ...state,
-        flights: action.payload,
-        isLoading: false
+        flightDays: action.payload,
+        isLoadingFlightDays: false
       };
     }
     case getType(actions.fetchFlights.failure): {
       console.log(action.payload);
       return {
         ...state,
-        isLoading: false
+        isLoadingFlightDays: false
+      };
+    }
+
+    case getType(actions.fetchFlightsPerDay.request): {
+      return {
+        ...state,
+        flightsOfTheDay: [],
+        isLoadingFlightsOfTheDay: true
+      };
+    }
+    case getType(actions.fetchFlightsPerDay.success): {
+      return {
+        ...state,
+        flightsOfTheDay: action.payload,
+        isLoadingFlightsOfTheDay: false
+      };
+    }
+    case getType(actions.fetchFlightsPerDay.failure): {
+      console.log(action.payload);
+      return {
+        ...state,
+        isLoadingFlightsOfTheDay: false
+      };
+    }
+
+    case getType(actions.fetchFlight.request): {
+      return {
+        ...state,
+        flight: action.payload,
+        isLoadingFlightDetails: true
+      };
+    }
+    case getType(actions.fetchFlight.success): {
+      return {
+        ...state,
+        flight: action.payload,
+        isLoadingFlightDetails: false
+      };
+    }
+    case getType(actions.fetchFlight.failure): {
+      console.log(action.payload);
+      return {
+        ...state,
+        isLoadingFlightDetails: false
       };
     }
 
