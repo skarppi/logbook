@@ -9,7 +9,7 @@ export default class Flight implements IFlight {
   startDate: Date;
   endDate: Date;
   duration: number;
-  readyTime: number;
+  armedTime: number;
   flightTime: number;
   segments: Segment[];
 
@@ -21,8 +21,8 @@ export default class Flight implements IFlight {
     this.endDate = segments[segments.length - 1].endDate;
     this.duration = durationInSeconds(this.startDate, this.endDate);
 
-    this.readyTime = this.segments
-      .filter(segment => segment.type === SegmentType.ready)
+    this.armedTime = this.segments
+      .filter(segment => segment.type !== SegmentType.stopped)
       .reduce((sum, segment) => sum + segment.duration, 0);
 
     this.flightTime = this.segments
@@ -33,7 +33,7 @@ export default class Flight implements IFlight {
   static list(): Promise<FlightDay[]> {
     return db.manyOrNone(
       "SELECT string_agg(distinct plane, ', ' ORDER BY plane) as planes, " +
-        " sum(duration) as duration, sum(ready_time) as ready_time, sum(flight_time) as flight_time, " +
+        " sum(duration) as duration, sum(armed_time) as armed_time, sum(flight_time) as flight_time, " +
         " to_char(start_date, 'YYYY-MM-DD') as date, count(*) as flights " +
         "FROM flights " +
         "GROUP BY date, plane " +
@@ -44,7 +44,7 @@ export default class Flight implements IFlight {
   static listByDay(day: Date): Promise<Flight[]> {
     return db.manyOrNone(
       "SELECT id, plane, start_date, end_date, " +
-        " duration, ready_time, flight_time " +
+        " duration, armed_time, flight_time " +
         "FROM flights " +
         "WHERE start_date::date = $1" +
         "ORDER BY start_date desc",
@@ -58,14 +58,14 @@ export default class Flight implements IFlight {
 
   save(): Promise<Flight> {
     return db.one(
-      "INSERT INTO flights (id, plane, start_date, end_date,  duration, ready_time, flight_time, segments) " +
-        "VALUES (${id}, ${plane}, ${startDate}, ${endDate}, ${duration}, ${readyTime}, ${flightTime}, ${segments:json}) " +
+      "INSERT INTO flights (id, plane, start_date, end_date,  duration, armed_time, flight_time, segments) " +
+        "VALUES (${id}, ${plane}, ${startDate}, ${endDate}, ${duration}, ${armedTime}, ${flightTime}, ${segments:json}) " +
         "ON CONFLICT (id) DO UPDATE SET " +
         " plane = ${plane}," +
         " start_date = ${startDate}," +
         " end_date = ${endDate}," +
         " duration = ${duration}," +
-        " ready_time = ${readyTime}," +
+        " armed_time = ${armedTime}," +
         " flight_time = ${flightTime}," +
         " segments = ${segments:json} " +
         "RETURNING *",
@@ -78,7 +78,7 @@ export default class Flight implements IFlight {
         flight start ${this.startDate}
         flight end ${this.endDate}
         duration ${formatDuration(this.duration)}
-        ready time ${formatDuration(this.readyTime)}
+        armed time ${formatDuration(this.armedTime)}
         flight time ${formatDuration(this.flightTime)}
 ]`;
   }

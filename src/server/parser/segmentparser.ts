@@ -21,10 +21,16 @@ export default class SegmentParser {
     return this.last && durationInSeconds(this.last.timestamp, timestamp) > 30;
   }
 
-  splitSegment(type: SegmentType) {
+  splitSegment(type: SegmentType, latest: SegmentItem) {
     if (this.type === type) {
       return false;
-    } else if (this.type === SegmentType.flying && type === SegmentType.ready) {
+    } else if (this.type === SegmentType.flying && type === SegmentType.armed) {
+      // stop flying if more than 3 entries indicate we are stopped
+      const history = this.items.slice(-10, -3).find(item => !item.flying);
+      if (history) {
+        return true;
+      }
+
       return false;
     }
     return true;

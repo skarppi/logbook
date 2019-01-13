@@ -10,17 +10,22 @@ export default class FlightParser {
   sessionCounter: number = 0;
   flights: Flight[] = [];
 
-  constructor(filename: string) {
-    this.name = filename.substring(0, filename.lastIndexOf("."));
+  constructor(name: string) {
+    this.name = name;
   }
 
-  appendItem(type: SegmentType, item: SegmentItem) {
+  appendItem(item: SegmentItem) {
     if (this.currentSegment.splitFlightAt(item.timestamp)) {
       console.log(`Split flight at ${item.timestamp}`);
       this.endFlight();
     }
 
-    if (this.currentSegment.splitSegment(type)) {
+    let type = SegmentType.stopped;
+    if (item.armed) {
+      type = item.flying ? SegmentType.flying : SegmentType.armed;
+    }
+
+    if (this.currentSegment.splitSegment(type, item)) {
       this.endSegment();
     }
 

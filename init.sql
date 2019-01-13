@@ -5,7 +5,7 @@ create table Flights (
   start_date TIMESTAMP WITH TIME ZONE NOT NULL,
   end_date TIMESTAMP WITH TIME ZONE NOT NULL,
   duration INTEGER NOT NULL,
-  ready_time INTEGER NOT NULL,
+  armed_time INTEGER NOT NULL,
   flight_time INTEGER NOT NULL,
   segments JSONB NOT NULL
 );

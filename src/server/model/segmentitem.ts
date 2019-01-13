@@ -15,11 +15,11 @@ export default class SegmentItem {
     return new Date(`${this["Date"]} ${this["Time"]}`);
   }
 
-  get armed(): Boolean {
+  get armed(): boolean {
     return this[ARMED_SWITCH] === ARMED_VALUE;
   }
 
-  get flying(): Boolean {
+  get flying(): boolean {
     return (
       parseInt(this["Thr"]) >= THR_MIN + (THR_MAX - THR_MIN) * THR_TRESHOLD
     );

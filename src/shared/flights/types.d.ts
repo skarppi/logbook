@@ -4,7 +4,7 @@ export interface Flight {
   startDate: Date;
   endDate: Date;
   duration: number;
-  readyTime: number;
+  armedTime: number;
   flightTime: number;
   status?: any;
 }
@@ -14,6 +14,6 @@ export interface FlightDay {
   flights: number;
   planes: string[];
   duration: number;
-  readyTime: number;
+  armedTime: number;
   flightTime: number;
 }

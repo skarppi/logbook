@@ -4,7 +4,7 @@ import SegmentItem from "./segmentitem";
 export enum SegmentType {
   stopped = "stopped",
   flying = "flying",
-  ready = "ready"
+  armed = "armed"
 }
 
 export default class Segment {
