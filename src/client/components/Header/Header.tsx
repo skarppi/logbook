@@ -14,6 +14,13 @@ export const Header = () => (
       >
         Flights
       </Button>
+
+      <Button
+        color="primary"
+        component={(p: any) => <Link to="/upload" {...p} />}
+      >
+        Upload
+      </Button>
     </Toolbar>
   </AppBar>
 );

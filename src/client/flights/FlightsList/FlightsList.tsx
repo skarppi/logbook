@@ -65,9 +65,6 @@ class FlightsList extends React.Component<
     return (
       <>
         <Grid item xs={12}>
-          <FlightsUpload />
-        </Grid>
-        <Grid item xs={12}>
           <Card>
             <CardHeader title="Flights List" />
             <CardContent>

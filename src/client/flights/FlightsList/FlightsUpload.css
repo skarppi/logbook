@@ -3,3 +3,7 @@
   border: 2px dashed #2bb0d4;
   text-align: center;
 }
+
+.footer td {
+  font-size: 16px;
+}

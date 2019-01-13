@@ -35,10 +35,7 @@ export const flightsReducer = function reducer(
     case getType(actions.addFlights): {
       return {
         ...state,
-        flightDays: {
-          upload: action.payload,
-          ...state.flightDays
-        }
+        flightsOfTheDay: action.payload
       };
     }
 
