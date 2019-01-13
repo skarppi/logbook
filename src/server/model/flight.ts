@@ -36,7 +36,7 @@ export default class Flight implements IFlight {
         " sum(duration) as duration, sum(armed_time) as armed_time, sum(flight_time) as flight_time, " +
         " to_char(start_date, 'YYYY-MM-DD') as date, count(*) as flights " +
         "FROM flights " +
-        "GROUP BY date, plane " +
+        "GROUP BY date " +
         "ORDER BY date desc"
     );
   }
