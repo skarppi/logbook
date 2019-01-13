@@ -66,6 +66,15 @@ export function apiRouter() {
       });
   });
 
+  router.delete("/api/flights/:day/:id", (req, res) => {
+    const id = req.params.id;
+    Flight.delete(id)
+      .then(_ => res.json({ status: "deleted" }))
+      .catch(err => {
+        console.log(err, err.stack);
+        return res.status(500).send(String(err));
+      });
+  });
 
   router.get("/api/flights/:day/:id/reset", (req, res) => {
     const id = req.params.id;

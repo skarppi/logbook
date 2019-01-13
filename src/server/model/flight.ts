@@ -56,6 +56,10 @@ export default class Flight implements IFlight {
     return db.oneOrNone("SELECT * FROM flights WHERE id = $1", id);
   }
 
+  static delete(id: string): Promise<Flight> {
+    return db.none("DELETE FROM flights WHERE id = $1", id);
+  }
+
   save(): Promise<Flight> {
     return db.one(
       "INSERT INTO flights (id, plane, start_date, end_date,  duration, armed_time, flight_time, segments) " +

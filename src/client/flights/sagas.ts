@@ -1,11 +1,11 @@
 import { all, call, fork, put, takeEvery } from "redux-saga/effects";
 import * as actions from "./actions";
-import { getApi } from "../utils/api-facade";
+import { getApi, deleteApi } from "../utils/api-facade";
 import { formatDate } from "../../shared/utils/date";
 
-function* handleCall(action, path) {
+function* handleCall(action, path, api = getApi) {
   try {
-    const res = yield call(getApi, path);
+    const res = yield call(api, path);
 
     if (res.error) {
       yield put(action.failure(res.error));
@@ -39,6 +39,14 @@ function* handleFetchFlight(action) {
   );
 }
 
+function* handledeleteFlight(action) {
+  return yield handleCall(
+    actions.deleteFlight,
+    "flights/" + formatDate(action.payload.startDate) + "/" + action.payload.id,
+    deleteApi
+  );
+}
+
 function* watchFetchFlightsRequest() {
   yield takeEvery(actions.fetchFlights.request, handleFetchFlights);
 }
@@ -51,11 +59,16 @@ function* watchFetchFlightRequest() {
   yield takeEvery(actions.fetchFlight.request, handleFetchFlight);
 }
 
+function* watchDeleteFlightRequest() {
+  yield takeEvery(actions.deleteFlight.request, handledeleteFlight);
+}
+
 // We can also use `fork()` here to split our saga into multiple watchers.
 export function* flightsSaga() {
   yield all([
     fork(watchFetchFlightsRequest),
     fork(watchFetchFlightsPerDayRequest),
-    fork(watchFetchFlightRequest)
+    fork(watchFetchFlightRequest),
+    fork(watchDeleteFlightRequest)
   ]);
 }

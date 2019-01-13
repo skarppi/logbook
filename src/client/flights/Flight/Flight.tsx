@@ -1,17 +1,25 @@
-import { Card, CardContent, CardHeader, Typography } from "@material-ui/core";
-import { Table, TableRow, TableCell, TableBody } from "@material-ui/core";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  Typography,
+  IconButton
+} from "@material-ui/core";
 import * as React from "react";
-import { NavLink, Route } from "react-router-dom";
 import { RouteComponentProps } from "react-router";
 import {
   formatDuration,
   formatTime,
   formatDate
 } from "../../../shared/utils/date";
+import TextField from "@material-ui/core/TextField";
 import { FlightsState } from "../reducer";
 import { RootState } from "../../store";
-import { fetchFlight } from "../actions";
+import { fetchFlight, deleteFlight } from "../actions";
 import { connect } from "react-redux";
+
+const css = require("./Flight.css");
+import DeleteIcon from "@material-ui/icons/Delete";
 
 interface LocalProps {}
 
@@ -35,22 +43,85 @@ class FlightDetails extends React.Component<AllProps> {
 
     return (
       <Card>
-        <CardHeader title={`Flight: ${flight.id}`} />
-        <CardContent>
-          <Typography variant="subheading">Id: {flight.id}</Typography>
-          <Typography variant="subheading">Image Url: {flight.id}</Typography>
+        <CardHeader
+          title={`Flight: ${flight.id}`}
+          action={
+            <IconButton onClick={_ => this.props.deleteFlight(flight)}>
+              <DeleteIcon />
+            </IconButton>
+          }
+        />
+        <CardContent className={css.container}>
+          <TextField
+            required
+            id="date"
+            type="date"
+            label="Date"
+            value={formatDate(this.props.flight.startDate)}
+            className={css.textField}
+            margin="normal"
+          />
+          <TextField
+            required
+            id="start_time"
+            type="time"
+            label="Started"
+            className={css.textField}
+            value={formatTime(this.props.flight.startDate)}
+            margin="normal"
+          />
+          <TextField
+            required
+            id="end_time"
+            type="time"
+            label="Stopped"
+            className={css.textField}
+            value={formatTime(this.props.flight.endDate)}
+            margin="normal"
+          />
+          <TextField
+            required
+            id="duration"
+            label="Duration"
+            className={css.textField}
+            value={formatDuration(this.props.flight.duration)}
+            margin="normal"
+          />
+
+          <TextField
+            id="armedTime"
+            label="Armed time"
+            className={css.textField}
+            value={formatDuration(this.props.flight.armedTime)}
+            margin="normal"
+          />
+
+          <TextField
+            id="flightTime"
+            label="Flight time"
+            className={css.textField}
+            value={formatDuration(this.props.flight.flightTime)}
+            margin="normal"
+          />
+
+          <TextField
+            id="filled-textarea"
+            label="Journal"
+            placeholder="Journal"
+            multiline
+            className={css.textField}
+            margin="normal"
+          />
         </CardContent>
       </Card>
     );
   }
 
   public async componentWillMount() {
-    console.log("MOUNT", this.props);
-
     const flight = this.props.flightsPerDay.find(
       f => f.id === this.props.match.params.id
     );
-
+    console.log("mount", this.props);
     this.props.fetchFlight(flight);
   }
 }
@@ -62,7 +133,8 @@ const mapStateToProps = (state: RootState) => ({
 });
 
 const mapDispatchToProps = {
-  fetchFlight: fetchFlight.request
+  fetchFlight: fetchFlight.request,
+  deleteFlight: deleteFlight.request
 };
 
 export default connect<any, any>(

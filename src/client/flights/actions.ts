@@ -20,3 +20,9 @@ export const fetchFlight = createAsyncAction(
   "FETCH_FLIGHTDETAILS_SUCCESS",
   "FETCH_FLIGHTDETAILS_FAILURE"
 )<Flight, Flight, string>();
+
+export const deleteFlight = createAsyncAction(
+  "DELETE_FLIGHTDETAILS_REQUEST",
+  "DELETE_FLIGHTDETAILS_SUCCESS",
+  "DELETE_FLIGHTDETAILS_FAILURE"
+)<Flight, string, string>();

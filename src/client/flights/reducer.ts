@@ -104,6 +104,27 @@ export const flightsReducer = function reducer(
       };
     }
 
+    case getType(actions.deleteFlight.request): {
+      return {
+        ...state,
+        isLoadingFlightDetails: true
+      };
+    }
+    case getType(actions.deleteFlight.success): {
+      return {
+        ...state,
+        flight: null,
+        isLoadingFlightDetails: false
+      };
+    }
+    case getType(actions.deleteFlight.failure): {
+      console.log(action.payload);
+      return {
+        ...state,
+        isLoadingFlightDetails: false
+      };
+    }
+
     default:
       return state;
   }
