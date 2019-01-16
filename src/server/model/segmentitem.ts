@@ -1,6 +1,6 @@
 // flight timer stops when you disarm, and continues when you arm and apply at least 5% throttle
 const ARMED_SWITCH = "SB";
-const ARMED_VALUE = "1";
+const NOT_ARMED_VALUE = "-1";
 
 const THR_TRESHOLD = 0.05;
 const THR_MIN = -1024;
@@ -16,7 +16,7 @@ export default class SegmentItem {
   }
 
   get armed(): boolean {
-    return this[ARMED_SWITCH] === ARMED_VALUE;
+    return this[ARMED_SWITCH] !== NOT_ARMED_VALUE;
   }
 
   get flying(): boolean {
