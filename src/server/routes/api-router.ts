@@ -12,20 +12,30 @@ export function apiRouter() {
   router.use(bodyParser.json());
 
   router.get("/api/dashboard", (req, res) => {
-    const unit = DashboardUnit[<string>req.query.unit];
-    if (req.query.unit && !unit) {
+    const query = {
+      unit: DashboardUnit[<string>req.query.unit],
+      size: req.query.size
+    };
+
+    if (!query.unit) {
       return res
         .status(400)
         .send(
-          `Invalid value '${
-            req.query.unit
-          }' for query parameter unit. Must be one of [${Object.keys(
+          `Query parameter "unit" must be one of [${Object.keys(
             DashboardUnit
-          )}]`
+          )}], was ${req.query.unit}`
         );
     }
 
-    Dashboard.list(unit || DashboardUnit.month)
+    if (!query.size || query.size < 1) {
+      return res
+        .status(400)
+        .send(
+          `Query parameter "size" must be one or more, was ${req.query.size}`
+        );
+    }
+
+    Dashboard.list(query)
       .then(flights => res.json(flights))
       .catch(err => {
         console.log(err, err.stack);

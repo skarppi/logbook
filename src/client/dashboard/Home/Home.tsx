@@ -10,7 +10,11 @@ import {
 import * as React from "react";
 
 import { DashboardState } from "../reducer";
-import { fetchDashboard } from "../actions";
+import {
+  fetchDashboard,
+  changeDashboardSize,
+  changeDashboardUnit
+} from "../actions";
 import { RootState } from "../../store";
 import { connect } from "react-redux";
 
@@ -18,6 +22,8 @@ import { defaults, Bar } from "react-chartjs-2";
 import * as Color from "color";
 import { formatDuration } from "../../../shared/utils/date";
 import { DashboardUnit } from "../../../shared/dashboard";
+import { cloneDeep } from "lodash";
+import { Dataset } from "../../../shared/dashboard/types";
 
 const css = require("./Home.css");
 const logoImg = require("../../../../assets/images/logo.png");
@@ -42,30 +48,51 @@ const chartColors = [
 
 defaults["global"].elements.line.fill = false;
 
+function yAxisStepSize(max: number) {
+  if (max < 1440) {
+    if (max <= 60) {
+      // sale in minutes
+      return max <= 10 ? 1 : 10;
+    } else {
+      // scale in hours
+      return 60;
+    }
+  } else {
+    // scale in days
+    return 60 * 24;
+  }
+}
+
+// every plane contains two set of datasets, use same color for both
+function colorize(datasets: Dataset[]) {
+  return datasets.map((dataset, index) => {
+    const colorIndex = Math.floor(index / 2);
+
+    dataset["borderColor"] = chartColors[colorIndex][0];
+    dataset["backgroundColor"] = chartColors[colorIndex][1];
+    dataset["borderWidth"] = 1;
+
+    return dataset;
+  });
+}
+
+function sizesForUnit(unit: DashboardUnit) {
+  if (unit === DashboardUnit.day) {
+    return [7, 14, 30];
+  } else if (unit === DashboardUnit.month) {
+    return [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+  } else {
+    return [1, 2, 3, 4, 5, 6];
+  }
+}
+
 class Dashboard extends React.Component<
   DashboardState & typeof mapDispatchToProps
 > {
-  public render() {
-    const { graph, unit } = this.props;
+  private chartOptions() {
+    const { graph, query } = this.props;
 
-    graph.datasets.map((dataset, index) => {
-      dataset["borderColor"] = chartColors[index][0];
-      dataset["backgroundColor"] = chartColors[index][1];
-      dataset["borderWidth"] = 1;
-
-      return dataset;
-    });
-
-    const stepSize =
-      graph.max < 1440
-        ? graph.max <= 60
-          ? graph.max <= 10
-            ? 1
-            : 10
-          : 60
-        : 60 * 24;
-
-    const options = {
+    return {
       offset: true,
       tooltips: {
         mode: "index",
@@ -86,6 +113,29 @@ class Dashboard extends React.Component<
           }
         }
       },
+      legend: {
+        labels: {
+          // show legend only once per plane
+          filter: item => item.datasetIndex % 2 === 0,
+          generateLabels: item2 => {
+            // show only plane name
+            const item = cloneDeep(item2);
+            if (item2.data) {
+              item.data = cloneDeep(item2.data);
+              item.data.datasets = item.data.datasets.map(dataset => {
+                const trimPoint = dataset.label.indexOf(" ");
+                if (trimPoint > 0) {
+                  dataset.label = dataset.label.substring(0, trimPoint);
+                }
+
+                return dataset;
+              });
+            }
+
+            return defaults["global"].legend.labels.generateLabels(item);
+          }
+        }
+      },
       responsive: true,
       layout: {
         padding: {
@@ -99,9 +149,9 @@ class Dashboard extends React.Component<
           {
             type: "time",
             time: {
-              unit: unit,
+              unit: query.unit,
               unitStepSize: 1,
-              round: unit,
+              round: query.unit,
               tooltipFormat: "D MMMM YYYY",
               displayFormats: {}
             },
@@ -121,7 +171,8 @@ class Dashboard extends React.Component<
             },
             ticks: {
               callback: value => formatDuration(value * 60),
-              stepSize: stepSize
+              stepSize: yAxisStepSize(graph.max),
+              min: 0
             },
             stacked: true
           },
@@ -132,11 +183,27 @@ class Dashboard extends React.Component<
               display: true,
               labelString: "Flights"
             },
+            ticks: {
+              min: 0
+            },
             stacked: true
           }
         ]
       }
     };
+  }
+
+  public render() {
+    const { graph, query } = this.props;
+
+    const options = this.chartOptions();
+
+    // TODO: modify somewhere else
+    graph.datasets = colorize(graph.datasets);
+
+    const sizes = sizesForUnit(DashboardUnit.month).map(value => (
+      <MenuItem value={value}>{value}</MenuItem>
+    ));
 
     return (
       <Grid item xs={12}>
@@ -145,7 +212,10 @@ class Dashboard extends React.Component<
           <CardContent>
             <Typography variant="subheading">Overview of flights </Typography>
             <Typography variant="subheading">
-              <Select value={unit} onChange={this.props.handleUnitChange}>
+              <Select value={query.size} onChange={this.props.handleSizeChange}>
+                {sizes}
+              </Select>
+              <Select value={query.unit} onChange={this.props.handleUnitChange}>
                 <MenuItem value={DashboardUnit.day}>Day</MenuItem>
                 <MenuItem value={DashboardUnit.month}>Month</MenuItem>
                 <MenuItem value={DashboardUnit.year}>Year</MenuItem>
@@ -159,19 +229,20 @@ class Dashboard extends React.Component<
   }
 
   public async componentDidMount() {
-    this.props.fetchDashboard(this.props.unit);
+    this.props.fetchDashboard(this.props.query);
   }
 }
 
 const mapStateToProps = (state: RootState) => ({
   graph: state.dashboard.graph,
-  unit: state.dashboard.unit,
+  query: state.dashboard.query,
   isLoading: state.dashboard.isLoading
 });
 
 const mapDispatchToProps = {
   fetchDashboard: fetchDashboard.request,
-  handleUnitChange: event => fetchDashboard.request(event.target.value)
+  handleUnitChange: event => changeDashboardUnit(event.target.value),
+  handleSizeChange: event => changeDashboardSize(event.target.value)
 };
 
 export default connect<any, any>(

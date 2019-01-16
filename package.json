@@ -40,7 +40,7 @@
     "@types/lodash": "^4.14.119",
     "axios": "^0.18.0",
     "body-parser": "^1.18.3",
-    "chart.js": "^2.7.3",
+    "chart.js": "2.5.0",
     "csv-parse": "^4.3.0",
     "date-fns": "^1.30.1",
     "express": "^4.16.4",
