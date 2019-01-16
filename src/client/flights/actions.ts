@@ -21,6 +21,12 @@ export const fetchFlight = createAsyncAction(
   "FETCH_FLIGHTDETAILS_FAILURE"
 )<Flight, Flight, string>();
 
+export const resetFlight = createAsyncAction(
+  "RESET_FLIGHTDETAILS_REQUEST",
+  "RESET_FLIGHTDETAILS_SUCCESS",
+  "RESET_FLIGHTDETAILS_FAILURE"
+)<Flight, Flight, string>();
+
 export const deleteFlight = createAsyncAction(
   "DELETE_FLIGHTDETAILS_REQUEST",
   "DELETE_FLIGHTDETAILS_SUCCESS",

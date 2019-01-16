@@ -39,6 +39,8 @@ export const flightsReducer = function reducer(
       };
     }
 
+    // DAYS
+
     case getType(actions.fetchFlights.request): {
       return {
         ...state,
@@ -59,6 +61,8 @@ export const flightsReducer = function reducer(
         isLoadingFlightDays: false
       };
     }
+
+    // FLIGHTS OF THE DAY
 
     case getType(actions.fetchFlightsPerDay.request): {
       return {
@@ -82,6 +86,8 @@ export const flightsReducer = function reducer(
       };
     }
 
+    // SINGLE FLIGHT
+
     case getType(actions.fetchFlight.request): {
       return {
         ...state,
@@ -89,27 +95,24 @@ export const flightsReducer = function reducer(
         isLoadingFlightDetails: true
       };
     }
-    case getType(actions.fetchFlight.success): {
-      return {
-        ...state,
-        flight: action.payload,
-        isLoadingFlightDetails: false
-      };
-    }
-    case getType(actions.fetchFlight.failure): {
-      console.log(action.payload);
-      return {
-        ...state,
-        isLoadingFlightDetails: false
-      };
-    }
 
+    case getType(actions.resetFlight.request):
     case getType(actions.deleteFlight.request): {
       return {
         ...state,
         isLoadingFlightDetails: true
       };
     }
+
+    case getType(actions.fetchFlight.success):
+    case getType(actions.resetFlight.success): {
+      return {
+        ...state,
+        flight: action.payload,
+        isLoadingFlightDetails: false
+      };
+    }
+
     case getType(actions.deleteFlight.success): {
       return {
         ...state,
@@ -117,6 +120,9 @@ export const flightsReducer = function reducer(
         isLoadingFlightDetails: false
       };
     }
+
+    case getType(actions.fetchFlight.failure):
+    case getType(actions.resetFlight.failure):
     case getType(actions.deleteFlight.failure): {
       console.log(action.payload);
       return {

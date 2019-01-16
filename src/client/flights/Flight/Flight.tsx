@@ -15,11 +15,12 @@ import {
 import TextField from "@material-ui/core/TextField";
 import { FlightsState } from "../reducer";
 import { RootState } from "../../store";
-import { fetchFlight, deleteFlight } from "../actions";
+import { fetchFlight, deleteFlight, resetFlight } from "../actions";
 import { connect } from "react-redux";
 
 const css = require("./Flight.css");
 import DeleteIcon from "@material-ui/icons/Delete";
+import RefreshIcon from "@material-ui/icons/Refresh";
 
 interface LocalProps {}
 
@@ -46,9 +47,15 @@ class FlightDetails extends React.Component<AllProps> {
         <CardHeader
           title={`Flight: ${flight.id}`}
           action={
-            <IconButton onClick={_ => this.props.deleteFlight(flight)}>
-              <DeleteIcon />
-            </IconButton>
+            <>
+              <IconButton onClick={_ => this.props.resetFlight(flight)}>
+                <RefreshIcon />
+              </IconButton>
+
+              <IconButton onClick={_ => this.props.deleteFlight(flight)}>
+                <DeleteIcon />
+              </IconButton>
+            </>
           }
         />
         <CardContent className={css.container}>
@@ -121,7 +128,6 @@ class FlightDetails extends React.Component<AllProps> {
     const flight = this.props.flightsPerDay.find(
       f => f.id === this.props.match.params.id
     );
-    console.log("mount", this.props);
     this.props.fetchFlight(flight);
   }
 }
@@ -134,6 +140,7 @@ const mapStateToProps = (state: RootState) => ({
 
 const mapDispatchToProps = {
   fetchFlight: fetchFlight.request,
+  resetFlight: resetFlight.request,
   deleteFlight: deleteFlight.request
 };
 

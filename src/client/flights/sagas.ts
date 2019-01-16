@@ -1,7 +1,8 @@
 import { all, call, fork, put, takeEvery } from "redux-saga/effects";
 import * as actions from "./actions";
-import { getApi, deleteApi } from "../utils/api-facade";
+import { getApi, deleteApi, putApi } from "../utils/api-facade";
 import { formatDate } from "../../shared/utils/date";
+import { Flight } from "../../shared/flights/types";
 
 function* handleCall(action, path, api = getApi) {
   try {
@@ -32,17 +33,26 @@ function* handleFetchFlightsPerDay(action) {
   );
 }
 
+function pathForFlight(flight: Flight) {
+  return "flights/" + formatDate(flight.startDate) + "/" + flight.id;
+}
+
 function* handleFetchFlight(action) {
+  return yield handleCall(actions.fetchFlight, pathForFlight(action.payload));
+}
+
+function* handleResetFlight(action) {
   return yield handleCall(
-    actions.fetchFlight,
-    "flights/" + formatDate(action.payload.startDate) + "/" + action.payload.id
+    actions.resetFlight,
+    pathForFlight(action.payload) + "/reset",
+    putApi
   );
 }
 
 function* handledeleteFlight(action) {
   return yield handleCall(
     actions.deleteFlight,
-    "flights/" + formatDate(action.payload.startDate) + "/" + action.payload.id,
+    pathForFlight(action.payload),
     deleteApi
   );
 }
@@ -59,6 +69,10 @@ function* watchFetchFlightRequest() {
   yield takeEvery(actions.fetchFlight.request, handleFetchFlight);
 }
 
+function* watchResetFlightRequest() {
+  yield takeEvery(actions.resetFlight.request, handleResetFlight);
+}
+
 function* watchDeleteFlightRequest() {
   yield takeEvery(actions.deleteFlight.request, handledeleteFlight);
 }
@@ -69,6 +83,7 @@ export function* flightsSaga() {
     fork(watchFetchFlightsRequest),
     fork(watchFetchFlightsPerDayRequest),
     fork(watchFetchFlightRequest),
+    fork(watchResetFlightRequest),
     fork(watchDeleteFlightRequest)
   ]);
 }

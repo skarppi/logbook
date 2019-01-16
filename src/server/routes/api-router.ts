@@ -86,7 +86,7 @@ export function apiRouter() {
       });
   });
 
-  router.get("/api/flights/:day/:id/reset", (req, res) => {
+  router.put("/api/flights/:day/:id/reset", (req, res) => {
     const id = req.params.id;
     Flight.find(id)
       .then(flight =>
@@ -98,7 +98,7 @@ export function apiRouter() {
           )
         )
       )
-      .then(updated => res.json(updated))
+      .then(updated => res.json(updated[0]))
       .catch(err => {
         console.log(err, err.stack);
         return res.status(500).send(String(err));
