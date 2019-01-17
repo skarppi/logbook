@@ -1,6 +1,7 @@
 import { durationInSeconds } from "../../shared/utils/date";
-import Segment, { SegmentType } from "../model/segment";
+import Segment from "../model/segment";
 import SegmentItem from "../model/segmentitem";
+import { SegmentType } from "../../shared/flights";
 
 export default class SegmentParser {
   type?: SegmentType;

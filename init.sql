@@ -7,8 +7,11 @@ create table Flights (
   duration INTEGER NOT NULL,
   armed_time INTEGER NOT NULL,
   flight_time INTEGER NOT NULL,
+  notes JSONB,
   segments JSONB NOT NULL
 );
+
+
 
 CREATE INDEX commands_plane_index ON Flights(plane);
 CREATE INDEX commands_startdate_index ON Flights(start_date);

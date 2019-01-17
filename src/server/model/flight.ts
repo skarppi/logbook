@@ -1,35 +1,12 @@
-import Segment, { SegmentType } from "./segment";
-import { durationInSeconds, formatDuration } from "../../shared/utils/date";
-import { Flight as IFlight, FlightDay } from "../../shared/flights/types";
+import { formatDuration } from "../../shared/utils/date";
+import {
+  Flight as IFlight,
+  FlightDay,
+  Flight
+} from "../../shared/flights/types";
 import { db } from "../db";
 
-export default class Flight implements IFlight {
-  id: string;
-  plane: string;
-  startDate: Date;
-  endDate: Date;
-  duration: number;
-  armedTime: number;
-  flightTime: number;
-  segments: Segment[];
-
-  constructor(id: string, plane: string, segments: Segment[]) {
-    this.id = id;
-    this.plane = plane;
-    this.segments = segments;
-    this.startDate = segments[0].startDate;
-    this.endDate = segments[segments.length - 1].endDate;
-    this.duration = durationInSeconds(this.startDate, this.endDate);
-
-    this.armedTime = this.segments
-      .filter(segment => segment.type !== SegmentType.stopped)
-      .reduce((sum, segment) => sum + segment.duration, 0);
-
-    this.flightTime = this.segments
-      .filter(segment => segment.type === SegmentType.flying)
-      .reduce((sum, segment) => sum + segment.duration, 0);
-  }
-
+export default class FlightRepository {
   static list(): Promise<FlightDay[]> {
     return db.manyOrNone(
       "SELECT string_agg(distinct plane, ', ' ORDER BY plane) as planes, " +
@@ -60,10 +37,11 @@ export default class Flight implements IFlight {
     return db.none("DELETE FROM flights WHERE id = $1", id);
   }
 
-  save(): Promise<Flight> {
+  static save(flight: Flight): Promise<Flight> {
+    console.log(flight);
     return db.one(
-      "INSERT INTO flights (id, plane, start_date, end_date,  duration, armed_time, flight_time, segments) " +
-        "VALUES (${id}, ${plane}, ${startDate}, ${endDate}, ${duration}, ${armedTime}, ${flightTime}, ${segments:json}) " +
+      "INSERT INTO flights (id, plane, start_date, end_date,  duration, armed_time, flight_time, notes, segments) " +
+        "VALUES (${id}, ${plane}, ${startDate}, ${endDate}, ${duration}, ${armedTime}, ${flightTime}, ${notes:json}, ${segments:json}) " +
         "ON CONFLICT (id) DO UPDATE SET " +
         " plane = ${plane}," +
         " start_date = ${startDate}," +
@@ -71,19 +49,20 @@ export default class Flight implements IFlight {
         " duration = ${duration}," +
         " armed_time = ${armedTime}," +
         " flight_time = ${flightTime}," +
+        " notes = ${notes:json}," +
         " segments = ${segments:json} " +
         "RETURNING *",
-      this
+      flight
     );
   }
 
-  toString() {
-    return `flight ${this.id} [
-        flight start ${this.startDate}
-        flight end ${this.endDate}
-        duration ${formatDuration(this.duration)}
-        armed time ${formatDuration(this.armedTime)}
-        flight time ${formatDuration(this.flightTime)}
+  toString(flight: Flight) {
+    return `flight ${flight.id} [
+        flight start ${flight.startDate}
+        flight end ${flight.endDate}
+        duration ${formatDuration(flight.duration)}
+        armed time ${formatDuration(flight.armedTime)}
+        flight time ${formatDuration(flight.flightTime)}
 ]`;
   }
 }

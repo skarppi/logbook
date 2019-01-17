@@ -1,7 +1,38 @@
-import Flight from "../model/flight";
-import Segment, { SegmentType } from "../model/segment";
+import Segment from "../model/segment";
 import SegmentItem from "../model/segmentitem";
 import SegmentParser from "./segmentparser";
+import { Flight, FlightNotes } from "../../shared/flights/types";
+import { durationInSeconds } from "../../shared/utils/date";
+import { SegmentType } from "../../shared/flights";
+
+class FlightFromCsv implements Flight {
+  id: string;
+  plane: string;
+  startDate: Date;
+  endDate: Date;
+  duration: number;
+  armedTime: number;
+  flightTime: number;
+  notes: FlightNotes = undefined;
+  segments: Segment[];
+
+  constructor(id: string, plane: string, segments: Segment[]) {
+    this.id = id;
+    this.plane = plane;
+    this.segments = segments;
+    this.startDate = segments[0].startDate;
+    this.endDate = segments[segments.length - 1].endDate;
+    this.duration = durationInSeconds(this.startDate, this.endDate);
+
+    this.armedTime = this.segments
+      .filter(segment => segment.type !== SegmentType.stopped)
+      .reduce((sum, segment) => sum + segment.duration, 0);
+
+    this.flightTime = this.segments
+      .filter(segment => segment.type === SegmentType.flying)
+      .reduce((sum, segment) => sum + segment.duration, 0);
+  }
+}
 
 export default class FlightParser {
   name: string;
@@ -58,7 +89,7 @@ export default class FlightParser {
     const id = this.generateId();
 
     if (this.currentSegments.length > 0) {
-      const flight = new Flight(id, this.plane, this.currentSegments);
+      const flight = new FlightFromCsv(id, this.plane, this.currentSegments);
 
       if (flight.flightTime === 0) {
         console.log(`Skipped empty flight ${flight}`);

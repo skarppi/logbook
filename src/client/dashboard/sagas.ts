@@ -31,7 +31,6 @@ function* handleFetch(action) {
 
 function* handleChangeQuery() {
   let query = yield select(getQuery);
-  console.log(query);
   yield put(actions.fetchDashboard.request(query));
 }
 

@@ -3,7 +3,8 @@
   flex-wrap: wrap;
 }
 
-.container .textField {
+.container .textField,
+.container .formControl {
   margin-left: 10px;
   margin-right: 10px;
   width: 200px;

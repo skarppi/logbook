@@ -22,6 +22,20 @@ const initialState: FlightsState = {
   isLoadingFlightDetails: false
 };
 
+function applyDefaults(flight: Flight) {
+  if (!flight.notes) {
+    flight.notes = {
+      osd: "",
+      location: "",
+      batteries: [],
+      journal: "",
+      chargeVoltage: "",
+      chargeFuel: ""
+    };
+  }
+  return flight;
+}
+
 /*
  * Reducer takes 2 arguments
  * state: The state of the reducer. By default initialState ( if there was no state provided)
@@ -91,7 +105,17 @@ export const flightsReducer = function reducer(
     case getType(actions.fetchFlight.request): {
       return {
         ...state,
-        flight: action.payload,
+        flight: applyDefaults(action.payload),
+        isLoadingFlightDetails: true
+      };
+    }
+
+    case getType(actions.updateFlightNotes): {
+      const flightNotes = { ...state.flight.notes, ...action.payload };
+
+      return {
+        ...state,
+        flight: { ...state.flight, notes: flightNotes },
         isLoadingFlightDetails: true
       };
     }
@@ -105,10 +129,11 @@ export const flightsReducer = function reducer(
     }
 
     case getType(actions.fetchFlight.success):
-    case getType(actions.resetFlight.success): {
+    case getType(actions.resetFlight.success):
+    case getType(actions.updateFlight.success): {
       return {
         ...state,
-        flight: action.payload,
+        flight: applyDefaults(action.payload),
         isLoadingFlightDetails: false
       };
     }
@@ -123,6 +148,7 @@ export const flightsReducer = function reducer(
 
     case getType(actions.fetchFlight.failure):
     case getType(actions.resetFlight.failure):
+    case getType(actions.updateFlight.failure):
     case getType(actions.deleteFlight.failure): {
       console.log(action.payload);
       return {

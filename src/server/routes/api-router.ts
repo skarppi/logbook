@@ -1,6 +1,6 @@
 import * as bodyParser from "body-parser";
 import { Router } from "express";
-import Flight from "../model/flight";
+import FlightRepository from "../model/flight";
 import Dashboard from "../model/dashboard";
 import config = require("../config");
 import * as multer from "multer";
@@ -44,7 +44,7 @@ export function apiRouter() {
   });
 
   router.get("/api/flights", (req, res) => {
-    Flight.list()
+    FlightRepository.list()
       .then(flights => res.json(flights))
       .catch(err => {
         console.log(err, err.stack);
@@ -54,7 +54,7 @@ export function apiRouter() {
 
   router.get("/api/flights/:day", (req, res) => {
     const day = new Date(req.params.day);
-    Flight.listByDay(day)
+    FlightRepository.listByDay(day)
       .then(flight => {
         res.json(flight);
       })
@@ -66,7 +66,7 @@ export function apiRouter() {
 
   router.get("/api/flights/:day/:id", (req, res) => {
     const id = req.params.id;
-    Flight.find(id)
+    FlightRepository.find(id)
       .then(flight => {
         res.json(flight);
       })
@@ -78,8 +78,28 @@ export function apiRouter() {
 
   router.delete("/api/flights/:day/:id", (req, res) => {
     const id = req.params.id;
-    Flight.delete(id)
+    FlightRepository.delete(id)
       .then(_ => res.json({ status: "deleted" }))
+      .catch(err => {
+        console.log(err, err.stack);
+        return res.status(500).send(String(err));
+      });
+  });
+
+  router.put("/api/flights/:day/:id", (req, res) => {
+    const id = req.params.id;
+    FlightRepository.find(id)
+      .then(flight => {
+        // preserve some fields
+        const updating = Object.assign(flight, req.body, {
+          id: flight.id,
+          segments: flight.segments
+        });
+
+        return FlightRepository.save(updating).then(updated =>
+          res.json(updated)
+        );
+      })
       .catch(err => {
         console.log(err, err.stack);
         return res.status(500).send(String(err));
@@ -88,14 +108,15 @@ export function apiRouter() {
 
   router.put("/api/flights/:day/:id/reset", (req, res) => {
     const id = req.params.id;
-    Flight.find(id)
+    FlightRepository.find(id)
       .then(flight =>
         parseData(
           flight.id,
           flight.segments.reduce(
             (res, segment) => [...res, ...segment.rows],
             []
-          )
+          ),
+          flight.notes
         )
       )
       .then(updated => res.json(updated[0]))

@@ -100,7 +100,7 @@ class FlightsUpload extends React.Component<AllProps, LocalState> {
           <TableCell>{flightsOfTheDay.length - index}</TableCell>
           <TableCell>{flight.plane}</TableCell>
           <TableCell>{formatDuration(flight.flightTime)}</TableCell>
-          <TableCell>{flight.status}</TableCell>
+          <TableCell>{flight.notes.journal}</TableCell>
         </TableRow>
       );
 
@@ -196,7 +196,7 @@ class FlightsUpload extends React.Component<AllProps, LocalState> {
         const flights = res.data as Flight[];
         this.props.addFlights(
           flights.map(f => {
-            f.status = res.statusText;
+            f.notes = { journal: res.statusText };
             return f;
           })
         );

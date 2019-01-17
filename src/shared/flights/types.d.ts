@@ -1,3 +1,5 @@
+import { SegmentType } from "./index";
+
 export interface Flight {
   id: string;
   plane: string;
@@ -6,7 +8,17 @@ export interface Flight {
   duration: number;
   armedTime: number;
   flightTime: number;
-  status?: any;
+  segments: Segment[];
+  notes?: FlightNotes;
+}
+
+export interface FlightNotes {
+  osd?: string;
+  location?: string;
+  batteries?: string[];
+  journal?: string;
+  chargeVoltage?: string;
+  chargeFuel?: string;
 }
 
 export interface FlightDay {
@@ -17,3 +29,17 @@ export interface FlightDay {
   armedTime: number;
   flightTime: number;
 }
+
+export interface Plane {
+  batteries: string[];
+}
+
+export interface Segment {
+  type: SegmentType;
+  rows: SegmentItem[];
+  startDate: Date;
+  endDate: Date;
+  duration: number;
+}
+
+export interface SegmentItem {}

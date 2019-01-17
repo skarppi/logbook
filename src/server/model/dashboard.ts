@@ -43,7 +43,7 @@ const groups = [
   { label: "Flights", type: "line", yAxisID: "count" }
 ];
 
-export default class Dashboard {
+export default class DashboardRepository {
   static list(query: DashboardQuery): Promise<IDashboard> {
     return db
       .manyOrNone(

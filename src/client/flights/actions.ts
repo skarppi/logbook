@@ -27,8 +27,18 @@ export const resetFlight = createAsyncAction(
   "RESET_FLIGHTDETAILS_FAILURE"
 )<Flight, Flight, string>();
 
+export const updateFlight = createAsyncAction(
+  "UPDATE_FLIGHTDETAILS_REQUEST",
+  "UPDATE_FLIGHTDETAILS_SUCCESS",
+  "UPDATE_FLIGHTDETAILS_FAILURE"
+)<Flight, Flight, string>();
+
 export const deleteFlight = createAsyncAction(
   "DELETE_FLIGHTDETAILS_REQUEST",
   "DELETE_FLIGHTDETAILS_SUCCESS",
   "DELETE_FLIGHTDETAILS_FAILURE"
 )<Flight, string, string>();
+
+export const updateFlightNotes = createStandardAction("UPDATE_FLIGHT_NOTES")<
+  object
+>();

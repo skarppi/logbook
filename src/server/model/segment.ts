@@ -1,13 +1,9 @@
 import { durationInSeconds, formatDuration } from "../../shared/utils/date";
 import SegmentItem from "./segmentitem";
+import { Segment as ISegment } from "../../shared/flights/types";
+import { SegmentType } from "../../shared/flights";
 
-export enum SegmentType {
-  stopped = "stopped",
-  flying = "flying",
-  armed = "armed"
-}
-
-export default class Segment {
+export default class Segment implements ISegment {
   type: SegmentType;
   rows: SegmentItem[];
   startDate: Date;
