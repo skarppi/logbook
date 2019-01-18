@@ -3,6 +3,7 @@ import { getType } from "typesafe-actions";
 
 import * as actions from "./actions";
 import { RootAction } from "../store";
+import { parseDurationIntoSeconds } from "../../shared/utils/date";
 
 export type FlightsState = Readonly<{
   flightDays: FlightDay[];
@@ -110,12 +111,13 @@ export const flightsReducer = function reducer(
       };
     }
 
-    case getType(actions.updateFlightNotes): {
-      const flightNotes = { ...state.flight.notes, ...action.payload };
+    case getType(actions.changeFlightFields): {
+      // merge old and new notes
+      const notes = { ...state.flight.notes, ...action.payload["notes"] };
 
       return {
         ...state,
-        flight: { ...state.flight, notes: flightNotes },
+        flight: { ...state.flight, ...action.payload, notes: notes },
         isLoadingFlightDetails: true
       };
     }

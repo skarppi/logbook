@@ -19,6 +19,25 @@ export function formatDuration(seconds: number): string {
   }
 }
 
+export function parseDurationIntoSeconds(str: string): number {
+  const res = str.match(
+    /^((\d+)d){0,1}\s*((\d+)h){0,1}\s*((\d+)m){0,1}\s*((\d+)s){0,1}$/
+  );
+
+  if (res && res.length > 0) {
+    const [, , days, , hours, , mins, , secs] = res;
+
+    return (
+      (parseInt(days) || 0) * 3600 * 24 +
+      (parseInt(hours) || 0) * 3600 +
+      (parseInt(mins) || 0) * 60 +
+      (parseInt(secs) || 0)
+    );
+  } else {
+    return null;
+  }
+}
+
 export function formatDate(
   date: Date,
   dateFormat: string = "YYYY-MM-DD"

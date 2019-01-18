@@ -15,7 +15,8 @@ import { RouteComponentProps } from "react-router";
 import {
   formatDuration,
   formatTime,
-  formatDate
+  formatDate,
+  parseDurationIntoSeconds
 } from "../../../shared/utils/date";
 import { Plane } from "../../../shared/flights/types";
 import TextField from "@material-ui/core/TextField";
@@ -25,7 +26,7 @@ import {
   fetchFlight,
   deleteFlight,
   resetFlight,
-  updateFlightNotes
+  changeFlightFields
 } from "../actions";
 import { connect } from "react-redux";
 
@@ -33,7 +34,14 @@ const css = require("./Flight.css");
 import DeleteIcon from "@material-ui/icons/Delete";
 import RefreshIcon from "@material-ui/icons/Refresh";
 
-interface LocalProps {}
+interface LocalProps {
+  armedTime: string;
+  flightTime: string;
+  errors: {
+    armedTime: boolean;
+    flightTime: boolean;
+  };
+}
 
 export interface RouteParams {
   date: string;
@@ -42,8 +50,7 @@ export interface RouteParams {
 
 type AllProps = FlightsState &
   typeof mapDispatchToProps &
-  RouteComponentProps<RouteParams> &
-  LocalProps;
+  RouteComponentProps<RouteParams>;
 
 const planes: { [key: string]: Plane } = {
   Reverb: {
@@ -75,18 +82,22 @@ const planes: { [key: string]: Plane } = {
   }
 };
 
-// function getStyles(name, personName, theme) {
-//   return {
-//     fontWeight:
-//       personName.indexOf(name) === -1
-//         ? theme.typography.fontWeightRegular
-//         : theme.typography.fontWeightMedium
-//   };
-// }
+class FlightDetails extends React.Component<AllProps, LocalProps> {
+  constructor(props) {
+    super(props);
+    this.state = {
+      armedTime: "",
+      flightTime: "",
+      errors: {
+        armedTime: false,
+        flightTime: false
+      }
+    };
+  }
 
-class FlightDetails extends React.Component<AllProps> {
   public render() {
-    const { flight, isLoadingFlight } = this.props;
+    const { flight } = this.props;
+    const { armedTime, flightTime, errors } = this.state;
 
     if (!flight) {
       return <div>Loading...</div>;
@@ -159,25 +170,27 @@ class FlightDetails extends React.Component<AllProps> {
 
           <TextField
             required
-            InputProps={{
-              readOnly: true
-            }}
+            error={errors.armedTime}
             id="armedTime"
             label="Armed time"
             className={css.textField}
-            value={formatDuration(flight.armedTime)}
+            value={armedTime}
+            name="armedTime"
+            onChange={this.changeFlightDuration}
+            onBlur={this.storeFlightDuration}
             margin="normal"
           />
 
           <TextField
             required
-            InputProps={{
-              readOnly: true
-            }}
+            error={errors.flightTime}
             id="flightTime"
             label="Flight time"
             className={css.textField}
-            value={formatDuration(flight.flightTime)}
+            value={flightTime}
+            name="flightTime"
+            onChange={this.changeFlightDuration}
+            onBlur={this.storeFlightDuration}
             margin="normal"
           />
 
@@ -215,14 +228,9 @@ class FlightDetails extends React.Component<AllProps> {
               onChange={this.props.changeNotes}
               input={<Input id="select-multiple-checkbox" />}
               renderValue={selected => (selected as string[]).join(", ")}
-              // MenuProps={MenuProps}
             >
               {planes[flight.plane].batteries.map(name => (
-                <MenuItem
-                  key={name}
-                  value={name}
-                  // style={getStyles(name, flight.ba, theme)}
-                >
+                <MenuItem key={name} value={name}>
                   <Checkbox
                     checked={flight.notes.batteries.indexOf(name) > -1}
                   />
@@ -276,6 +284,46 @@ class FlightDetails extends React.Component<AllProps> {
     );
     this.props.fetchFlight(flight);
   }
+
+  componentWillReceiveProps(nextProps) {
+    this.setState({
+      armedTime: formatDuration(nextProps.flight.armedTime),
+      flightTime: formatDuration(nextProps.flight.flightTime)
+    });
+  }
+
+  onBlur = event => {
+    const seconds = parseDurationIntoSeconds(event.target.value);
+
+    console.log("onBlur", event.target, seconds);
+
+    if (seconds) {
+      this.props.changeFlightFields({
+        [event.target.name]: parseDurationIntoSeconds(event.target.value)
+      });
+    }
+  };
+
+  changeFlightDuration = event => {
+    const errors = {
+      ...this.state.errors,
+      [event.target.name]: parseDurationIntoSeconds(event.target.value) === null
+    } as any;
+
+    this.setState({
+      [event.target.name]: event.target.value,
+      errors: errors
+    } as any);
+  };
+
+  storeFlightDuration = event => {
+    const seconds = parseDurationIntoSeconds(event.target.value);
+    if (seconds) {
+      this.props.changeFlightFields({
+        [event.target.name]: seconds
+      });
+    }
+  };
 }
 
 const mapStateToProps = (state: RootState) => ({
@@ -289,7 +337,12 @@ const mapDispatchToProps = {
   resetFlight: resetFlight.request,
   deleteFlight: deleteFlight.request,
   changeNotes: event =>
-    updateFlightNotes({ [event.target.name]: event.target.value })
+    changeFlightFields({ notes: { [event.target.name]: event.target.value } }),
+  changeFlightFields: changeFlightFields,
+  updateFlightTimes: event =>
+    changeFlightFields({
+      [event.target.name]: parseDurationIntoSeconds(event.target.value)
+    })
 };
 
 export default connect<any, any>(

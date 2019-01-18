@@ -63,6 +63,8 @@ function* handleUpdateFlight() {
   yield delay(1000);
 
   let flight = yield select(getFlight);
+
+  // do not upload raw data
   delete flight["segments"];
 
   return yield handleCall(
@@ -101,8 +103,8 @@ function* watchDeleteFlightRequest() {
   yield takeEvery(actions.deleteFlight.request, handledeleteFlight);
 }
 
-function* watchUpdateFlightRequests() {
-  yield takeLatest(actions.updateFlightNotes, handleUpdateFlight);
+function* watchUpdateFlight() {
+  yield takeLatest(actions.changeFlightFields, handleUpdateFlight);
 }
 
 // We can also use `fork()` here to split our saga into multiple watchers.
@@ -112,7 +114,7 @@ export function* flightsSaga() {
     fork(watchFetchFlightsPerDayRequest),
     fork(watchFetchFlightRequest),
     fork(watchResetFlightRequest),
-    fork(watchUpdateFlightRequests),
+    fork(watchUpdateFlight),
     fork(watchDeleteFlightRequest)
   ]);
 }

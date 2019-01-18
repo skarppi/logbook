@@ -39,6 +39,6 @@ export const deleteFlight = createAsyncAction(
   "DELETE_FLIGHTDETAILS_FAILURE"
 )<Flight, string, string>();
 
-export const updateFlightNotes = createStandardAction("UPDATE_FLIGHT_NOTES")<
+export const changeFlightFields = createStandardAction("CHANGE_FLIGHT_FIELDS")<
   object
 >();
