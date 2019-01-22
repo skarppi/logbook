@@ -31,6 +31,7 @@ import {
 const css = require("./FlightsUpload.css");
 
 interface LocalState {
+  uploadedFlights: Flight[];
   loaded: number;
   error?: string;
 }
@@ -48,6 +49,7 @@ class FlightsUpload extends React.Component<AllProps, LocalState> {
   constructor(props) {
     super(props);
     this.state = {
+      uploadedFlights: [],
       loaded: 0,
       error: undefined
     };
@@ -85,9 +87,9 @@ class FlightsUpload extends React.Component<AllProps, LocalState> {
   }
 
   public render() {
-    const { flightsOfTheDay } = this.props;
+    const { uploadedFlights } = this.state;
 
-    const rows = flightsOfTheDay.map((flight, index) => {
+    const rows = uploadedFlights.map((flight, index) => {
       const flightRow = (
         <TableRow key={flight.id}>
           <TableCell>
@@ -97,10 +99,10 @@ class FlightsUpload extends React.Component<AllProps, LocalState> {
               {formatDateTime(flight.startDate)}
             </NavLink>
           </TableCell>
-          <TableCell>{flightsOfTheDay.length - index}</TableCell>
+          <TableCell>{uploadedFlights.length - index}</TableCell>
           <TableCell>{flight.plane}</TableCell>
           <TableCell>{formatDuration(flight.flightTime)}</TableCell>
-          <TableCell>{flight.notes.journal}</TableCell>
+          <TableCell>{flight.notes && flight.notes.journal}</TableCell>
         </TableRow>
       );
 
@@ -160,11 +162,11 @@ class FlightsUpload extends React.Component<AllProps, LocalState> {
                 <TableFooter className={css.footer}>
                   <TableRow>
                     <TableCell align="right">Total</TableCell>
-                    <TableCell>{flightsOfTheDay.length}</TableCell>
+                    <TableCell>{uploadedFlights.length}</TableCell>
                     <TableCell />
                     <TableCell>
                       {formatDuration(
-                        flightsOfTheDay.reduce(
+                        uploadedFlights.reduce(
                           (total, flight) => total + flight.flightTime,
                           0
                         )
@@ -210,10 +212,7 @@ class FlightsUpload extends React.Component<AllProps, LocalState> {
   }
 }
 
-const mapStateToProps = (state: RootState) => ({
-  flightsOfTheDay: state.flights.flightsOfTheDay,
-  flightDays: state.flights.flightDays
-});
+const mapStateToProps = (state: RootState) => ({});
 
 const mapDispatchToProps = {
   addFlights: addFlights
