@@ -8,18 +8,16 @@ import {
   Select,
   Input,
   MenuItem,
-  Checkbox
+  Checkbox,
+  TextField
 } from "@material-ui/core";
 import * as React from "react";
 import { RouteComponentProps } from "react-router";
 import {
   formatDuration,
-  formatTime,
-  formatDate,
   parseDurationIntoSeconds
 } from "../../../shared/utils/date";
 import { Plane } from "../../../shared/flights/types";
-import TextField from "@material-ui/core/TextField";
 import { FlightsState } from "../reducer";
 import { RootState } from "../../store";
 import {
@@ -30,18 +28,12 @@ import {
 } from "../actions";
 import { connect } from "react-redux";
 
+import { FlightDate } from "./FlightDate";
+import { FlightDuration } from "./FlightDuration";
+
 const css = require("./Flight.css");
 import DeleteIcon from "@material-ui/icons/Delete";
 import RefreshIcon from "@material-ui/icons/Refresh";
-
-interface LocalProps {
-  armedTime: string;
-  flightTime: string;
-  errors: {
-    armedTime: boolean;
-    flightTime: boolean;
-  };
-}
 
 export interface RouteParams {
   date: string;
@@ -82,22 +74,9 @@ const planes: { [key: string]: Plane } = {
   }
 };
 
-class FlightDetails extends React.Component<AllProps, LocalProps> {
-  constructor(props) {
-    super(props);
-    this.state = {
-      armedTime: "",
-      flightTime: "",
-      errors: {
-        armedTime: false,
-        flightTime: false
-      }
-    };
-  }
-
+class FlightDetails extends React.Component<AllProps> {
   public render() {
     const { flight } = this.props;
-    const { armedTime, flightTime, errors } = this.state;
 
     if (!flight) {
       return <div>Loading...</div>;
@@ -120,79 +99,8 @@ class FlightDetails extends React.Component<AllProps, LocalProps> {
           }
         />
         <CardContent className={css.container}>
-          <TextField
-            required
-            InputProps={{
-              readOnly: true
-            }}
-            id="date"
-            type="date"
-            label="Date"
-            value={formatDate(flight.startDate)}
-            className={css.textField}
-            margin="normal"
-          />
-          <TextField
-            required
-            InputProps={{
-              readOnly: true
-            }}
-            id="start_time"
-            type="time"
-            label="Started"
-            className={css.textField}
-            value={formatTime(flight.startDate)}
-            margin="normal"
-          />
-          <TextField
-            required
-            InputProps={{
-              readOnly: true
-            }}
-            id="end_time"
-            type="time"
-            label="Stopped"
-            className={css.textField}
-            value={formatTime(flight.endDate)}
-            margin="normal"
-          />
-          <TextField
-            required
-            InputProps={{
-              readOnly: true
-            }}
-            id="duration"
-            label="Duration"
-            className={css.textField}
-            value={formatDuration(flight.duration)}
-            margin="normal"
-          />
-
-          <TextField
-            required
-            error={errors.armedTime}
-            id="armedTime"
-            label="Armed time"
-            className={css.textField}
-            value={armedTime}
-            name="armedTime"
-            onChange={this.changeFlightDuration}
-            onBlur={this.storeFlightDuration}
-            margin="normal"
-          />
-
-          <TextField
-            required
-            error={errors.flightTime}
-            id="flightTime"
-            label="Flight time"
-            className={css.textField}
-            value={flightTime}
-            name="flightTime"
-            onChange={this.changeFlightDuration}
-            onBlur={this.storeFlightDuration}
-            margin="normal"
-          />
+          <FlightDate flight={flight} />
+          <FlightDuration flight={flight} save={this.props.save} />
 
           <TextField
             id="osd"
@@ -284,46 +192,6 @@ class FlightDetails extends React.Component<AllProps, LocalProps> {
     );
     this.props.fetchFlight(flight);
   }
-
-  componentWillReceiveProps(nextProps) {
-    this.setState({
-      armedTime: formatDuration(nextProps.flight.armedTime),
-      flightTime: formatDuration(nextProps.flight.flightTime)
-    });
-  }
-
-  onBlur = event => {
-    const seconds = parseDurationIntoSeconds(event.target.value);
-
-    console.log("onBlur", event.target, seconds);
-
-    if (seconds) {
-      this.props.changeFlightFields({
-        [event.target.name]: parseDurationIntoSeconds(event.target.value)
-      });
-    }
-  };
-
-  changeFlightDuration = event => {
-    const errors = {
-      ...this.state.errors,
-      [event.target.name]: parseDurationIntoSeconds(event.target.value) === null
-    } as any;
-
-    this.setState({
-      [event.target.name]: event.target.value,
-      errors: errors
-    } as any);
-  };
-
-  storeFlightDuration = event => {
-    const seconds = parseDurationIntoSeconds(event.target.value);
-    if (seconds) {
-      this.props.changeFlightFields({
-        [event.target.name]: seconds
-      });
-    }
-  };
 }
 
 const mapStateToProps = (state: RootState) => ({
@@ -338,7 +206,7 @@ const mapDispatchToProps = {
   deleteFlight: deleteFlight.request,
   changeNotes: event =>
     changeFlightFields({ notes: { [event.target.name]: event.target.value } }),
-  changeFlightFields: changeFlightFields,
+  save: changeFlightFields,
   updateFlightTimes: event =>
     changeFlightFields({
       [event.target.name]: parseDurationIntoSeconds(event.target.value)
