@@ -6,6 +6,7 @@ export interface Battery {
   type: string;
   cells: number;
   capacity: number;
+  lastCycle?: BatteryCycle;
 }
 
 export interface BatteryCycle {

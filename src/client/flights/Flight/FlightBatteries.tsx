@@ -12,6 +12,7 @@ import {
   deleteBatteryCycle,
   updateBatteryCycle
 } from "../../batteries/actions";
+import { planes } from "./Flight";
 import { BatteryState } from "../../../shared/batteries";
 import { BatteryCycle } from "../../../shared/batteries/types";
 const css = require("./Flight.css");
@@ -30,7 +31,7 @@ class FlightBatteries extends React.Component<AllProps> {
     this.props.insertBatteryCycle({
       id: -1,
       date: flight.startDate,
-      batteryId: "",
+      batteryId: planes[flight.plane].batteries[0],
       flightId: flight.id,
       state: BatteryState.discharged,
       voltage: null,

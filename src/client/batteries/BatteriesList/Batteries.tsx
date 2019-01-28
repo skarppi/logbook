@@ -10,11 +10,11 @@ import {
   TableBody
 } from "@material-ui/core";
 import * as React from "react";
-import { NavLink, Route } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import { fetchBatteries } from "../actions";
 import { connect } from "react-redux";
 import { RootState } from "../../store";
-import { formatDuration, formatDate } from "../../../shared/utils/date";
+import { formatDate, formatDateTime } from "../../../shared/utils/date";
 import { Battery } from "../../../shared/batteries/types";
 
 interface BatteryProps {
@@ -25,6 +25,27 @@ interface BatteryProps {
 class BatteriesList extends React.Component<
   BatteryProps & typeof mapDispatchToProps
 > {
+  lastUsed(battery) {
+    if (!battery.lastCycle) {
+      return;
+    }
+    const timestamp = formatDateTime(battery.lastCycle.date);
+
+    if (!battery.lastCycle.flightId) {
+      return timestamp;
+    }
+
+    return (
+      <NavLink
+        to={`/flights/${formatDate(battery.lastCycle.date)}/${
+          battery.lastCycle.flightId
+        }`}
+      >
+        {timestamp}
+      </NavLink>
+    );
+  }
+
   public render() {
     const { batteries, isLoadingBatteries } = this.props;
 
@@ -39,10 +60,11 @@ class BatteriesList extends React.Component<
           <TableCell>
             <NavLink to={`/batteries/${id}`}>{id}</NavLink>
           </TableCell>
-          <TableCell>{battery.type}</TableCell>
-          <TableCell>{battery.cells}</TableCell>
-          <TableCell>{battery.capacity}</TableCell>
-          <TableCell>{formatDate(battery.purchaseDate)}</TableCell>
+          <TableCell>
+            {battery.type} {battery.cells}s {battery.capacity}mAh
+          </TableCell>
+          <TableCell>{battery.lastCycle && battery.lastCycle.state}</TableCell>
+          <TableCell>{this.lastUsed(battery)}</TableCell>
         </TableRow>
       );
     });
@@ -58,9 +80,8 @@ class BatteriesList extends React.Component<
                   <TableRow>
                     <TableCell>ID</TableCell>
                     <TableCell>Type</TableCell>
-                    <TableCell>Cells</TableCell>
-                    <TableCell>Capacity</TableCell>
-                    <TableCell>Purchase date</TableCell>
+                    <TableCell>Current status</TableCell>
+                    <TableCell>Last used</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>{rows}</TableBody>

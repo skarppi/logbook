@@ -1,9 +1,5 @@
 import { formatDuration } from "../../shared/utils/date";
-import {
-  Flight as IFlight,
-  FlightDay,
-  Flight
-} from "../../shared/flights/types";
+import { FlightDay, Flight } from "../../shared/flights/types";
 import { db } from "../db";
 import BatteryCycleRepository from "./batterycycle";
 

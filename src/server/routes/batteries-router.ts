@@ -1,5 +1,5 @@
 import { Router } from "express";
-import BatteryCycleRepository from "../model/battery";
+import BatteryCycleRepository from "../model/batterycycle";
 import BatteryRepository from "../model/battery";
 
 export function batteriesRouter() {
@@ -28,6 +28,12 @@ export function batteriesRouter() {
     const id = req.params.id;
     BatteryCycleRepository.delete(id)
       .then(_ => res.json({ id, status: "deleted" }))
+      .catch(next);
+  });
+
+  router.get("/:id", (req, res, next) => {
+    BatteryRepository.get(req.params.id)
+      .then(batteries => res.json(batteries))
       .catch(next);
   });
 

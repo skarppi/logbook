@@ -58,17 +58,6 @@ export class FlightBattery extends React.Component<BatteryProps, LocalState> {
     });
   };
 
-  save = event => {
-    const battery = {
-      ...this.state.battery,
-      [event.target.name]: event.target.value
-    };
-
-    console.log(battery);
-
-    this.props.update(battery);
-  };
-
   removeBattery = _ => {
     this.props.delete(this.state.battery);
   };
