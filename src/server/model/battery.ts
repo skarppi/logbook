@@ -1,55 +1,35 @@
-import { BatteryCycle } from "../../shared/batteries/types";
+import { Battery } from "../../shared/batteries/types";
 import { db } from "../db";
 
 export default class BatteryRepository {
-  static nullify(battery: BatteryCycle) {
-    const voltage = this.orNull(battery.voltage);
-    const discharged = this.orNull(battery.discharged);
-    const charged = this.orNull(battery.charged);
-
-    return { ...battery, voltage, discharged, charged };
+  static list(): Promise<Battery[]> {
+    return db.manyOrNone("SELECT * " + "FROM batteries " + "ORDER BY id asc");
   }
 
-  static orNull(number: any) {
-    return number !== "" ? number : null;
+  static delete(id: string): Promise<Battery> {
+    return db.none("DELETE FROM batteries WHERE id = $1", id);
   }
 
-  static listByFlight(flightId: string): Promise<BatteryCycle[]> {
-    return db.manyOrNone(
-      "SELECT * " +
-        "FROM batterycycles " +
-        "WHERE flight_id = $1" +
-        "ORDER BY battery_id desc",
-      flightId
-    );
-  }
-
-  static delete(id: string): Promise<BatteryCycle> {
-    return db.none("DELETE FROM batterycycles WHERE id = $1", id);
-  }
-
-  static insert(battery: BatteryCycle): Promise<BatteryCycle> {
+  static insert(battery: Battery): Promise<Battery> {
     return db.one(
-      "INSERT INTO batterycycles (date, battery_id, state, flight_id, voltage, discharged, charged) " +
-        "VALUES (${date}, ${batteryId}, ${state}, ${flightId}, ${voltage}, ${discharged}, ${charged}) " +
+      "INSERT INTO batteries (id, purchase_date, type, cells, capacity) " +
+        "VALUES (${id}, ${purchaseDate}, ${type}, ${cells}, ${capacity}) " +
         "RETURNING *",
-      this.nullify(battery)
+      battery
     );
   }
 
-  static update(id: number, battery: BatteryCycle): Promise<BatteryCycle> {
+  static update(id: number, battery: Battery): Promise<Battery> {
     return db.one(
-      "UPDATE batterycycles SET " +
-        " date = ${date}," +
-        " battery_id = ${batteryId}," +
-        " state = ${state}," +
-        " flight_id = ${flightId}," +
-        " voltage = ${voltage}," +
-        " discharged = ${discharged}," +
-        " charged = ${charged} " +
+      "UPDATE batteries SET " +
+        " id = ${id}," +
+        " purchase_date = ${purchaseDate}," +
+        " type = ${type}," +
+        " cells = ${cells}," +
+        " capacity = ${capacity}," +
         "WHERE id = ${id} " +
         "RETURNING *",
-      { ...this.nullify(battery), id }
+      { ...battery, id }
     );
   }
 }

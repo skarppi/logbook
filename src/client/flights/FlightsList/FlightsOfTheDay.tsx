@@ -38,7 +38,7 @@ class FlightsOfTheDay extends React.Component<AllProps> {
           <TableCell>{flightsOfTheDay.length - index}</TableCell>
           <TableCell>{flight.plane}</TableCell>
           <TableCell>{formatDuration(flight.flightTime)}</TableCell>
-          <TableCell>{flight.status}</TableCell>
+          {flight.status && <TableCell>{flight.status}</TableCell>}
         </TableRow>
       );
 

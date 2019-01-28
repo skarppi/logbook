@@ -5,7 +5,6 @@ import { FlightBattery } from "./FlightBattery";
 import AddIcon from "@material-ui/icons/Add";
 import { RootState } from "../../store";
 import { changeFlightFields } from "../actions";
-import { BatteryCycleState } from "../../batteries/reducer";
 import { parseDurationIntoSeconds } from "../../../shared/utils/date";
 import { connect } from "react-redux";
 import {
@@ -14,13 +13,16 @@ import {
   updateBatteryCycle
 } from "../../batteries/actions";
 import { BatteryState } from "../../../shared/batteries";
+import { BatteryCycle } from "../../../shared/batteries/types";
 const css = require("./Flight.css");
 
 interface BatteryProps {
   flight: Flight;
+  cycles: { [key: string]: BatteryCycle };
+  isLoadingBatteries: boolean;
 }
 
-type AllProps = BatteryCycleState & typeof mapDispatchToProps & BatteryProps;
+type AllProps = BatteryProps & typeof mapDispatchToProps;
 
 class FlightBatteries extends React.Component<AllProps> {
   addBattery = _ => {
@@ -38,13 +40,13 @@ class FlightBatteries extends React.Component<AllProps> {
   };
 
   render() {
-    const { batteries, flight } = this.props;
-    const rows = Object.keys(batteries).map(id => {
+    const { cycles, flight } = this.props;
+    const rows = Object.keys(cycles).map(id => {
       return (
         <FlightBattery
           key={id}
           flight={flight}
-          battery={batteries[id]}
+          battery={cycles[id]}
           update={this.props.updateBatteryCycle}
           delete={this.props.deleteBatteryCycle}
         />
@@ -67,7 +69,7 @@ class FlightBatteries extends React.Component<AllProps> {
 
 const mapStateToProps = (state: RootState) => ({
   flight: state.flights.flight,
-  batteries: state.batteries.batteries,
+  cycles: state.batteries.cycles,
   isLoadingBatteries: state.batteries.isLoadingBatteries
 });
 

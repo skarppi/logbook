@@ -2,15 +2,17 @@ import { getType } from "typesafe-actions";
 import { fetchFlight } from "../flights/actions";
 import * as actions from "./actions";
 import { RootAction } from "../store";
-import { BatteryCycle } from "../../shared/batteries/types";
+import { BatteryCycle, Battery } from "../../shared/batteries/types";
 
 export type BatteryCycleState = Readonly<{
-  batteries: { [key: string]: BatteryCycle };
+  batteries: { [key: string]: Battery };
+  cycles: { [key: string]: BatteryCycle };
   isLoadingBatteries: boolean;
 }>;
 
 const initialState: BatteryCycleState = {
   batteries: {},
+  cycles: {},
   isLoadingBatteries: false
 };
 
@@ -20,17 +22,31 @@ export const batteriesReducer = function reducer(
 ) {
   switch (action.type) {
     case getType(fetchFlight.success): {
+      const cycles = {};
+      action.payload.batteries.forEach(cycle => {
+        cycles[cycle.id] = cycle;
+      });
+
+      return {
+        ...state,
+        cycles: cycles
+      };
+    }
+
+    case getType(actions.fetchBatteries.success): {
       const batteries = {};
-      action.payload.batteries.forEach(battery => {
+      action.payload.forEach(battery => {
         batteries[battery.id] = battery;
       });
 
       return {
         ...state,
-        batteries: batteries
+        batteries: batteries,
+        isLoadingBatteries: false
       };
     }
 
+    case getType(actions.fetchBatteries.request):
     case getType(actions.insertBatteryCycle.request):
     case getType(actions.updateBatteryCycle.request):
     case getType(actions.deleteBatteryCycle.request): {
@@ -44,8 +60,8 @@ export const batteriesReducer = function reducer(
     case getType(actions.updateBatteryCycle.success): {
       return {
         ...state,
-        batteries: {
-          ...state.batteries,
+        cycles: {
+          ...state.cycles,
           [action.payload.id]: action.payload
         },
         isLoadingBatteries: false
@@ -53,15 +69,16 @@ export const batteriesReducer = function reducer(
     }
 
     case getType(actions.deleteBatteryCycle.success): {
-      const batteries = { ...state.batteries };
-      delete batteries[action.payload.id];
+      const cycles = { ...state.cycles };
+      delete cycles[action.payload.id];
       return {
         ...state,
-        batteries: batteries,
+        cycles: cycles,
         isLoadingBatteries: false
       };
     }
 
+    case getType(actions.fetchBatteries.failure):
     case getType(actions.insertBatteryCycle.failure):
     case getType(actions.updateBatteryCycle.failure):
     case getType(actions.deleteBatteryCycle.failure): {

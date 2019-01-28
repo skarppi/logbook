@@ -5,7 +5,7 @@ import {
   Flight
 } from "../../shared/flights/types";
 import { db } from "../db";
-import BatteryRepository from "./battery";
+import BatteryCycleRepository from "./batterycycle";
 
 export default class FlightRepository {
   static list(): Promise<FlightDay[]> {
@@ -34,7 +34,7 @@ export default class FlightRepository {
     return db
       .one("SELECT * FROM flights f " + " WHERE f.id = $1", id)
       .then(flight =>
-        BatteryRepository.listByFlight(id).then(batteries => {
+        BatteryCycleRepository.listByFlight(id).then(batteries => {
           flight.batteries = batteries;
           return flight;
         })

@@ -1,12 +1,13 @@
 import * as bodyParser from "body-parser";
 import { Router } from "express";
 import FlightRepository from "../model/flight";
-import BatteryRepository from "../model/battery";
+import BatteryCycleRepository from "../model/battery";
 import Dashboard from "../model/dashboard";
 import config = require("../config");
 import * as multer from "multer";
 import { parseFile, parseData } from "../parser";
 import { DashboardUnit } from "../../shared/dashboard";
+import BatteryRepository from "../model/battery";
 
 export function apiRouter() {
   const router = Router();
@@ -156,8 +157,17 @@ export function apiRouter() {
       });
   });
 
+  router.get("/api/batteries", (req, res) => {
+    BatteryRepository.list()
+      .then(batteries => res.json(batteries))
+      .catch(err => {
+        console.log(err, err.stack);
+        return res.status(500).send(String(err));
+      });
+  });
+
   router.post("/api/batteries/cycles", (req, res) => {
-    BatteryRepository.insert(req.body)
+    BatteryCycleRepository.insert(req.body)
       .then(cycle => res.json(cycle))
       .catch(err => {
         console.log(err, err.stack);
@@ -167,7 +177,7 @@ export function apiRouter() {
 
   router.put("/api/batteries/cycles/:id", (req, res) => {
     const id = req.params.id;
-    BatteryRepository.update(id, req.body)
+    BatteryCycleRepository.update(id, req.body)
       .then(cycle => res.json(cycle))
       .catch(err => {
         console.log(err, err.stack);
@@ -177,7 +187,7 @@ export function apiRouter() {
 
   router.delete("/api/batteries/cycles/:id", (req, res) => {
     const id = req.params.id;
-    BatteryRepository.delete(id)
+    BatteryCycleRepository.delete(id)
       .then(_ => res.json({ id, status: "deleted" }))
       .catch(err => {
         console.log(err, err.stack);

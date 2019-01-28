@@ -41,7 +41,6 @@ class FlightsList extends React.Component<
           <TableCell>{flightDay.flights}</TableCell>
           <TableCell>{flightDay.planes}</TableCell>
           <TableCell>{formatDuration(flightDay.flightTime)}</TableCell>
-          <TableCell />
         </TableRow>
       );
 
@@ -51,7 +50,7 @@ class FlightsList extends React.Component<
           path={"/flights/:date(" + flightDay.date + ")"}
           render={props => (
             <TableRow key={flightDay.date + "-flights"}>
-              <TableCell colSpan={5}>
+              <TableCell colSpan={4}>
                 <FlightsOfTheDay {...props} />
               </TableCell>
             </TableRow>
@@ -75,7 +74,6 @@ class FlightsList extends React.Component<
                     <TableCell>#</TableCell>
                     <TableCell>Plane</TableCell>
                     <TableCell>Flight Time</TableCell>
-                    <TableCell>Status</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>{rows}</TableBody>
