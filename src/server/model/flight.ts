@@ -5,6 +5,7 @@ import {
   Flight
 } from "../../shared/flights/types";
 import { db } from "../db";
+import BatteryRepository from "./battery";
 
 export default class FlightRepository {
   static list(): Promise<FlightDay[]> {
@@ -30,7 +31,14 @@ export default class FlightRepository {
   }
 
   static find(id: string): Promise<Flight> {
-    return db.oneOrNone("SELECT * FROM flights WHERE id = $1", id);
+    return db
+      .one("SELECT * FROM flights f " + " WHERE f.id = $1", id)
+      .then(flight =>
+        BatteryRepository.listByFlight(id).then(batteries => {
+          flight.batteries = batteries;
+          return flight;
+        })
+      );
   }
 
   static delete(id: string): Promise<Flight> {

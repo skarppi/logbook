@@ -9,3 +9,15 @@
   margin-right: 10px;
   width: 200px;
 }
+
+.container .textFieldWide {
+  margin-left: 10px;
+  margin-right: 10px;
+  width: 100%;
+}
+
+.container .textFieldNarrow {
+  margin-left: 10px;
+  margin-right: 10px;
+  width: 100px;
+}

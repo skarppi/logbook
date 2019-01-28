@@ -1,12 +1,4 @@
-import {
-  all,
-  call,
-  fork,
-  put,
-  takeEvery,
-  select,
-  takeLatest
-} from "redux-saga/effects";
+import { all, call, fork, put, select, takeLatest } from "redux-saga/effects";
 import * as actions from "./actions";
 import { getQuery } from "./selectors";
 import { getApi } from "../utils/api-facade";

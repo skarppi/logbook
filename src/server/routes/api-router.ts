@@ -1,6 +1,7 @@
 import * as bodyParser from "body-parser";
 import { Router } from "express";
 import FlightRepository from "../model/flight";
+import BatteryRepository from "../model/battery";
 import Dashboard from "../model/dashboard";
 import config = require("../config");
 import * as multer from "multer";
@@ -152,6 +153,35 @@ export function apiRouter() {
       .catch(err => {
         console.log(err, err.stack);
         res.status(500).send(String(err));
+      });
+  });
+
+  router.post("/api/batteries/cycles", (req, res) => {
+    BatteryRepository.insert(req.body)
+      .then(cycle => res.json(cycle))
+      .catch(err => {
+        console.log(err, err.stack);
+        return res.status(500).send(String(err));
+      });
+  });
+
+  router.put("/api/batteries/cycles/:id", (req, res) => {
+    const id = req.params.id;
+    BatteryRepository.update(id, req.body)
+      .then(cycle => res.json(cycle))
+      .catch(err => {
+        console.log(err, err.stack);
+        return res.status(500).send(String(err));
+      });
+  });
+
+  router.delete("/api/batteries/cycles/:id", (req, res) => {
+    const id = req.params.id;
+    BatteryRepository.delete(id)
+      .then(_ => res.json({ id, status: "deleted" }))
+      .catch(err => {
+        console.log(err, err.stack);
+        return res.status(500).send(String(err));
       });
   });
 

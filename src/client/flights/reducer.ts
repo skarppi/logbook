@@ -28,12 +28,10 @@ function applyDefaults(flight: Flight) {
     flight.notes = {
       osd: "",
       location: "",
-      batteries: [],
-      journal: "",
-      chargeVoltage: "",
-      chargeFuel: ""
+      journal: ""
     };
   }
+
   return flight;
 }
 
@@ -114,6 +112,12 @@ export const flightsReducer = function reducer(
     case getType(actions.changeFlightFields): {
       // merge old and new notes
       const notes = { ...state.flight.notes, ...action.payload["notes"] };
+
+      // migrate deprecated fields
+      delete notes["batteries"];
+      delete notes["id"];
+      delete notes["chargeFuel"];
+      delete notes["chargeVoltage"];
 
       return {
         ...state,

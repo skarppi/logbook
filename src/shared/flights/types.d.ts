@@ -1,4 +1,5 @@
 import { SegmentType } from "./index";
+import { BatteryCycle } from "../batteries/types";
 
 export interface Flight {
   id: string;
@@ -9,16 +10,14 @@ export interface Flight {
   armedTime: number;
   flightTime: number;
   segments: Segment[];
+  batteries?: BatteryCycle[];
   notes?: FlightNotes;
 }
 
 export interface FlightNotes {
   osd?: string;
   location?: string;
-  batteries?: string[];
   journal?: string;
-  chargeVoltage?: string;
-  chargeFuel?: string;
 }
 
 export interface FlightDay {

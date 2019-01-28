@@ -196,12 +196,13 @@ class FlightsUpload extends React.Component<AllProps, LocalState> {
     })
       .then(res => {
         const flights = res.data as Flight[];
-        this.props.addFlights(
-          flights.map(f => {
+        this.props.addFlights(flights);
+        this.setState({
+          uploadedFlights: flights.map(f => {
             f.notes = { journal: res.statusText };
             return f;
           })
-        );
+        });
       })
       .catch(err => {
         console.log(err);

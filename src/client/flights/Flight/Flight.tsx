@@ -3,20 +3,11 @@ import {
   CardContent,
   CardHeader,
   IconButton,
-  FormControl,
-  InputLabel,
-  Select,
-  Input,
-  MenuItem,
-  Checkbox,
   TextField
 } from "@material-ui/core";
 import * as React from "react";
 import { RouteComponentProps } from "react-router";
-import {
-  formatDuration,
-  parseDurationIntoSeconds
-} from "../../../shared/utils/date";
+import { parseDurationIntoSeconds } from "../../../shared/utils/date";
 import { Plane } from "../../../shared/flights/types";
 import { FlightsState } from "../reducer";
 import { RootState } from "../../store";
@@ -30,6 +21,7 @@ import { connect } from "react-redux";
 
 import { FlightDate } from "./FlightDate";
 import { FlightDuration } from "./FlightDuration";
+import FlightBatteries from "./FlightBatteries";
 
 const css = require("./Flight.css");
 import DeleteIcon from "@material-ui/icons/Delete";
@@ -44,7 +36,7 @@ type AllProps = FlightsState &
   typeof mapDispatchToProps &
   RouteComponentProps<RouteParams>;
 
-const planes: { [key: string]: Plane } = {
+export const planes: { [key: string]: Plane } = {
   Reverb: {
     batteries: ["tattu1", "tattu2", "tattu3", "tattu4"]
   },
@@ -74,9 +66,9 @@ const planes: { [key: string]: Plane } = {
   }
 };
 
-class FlightDetails extends React.Component<AllProps> {
+export class FlightDetails extends React.Component<AllProps> {
   public render() {
-    const { flight } = this.props;
+    const { flight, batteries } = this.props;
 
     if (!flight) {
       return <div>Loading...</div>;
@@ -98,89 +90,50 @@ class FlightDetails extends React.Component<AllProps> {
             </>
           }
         />
-        <CardContent className={css.container}>
-          <FlightDate flight={flight} />
-          <FlightDuration flight={flight} save={this.props.save} />
+        <CardContent>
+          <div className={css.container}>
+            <FlightDate flight={flight} />
+            <FlightDuration flight={flight} save={this.props.save} />
 
-          <TextField
-            id="osd"
-            label="OSD"
-            placeholder="OSD"
-            multiline
-            className={css.textField}
-            value={flight.notes.osd}
-            name="osd"
-            onChange={this.props.changeNotes}
-            margin="normal"
-          />
-
-          <TextField
-            id="location"
-            label="Location"
-            placeholder="Location"
-            className={css.textField}
-            value={flight.notes.location}
-            name="location"
-            onChange={this.props.changeNotes}
-            margin="normal"
-          />
-
-          <FormControl className={css.formControl} margin="normal">
-            <InputLabel htmlFor="select-multiple-checkbox">
-              Batteries
-            </InputLabel>
-            <Select
-              multiple
-              value={flight.notes.batteries}
-              name="batteries"
+            <TextField
+              id="osd"
+              label="OSD"
+              placeholder="OSD"
+              multiline
+              className={css.textField}
+              value={flight.notes.osd}
+              name="osd"
               onChange={this.props.changeNotes}
-              input={<Input id="select-multiple-checkbox" />}
-              renderValue={selected => (selected as string[]).join(", ")}
-            >
-              {planes[flight.plane].batteries.map(name => (
-                <MenuItem key={name} value={name}>
-                  <Checkbox
-                    checked={flight.notes.batteries.indexOf(name) > -1}
-                  />
-                  {name}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+              margin="normal"
+            />
 
-          <TextField
-            id="chargeVoltage"
-            label="Charged Voltage"
-            placeholder="Charged Voltage"
-            className={css.textField}
-            value={flight.notes.chargeVoltage}
-            name="chargeVoltage"
-            onChange={this.props.changeNotes}
-            margin="normal"
-          />
+            <TextField
+              id="location"
+              label="Location"
+              placeholder="Location"
+              className={css.textField}
+              value={flight.notes.location}
+              name="location"
+              onChange={this.props.changeNotes}
+              margin="normal"
+            />
+          </div>
 
-          <TextField
-            id="chargeFuel"
-            label="Charged fuel"
-            placeholder="Charged fuel"
-            className={css.textField}
-            value={flight.notes.chargeFuel}
-            name="chargeFuel"
-            onChange={this.props.changeNotes}
-            margin="normal"
-          />
+          <FlightBatteries />
 
-          <TextField
-            id="jornal"
-            label="Journal"
-            placeholder="Journal"
-            multiline
-            className={css.textField}
-            value={flight.notes.journal}
-            name="journal"
-            onChange={this.props.changeNotes}
-            margin="normal"
-          />
+          <div className={css.container}>
+            <TextField
+              id="jornal"
+              label="Journal"
+              placeholder="Journal"
+              multiline
+              className={css.textFieldWide}
+              value={flight.notes.journal}
+              name="journal"
+              onChange={this.props.changeNotes}
+              margin="normal"
+            />
+          </div>
         </CardContent>
       </Card>
     );
@@ -213,7 +166,7 @@ const mapDispatchToProps = {
     })
 };
 
-export default connect<any, any>(
+export default connect(
   mapStateToProps,
   mapDispatchToProps
 )(FlightDetails);
