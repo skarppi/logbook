@@ -1,51 +1,15 @@
 import * as bodyParser from "body-parser";
 import { Router } from "express";
 import FlightRepository from "../model/flight";
-import BatteryCycleRepository from "../model/battery";
-import Dashboard from "../model/dashboard";
 import config = require("../config");
 import * as multer from "multer";
 import { parseFile, parseData } from "../parser";
-import { DashboardUnit } from "../../shared/dashboard";
-import BatteryRepository from "../model/battery";
 
-export function apiRouter() {
+export function flightsRouter() {
   const router = Router();
   router.use(bodyParser.json());
 
-  router.get("/api/dashboard", (req, res) => {
-    const query = {
-      unit: DashboardUnit[<string>req.query.unit],
-      size: req.query.size
-    };
-
-    if (!query.unit) {
-      return res
-        .status(400)
-        .send(
-          `Query parameter "unit" must be one of [${Object.keys(
-            DashboardUnit
-          )}], was ${req.query.unit}`
-        );
-    }
-
-    if (!query.size || query.size < 1) {
-      return res
-        .status(400)
-        .send(
-          `Query parameter "size" must be one or more, was ${req.query.size}`
-        );
-    }
-
-    Dashboard.list(query)
-      .then(flights => res.json(flights))
-      .catch(err => {
-        console.log(err, err.stack);
-        return res.status(500).send(String(err));
-      });
-  });
-
-  router.get("/api/flights", (req, res) => {
+  router.get("/", (req, res) => {
     FlightRepository.list()
       .then(flights => res.json(flights))
       .catch(err => {
@@ -54,7 +18,7 @@ export function apiRouter() {
       });
   });
 
-  router.get("/api/flights/:day", (req, res) => {
+  router.get("/:day", (req, res) => {
     const day = new Date(req.params.day);
     FlightRepository.listByDay(day)
       .then(flight => {
@@ -66,7 +30,7 @@ export function apiRouter() {
       });
   });
 
-  router.get("/api/flights/:day/:id", (req, res) => {
+  router.get("/:day/:id", (req, res) => {
     const id = req.params.id;
     FlightRepository.find(id)
       .then(flight => {
@@ -78,7 +42,7 @@ export function apiRouter() {
       });
   });
 
-  router.delete("/api/flights/:day/:id", (req, res) => {
+  router.delete("/:day/:id", (req, res) => {
     const id = req.params.id;
     FlightRepository.delete(id)
       .then(_ => res.json({ status: "deleted" }))
@@ -88,7 +52,7 @@ export function apiRouter() {
       });
   });
 
-  router.put("/api/flights/:day/:id", (req, res) => {
+  router.put("/:day/:id", (req, res) => {
     const id = req.params.id;
     FlightRepository.find(id)
       .then(flight => {
@@ -108,7 +72,7 @@ export function apiRouter() {
       });
   });
 
-  router.put("/api/flights/:day/:id/reset", (req, res) => {
+  router.put("/:day/:id/reset", (req, res) => {
     const id = req.params.id;
     FlightRepository.find(id)
       .then(flight =>
@@ -146,52 +110,12 @@ export function apiRouter() {
 
   const upload = multer({ storage: storage, fileFilter: fileFilter });
 
-  router.post("/api/flights", upload.array("flight"), (req: any, res) => {
-    console.log(req.files);
-
+  router.post("", upload.array("flight"), (req: any, res) => {
     Promise.all(req.files.map(file => parseFile(file.originalname)))
       .then(flights => res.json([].concat(...flights)))
       .catch(err => {
         console.log(err, err.stack);
         res.status(500).send(String(err));
-      });
-  });
-
-  router.get("/api/batteries", (req, res) => {
-    BatteryRepository.list()
-      .then(batteries => res.json(batteries))
-      .catch(err => {
-        console.log(err, err.stack);
-        return res.status(500).send(String(err));
-      });
-  });
-
-  router.post("/api/batteries/cycles", (req, res) => {
-    BatteryCycleRepository.insert(req.body)
-      .then(cycle => res.json(cycle))
-      .catch(err => {
-        console.log(err, err.stack);
-        return res.status(500).send(String(err));
-      });
-  });
-
-  router.put("/api/batteries/cycles/:id", (req, res) => {
-    const id = req.params.id;
-    BatteryCycleRepository.update(id, req.body)
-      .then(cycle => res.json(cycle))
-      .catch(err => {
-        console.log(err, err.stack);
-        return res.status(500).send(String(err));
-      });
-  });
-
-  router.delete("/api/batteries/cycles/:id", (req, res) => {
-    const id = req.params.id;
-    BatteryCycleRepository.delete(id)
-      .then(_ => res.json({ id, status: "deleted" }))
-      .catch(err => {
-        console.log(err, err.stack);
-        return res.status(500).send(String(err));
       });
   });
 
