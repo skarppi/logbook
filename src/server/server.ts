@@ -1,4 +1,5 @@
 import * as express from "express";
+import * as bodyParser from "body-parser";
 import { batteriesRouter } from "./routes/batteries-router";
 import { flightsRouter } from "./routes/flights-router";
 import { dashboardRouter } from "./routes/dashboard-router";
@@ -8,11 +9,18 @@ import * as config from "./config";
 
 const app = express();
 
+app.use(bodyParser.json());
+
 app.use("/api/batteries", batteriesRouter());
 app.use("/api/dashboard", dashboardRouter());
 app.use("/api/flights", flightsRouter());
 
 app.use(config.IS_PRODUCTION ? staticsRouter() : staticsDevRouter());
+
+app.use(function(err, req, res, next) {
+  console.log(err, err.stack);
+  res.status(500).send(String(err));
+});
 
 app.listen(config.SERVER_PORT, () => {
   console.log(`App listening on port ${config.SERVER_PORT}!`);

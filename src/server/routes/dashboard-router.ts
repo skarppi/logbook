@@ -1,13 +1,11 @@
-import * as bodyParser from "body-parser";
 import { Router } from "express";
 import Dashboard from "../model/dashboard";
 import { DashboardUnit } from "../../shared/dashboard";
 
 export function dashboardRouter() {
   const router = Router();
-  router.use(bodyParser.json());
 
-  router.get("/", (req, res) => {
+  router.get("/", (req, res, next) => {
     const query = {
       unit: DashboardUnit[<string>req.query.unit],
       size: req.query.size
@@ -33,10 +31,7 @@ export function dashboardRouter() {
 
     Dashboard.list(query)
       .then(flights => res.json(flights))
-      .catch(err => {
-        console.log(err, err.stack);
-        return res.status(500).send(String(err));
-      });
+      .catch(next);
   });
 
   return router;

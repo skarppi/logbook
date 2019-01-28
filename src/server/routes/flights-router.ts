@@ -1,4 +1,3 @@
-import * as bodyParser from "body-parser";
 import { Router } from "express";
 import FlightRepository from "../model/flight";
 import config = require("../config");
@@ -7,52 +6,35 @@ import { parseFile, parseData } from "../parser";
 
 export function flightsRouter() {
   const router = Router();
-  router.use(bodyParser.json());
 
-  router.get("/", (req, res) => {
+  router.get("/", (req, res, next) => {
     FlightRepository.list()
       .then(flights => res.json(flights))
-      .catch(err => {
-        console.log(err, err.stack);
-        return res.status(500).send(String(err));
-      });
+      .catch(next);
   });
 
-  router.get("/:day", (req, res) => {
+  router.get("/:day", (req, res, next) => {
     const day = new Date(req.params.day);
     FlightRepository.listByDay(day)
-      .then(flight => {
-        res.json(flight);
-      })
-      .catch(err => {
-        console.log(err, err.stack);
-        return res.status(500).send(String(err));
-      });
+      .then(flight => res.json(flight))
+      .catch(next);
   });
 
-  router.get("/:day/:id", (req, res) => {
+  router.get("/:day/:id", (req, res, next) => {
     const id = req.params.id;
     FlightRepository.find(id)
-      .then(flight => {
-        res.json(flight);
-      })
-      .catch(err => {
-        console.log(err, err.stack);
-        return res.status(500).send(String(err));
-      });
+      .then(flight => res.json(flight))
+      .catch(next);
   });
 
-  router.delete("/:day/:id", (req, res) => {
+  router.delete("/:day/:id", (req, res, next) => {
     const id = req.params.id;
     FlightRepository.delete(id)
       .then(_ => res.json({ status: "deleted" }))
-      .catch(err => {
-        console.log(err, err.stack);
-        return res.status(500).send(String(err));
-      });
+      .catch(next);
   });
 
-  router.put("/:day/:id", (req, res) => {
+  router.put("/:day/:id", (req, res, next) => {
     const id = req.params.id;
     FlightRepository.find(id)
       .then(flight => {
@@ -66,13 +48,10 @@ export function flightsRouter() {
           res.json(updated)
         );
       })
-      .catch(err => {
-        console.log(err, err.stack);
-        return res.status(500).send(String(err));
-      });
+      .catch(next);
   });
 
-  router.put("/:day/:id/reset", (req, res) => {
+  router.put("/:day/:id/reset", (req, res, next) => {
     const id = req.params.id;
     FlightRepository.find(id)
       .then(flight =>
@@ -86,10 +65,7 @@ export function flightsRouter() {
         )
       )
       .then(updated => res.json(updated[0]))
-      .catch(err => {
-        console.log(err, err.stack);
-        return res.status(500).send(String(err));
-      });
+      .catch(next);
   });
 
   const storage = multer.diskStorage({
@@ -110,13 +86,10 @@ export function flightsRouter() {
 
   const upload = multer({ storage: storage, fileFilter: fileFilter });
 
-  router.post("", upload.array("flight"), (req: any, res) => {
+  router.post("", upload.array("flight"), (req: any, res, next) => {
     Promise.all(req.files.map(file => parseFile(file.originalname)))
       .then(flights => res.json([].concat(...flights)))
-      .catch(err => {
-        console.log(err, err.stack);
-        res.status(500).send(String(err));
-      });
+      .catch(next);
   });
 
   return router;

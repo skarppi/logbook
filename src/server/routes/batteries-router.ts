@@ -1,48 +1,34 @@
-import * as bodyParser from "body-parser";
 import { Router } from "express";
 import BatteryCycleRepository from "../model/battery";
 import BatteryRepository from "../model/battery";
 
 export function batteriesRouter() {
   const router = Router();
-  router.use(bodyParser.json());
 
-  router.get("/", (req, res) => {
+  router.get("/", (req, res, next) => {
     BatteryRepository.list()
       .then(batteries => res.json(batteries))
-      .catch(err => {
-        console.log(err, err.stack);
-        return res.status(500).send(String(err));
-      });
+      .catch(next);
   });
 
-  router.post("/cycles", (req, res) => {
+  router.post("/cycles", (req, res, next) => {
     BatteryCycleRepository.insert(req.body)
       .then(cycle => res.json(cycle))
-      .catch(err => {
-        console.log(err, err.stack);
-        return res.status(500).send(String(err));
-      });
+      .catch(next);
   });
 
-  router.put("/cycles/:id", (req, res) => {
+  router.put("/cycles/:id", (req, res, next) => {
     const id = req.params.id;
     BatteryCycleRepository.update(id, req.body)
       .then(cycle => res.json(cycle))
-      .catch(err => {
-        console.log(err, err.stack);
-        return res.status(500).send(String(err));
-      });
+      .catch(next);
   });
 
-  router.delete("/cycles/:id", (req, res) => {
+  router.delete("/cycles/:id", (req, res, next) => {
     const id = req.params.id;
     BatteryCycleRepository.delete(id)
       .then(_ => res.json({ id, status: "deleted" }))
-      .catch(err => {
-        console.log(err, err.stack);
-        return res.status(500).send(String(err));
-      });
+      .catch(next);
   });
 
   return router;
