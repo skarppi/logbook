@@ -1,5 +1,5 @@
 import * as React from "react";
-import { IconButton } from "@material-ui/core";
+import { Button, FormControl } from "@material-ui/core";
 import { Flight } from "../../../../shared/flights/types";
 import { FlightBattery } from "./FlightBattery";
 import AddIcon from "@material-ui/icons/Add";
@@ -57,12 +57,12 @@ class FlightBatteries extends React.Component<AllProps> {
     return (
       <>
         {rows}
-        <div className={css.formControl}>
-          <span>Add cycle</span>
-          <IconButton onClick={this.addBattery}>
+        <FormControl className={css.formControl} margin="normal">
+          <Button onClick={this.addBattery}>
+            Add battery
             <AddIcon />
-          </IconButton>
-        </div>
+          </Button>
+        </FormControl>
       </>
     );
   }

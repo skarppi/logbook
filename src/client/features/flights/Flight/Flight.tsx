@@ -3,7 +3,8 @@ import {
   CardContent,
   CardHeader,
   IconButton,
-  TextField
+  TextField,
+  Tooltip
 } from "@material-ui/core";
 import * as React from "react";
 import { RouteComponentProps } from "react-router";
@@ -46,6 +47,7 @@ export const planes: { [key: string]: Plane } = {
       "mylipo2",
       "mylipo3",
       "mylipo4",
+      "mylipo5",
       "happy1",
       "happy2",
       "happy3",
@@ -80,13 +82,17 @@ export class FlightDetails extends React.Component<AllProps> {
           title={`Flight: ${flight.id}`}
           action={
             <>
-              <IconButton onClick={_ => this.props.resetFlight(flight)}>
-                <RefreshIcon />
-              </IconButton>
+              <Tooltip title="Reset flight">
+                <IconButton onClick={_ => this.props.resetFlight(flight)}>
+                  <RefreshIcon />
+                </IconButton>
+              </Tooltip>
 
-              <IconButton onClick={_ => this.props.deleteFlight(flight)}>
-                <DeleteIcon />
-              </IconButton>
+              <Tooltip title="Delete flight">
+                <IconButton onClick={_ => this.props.deleteFlight(flight)}>
+                  <DeleteIcon />
+                </IconButton>
+              </Tooltip>
             </>
           }
         />

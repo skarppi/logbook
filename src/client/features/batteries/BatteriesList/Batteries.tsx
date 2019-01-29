@@ -7,15 +7,20 @@ import {
   TableRow,
   TableCell,
   TableHead,
-  TableBody
+  TableBody,
+  IconButton
 } from "@material-ui/core";
 import * as React from "react";
 import { NavLink } from "react-router-dom";
-import { fetchBatteries } from "../actions";
+import { fetchBatteries, insertBatteryCycle } from "../actions";
 import { connect } from "react-redux";
 import { RootState } from "../../../app";
 import { formatDate, formatDateTime } from "../../../../shared/utils/date";
 import { Battery } from "../../../../shared/batteries/types";
+
+import FullChargeIcon from "@material-ui/icons/BatteryChargingFull";
+import StorageChargeIcon from "@material-ui/icons/BatteryCharging50";
+import { BatteryState } from "../../../../shared/batteries";
 
 interface BatteryProps {
   batteries: { [key: string]: Battery };
@@ -46,6 +51,40 @@ class BatteriesList extends React.Component<
     );
   }
 
+  batteryOps(battery) {
+    if (!battery.lastCycle) {
+      return;
+    }
+
+    return (
+      <>
+        <IconButton
+          onClick={_ => this.charge(battery.id, BatteryState.storage)}
+        >
+          <StorageChargeIcon />
+        </IconButton>
+        <IconButton
+          onClick={_ => this.charge(battery.id, BatteryState.charged)}
+        >
+          <FullChargeIcon />
+        </IconButton>
+      </>
+    );
+  }
+
+  charge = (id, state) => {
+    this.props.insertBatteryCycle({
+      id: -1,
+      date: new Date(),
+      batteryId: id,
+      flightId: null,
+      state: state,
+      voltage: null,
+      discharged: null,
+      charged: null
+    });
+  };
+
   public render() {
     const { batteries, isLoadingBatteries } = this.props;
 
@@ -65,6 +104,7 @@ class BatteriesList extends React.Component<
           </TableCell>
           <TableCell>{battery.lastCycle && battery.lastCycle.state}</TableCell>
           <TableCell>{this.lastUsed(battery)}</TableCell>
+          <TableCell>{this.batteryOps(battery)}</TableCell>
         </TableRow>
       );
     });
@@ -82,6 +122,7 @@ class BatteriesList extends React.Component<
                     <TableCell>Type</TableCell>
                     <TableCell>Current status</TableCell>
                     <TableCell>Last used</TableCell>
+                    <TableCell>Actions</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>{rows}</TableBody>
@@ -104,7 +145,8 @@ const mapStateToProps = (state: RootState) => ({
 });
 
 const mapDispatchToProps = {
-  fetchBatteries: fetchBatteries.request
+  fetchBatteries: fetchBatteries.request,
+  insertBatteryCycle: insertBatteryCycle.request
 };
 
 export default connect<any, any>(

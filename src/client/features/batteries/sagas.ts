@@ -1,7 +1,15 @@
-import { all, fork, takeEvery, takeLatest, select } from "redux-saga/effects";
+import {
+  all,
+  fork,
+  takeEvery,
+  takeLatest,
+  select,
+  put
+} from "redux-saga/effects";
 import * as actions from "./actions";
 import { handleCall, deleteApi, putApi, postApi } from "../../utils/api-facade";
 import { BatteryCycle, Battery } from "../../../shared/batteries/types";
+import { BatteryState } from "../../../shared/batteries";
 
 function pathForBatteries(battery: Battery) {
   return "batteries/" + ((battery && battery.id) || "");
@@ -16,15 +24,21 @@ function* handleFetchBatteries(action) {
 }
 
 function* handleInsertBatteryCycle(action) {
-  return yield handleCall(
+  const inserted = yield handleCall(
     actions.insertBatteryCycle,
     pathForBatteryCycles(null),
     postApi,
     action.payload
   );
+
+  if (action.payload.state !== BatteryState.discharged) {
+    // refresh list
+    yield put(actions.fetchBatteries.request());
+  }
+  return inserted;
 }
 
-function* handleUpdateBatteries(action) {
+function* handleUpdateBatteryCycle(action) {
   return yield handleCall(
     actions.updateBatteryCycle,
     pathForBatteryCycles(action.payload),
@@ -33,7 +47,7 @@ function* handleUpdateBatteries(action) {
   );
 }
 
-function* handleDeleteBatteries(action) {
+function* handleDeleteBatteryCycle(action) {
   return yield handleCall(
     actions.deleteBatteryCycle,
     pathForBatteryCycles(action.payload),
@@ -50,11 +64,14 @@ function* watchInsertBatteryCycleRequest() {
 }
 
 function* watchUpdateBatteryCycleRequest() {
-  yield takeLatest(actions.updateBatteryCycle.request, handleUpdateBatteries);
+  yield takeLatest(
+    actions.updateBatteryCycle.request,
+    handleUpdateBatteryCycle
+  );
 }
 
 function* watchDeleteBatteryCycleRequest() {
-  yield takeEvery(actions.deleteBatteryCycle.request, handleDeleteBatteries);
+  yield takeEvery(actions.deleteBatteryCycle.request, handleDeleteBatteryCycle);
 }
 
 export function* batteriesSaga() {

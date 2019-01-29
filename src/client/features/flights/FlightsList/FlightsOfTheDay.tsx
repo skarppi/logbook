@@ -36,7 +36,9 @@ class FlightsOfTheDay extends React.Component<AllProps> {
             </NavLink>
           </TableCell>
           <TableCell>{flightsOfTheDay.length - index}</TableCell>
-          <TableCell>{flight.plane}</TableCell>
+          <TableCell>
+            {flight.plane} {flight.batteryIds && `(${flight.batteryIds})`}
+          </TableCell>
           <TableCell>{formatDuration(flight.flightTime)}</TableCell>
           {flight.status && <TableCell>{flight.status}</TableCell>}
         </TableRow>
