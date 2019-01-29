@@ -12,6 +12,7 @@ export interface Flight {
   segments: Segment[];
   batteries?: BatteryCycle[];
   notes?: FlightNotes;
+  videos?: string[];
 }
 
 export interface FlightNotes {

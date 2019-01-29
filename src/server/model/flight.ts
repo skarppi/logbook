@@ -1,7 +1,9 @@
 import { formatDuration } from "../../shared/utils/date";
 import { FlightDay, Flight } from "../../shared/flights/types";
 import { db } from "../db";
+import { readdirSync } from "fs";
 import BatteryCycleRepository from "./batterycycle";
+import { VIDEO_FOLDER } from "../config";
 
 export default class FlightRepository {
   static list(): Promise<FlightDay[]> {
@@ -34,6 +36,11 @@ export default class FlightRepository {
       .then(flight =>
         BatteryCycleRepository.listByFlight(id).then(batteries => {
           flight.batteries = batteries;
+
+          flight.videos = readdirSync(VIDEO_FOLDER).filter(file =>
+            file.startsWith(id)
+          );
+
           return flight;
         })
       );

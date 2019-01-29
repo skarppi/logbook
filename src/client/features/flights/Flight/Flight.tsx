@@ -24,6 +24,8 @@ import { FlightDate } from "./FlightDate";
 import { FlightDuration } from "./FlightDuration";
 import FlightBatteries from "./FlightBatteries";
 
+import { Player, ControlBar, BigPlayButton } from "video-react";
+
 const css = require("./Flight.css");
 import DeleteIcon from "@material-ui/icons/Delete";
 import RefreshIcon from "@material-ui/icons/Refresh";
@@ -140,6 +142,14 @@ export class FlightDetails extends React.Component<AllProps> {
               margin="normal"
             />
           </div>
+
+          {flight.videos &&
+            flight.videos.map(video => (
+              <Player key={video} src={"http://localhost:3000/videos/" + video}>
+                <ControlBar autoHide={true} />
+                <BigPlayButton position="center" />
+              </Player>
+            ))}
         </CardContent>
       </Card>
     );

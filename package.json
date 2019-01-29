@@ -60,7 +60,8 @@
     "redux-logger": "^3.0.6",
     "redux-saga": "^0.16.2",
     "tslib": "^1.9.3",
-    "typesafe-actions": "^3.0.0"
+    "typesafe-actions": "^3.0.0",
+    "video-react": "^0.13.2"
   },
   "devDependencies": {
     "@types/express": "^4.16.0",

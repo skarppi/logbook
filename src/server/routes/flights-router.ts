@@ -1,6 +1,6 @@
 import { Router } from "express";
 import FlightRepository from "../model/flight";
-import config = require("../config");
+import { CSV_FOLDER } from "../config";
 import * as multer from "multer";
 import { parseFile, parseData } from "../parser";
 
@@ -70,7 +70,7 @@ export function flightsRouter() {
 
   const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-      cb(null, config.CSV_FOLDER);
+      cb(null, CSV_FOLDER);
     },
     filename: (req, file, cb) => {
       cb(null, file.originalname); // + "-" + Date.now());
@@ -88,7 +88,12 @@ export function flightsRouter() {
 
   router.post("", upload.array("flight"), (req: any, res, next) => {
     Promise.all(req.files.map(file => parseFile(file.originalname)))
-      .then(flights => res.json([].concat(...flights)))
+      .then(flights => {
+        const flatten = []
+          .concat(...flights)
+          .sort((a, b) => (a.id > b.id ? -1 : 1));
+        res.json(flatten);
+      })
       .catch(next);
   });
 
