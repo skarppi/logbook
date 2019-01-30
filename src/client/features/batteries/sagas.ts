@@ -7,9 +7,11 @@ import {
   put
 } from "redux-saga/effects";
 import * as actions from "./actions";
+import { fetchFlight } from "../flights/actions";
 import { handleCall, deleteApi, putApi, postApi } from "../../utils/api-facade";
 import { BatteryCycle, Battery } from "../../../shared/batteries/types";
 import { BatteryState } from "../../../shared/batteries";
+import { getFlight } from "../flights/selectors";
 
 function pathForBatteries(battery: Battery) {
   return "batteries/" + ((battery && battery.id) || "");
@@ -39,12 +41,18 @@ function* handleInsertBatteryCycle(action) {
 }
 
 function* handleUpdateBatteryCycle(action) {
-  return yield handleCall(
+  const updated = yield handleCall(
     actions.updateBatteryCycle,
     pathForBatteryCycles(action.payload),
     putApi,
     action.payload
   );
+
+  // update current flight
+  let flight = yield select(getFlight, action.payload.flightId);
+  yield put(fetchFlight.request(flight));
+
+  return updated;
 }
 
 function* handleDeleteBatteryCycle(action) {
