@@ -3,6 +3,8 @@ import Segment from "../model/segment";
 import SegmentItem from "../model/segmentitem";
 import { SegmentType } from "../../shared/flights";
 
+const SPLIT_FLIGHTS_AFTER_SECONDS = 30;
+
 export default class SegmentParser {
   type?: SegmentType;
   items: SegmentItem[] = [];
@@ -19,7 +21,11 @@ export default class SegmentParser {
   }
 
   splitFlightAt(timestamp: Date) {
-    return this.last && durationInSeconds(this.last.timestamp, timestamp) > 30;
+    return (
+      this.last &&
+      durationInSeconds(this.last.timestamp, timestamp) >
+        SPLIT_FLIGHTS_AFTER_SECONDS
+    );
   }
 
   splitSegment(type: SegmentType, latest: SegmentItem) {
