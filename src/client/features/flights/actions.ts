@@ -3,16 +3,16 @@ import { Flight, FlightDay } from "../../../shared/flights/types";
 
 export const addFlights = createStandardAction("ADD_FLIGHTS")<Flight[]>();
 
+export const fetchFlightDays = createAsyncAction(
+  "FETCH_FLIGHTDAYS_REQUEST",
+  "FETCH_FLIGHTDAYS_SUCCESS",
+  "FETCH_FLIGHTDAYS_FAILURE"
+)<void, FlightDay[], string>();
+
 export const fetchFlights = createAsyncAction(
   "FETCH_FLIGHTS_REQUEST",
   "FETCH_FLIGHTS_SUCCESS",
   "FETCH_FLIGHTS_FAILURE"
-)<void, FlightDay[], string>();
-
-export const fetchFlightsPerDay = createAsyncAction(
-  "FETCH_FLIGHTSPERDAY_REQUEST",
-  "FETCH_FLIGHTSPERDAY_SUCCESS",
-  "FETCH_FLIGHTSPERDAY_FAILURE"
 )<string, Flight[], string>();
 
 export const fetchFlight = createAsyncAction(
@@ -37,7 +37,7 @@ export const deleteFlight = createAsyncAction(
   "DELETE_FLIGHTDETAILS_REQUEST",
   "DELETE_FLIGHTDETAILS_SUCCESS",
   "DELETE_FLIGHTDETAILS_FAILURE"
-)<Flight, string, string>();
+)<Flight, Flight, string>();
 
 export const changeFlightFields = createStandardAction("CHANGE_FLIGHT_FIELDS")<
   object

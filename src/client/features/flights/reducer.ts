@@ -1,26 +1,27 @@
 import { FlightDay, Flight } from "../../../shared/flights/types";
 import { getType } from "typesafe-actions";
 
+import * as batteryActions from "../batteries/actions";
 import * as actions from "./actions";
+import store from "../../app/store";
 import { RootAction } from "../../app";
-import { parseDurationIntoSeconds } from "../../../shared/utils/date";
 
 export type FlightsState = Readonly<{
   flightDays: FlightDay[];
   isLoadingFlightDays: boolean;
-  flightsOfTheDay: Flight[];
-  isLoadingFlightsOfTheDay: boolean;
-  flight: Flight;
-  isLoadingFlightDetails: boolean;
+  flights: { [key: string]: Flight };
+  flightIds: string[];
+  isLoadingFlights: boolean;
+  isLoadingFlight: boolean;
 }>;
 
 const initialState: FlightsState = {
   flightDays: [],
   isLoadingFlightDays: false,
-  flightsOfTheDay: [],
-  isLoadingFlightsOfTheDay: false,
-  flight: null,
-  isLoadingFlightDetails: false
+  flights: {},
+  flightIds: [],
+  isLoadingFlights: false,
+  isLoadingFlight: false
 };
 
 function applyDefaults(flight: Flight) {
@@ -44,30 +45,41 @@ export const flightsReducer = function reducer(
   state: FlightsState = initialState,
   action: RootAction
 ) {
+  function normalize(flights: Flight[]) {
+    const obj = {};
+    flights.forEach(flight => {
+      obj[flight.id] = flight;
+    });
+    return {
+      flights: obj,
+      flightIds: flights.map(f => f.id)
+    };
+  }
+
   switch (action.type) {
     case getType(actions.addFlights): {
       return {
         ...state,
-        flightsOfTheDay: action.payload
+        ...normalize(action.payload)
       };
     }
 
     // DAYS
 
-    case getType(actions.fetchFlights.request): {
+    case getType(actions.fetchFlightDays.request): {
       return {
         ...state,
         isLoadingFlightDays: true
       };
     }
-    case getType(actions.fetchFlights.success): {
+    case getType(actions.fetchFlightDays.success): {
       return {
         ...state,
         flightDays: action.payload,
         isLoadingFlightDays: false
       };
     }
-    case getType(actions.fetchFlights.failure): {
+    case getType(actions.fetchFlightDays.failure): {
       console.log(action.payload);
       return {
         ...state,
@@ -77,41 +89,36 @@ export const flightsReducer = function reducer(
 
     // FLIGHTS OF THE DAY
 
-    case getType(actions.fetchFlightsPerDay.request): {
+    case getType(actions.fetchFlights.request): {
       return {
         ...state,
-        flightsOfTheDay: [],
-        isLoadingFlightsOfTheDay: true
+        ...normalize([]),
+        isLoadingFlights: true
       };
     }
-    case getType(actions.fetchFlightsPerDay.success): {
+    case getType(actions.fetchFlights.success): {
       return {
         ...state,
-        flightsOfTheDay: action.payload,
-        isLoadingFlightsOfTheDay: false
+        ...normalize(action.payload),
+        isLoadingFlights: false
       };
     }
-    case getType(actions.fetchFlightsPerDay.failure): {
+    case getType(actions.fetchFlights.failure): {
       console.log(action.payload);
       return {
         ...state,
-        isLoadingFlightsOfTheDay: false
+        isLoadingFlights: false
       };
     }
 
     // SINGLE FLIGHT
 
-    case getType(actions.fetchFlight.request): {
-      return {
-        ...state,
-        flight: applyDefaults(action.payload),
-        isLoadingFlightDetails: true
-      };
-    }
-
     case getType(actions.changeFlightFields): {
+      const id = action.payload["id"];
+      const flight = state.flights[id];
+
       // merge old and new notes
-      const notes = { ...state.flight.notes, ...action.payload["notes"] };
+      const notes = { ...flight.notes, ...action.payload["notes"] };
 
       // migrate deprecated fields
       delete notes["batteries"];
@@ -121,16 +128,20 @@ export const flightsReducer = function reducer(
 
       return {
         ...state,
-        flight: { ...state.flight, ...action.payload, notes: notes },
-        isLoadingFlightDetails: true
+        flights: {
+          ...state.flights,
+          [id]: { ...flight, ...action.payload, notes: notes }
+        },
+        isLoadingFlight: true
       };
     }
 
+    case getType(actions.fetchFlight.request):
     case getType(actions.resetFlight.request):
     case getType(actions.deleteFlight.request): {
       return {
         ...state,
-        isLoadingFlightDetails: true
+        isLoadingFlight: true
       };
     }
 
@@ -139,16 +150,23 @@ export const flightsReducer = function reducer(
     case getType(actions.updateFlight.success): {
       return {
         ...state,
-        flight: applyDefaults(action.payload),
-        isLoadingFlightDetails: false
+        flights: {
+          ...state.flights,
+          [action.payload.id]: applyDefaults(action.payload)
+        },
+        isLoadingFlight: false
       };
     }
 
     case getType(actions.deleteFlight.success): {
+      const flights = { ...state.flights };
+      delete flights[action.payload.id];
+
       return {
         ...state,
-        flight: null,
-        isLoadingFlightDetails: false
+        flights: flights,
+        flightIds: state.flightIds.filter(id => id !== action.payload.id),
+        isLoadingFlight: false
       };
     }
 
@@ -159,7 +177,7 @@ export const flightsReducer = function reducer(
       console.log(action.payload);
       return {
         ...state,
-        isLoadingFlightDetails: false
+        isLoadingFlight: false
       };
     }
 

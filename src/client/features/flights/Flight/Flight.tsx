@@ -9,7 +9,6 @@ import {
 import * as React from "react";
 import { parseDurationIntoSeconds } from "../../../../shared/utils/date";
 import { Plane, Flight } from "../../../../shared/flights/types";
-import { FlightsState } from "../reducer";
 import { RootState } from "../../../app";
 import {
   fetchFlight,
@@ -28,10 +27,13 @@ import { Player, ControlBar, BigPlayButton } from "video-react";
 const css = require("./Flight.css");
 import DeleteIcon from "@material-ui/icons/Delete";
 import RefreshIcon from "@material-ui/icons/Refresh";
+import { getFlight } from "../selectors";
+
+export interface OwnProps {
+  id: string;
+}
 
 export interface FlightDetailsProps {
-  id: string;
-  flightsOfTheDay: Flight[];
   flight: Flight;
   isLoadingFlight: boolean;
 }
@@ -108,9 +110,9 @@ export class FlightDetails extends React.Component<AllProps> {
               placeholder="OSD"
               multiline
               className={css.textField}
-              value={flight.notes.osd}
+              value={(flight.notes && flight.notes.osd) || ""}
               name="osd"
-              onChange={this.props.changeNotes}
+              onChange={e => this.changeNotes(flight.id, e)}
               margin="normal"
             />
 
@@ -119,14 +121,14 @@ export class FlightDetails extends React.Component<AllProps> {
               label="Location"
               placeholder="Location"
               className={css.textField}
-              value={flight.notes.location}
+              value={(flight.notes && flight.notes.location) || ""}
               name="location"
-              onChange={this.props.changeNotes}
+              onChange={e => this.changeNotes(flight.id, e)}
               margin="normal"
             />
           </div>
 
-          <FlightBatteries />
+          <FlightBatteries id={flight.id} />
 
           <div className={css.container}>
             <TextField
@@ -135,9 +137,9 @@ export class FlightDetails extends React.Component<AllProps> {
               placeholder="Journal"
               multiline
               className={css.textFieldWide}
-              value={flight.notes.journal}
+              value={(flight.notes && flight.notes.journal) || ""}
               name="journal"
-              onChange={this.props.changeNotes}
+              onChange={e => this.changeNotes(flight.id, e)}
               margin="normal"
             />
           </div>
@@ -155,14 +157,18 @@ export class FlightDetails extends React.Component<AllProps> {
   }
 
   public async componentWillMount() {
-    const flight = this.props.flightsOfTheDay.find(f => f.id === this.props.id);
-    this.props.fetchFlight(flight);
+    // const flight = this.props.flights.find(f => f.id === this.props.id);
+    this.props.fetchFlight(this.props.flight);
   }
+
+  changeNotes = (flightId, event) =>
+    this.props.save(flightId, {
+      notes: { [event.target.name]: event.target.value }
+    });
 }
 
-const mapStateToProps = (state: RootState) => ({
-  flightsOfTheDay: state.flights.flightsOfTheDay,
-  flight: state.flights.flight,
+const mapStateToProps = (state: RootState, ownProps: OwnProps) => ({
+  flight: getFlight(state, ownProps.id),
   isLoadingFlight: state.flights.isLoadingFlightDays
 });
 
@@ -170,13 +176,7 @@ const mapDispatchToProps = {
   fetchFlight: fetchFlight.request,
   resetFlight: resetFlight.request,
   deleteFlight: deleteFlight.request,
-  changeNotes: event =>
-    changeFlightFields({ notes: { [event.target.name]: event.target.value } }),
-  save: changeFlightFields,
-  updateFlightTimes: event =>
-    changeFlightFields({
-      [event.target.name]: parseDurationIntoSeconds(event.target.value)
-    })
+  save: (id, obj) => changeFlightFields({ ...obj, id })
 };
 
 export default connect(

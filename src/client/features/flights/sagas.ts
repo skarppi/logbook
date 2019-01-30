@@ -1,12 +1,4 @@
-import {
-  all,
-  call,
-  fork,
-  put,
-  takeEvery,
-  select,
-  takeLatest
-} from "redux-saga/effects";
+import { all, fork, takeEvery, select, takeLatest } from "redux-saga/effects";
 import { delay } from "redux-saga";
 import * as actions from "./actions";
 import { handleCall, deleteApi, putApi } from "../../utils/api-facade";
@@ -14,15 +6,12 @@ import { formatDate } from "../../../shared/utils/date";
 import { Flight } from "../../../shared/flights/types";
 import { getFlight } from "./selectors";
 
-function* handleFetchFlights() {
-  return yield handleCall(actions.fetchFlights, "flights");
+function* handleFetchFlightDays() {
+  return yield handleCall(actions.fetchFlightDays, "flights");
 }
 
-function* handleFetchFlightsPerDay(action) {
-  return yield handleCall(
-    actions.fetchFlightsPerDay,
-    "flights/" + action.payload
-  );
+function* handleFetchFlights(action) {
+  return yield handleCall(actions.fetchFlights, "flights/" + action.payload);
 }
 
 function pathForFlight(flight: Flight) {
@@ -41,10 +30,10 @@ function* handleResetFlight(action) {
   );
 }
 
-function* handleUpdateFlight() {
+function* handleUpdateFlight(action) {
   yield delay(1000);
 
-  let flight = yield select(getFlight);
+  let flight = yield select(getFlight, action.payload.id);
 
   // do not upload raw data
   delete flight["segments"];
@@ -65,12 +54,12 @@ function* handledeleteFlight(action) {
   );
 }
 
-function* watchFetchFlightsRequest() {
-  yield takeEvery(actions.fetchFlights.request, handleFetchFlights);
+function* watchFetchFlightDaysRequest() {
+  yield takeEvery(actions.fetchFlightDays.request, handleFetchFlightDays);
 }
 
-function* watchFetchFlightsPerDayRequest() {
-  yield takeEvery(actions.fetchFlightsPerDay.request, handleFetchFlightsPerDay);
+function* watchFetchFlightsRequest() {
+  yield takeEvery(actions.fetchFlights.request, handleFetchFlights);
 }
 
 function* watchFetchFlightRequest() {
@@ -92,8 +81,8 @@ function* watchUpdateFlight() {
 // We can also use `fork()` here to split our saga into multiple watchers.
 export function* flightsSaga() {
   yield all([
+    fork(watchFetchFlightDaysRequest),
     fork(watchFetchFlightsRequest),
-    fork(watchFetchFlightsPerDayRequest),
     fork(watchFetchFlightRequest),
     fork(watchResetFlightRequest),
     fork(watchUpdateFlight),

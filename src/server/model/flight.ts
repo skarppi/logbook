@@ -9,6 +9,7 @@ export default class FlightRepository {
   static enrich(flight: Flight) {
     return BatteryCycleRepository.listByFlight(flight.id).then(batteries => {
       flight.batteries = batteries;
+      flight.batteryIds = batteries.map(b => b.batteryId).join(",");
 
       flight.videos = readdirSync(VIDEO_FOLDER).filter(file =>
         file.startsWith(flight.id)

@@ -1,16 +1,11 @@
 import { Table, TableRow, TableCell, TableBody } from "@material-ui/core";
 import * as React from "react";
-import { NavLink, Route } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import { RouteComponentProps } from "react-router";
-import {
-  formatDuration,
-  formatTime,
-  formatDate
-} from "../../../../shared/utils/date";
-import classNames from "classnames";
+import { formatDuration, formatTime } from "../../../../shared/utils/date";
 import { FlightsState } from "../reducer";
 import { RootState } from "../../../app";
-import { fetchFlightsPerDay } from "../actions";
+import { fetchFlights } from "../actions";
 import { connect } from "react-redux";
 import FlightDetails from "../Flight/Flight";
 
@@ -30,40 +25,39 @@ type AllProps = FlightsState &
 
 class FlightsOfTheDay extends React.Component<AllProps> {
   public render() {
-    const { flightsOfTheDay } = this.props;
+    const { flights, flightIds } = this.props;
 
     const path = `/flights/${this.props.match.params.date}`;
 
-    const rows = flightsOfTheDay.map((flight, index) => {
+    const rows = flightIds.map((id, index) => {
+      const flight = flights[id];
       const current = this.props.match.params.id === flight.id;
 
       const detailsRow = current && (
-        <TableRow key={flight.id + "-details"} className={css.opened}>
+        <TableRow key={id + "-details"} className={css.opened}>
           <TableCell colSpan={5}>
-            <FlightDetails id={flight.id} />
+            <FlightDetails id={id} />
           </TableCell>
         </TableRow>
       );
 
-      return (
-        <>
-          <TableRow key={flight.id}>
-            <TableCell>
-              <NavLink to={current ? path : `${path}/${flight.id}`}>
-                {(current && <OpenedIcon />) || <ClosedIcon />}
-                {formatTime(flight.startDate)}
-              </NavLink>
-            </TableCell>
-            <TableCell>{flightsOfTheDay.length - index}</TableCell>
-            <TableCell>
-              {flight.plane} {flight.batteryIds && `(${flight.batteryIds})`}
-            </TableCell>
-            <TableCell>{formatDuration(flight.flightTime)}</TableCell>
-            {flight.status && <TableCell>{flight.status}</TableCell>}
-          </TableRow>
-          {detailsRow}
-        </>
-      );
+      return [
+        <TableRow key={id}>
+          <TableCell>
+            <NavLink to={current ? path : `${path}/${id}`}>
+              {(current && <OpenedIcon />) || <ClosedIcon />}
+              {formatTime(flight.startDate)}
+            </NavLink>
+          </TableCell>
+          <TableCell>{flightIds.length - index}</TableCell>
+          <TableCell>
+            {flight.plane} {flight.batteryIds && `(${flight.batteryIds})`}
+          </TableCell>
+          <TableCell>{formatDuration(flight.flightTime)}</TableCell>
+          {flight.status && <TableCell>{flight.status}</TableCell>}
+        </TableRow>,
+        detailsRow
+      ];
     });
 
     return (
@@ -74,17 +68,18 @@ class FlightsOfTheDay extends React.Component<AllProps> {
   }
 
   public async componentWillMount() {
-    this.props.fetchFlightPerDay(this.props.match.params.date);
+    this.props.fetchFlights(this.props.match.params.date);
   }
 }
 
 const mapStateToProps = (state: RootState) => ({
-  flightsOfTheDay: state.flights.flightsOfTheDay,
-  isLoadingFlightsOfTheDay: state.flights.isLoadingFlightsOfTheDay
+  flights: state.flights.flights,
+  flightIds: state.flights.flightIds,
+  isLoadingFlights: state.flights.isLoadingFlights
 });
 
 const mapDispatchToProps = {
-  fetchFlightPerDay: fetchFlightsPerDay.request
+  fetchFlights: fetchFlights.request
 };
 
 export default connect<any, any>(

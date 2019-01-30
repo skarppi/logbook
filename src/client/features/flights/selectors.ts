@@ -1,1 +1,1 @@
-export const getFlight = state => state.flights.flight;
+export const getFlight = (state, id) => state.flights.flights[id];

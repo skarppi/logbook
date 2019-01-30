@@ -30,7 +30,7 @@ export function flightsRouter() {
   router.delete("/:day/:id", (req, res, next) => {
     const id = req.params.id;
     FlightRepository.delete(id)
-      .then(_ => res.json({ status: "deleted" }))
+      .then(_ => res.json({ id, status: "deleted" }))
       .catch(next);
   });
 

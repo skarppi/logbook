@@ -4,8 +4,6 @@ import { Flight } from "../../../../shared/flights/types";
 import { FlightBattery } from "./FlightBattery";
 import AddIcon from "@material-ui/icons/Add";
 import { RootState } from "../../..//app";
-import { changeFlightFields } from "../actions";
-import { parseDurationIntoSeconds } from "../../../../shared/utils/date";
 import { connect } from "react-redux";
 import {
   insertBatteryCycle,
@@ -15,12 +13,16 @@ import {
 import { planes } from "./Flight";
 import { BatteryState } from "../../../../shared/batteries";
 import { BatteryCycle } from "../../../../shared/batteries/types";
+import { getFlight } from "../selectors";
 const css = require("./Flight.css");
+
+export interface OwnProps {
+  id: string;
+}
 
 interface BatteryProps {
   flight: Flight;
   cycles: { [key: string]: BatteryCycle };
-  isLoadingBatteries: boolean;
 }
 
 type AllProps = BatteryProps & typeof mapDispatchToProps;
@@ -68,20 +70,15 @@ class FlightBatteries extends React.Component<AllProps> {
   }
 }
 
-const mapStateToProps = (state: RootState) => ({
-  flight: state.flights.flight,
-  cycles: state.batteries.cycles,
-  isLoadingBatteries: state.batteries.isLoadingBatteries
+const mapStateToProps = (state: RootState, ownProps: OwnProps) => ({
+  flight: getFlight(state, ownProps.id),
+  cycles: state.batteries.cycles
 });
 
 const mapDispatchToProps = {
   insertBatteryCycle: insertBatteryCycle.request,
   updateBatteryCycle: updateBatteryCycle.request,
-  deleteBatteryCycle: deleteBatteryCycle.request,
-  updateFlightTimes: event =>
-    changeFlightFields({
-      [event.target.name]: parseDurationIntoSeconds(event.target.value)
-    })
+  deleteBatteryCycle: deleteBatteryCycle.request
 };
 
 export default connect(

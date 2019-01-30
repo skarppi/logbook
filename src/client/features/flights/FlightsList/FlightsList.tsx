@@ -12,7 +12,7 @@ import {
 import * as React from "react";
 import { NavLink, Route } from "react-router-dom";
 import { RouteComponentProps } from "react-router";
-import { fetchFlights } from "../actions";
+import { fetchFlightDays } from "../actions";
 import { FlightsState } from "../reducer";
 import { connect } from "react-redux";
 import { RootState } from "../../../app";
@@ -100,7 +100,7 @@ class FlightsList extends React.Component<AllProps> {
   }
 
   public async componentWillMount() {
-    this.props.fetchFlights();
+    this.props.fetchFlightDays();
   }
 }
 
@@ -110,7 +110,7 @@ const mapStateToProps = (state: RootState) => ({
 });
 
 const mapDispatchToProps = {
-  fetchFlights: fetchFlights.request
+  fetchFlightDays: fetchFlightDays.request
 };
 
 export default connect<any, any>(

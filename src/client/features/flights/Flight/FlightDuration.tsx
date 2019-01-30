@@ -9,7 +9,7 @@ const css = require("./Flight.css");
 
 interface FlightDurationProps {
   flight: Flight;
-  save: (object) => {};
+  save: (id, object) => {};
 }
 
 interface LocalState {
@@ -59,7 +59,7 @@ export class FlightDuration extends React.Component<
   storeFlightDuration = event => {
     const seconds = parseDurationIntoSeconds(event.target.value);
     if (seconds) {
-      this.props.save({
+      this.props.save(this.props.flight.id, {
         [event.target.name]: seconds
       });
     }
