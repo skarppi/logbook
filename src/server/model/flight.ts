@@ -6,6 +6,18 @@ import BatteryCycleRepository from "./batterycycle";
 import { VIDEO_FOLDER } from "../config";
 
 export default class FlightRepository {
+  static enrich(flight: Flight) {
+    return BatteryCycleRepository.listByFlight(flight.id).then(batteries => {
+      flight.batteries = batteries;
+
+      flight.videos = readdirSync(VIDEO_FOLDER).filter(file =>
+        file.startsWith(flight.id)
+      );
+
+      return flight;
+    });
+  }
+
   static list(): Promise<FlightDay[]> {
     return db.manyOrNone(
       "SELECT string_agg(distinct plane, ', ' ORDER BY plane) as planes, " +
@@ -33,17 +45,7 @@ export default class FlightRepository {
   static find(id: string): Promise<Flight> {
     return db
       .one("SELECT * FROM flights f " + " WHERE f.id = $1", id)
-      .then(flight =>
-        BatteryCycleRepository.listByFlight(id).then(batteries => {
-          flight.batteries = batteries;
-
-          flight.videos = readdirSync(VIDEO_FOLDER).filter(file =>
-            file.startsWith(id)
-          );
-
-          return flight;
-        })
-      );
+      .then(this.enrich);
   }
 
   static delete(id: string): Promise<Flight> {
@@ -52,21 +54,23 @@ export default class FlightRepository {
 
   static save(flight: Flight): Promise<Flight> {
     console.log(flight);
-    return db.one(
-      "INSERT INTO flights (id, plane, start_date, end_date,  duration, armed_time, flight_time, notes, segments) " +
-        "VALUES (${id}, ${plane}, ${startDate}, ${endDate}, ${duration}, ${armedTime}, ${flightTime}, ${notes:json}, ${segments:json}) " +
-        "ON CONFLICT (id) DO UPDATE SET " +
-        " plane = ${plane}," +
-        " start_date = ${startDate}," +
-        " end_date = ${endDate}," +
-        " duration = ${duration}," +
-        " armed_time = ${armedTime}," +
-        " flight_time = ${flightTime}," +
-        " notes = ${notes:json}," +
-        " segments = ${segments:json} " +
-        "RETURNING *",
-      flight
-    );
+    return db
+      .one(
+        "INSERT INTO flights (id, plane, start_date, end_date,  duration, armed_time, flight_time, notes, segments) " +
+          "VALUES (${id}, ${plane}, ${startDate}, ${endDate}, ${duration}, ${armedTime}, ${flightTime}, ${notes:json}, ${segments:json}) " +
+          "ON CONFLICT (id) DO UPDATE SET " +
+          " plane = ${plane}," +
+          " start_date = ${startDate}," +
+          " end_date = ${endDate}," +
+          " duration = ${duration}," +
+          " armed_time = ${armedTime}," +
+          " flight_time = ${flightTime}," +
+          " notes = ${notes:json}," +
+          " segments = ${segments:json} " +
+          "RETURNING *",
+        flight
+      )
+      .then(this.enrich);
   }
 
   toString(flight: Flight) {

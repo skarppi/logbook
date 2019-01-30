@@ -11,6 +11,7 @@ import {
 } from "@material-ui/core";
 import * as React from "react";
 import { NavLink, Route } from "react-router-dom";
+import { RouteComponentProps } from "react-router";
 import { fetchFlights } from "../actions";
 import { FlightsState } from "../reducer";
 import { connect } from "react-redux";
@@ -19,9 +20,20 @@ import { formatDuration } from "../../../../shared/utils/date";
 
 import FlightsOfTheDay from "./FlightsOfTheDay";
 
-class FlightsList extends React.Component<
-  FlightsState & typeof mapDispatchToProps
-> {
+import ClosedIcon from "@material-ui/icons/KeyboardArrowRight";
+import OpenedIcon from "@material-ui/icons/KeyboardArrowDown";
+
+const css = require("./FlightOfTheDay.css");
+
+interface RouteParams {
+  date: string;
+}
+
+type AllProps = FlightsState &
+  typeof mapDispatchToProps &
+  RouteComponentProps<RouteParams>;
+
+class FlightsList extends React.Component<AllProps> {
   public render() {
     const { flightDays, isLoadingFlightDays } = this.props;
 
@@ -30,10 +42,13 @@ class FlightsList extends React.Component<
     }
 
     const rows = flightDays.map(flightDay => {
+      const current = this.props.match.params.date === flightDay.date;
+
       const dayRow = (
         <TableRow key={String(flightDay.date)}>
           <TableCell>
             <NavLink to={`/flights/${flightDay.date}`}>
+              {(current && <OpenedIcon />) || <ClosedIcon />}
               {flightDay.date}
             </NavLink>
           </TableCell>
@@ -46,9 +61,9 @@ class FlightsList extends React.Component<
       const flightsRow = (
         <Route
           key={flightDay.date + "-route"}
-          path={"/flights/:date(" + flightDay.date + ")"}
+          path={"/flights/:date(" + flightDay.date + ")/:id?"}
           render={props => (
-            <TableRow key={flightDay.date + "-flights"}>
+            <TableRow key={flightDay.date + "-flights"} className={css.opened}>
               <TableCell colSpan={4}>
                 <FlightsOfTheDay {...props} />
               </TableCell>

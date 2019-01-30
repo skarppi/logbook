@@ -15,7 +15,7 @@ export const App = () => (
         <Header />
         <Switch>
           <Route exact path="/" component={Dashboard} />
-          <Route path="/flights" component={FlightsList} />
+          <Route path="/flights/:date?" component={FlightsList} />
           <Route path="/batteries" component={BatteriesList} />
           <Route path="/upload" component={FlightsUpload} />
         </Switch>

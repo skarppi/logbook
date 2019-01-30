@@ -7,9 +7,8 @@ import {
   Tooltip
 } from "@material-ui/core";
 import * as React from "react";
-import { RouteComponentProps } from "react-router";
 import { parseDurationIntoSeconds } from "../../../../shared/utils/date";
-import { Plane } from "../../../../shared/flights/types";
+import { Plane, Flight } from "../../../../shared/flights/types";
 import { FlightsState } from "../reducer";
 import { RootState } from "../../../app";
 import {
@@ -30,14 +29,14 @@ const css = require("./Flight.css");
 import DeleteIcon from "@material-ui/icons/Delete";
 import RefreshIcon from "@material-ui/icons/Refresh";
 
-export interface RouteParams {
-  date: string;
+export interface FlightDetailsProps {
   id: string;
+  flightsOfTheDay: Flight[];
+  flight: Flight;
+  isLoadingFlight: boolean;
 }
 
-type AllProps = FlightsState &
-  typeof mapDispatchToProps &
-  RouteComponentProps<RouteParams>;
+type AllProps = FlightDetailsProps & typeof mapDispatchToProps;
 
 export const planes: { [key: string]: Plane } = {
   Reverb: {
@@ -72,14 +71,14 @@ export const planes: { [key: string]: Plane } = {
 
 export class FlightDetails extends React.Component<AllProps> {
   public render() {
-    const { flight, batteries } = this.props;
+    const { flight } = this.props;
 
     if (!flight) {
       return <div>Loading...</div>;
     }
 
     return (
-      <Card>
+      <Card className={css.card}>
         <CardHeader
           title={`Flight: ${flight.id}`}
           action={
@@ -145,7 +144,7 @@ export class FlightDetails extends React.Component<AllProps> {
 
           {flight.videos &&
             flight.videos.map(video => (
-              <Player key={video} src={"http://localhost:3000/videos/" + video}>
+              <Player key={video} src={"/videos/" + video}>
                 <ControlBar autoHide={true} />
                 <BigPlayButton position="center" />
               </Player>
@@ -156,15 +155,13 @@ export class FlightDetails extends React.Component<AllProps> {
   }
 
   public async componentWillMount() {
-    const flight = this.props.flightsPerDay.find(
-      f => f.id === this.props.match.params.id
-    );
+    const flight = this.props.flightsOfTheDay.find(f => f.id === this.props.id);
     this.props.fetchFlight(flight);
   }
 }
 
 const mapStateToProps = (state: RootState) => ({
-  flightsPerDay: state.flights.flightsOfTheDay,
+  flightsOfTheDay: state.flights.flightsOfTheDay,
   flight: state.flights.flight,
   isLoadingFlight: state.flights.isLoadingFlightDays
 });

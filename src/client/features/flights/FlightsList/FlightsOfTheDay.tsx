@@ -7,14 +7,21 @@ import {
   formatTime,
   formatDate
 } from "../../../../shared/utils/date";
+import classNames from "classnames";
 import { FlightsState } from "../reducer";
 import { RootState } from "../../../app";
 import { fetchFlightsPerDay } from "../actions";
 import { connect } from "react-redux";
 import FlightDetails from "../Flight/Flight";
 
+import ClosedIcon from "@material-ui/icons/ArrowRight";
+import OpenedIcon from "@material-ui/icons/ArrowDropDown";
+
+const css = require("./FlightOfTheDay.css");
+
 interface RouteParams {
   date: string;
+  id?: string;
 }
 
 type AllProps = FlightsState &
@@ -23,49 +30,40 @@ type AllProps = FlightsState &
 
 class FlightsOfTheDay extends React.Component<AllProps> {
   public render() {
-    const { flightsOfTheDay, date } = this.props;
+    const { flightsOfTheDay } = this.props;
+
+    const path = `/flights/${this.props.match.params.date}`;
 
     const rows = flightsOfTheDay.map((flight, index) => {
-      const flightRow = (
-        <TableRow key={flight.id}>
-          <TableCell>
-            <NavLink
-              to={`/flights/${formatDate(flight.startDate)}/${flight.id}`}
-            >
-              {formatTime(flight.startDate)}
-            </NavLink>
+      const current = this.props.match.params.id === flight.id;
+
+      const detailsRow = current && (
+        <TableRow key={flight.id + "-details"} className={css.opened}>
+          <TableCell colSpan={5}>
+            <FlightDetails id={flight.id} />
           </TableCell>
-          <TableCell>{flightsOfTheDay.length - index}</TableCell>
-          <TableCell>
-            {flight.plane} {flight.batteryIds && `(${flight.batteryIds})`}
-          </TableCell>
-          <TableCell>{formatDuration(flight.flightTime)}</TableCell>
-          {flight.status && <TableCell>{flight.status}</TableCell>}
         </TableRow>
       );
 
-      const detailsRow = (
-        <Route
-          exact
-          key={flight.id + "-route"}
-          path={
-            "/flights/:date(" +
-            this.props.match.params.date +
-            ")/:id(" +
-            flight.id +
-            ")"
-          }
-          render={props => (
-            <TableRow key={flight.id + "-details"}>
-              <TableCell colSpan={5}>
-                <FlightDetails {...props} />
-              </TableCell>
-            </TableRow>
-          )}
-        />
+      return (
+        <>
+          <TableRow key={flight.id}>
+            <TableCell>
+              <NavLink to={current ? path : `${path}/${flight.id}`}>
+                {(current && <OpenedIcon />) || <ClosedIcon />}
+                {formatTime(flight.startDate)}
+              </NavLink>
+            </TableCell>
+            <TableCell>{flightsOfTheDay.length - index}</TableCell>
+            <TableCell>
+              {flight.plane} {flight.batteryIds && `(${flight.batteryIds})`}
+            </TableCell>
+            <TableCell>{formatDuration(flight.flightTime)}</TableCell>
+            {flight.status && <TableCell>{flight.status}</TableCell>}
+          </TableRow>
+          {detailsRow}
+        </>
       );
-
-      return [flightRow, detailsRow];
     });
 
     return (
