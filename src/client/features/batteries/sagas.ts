@@ -37,7 +37,13 @@ function* handleInsertBatteryCycle(action) {
     // refresh list
     yield put(actions.fetchBatteries.request());
   }
+  updateFlight(action.payload);
   return inserted;
+}
+
+function* updateFlight(cycle: BatteryCycle) {
+  let flight = yield select(getFlight, cycle.flightId);
+  yield put(fetchFlight.request(flight));
 }
 
 function* handleUpdateBatteryCycle(action) {
@@ -48,19 +54,19 @@ function* handleUpdateBatteryCycle(action) {
     action.payload
   );
 
-  // update current flight
-  let flight = yield select(getFlight, action.payload.flightId);
-  yield put(fetchFlight.request(flight));
+  updateFlight(action.payload);
 
   return updated;
 }
 
 function* handleDeleteBatteryCycle(action) {
-  return yield handleCall(
+  const deleted = yield handleCall(
     actions.deleteBatteryCycle,
     pathForBatteryCycles(action.payload),
     deleteApi
   );
+  updateFlight(action.payload);
+  return deleted;
 }
 
 function* watchFetchBatteriesRequest() {
