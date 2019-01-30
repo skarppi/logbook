@@ -28,6 +28,9 @@ import {
   formatDateTime
 } from "../../../../shared/utils/date";
 
+import ClosedIcon from "@material-ui/icons/ArrowRight";
+import OpenedIcon from "@material-ui/icons/ArrowDropDown";
+
 const css = require("./FlightsUpload.css");
 
 interface LocalState {
@@ -37,7 +40,7 @@ interface LocalState {
 }
 
 export interface RouteParams {
-  id: string;
+  id?: string;
 }
 
 type AllProps = FlightsState &
@@ -89,13 +92,24 @@ class FlightsUpload extends React.Component<AllProps, LocalState> {
   public render() {
     const { uploadedFlights } = this.state;
 
+    const path = `/upload/`;
+
     const rows = uploadedFlights.map((flight, index) => {
-      const flightRow = (
+      const current = this.props.match.params.id === flight.id;
+
+      const detailsRow = current && (
+        <TableRow key={flight.id + "-details"}>
+          <TableCell colSpan={5}>
+            <FlightDetails id={flight.id} />
+          </TableCell>
+        </TableRow>
+      );
+
+      return [
         <TableRow key={flight.id}>
           <TableCell>
-            <NavLink
-              to={`/upload/${formatDate(flight.startDate)}/${flight.id}`}
-            >
+            <NavLink to={current ? path : `${path}${flight.id}`}>
+              {(current && <OpenedIcon />) || <ClosedIcon />}
               {formatDateTime(flight.startDate)}
             </NavLink>
           </TableCell>
@@ -103,31 +117,9 @@ class FlightsUpload extends React.Component<AllProps, LocalState> {
           <TableCell>{flight.plane}</TableCell>
           <TableCell>{formatDuration(flight.flightTime)}</TableCell>
           <TableCell>{flight.notes && flight.notes.journal}</TableCell>
-        </TableRow>
-      );
-
-      const detailsRow = (
-        <Route
-          exact
-          key={flight.id + "-route"}
-          path={
-            "/upload/:date(" +
-            formatDate(flight.startDate) +
-            ")/:id(" +
-            flight.id +
-            ")"
-          }
-          render={props => (
-            <TableRow key={flight.id + "-details"}>
-              <TableCell colSpan={5}>
-                <FlightDetails {...props} />
-              </TableCell>
-            </TableRow>
-          )}
-        />
-      );
-
-      return [flightRow, detailsRow];
+        </TableRow>,
+        detailsRow
+      ];
     });
 
     return (

@@ -17,7 +17,7 @@ export const App = () => (
           <Route exact path="/" component={Dashboard} />
           <Route path="/flights/:date?" component={FlightsList} />
           <Route path="/batteries" component={BatteriesList} />
-          <Route path="/upload" component={FlightsUpload} />
+          <Route path="/upload/:id?" component={FlightsUpload} />
         </Switch>
       </Grid>
     </div>
