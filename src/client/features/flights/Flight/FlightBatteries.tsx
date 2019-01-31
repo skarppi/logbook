@@ -30,14 +30,22 @@ type AllProps = BatteryProps & typeof mapDispatchToProps;
 class FlightBatteries extends React.Component<AllProps> {
   addBattery = _ => {
     const { flight } = this.props;
+
+    const lastSegment = flight.segments.slice(-1)[0];
+    const lastTelemetry = lastSegment.rows.slice(-1)[0];
+
+    const usedBatteries = flight.batteries.map(b => b.batteryId);
+
     this.props.insertBatteryCycle({
       id: -1,
       date: flight.startDate,
-      batteryId: planes[flight.plane].batteries[0],
+      batteryId: planes[flight.plane].batteries.find(
+        id => usedBatteries.indexOf(id) === -1
+      ),
       flightId: flight.id,
       state: BatteryState.discharged,
-      voltage: null,
-      discharged: null,
+      voltage: lastTelemetry && lastTelemetry["VFAS(V)"],
+      discharged: lastTelemetry && lastTelemetry["Fuel(mAh)"],
       charged: null
     });
   };

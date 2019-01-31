@@ -13,7 +13,12 @@ import { Flight } from "../../../../shared/flights/types";
 import { BatteryCycle } from "../../../../shared/batteries/types";
 import { planes } from "./Flight";
 const css = require("./Flight.css");
+
+import FullChargeIcon from "@material-ui/icons/BatteryChargingFull";
+import StorageChargeIcon from "@material-ui/icons/BatteryCharging50";
+import EmptyChargeIcon from "@material-ui/icons/BatteryCharging20Rounded";
 import ClearIcon from "@material-ui/icons/Clear";
+import { BatteryState } from "../../../../shared/batteries";
 
 interface BatteryProps {
   flight: Flight;
@@ -51,16 +56,16 @@ export class FlightBattery extends React.Component<BatteryProps, LocalState> {
     } as any);
   };
 
-  storeBattery = event => {
+  storeBatteryState = state => {
     this.props.update({
       ...this.state.battery,
-      [event.target.name]: event.target.value
+      state: state
     });
   };
 
-  removeBattery = _ => {
-    this.props.delete(this.state.battery);
-  };
+  storeBattery = _ => this.props.update(this.state.battery);
+
+  removeBattery = _ => this.props.delete(this.state.battery);
 
   render() {
     const { flight } = this.props;
@@ -85,6 +90,21 @@ export class FlightBattery extends React.Component<BatteryProps, LocalState> {
           </Select>
         </FormControl>
         <TextField
+          id="discharged"
+          label="Fuel"
+          placeholder="Used"
+          className={css.textFieldNarrow}
+          value={battery.discharged || ""}
+          name={"discharged"}
+          type="number"
+          onChange={this.changeBattery}
+          onBlur={this.storeBattery}
+          InputProps={{
+            endAdornment: <InputAdornment position="end">mAh</InputAdornment>
+          }}
+          margin="normal"
+        />
+        <TextField
           id="resting"
           label="Resting"
           placeholder="Resting"
@@ -99,21 +119,57 @@ export class FlightBattery extends React.Component<BatteryProps, LocalState> {
           }}
           margin="normal"
         />
-        <TextField
-          id="charged"
-          label="Charged"
-          placeholder="Charged"
-          className={css.textFieldNarrow}
-          value={battery.charged || ""}
-          name={"charged"}
-          type="number"
-          onChange={this.changeBattery}
-          onBlur={this.storeBattery}
-          margin="normal"
-          InputProps={{
-            endAdornment: <InputAdornment position="end">mAh</InputAdornment>
-          }}
-        />
+
+        <IconButton
+          onClick={_ => this.storeBatteryState(BatteryState.discharged)}
+          color={
+            this.state.battery.state === BatteryState.discharged
+              ? "primary"
+              : "default"
+          }
+        >
+          <EmptyChargeIcon />
+        </IconButton>
+
+        <IconButton
+          onClick={_ => this.storeBatteryState(BatteryState.storage)}
+          color={
+            this.state.battery.state === BatteryState.storage
+              ? "primary"
+              : "default"
+          }
+        >
+          <StorageChargeIcon />
+        </IconButton>
+        <IconButton
+          onClick={_ => this.storeBatteryState(BatteryState.charged)}
+          color={
+            this.state.battery.state === BatteryState.charged
+              ? "primary"
+              : "default"
+          }
+        >
+          <FullChargeIcon />
+        </IconButton>
+
+        {this.state.battery.state === BatteryState.charged && (
+          <TextField
+            id="charged"
+            label="Charged"
+            placeholder="Charged"
+            className={css.textFieldNarrow}
+            value={battery.charged || ""}
+            name={"charged"}
+            type="number"
+            onChange={this.changeBattery}
+            onBlur={this.storeBattery}
+            margin="normal"
+            InputProps={{
+              endAdornment: <InputAdornment position="end">mAh</InputAdornment>
+            }}
+          />
+        )}
+
         <IconButton onClick={this.removeBattery}>
           <ClearIcon />
         </IconButton>
