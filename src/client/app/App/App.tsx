@@ -4,9 +4,9 @@ import { BrowserRouter, Route, Switch } from "react-router-dom";
 // Pages
 import { Header } from "../Header/Header";
 import Dashboard from "../../features/dashboard/Home/Home";
-import FlightsList from "../../features/flights/FlightsList/FlightsList";
+import FlightDays from "../../features/flights/Days/FlightDays";
 import BatteriesList from "../../features/batteries/BatteriesList/Batteries";
-import FlightsUpload from "../../features/flights/FlightsList/FlightsUpload";
+import FlightsUpload from "../../features/flights/Upload/FlightsUpload";
 
 export const App = () => (
   <BrowserRouter>
@@ -15,7 +15,7 @@ export const App = () => (
         <Header />
         <Switch>
           <Route exact path="/" component={Dashboard} />
-          <Route path="/flights/:date?" component={FlightsList} />
+          <Route path="/flights/:date?" component={FlightDays} />
           <Route path="/batteries" component={BatteriesList} />
           <Route path="/upload/:id?" component={FlightsUpload} />
         </Switch>

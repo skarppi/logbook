@@ -12,7 +12,7 @@ import FlightDetails from "../Flight/Flight";
 import ClosedIcon from "@material-ui/icons/ArrowRight";
 import OpenedIcon from "@material-ui/icons/ArrowDropDown";
 
-const css = require("./FlightOfTheDay.css");
+const css = require("./Flights.css");
 
 interface RouteParams {
   date: string;
@@ -23,7 +23,7 @@ type AllProps = FlightsState &
   typeof mapDispatchToProps &
   RouteComponentProps<RouteParams>;
 
-class FlightsOfTheDay extends React.Component<AllProps> {
+class Flights extends React.Component<AllProps> {
   public render() {
     const { flights, flightIds } = this.props;
 
@@ -85,4 +85,4 @@ const mapDispatchToProps = {
 export default connect<any, any>(
   mapStateToProps,
   mapDispatchToProps
-)(FlightsOfTheDay);
+)(Flights);

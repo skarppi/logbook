@@ -18,12 +18,12 @@ import { connect } from "react-redux";
 import { RootState } from "../../../app";
 import { formatDuration } from "../../../../shared/utils/date";
 
-import FlightsOfTheDay from "./FlightsOfTheDay";
+import Flights from "../Flights/Flights";
 
 import ClosedIcon from "@material-ui/icons/KeyboardArrowRight";
 import OpenedIcon from "@material-ui/icons/KeyboardArrowDown";
 
-const css = require("./FlightOfTheDay.css");
+const css = require("./FlightDays.css");
 
 interface RouteParams {
   date: string;
@@ -33,7 +33,7 @@ type AllProps = FlightsState &
   typeof mapDispatchToProps &
   RouteComponentProps<RouteParams>;
 
-class FlightsList extends React.Component<AllProps> {
+class FlightDays extends React.Component<AllProps> {
   public render() {
     const { flightDays, isLoadingFlightDays } = this.props;
 
@@ -65,7 +65,7 @@ class FlightsList extends React.Component<AllProps> {
           render={props => (
             <TableRow key={flightDay.date + "-flights"} className={css.opened}>
               <TableCell colSpan={4}>
-                <FlightsOfTheDay {...props} />
+                <Flights {...props} />
               </TableCell>
             </TableRow>
           )}
@@ -116,4 +116,4 @@ const mapDispatchToProps = {
 export default connect<any, any>(
   mapStateToProps,
   mapDispatchToProps
-)(FlightsList);
+)(FlightDays);

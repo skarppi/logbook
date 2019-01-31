@@ -27,7 +27,7 @@ I use two-stage arming. Switch SA is a safety switch and also turns on the loggi
 
 After flying is done, connect your transmitter to a computer and drag&drop latest csv files from SD card LOGS directory to Upload-tab of the service.
 
-For more information read [Working with Log Files](http://open-txu.org/home/special-interests/telemetry/working-with-log-files/)).
+For more information read [Working with Log Files](http://open-txu.org/home/special-interests/telemetry/working-with-log-files/).
 
 ### Quick Start
 
