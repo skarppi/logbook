@@ -13,6 +13,7 @@ export type FlightsState = Readonly<{
   flightIds: string[];
   isLoadingFlights: boolean;
   isLoadingFlight: boolean;
+  error?: string;
 }>;
 
 const initialState: FlightsState = {
@@ -21,7 +22,8 @@ const initialState: FlightsState = {
   flights: {},
   flightIds: [],
   isLoadingFlights: false,
-  isLoadingFlight: false
+  isLoadingFlight: false,
+  error: null
 };
 
 function applyDefaults(flight: Flight) {
@@ -138,9 +140,11 @@ export const flightsReducer = function reducer(
 
     case getType(actions.fetchFlight.request):
     case getType(actions.resetFlight.request):
+    case getType(actions.updateFlight.request):
     case getType(actions.deleteFlight.request): {
       return {
         ...state,
+        error: null,
         isLoadingFlight: true
       };
     }
@@ -170,6 +174,9 @@ export const flightsReducer = function reducer(
       };
     }
 
+    case getType(batteryActions.insertBatteryCycle.failure):
+    case getType(batteryActions.updateBatteryCycle.failure):
+    case getType(batteryActions.deleteBatteryCycle.failure):
     case getType(actions.fetchFlight.failure):
     case getType(actions.resetFlight.failure):
     case getType(actions.updateFlight.failure):
@@ -177,6 +184,7 @@ export const flightsReducer = function reducer(
       console.log(action.payload);
       return {
         ...state,
+        error: action.payload,
         isLoadingFlight: false
       };
     }

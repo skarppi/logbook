@@ -13,7 +13,8 @@ export function* handleCall(action, path, api = getApi, body?: any) {
     }
   } catch (err) {
     if (err instanceof Error) {
-      yield put(action.failure(err.stack!));
+      const msg = (err["response"] && err["response"]["data"]) || err.message;
+      yield put(action.failure(msg));
     } else {
       yield put(action.failure("An unknown error occured."));
     }

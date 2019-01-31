@@ -27,6 +27,7 @@ import { Player, ControlBar, BigPlayButton } from "video-react";
 const css = require("./Flight.css");
 import DeleteIcon from "@material-ui/icons/Delete";
 import RefreshIcon from "@material-ui/icons/Refresh";
+import WarningIcon from "@material-ui/icons/Warning";
 import { getFlight } from "../selectors";
 
 export interface OwnProps {
@@ -36,13 +37,14 @@ export interface OwnProps {
 export interface FlightDetailsProps {
   flight: Flight;
   isLoadingFlight: boolean;
+  error?: string;
 }
 
 type AllProps = FlightDetailsProps & typeof mapDispatchToProps;
 
 export const planes: { [key: string]: Plane } = {
   Reverb: {
-    batteries: ["tattu1", "tattu2", "tattu3", "tattu4"]
+    batteries: ["cnhl1", "cnhl2", "tattu1", "tattu2", "tattu3", "tattu4"]
   },
   TWR: {
     batteries: [
@@ -73,7 +75,7 @@ export const planes: { [key: string]: Plane } = {
 
 export class FlightDetails extends React.Component<AllProps> {
   public render() {
-    const { flight } = this.props;
+    const { flight, error } = this.props;
 
     if (!flight) {
       return <div>Loading...</div>;
@@ -85,6 +87,14 @@ export class FlightDetails extends React.Component<AllProps> {
           title={`Flight: ${flight.id}`}
           action={
             <>
+              {error && (
+                <Tooltip title={error}>
+                  <IconButton>
+                    <WarningIcon color="error" />
+                  </IconButton>
+                </Tooltip>
+              )}
+
               <Tooltip title="Reset flight">
                 <IconButton onClick={_ => this.props.resetFlight(flight)}>
                   <RefreshIcon />
@@ -169,7 +179,8 @@ export class FlightDetails extends React.Component<AllProps> {
 
 const mapStateToProps = (state: RootState, ownProps: OwnProps) => ({
   flight: getFlight(state, ownProps.id),
-  isLoadingFlight: state.flights.isLoadingFlightDays
+  isLoadingFlight: state.flights.isLoadingFlightDays,
+  error: state.flights.error
 });
 
 const mapDispatchToProps = {
