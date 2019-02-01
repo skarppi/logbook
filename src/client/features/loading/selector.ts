@@ -1,8 +1,19 @@
-export const isLoading = (state, actions) => {
-  if (!state.api) {
+import { RootState, RootAction } from "../../app";
+import { AsyncActionBuilder } from "typesafe-actions/dist/create-async-action";
+import { getType } from "typesafe-actions";
+
+const type = (action: AsyncActionBuilder<any, any, any, any, any, any>) => {
+  const t = getType(action.request) as string;
+  return t.substr(0, t.lastIndexOf("_"));
+};
+
+export const isLoading = (
+  state: RootState,
+  actions: AsyncActionBuilder<any, any, any, any, any, any>[]
+) => {
+  if (!state.loading) {
     return;
   }
-  // returns true only when all actions is not loading
-  return actions.find(action => state.api.loading[action]) !== undefined;
-  // return _(actions).some(action => _.get(state));
+
+  return actions.find(action => state.loading[type(action)]) !== undefined;
 };

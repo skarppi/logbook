@@ -14,7 +14,8 @@ import {
   fetchFlight,
   deleteFlight,
   resetFlight,
-  changeFlightFields
+  changeFlightFields,
+  updateFlight
 } from "../actions";
 import { connect } from "react-redux";
 
@@ -29,6 +30,12 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import RefreshIcon from "@material-ui/icons/Refresh";
 import WarningIcon from "@material-ui/icons/Warning";
 import { getFlight } from "../selectors";
+import Loading from "../../loading/Loading/Loading";
+import {
+  insertBatteryCycle,
+  updateBatteryCycle,
+  deleteBatteryCycle
+} from "../../batteries/actions";
 
 export interface OwnProps {
   id: string;
@@ -36,7 +43,6 @@ export interface OwnProps {
 
 export interface FlightDetailsProps {
   flight: Flight;
-  isLoadingFlight: boolean;
   error?: string;
 }
 
@@ -77,19 +83,27 @@ export class FlightDetails extends React.Component<AllProps> {
   public render() {
     const { flight, error } = this.props;
 
-    if (!flight) {
-      return <div>Loading...</div>;
-    }
-
     return (
       <Card className={css.card}>
         <CardHeader
           title={`Flight: ${flight.id}`}
           action={
             <>
+              <Loading
+                actions={[
+                  fetchFlight,
+                  updateFlight,
+                  deleteFlight,
+                  insertBatteryCycle,
+                  updateBatteryCycle,
+                  deleteBatteryCycle
+                ]}
+                overlay={false}
+              />
+
               {error && (
                 <Tooltip title={error}>
-                  <IconButton>
+                  <IconButton disabled>
                     <WarningIcon color="error" />
                   </IconButton>
                 </Tooltip>
@@ -137,9 +151,7 @@ export class FlightDetails extends React.Component<AllProps> {
               margin="normal"
             />
           </div>
-
           <FlightBatteries id={flight.id} />
-
           <div className={css.container}>
             <TextField
               id="jornal"
@@ -153,7 +165,6 @@ export class FlightDetails extends React.Component<AllProps> {
               margin="normal"
             />
           </div>
-
           {flight.videos &&
             flight.videos.map(video => (
               <Player key={video} src={"/videos/" + video}>
@@ -167,7 +178,6 @@ export class FlightDetails extends React.Component<AllProps> {
   }
 
   public async componentWillMount() {
-    // const flight = this.props.flights.find(f => f.id === this.props.id);
     this.props.fetchFlight(this.props.flight);
   }
 
@@ -179,7 +189,6 @@ export class FlightDetails extends React.Component<AllProps> {
 
 const mapStateToProps = (state: RootState, ownProps: OwnProps) => ({
   flight: getFlight(state, ownProps.id),
-  isLoadingFlight: state.flights.isLoadingFlightDays,
   error: state.flights.error
 });
 

@@ -3,7 +3,7 @@ import { Button, FormControl } from "@material-ui/core";
 import { Flight } from "../../../../shared/flights/types";
 import { FlightBattery } from "./FlightBattery";
 import AddIcon from "@material-ui/icons/Add";
-import { RootState } from "../../..//app";
+import { RootState } from "../../../app";
 import { connect } from "react-redux";
 import {
   insertBatteryCycle,

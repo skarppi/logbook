@@ -12,3 +12,8 @@ td a {
 td a:visited {
   text-decoration: none;
 }
+
+.loadingParent {
+  min-height: 40px;
+  position: relative;
+}

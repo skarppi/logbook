@@ -22,6 +22,7 @@ import Flights from "../Flights/Flights";
 
 import ClosedIcon from "@material-ui/icons/KeyboardArrowRight";
 import OpenedIcon from "@material-ui/icons/KeyboardArrowDown";
+import Loading from "../../loading/Loading/Loading";
 
 const css = require("./FlightDays.css");
 
@@ -35,11 +36,7 @@ type AllProps = FlightsState &
 
 class FlightDays extends React.Component<AllProps> {
   public render() {
-    const { flightDays, isLoadingFlightDays } = this.props;
-
-    if (isLoadingFlightDays) {
-      return <div>Loading...</div>;
-    }
+    const { flightDays } = this.props;
 
     const rows = flightDays.map(flightDay => {
       const current = this.props.match.params.date === flightDay.date;
@@ -80,7 +77,7 @@ class FlightDays extends React.Component<AllProps> {
         <Grid item xs={12}>
           <Card>
             <CardHeader title="Flights List" />
-            <CardContent>
+            <CardContent className={css.loadingParent}>
               <Table>
                 <TableHead>
                   <TableRow>
@@ -92,6 +89,7 @@ class FlightDays extends React.Component<AllProps> {
                 </TableHead>
                 <TableBody>{rows}</TableBody>
               </Table>
+              <Loading actions={[fetchFlightDays]} overlay={true} />
             </CardContent>
           </Card>
         </Grid>
@@ -105,8 +103,7 @@ class FlightDays extends React.Component<AllProps> {
 }
 
 const mapStateToProps = (state: RootState) => ({
-  flightDays: state.flights.flightDays,
-  isLoadingFlightDays: state.flights.isLoadingFlightDays
+  flightDays: state.flights.flightDays
 });
 
 const mapDispatchToProps = {

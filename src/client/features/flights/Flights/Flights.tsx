@@ -11,6 +11,7 @@ import FlightDetails from "../Flight/Flight";
 
 import ClosedIcon from "@material-ui/icons/ArrowRight";
 import OpenedIcon from "@material-ui/icons/ArrowDropDown";
+import Loading from "../../loading/Loading/Loading";
 
 const css = require("./Flights.css");
 
@@ -61,9 +62,12 @@ class Flights extends React.Component<AllProps> {
     });
 
     return (
-      <Table>
-        <TableBody>{rows}</TableBody>
-      </Table>
+      <div className={css.loadingParent}>
+        <Table>
+          <TableBody>{rows}</TableBody>
+        </Table>
+        <Loading actions={[fetchFlights]} overlay={true} />
+      </div>
     );
   }
 
@@ -74,8 +78,7 @@ class Flights extends React.Component<AllProps> {
 
 const mapStateToProps = (state: RootState) => ({
   flights: state.flights.flights,
-  flightIds: state.flights.flightIds,
-  isLoadingFlights: state.flights.isLoadingFlights
+  flightIds: state.flights.flightIds
 });
 
 const mapDispatchToProps = {

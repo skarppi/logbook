@@ -17,16 +17,16 @@ import { connect } from "react-redux";
 import { RootState } from "../../../app";
 import { formatDate, formatDateTime } from "../../../../shared/utils/date";
 import { Battery } from "../../../../shared/batteries/types";
-import { isLoading } from "../../loading/selector";
-import { Loading } from "../../loading/Loading/Loading";
+import Loading from "../../loading/Loading/Loading";
 
 import FullChargeIcon from "@material-ui/icons/BatteryChargingFull";
 import StorageChargeIcon from "@material-ui/icons/BatteryCharging50";
 import { BatteryState } from "../../../../shared/batteries";
 
+const css = require("./Batteries.css");
+
 interface BatteryProps {
   batteries: { [key: string]: Battery };
-  isLoadingBatteries: boolean;
 }
 
 class BatteriesList extends React.Component<
@@ -88,11 +88,7 @@ class BatteriesList extends React.Component<
   };
 
   public render() {
-    const { batteries, isLoadingBatteries } = this.props;
-
-    if (isLoadingBatteries) {
-      return <Loading spinning={isLoadingBatteries} />;
-    }
+    const { batteries } = this.props;
 
     const rows = Object.keys(batteries).map(id => {
       const battery = batteries[id];
@@ -116,7 +112,7 @@ class BatteriesList extends React.Component<
         <Grid item xs={12}>
           <Card>
             <CardHeader title="Batteries" />
-            <CardContent>
+            <CardContent className={css.loadingParent}>
               <Table>
                 <TableHead>
                   <TableRow>
@@ -129,6 +125,7 @@ class BatteriesList extends React.Component<
                 </TableHead>
                 <TableBody>{rows}</TableBody>
               </Table>
+              <Loading actions={[fetchBatteries]} overlay={true} />
             </CardContent>
           </Card>
         </Grid>
@@ -142,8 +139,7 @@ class BatteriesList extends React.Component<
 }
 
 const mapStateToProps = (state: RootState) => ({
-  batteries: state.batteries.batteries,
-  isLoadingBatteries: isLoading(state, ["FETCH_BATTERIES"])
+  batteries: state.batteries.batteries
 });
 
 const mapDispatchToProps = {
