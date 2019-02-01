@@ -6,6 +6,7 @@ import { batteriesReducer } from "../features/batteries/reducer";
 import { batteriesSaga } from "../features/batteries/sagas";
 import { dashboardReducer } from "../features/dashboard/reducer";
 import { dashboardSaga } from "../features/dashboard/sagas";
+import { loadingReducer } from "../features/loading/reducer";
 
 import * as FlightsAction from "../features/flights/actions";
 import * as BatteriesAction from "../features/batteries/actions";
@@ -15,7 +16,8 @@ import { all, fork } from "redux-saga/effects";
 export const rootReducer = combineReducers({
   flights: flightsReducer,
   batteries: batteriesReducer,
-  dashboard: dashboardReducer
+  dashboard: dashboardReducer,
+  loading: loadingReducer
 });
 
 // Here we use `redux-saga` to trigger actions asynchronously.

@@ -17,6 +17,8 @@ import { connect } from "react-redux";
 import { RootState } from "../../../app";
 import { formatDate, formatDateTime } from "../../../../shared/utils/date";
 import { Battery } from "../../../../shared/batteries/types";
+import { isLoading } from "../../loading/selector";
+import { Loading } from "../../loading/Loading/Loading";
 
 import FullChargeIcon from "@material-ui/icons/BatteryChargingFull";
 import StorageChargeIcon from "@material-ui/icons/BatteryCharging50";
@@ -89,7 +91,7 @@ class BatteriesList extends React.Component<
     const { batteries, isLoadingBatteries } = this.props;
 
     if (isLoadingBatteries) {
-      return <div>Loading...</div>;
+      return <Loading spinning={isLoadingBatteries} />;
     }
 
     const rows = Object.keys(batteries).map(id => {
@@ -141,7 +143,7 @@ class BatteriesList extends React.Component<
 
 const mapStateToProps = (state: RootState) => ({
   batteries: state.batteries.batteries,
-  isLoadingBatteries: state.batteries.isLoadingBatteries
+  isLoadingBatteries: isLoading(state, ["FETCH_BATTERIES"])
 });
 
 const mapDispatchToProps = {
