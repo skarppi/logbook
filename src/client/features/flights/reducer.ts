@@ -10,14 +10,12 @@ export type FlightsState = Readonly<{
   flightDays: FlightDay[];
   flights: { [key: string]: Flight };
   flightIds: string[];
-  error?: string;
 }>;
 
 const initialState: FlightsState = {
   flightDays: [],
   flights: {},
-  flightIds: [],
-  error: null
+  flightIds: []
 };
 
 function applyDefaults(flight: Flight) {
@@ -108,16 +106,6 @@ export const flightsReducer = function reducer(
       };
     }
 
-    case getType(actions.fetchFlight.request):
-    case getType(actions.resetFlight.request):
-    case getType(actions.updateFlight.request):
-    case getType(actions.deleteFlight.request): {
-      return {
-        ...state,
-        error: null
-      };
-    }
-
     case getType(actions.fetchFlight.success):
     case getType(actions.resetFlight.success):
     case getType(actions.updateFlight.success): {
@@ -138,20 +126,6 @@ export const flightsReducer = function reducer(
         ...state,
         flights: flights,
         flightIds: state.flightIds.filter(id => id !== action.payload.id)
-      };
-    }
-
-    case getType(batteryActions.insertBatteryCycle.failure):
-    case getType(batteryActions.updateBatteryCycle.failure):
-    case getType(batteryActions.deleteBatteryCycle.failure):
-    case getType(actions.fetchFlight.failure):
-    case getType(actions.resetFlight.failure):
-    case getType(actions.updateFlight.failure):
-    case getType(actions.deleteFlight.failure): {
-      console.log(action.payload);
-      return {
-        ...state,
-        error: action.payload
       };
     }
 

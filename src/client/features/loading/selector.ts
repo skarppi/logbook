@@ -1,19 +1,22 @@
-import { RootState, RootAction } from "../../app";
-import { AsyncActionBuilder } from "typesafe-actions/dist/create-async-action";
+import { RootState } from "../../app";
 import { getType } from "typesafe-actions";
-
-const type = (action: AsyncActionBuilder<any, any, any, any, any, any>) => {
-  const t = getType(action.request) as string;
-  return t.substr(0, t.lastIndexOf("_"));
-};
+import { ActionCreator } from "typesafe-actions/dist/types";
 
 export const isLoading = (
   state: RootState,
-  actions: AsyncActionBuilder<any, any, any, any, any, any>[]
-) => {
-  if (!state.loading) {
-    return;
-  }
+  actions: ActionCreator<any>[]
+): boolean => {
+  return actions.find(action => state.loading[getType(action)]) !== undefined;
+};
 
-  return actions.find(action => state.loading[type(action)]) !== undefined;
+export const getError = (
+  state: RootState,
+  actions: ActionCreator<any>[]
+): string => {
+  const action = actions.find(
+    action => state.loading[getType(action)] !== null
+  );
+  if (action) {
+    return state.loading[getType(action)];
+  }
 };

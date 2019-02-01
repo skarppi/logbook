@@ -14,6 +14,8 @@ export const loadingReducer = function reducer(state = {}, action: RootAction) {
     // Store whether a request is happening at the moment or not
     // e.g. will be true when receiving GET_TODOS_REQUEST
     //      and false when receiving GET_TODOS_SUCCESS / GET_TODOS_FAILURE
-    [requestName]: requestState === "REQUEST"
+    [`${requestName}_REQUEST`]: requestState === "REQUEST",
+    [`${requestName}_FAILURE`]:
+      requestState === "FAILURE" ? action["payload"] : null
   };
 };

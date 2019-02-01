@@ -28,7 +28,6 @@ import { Player, ControlBar, BigPlayButton } from "video-react";
 const css = require("./Flight.css");
 import DeleteIcon from "@material-ui/icons/Delete";
 import RefreshIcon from "@material-ui/icons/Refresh";
-import WarningIcon from "@material-ui/icons/Warning";
 import { getFlight } from "../selectors";
 import Loading from "../../loading/Loading/Loading";
 import {
@@ -43,7 +42,6 @@ export interface OwnProps {
 
 export interface FlightDetailsProps {
   flight: Flight;
-  error?: string;
 }
 
 type AllProps = FlightDetailsProps & typeof mapDispatchToProps;
@@ -81,7 +79,7 @@ export const planes: { [key: string]: Plane } = {
 
 export class FlightDetails extends React.Component<AllProps> {
   public render() {
-    const { flight, error } = this.props;
+    const { flight } = this.props;
 
     return (
       <Card className={css.card}>
@@ -93,6 +91,7 @@ export class FlightDetails extends React.Component<AllProps> {
                 actions={[
                   fetchFlight,
                   updateFlight,
+                  resetFlight,
                   deleteFlight,
                   insertBatteryCycle,
                   updateBatteryCycle,
@@ -100,14 +99,6 @@ export class FlightDetails extends React.Component<AllProps> {
                 ]}
                 overlay={false}
               />
-
-              {error && (
-                <Tooltip title={error}>
-                  <IconButton disabled>
-                    <WarningIcon color="error" />
-                  </IconButton>
-                </Tooltip>
-              )}
 
               <Tooltip title="Reset flight">
                 <IconButton onClick={_ => this.props.resetFlight(flight)}>
@@ -188,8 +179,7 @@ export class FlightDetails extends React.Component<AllProps> {
 }
 
 const mapStateToProps = (state: RootState, ownProps: OwnProps) => ({
-  flight: getFlight(state, ownProps.id),
-  error: state.flights.error
+  flight: getFlight(state, ownProps.id)
 });
 
 const mapDispatchToProps = {

@@ -12,8 +12,11 @@
   background: rgba(255, 255, 255, 0.5);
 }
 
-.container {
+.overlayError {
+  display: flex;
+  align-items: center;
 }
 
-.progress {
+.overlayError span {
+  margin-left: 10px;
 }
