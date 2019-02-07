@@ -7,9 +7,14 @@ import Dashboard from "../../features/dashboard/Home/Home";
 import FlightDays from "../../features/flights/Days/FlightDays";
 import BatteriesList from "../../features/batteries/BatteriesList/Batteries";
 import FlightsUpload from "../../features/flights/Upload/FlightsUpload";
+import { ConnectedRouter } from "connected-react-router";
 
-export const App = () => (
-  <BrowserRouter>
+interface AppProps {
+  history: History;
+}
+
+export const App = ({ history }: AppProps) => (
+  <ConnectedRouter history={history}>
     <div>
       <Grid container spacing={24}>
         <Header />
@@ -21,5 +26,5 @@ export const App = () => (
         </Switch>
       </Grid>
     </div>
-  </BrowserRouter>
+  </ConnectedRouter>
 );

@@ -13,12 +13,17 @@ import * as BatteriesAction from "../features/batteries/actions";
 import * as DashboardAction from "../features/dashboard/actions";
 import { all, fork } from "redux-saga/effects";
 
-export const rootReducer = combineReducers({
-  flights: flightsReducer,
-  batteries: batteriesReducer,
-  dashboard: dashboardReducer,
-  loading: loadingReducer
-});
+import { connectRouter, RouterAction } from "connected-react-router";
+import { rootReducer } from "./store";
+
+export const createRootReducer = (history: History) =>
+  combineReducers({
+    router: connectRouter(history),
+    flights: flightsReducer,
+    batteries: batteriesReducer,
+    dashboard: dashboardReducer,
+    loading: loadingReducer
+  });
 
 // Here we use `redux-saga` to trigger actions asynchronously.
 export function* rootSaga() {
