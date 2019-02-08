@@ -14,7 +14,7 @@ import { planes } from "./Flight";
 import { BatteryState } from "../../../../shared/batteries";
 import { BatteryCycle } from "../../../../shared/batteries/types";
 import { getFlight } from "../selectors";
-const css = require("./Flight.css");
+const css = require("../../../common/Form.css");
 
 export interface OwnProps {
   id: string;

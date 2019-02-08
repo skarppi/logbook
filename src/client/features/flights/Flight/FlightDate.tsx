@@ -2,7 +2,7 @@ import * as React from "react";
 import { TextField } from "@material-ui/core";
 import { formatTime, formatDate } from "../../../../shared/utils/date";
 import { Flight } from "../../../../shared/flights/types";
-const css = require("./Flight.css");
+const css = require("../../../common/Form.css");
 
 interface FlightDateProps {
   flight: Flight;

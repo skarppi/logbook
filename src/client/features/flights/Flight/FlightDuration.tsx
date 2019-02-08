@@ -5,7 +5,7 @@ import {
   parseDurationIntoSeconds
 } from "../../../../shared/utils/date";
 import { Flight } from "../../../../shared/flights/types";
-const css = require("./Flight.css");
+const css = require("../../../common/Form.css");
 
 interface FlightDurationProps {
   flight: Flight;

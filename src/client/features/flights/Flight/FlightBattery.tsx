@@ -12,7 +12,7 @@ import {
 import { Flight } from "../../../../shared/flights/types";
 import { BatteryCycle } from "../../../../shared/batteries/types";
 import { planes } from "./Flight";
-const css = require("./Flight.css");
+const css = require("../../../common/Form.css");
 
 import FullChargeIcon from "@material-ui/icons/BatteryChargingFull";
 import StorageChargeIcon from "@material-ui/icons/BatteryCharging50";

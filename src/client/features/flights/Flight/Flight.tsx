@@ -25,7 +25,7 @@ import FlightBatteries from "./FlightBatteries";
 
 import { Player, ControlBar, BigPlayButton } from "video-react";
 
-const css = require("./Flight.css");
+const css = require("../../../common/Form.css");
 import DeleteIcon from "@material-ui/icons/Delete";
 import RefreshIcon from "@material-ui/icons/Refresh";
 import { getFlight } from "../selectors";
@@ -77,7 +77,7 @@ export const planes: { [key: string]: Plane } = {
   }
 };
 
-export class FlightDetails extends React.Component<AllProps> {
+class FlightDetails extends React.Component<AllProps> {
   public render() {
     const { flight } = this.props;
 
