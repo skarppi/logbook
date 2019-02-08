@@ -6,9 +6,9 @@ export function batteriesRouter() {
   const router = Router();
 
   router.get("/", (req, res, next) => {
-    BatteryRepository.list()
-      .then(batteries => res.json(batteries))
-      .catch(next);
+      BatteryRepository.list()
+        .then(batteries => res.json(batteries))
+        .catch(next);
   });
 
   router.post("/cycles", (req, res, next) => {
@@ -34,6 +34,26 @@ export function batteriesRouter() {
   router.get("/:id", (req, res, next) => {
     BatteryRepository.get(req.params.id)
       .then(batteries => res.json(batteries))
+      .catch(next);
+  });
+
+  router.post("/", (req, res, next) => {
+    BatteryRepository.insert(req.body)
+      .then(battery => res.json(battery))
+      .catch(next);
+  });
+
+  router.put("/:id", (req, res, next) => {
+    const id = req.params.id;
+    BatteryRepository.update(id, req.body)
+      .then(battery => res.json(battery))
+      .catch(next);
+  });
+
+  router.delete("/:id", (req, res, next) => {
+    const id = req.params.id;
+    BatteryRepository.delete(id)
+      .then(_ => res.json({ id, status: "deleted" }))
       .catch(next);
   });
 

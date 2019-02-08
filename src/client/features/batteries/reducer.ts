@@ -7,13 +7,11 @@ import { BatteryCycle, Battery } from "../../../shared/batteries/types";
 export type BatteryCycleState = Readonly<{
   batteries: { [key: string]: Battery };
   cycles: { [key: string]: BatteryCycle };
-  isLoadingBatteries: boolean;
 }>;
 
 const initialState: BatteryCycleState = {
   batteries: {},
-  cycles: {},
-  isLoadingBatteries: false
+  cycles: {}
 };
 
 export const batteriesReducer = function reducer(
@@ -41,18 +39,27 @@ export const batteriesReducer = function reducer(
 
       return {
         ...state,
-        batteries: batteries,
-        isLoadingBatteries: false
+        batteries: batteries
       };
     }
 
-    case getType(actions.fetchBatteries.request):
-    case getType(actions.insertBatteryCycle.request):
-    case getType(actions.updateBatteryCycle.request):
-    case getType(actions.deleteBatteryCycle.request): {
+    case getType(actions.insertBattery.success):
+    case getType(actions.updateBattery.success): {
       return {
         ...state,
-        isLoadingBatteries: true
+        batteries: {
+          ...state.batteries,
+          [action.payload.id]: action.payload
+        }
+      };
+    }
+
+    case getType(actions.deleteBattery.success): {
+      const batteries = { ...state.batteries };
+      delete batteries[action.payload.id];
+      return {
+        ...state,
+        batteries: batteries
       };
     }
 
@@ -63,8 +70,7 @@ export const batteriesReducer = function reducer(
         cycles: {
           ...state.cycles,
           [action.payload.id]: action.payload
-        },
-        isLoadingBatteries: false
+        }
       };
     }
 
@@ -73,19 +79,7 @@ export const batteriesReducer = function reducer(
       delete cycles[action.payload.id];
       return {
         ...state,
-        cycles: cycles,
-        isLoadingBatteries: false
-      };
-    }
-
-    case getType(actions.fetchBatteries.failure):
-    case getType(actions.insertBatteryCycle.failure):
-    case getType(actions.updateBatteryCycle.failure):
-    case getType(actions.deleteBatteryCycle.failure): {
-      console.log(action.payload);
-      return {
-        ...state,
-        isLoadingBatteries: false
+        cycles: cycles
       };
     }
 

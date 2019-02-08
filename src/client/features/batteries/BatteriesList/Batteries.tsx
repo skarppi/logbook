@@ -19,6 +19,7 @@ import { RootState } from "../../../app";
 import { formatDate, formatDateTime } from "../../../../shared/utils/date";
 import { Battery } from "../../../../shared/batteries/types";
 import Loading from "../../loading/Loading/Loading";
+import BatteryDetails from "../Battery/Battery";
 
 import NewBatteryIcon from "@material-ui/icons/Add";
 import FullChargeIcon from "@material-ui/icons/BatteryChargingFull";
@@ -89,6 +90,22 @@ class BatteriesList extends React.Component<
     });
   };
 
+  details(id: number, path: string) {
+    return (
+      <Route
+        key={"new-route"}
+        path={"/batteries/:id(" + path + ")"}
+        render={_ => (
+          <TableRow key={id + "-battery"} className={css.opened}>
+            <TableCell colSpan={5}>
+              <BatteryDetails id={id} />
+            </TableCell>
+          </TableRow>
+        )}
+      />
+    );
+  }
+
   public render() {
     const { batteries } = this.props;
 
@@ -105,7 +122,8 @@ class BatteriesList extends React.Component<
           <TableCell>{battery.lastCycle && battery.lastCycle.state}</TableCell>
           <TableCell>{this.lastUsed(battery)}</TableCell>
           <TableCell>{this.batteryOps(battery)}</TableCell>
-        </TableRow>
+        </TableRow>,
+        this.details(battery.id, `${battery.id}`)
       ];
     });
 
@@ -136,7 +154,10 @@ class BatteriesList extends React.Component<
                     <TableCell>Actions</TableCell>
                   </TableRow>
                 </TableHead>
-                <TableBody>{rows}</TableBody>
+                <TableBody>
+                  {this.details(-1, "add")}
+                  {rows}
+                </TableBody>
               </Table>
               <Loading actions={[fetchBatteries]} overlay={true} />
             </CardContent>

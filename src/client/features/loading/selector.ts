@@ -13,9 +13,7 @@ export const getError = (
   state: RootState,
   actions: ActionCreator<any>[]
 ): string => {
-  const action = actions.find(
-    action => state.loading[getType(action)] !== null
-  );
+  const action = actions.find(action => state.loading[getType(action)]);
   if (action) {
     return state.loading[getType(action)];
   }

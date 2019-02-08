@@ -1,8 +1,15 @@
 import axios from "axios";
 
 import { call, put } from "redux-saga/effects";
+import { push } from "connected-react-router";
 
-export function* handleCall(action, path, api = getApi, body?: any) {
+export function* handleCall(
+  action,
+  path,
+  api = getApi,
+  body?: any,
+  navigate?: (any) => string
+) {
   try {
     const res = yield call(api, path, body);
 
@@ -10,6 +17,9 @@ export function* handleCall(action, path, api = getApi, body?: any) {
       yield put(action.failure(res.error));
     } else {
       yield put(action.success(res));
+      if (navigate) {
+        yield put(push(navigate(res)));
+      }
     }
   } catch (err) {
     if (err instanceof Error) {
