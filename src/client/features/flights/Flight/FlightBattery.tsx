@@ -76,8 +76,8 @@ export class FlightBattery extends React.Component<BatteryProps, LocalState> {
         <FormControl className={css.formControl} margin="normal">
           <InputLabel htmlFor="select-multiple-checkbox">Battery</InputLabel>
           <Select
-            value={battery.batteryId || ""}
-            name={"batteryId"}
+            value={battery.batteryName || ""}
+            name={"batteryName"}
             onChange={this.changeBattery}
             onBlur={this.storeBattery}
             input={<Input id="select-multiple-checkbox" />}

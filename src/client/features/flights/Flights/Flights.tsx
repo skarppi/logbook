@@ -52,7 +52,7 @@ class Flights extends React.Component<AllProps> {
           </TableCell>
           <TableCell>{flightIds.length - index}</TableCell>
           <TableCell>
-            {flight.plane} {flight.batteryIds && `(${flight.batteryIds})`}
+            {flight.plane} {flight.batteryNames && `(${flight.batteryNames})`}
           </TableCell>
           <TableCell>{formatDuration(flight.flightTime)}</TableCell>
           {flight.status && <TableCell>{flight.status}</TableCell>}

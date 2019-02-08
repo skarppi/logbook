@@ -1,5 +1,5 @@
-drop table if EXISTS Flights;
-create table Flights (
+DROP TABLE if EXISTS Flights;
+CREATE TABLE Flights (
   id VARCHAR(64) NOT NULL PRIMARY KEY,
   plane VARCHAR(10) NOT NULL,
   start_date TIMESTAMP WITH TIME ZONE NOT NULL,
@@ -17,37 +17,37 @@ CREATE INDEX flights_enddate_index ON Flights(end_date);
 CREATE INDEX flights_duration_index ON Flights(duration);
 CREATE INDEX flights_flighttime_index ON Flights(flight_time);
 
-drop table if EXISTS Batteries;
-create table Batteries (
-  id VARCHAR(64) NOT NULL PRIMARY KEY,
+DROP TABLE if EXISTS Batteries;
+CREATE TABLE Batteries (
+  id SERIAL NOT NULL PRIMARY KEY,
+  name VARCHAR(64) NOT NULL,
   purchase_date TIMESTAMP WITH TIME ZONE NOT NULL,
   type VARCHAR(64) NOT NULL,
   cells INTEGER NOT NULL,
-  capacity INTEGER NOT NULL
+  capacity INTEGER NOT NULL,
+  UNIQUE(name)
 );
 
 
-CREATE INDEX batteries_battery_index ON BatteryCycles(battery_id);
-CREATE INDEX batteries_date_index ON BatteryCycles(date);
-CREATE INDEX batteries_flight_index ON BatteryCycles(flight_id);
+CREATE INDEX batteries_battery_index ON Batteries(id);
 
-DROP TYPE BatteryState;
+DROP TYPE if EXISTS BatteryState;
 CREATE TYPE BatteryState AS ENUM ('discharged', 'storage', 'charged');
 
-drop table if EXISTS BatteryCycles;
-create table BatteryCycles (
+DROP TABLE if EXISTS BatteryCycles;
+CREATE TABLE BatteryCycles (
   id SERIAL NOT NULL PRIMARY KEY,
-  date TIMESTAMP WITH TIME ZONE NOT NULL,
-  battery_id VARCHAR(64) NOT NULL REFERENCES Batteries(id),
+  DATE TIMESTAMP WITH TIME ZONE NOT NULL,
+  battery_name VARCHAR(64) NOT NULL REFERENCES Batteries(name),
   state BatteryState NOT NULL,
   flight_id VARCHAR(64) REFERENCES Flights(id),
   voltage DECIMAL(5,3),
   discharged INTEGER,
   charged INTEGER,
-  UNIQUE (date, battery_id),
-  UNIQUE (battery_id, flight_id)
+  UNIQUE (date, battery_name),
+  UNIQUE (battery_name, flight_id)
 );
 
-CREATE INDEX batteries_battery_index ON BatteryCycles(battery_id);
-CREATE INDEX batteries_date_index ON BatteryCycles(date);
-CREATE INDEX batteries_flight_index ON BatteryCycles(flight_id);
+CREATE INDEX batterycycles_battery_index ON BatteryCycles(battery_name);
+CREATE INDEX battercycles_date_index ON BatteryCycles(date);
+CREATE INDEX battercycles_flight_index ON BatteryCycles(flight_id);

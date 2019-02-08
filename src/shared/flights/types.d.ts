@@ -11,7 +11,7 @@ export interface Flight {
   flightTime: number;
   segments: Segment[];
   batteries?: BatteryCycle[];
-  batteryIds?: string;
+  batteryNames?: string;
   notes?: FlightNotes;
   videos?: string[];
 }

@@ -1,7 +1,8 @@
 import { BatteryState } from "./index";
 
 export interface Battery {
-  id: string;
+  id: number;
+  name: string;
   purchaseDate: Date;
   type: string;
   cells: number;
@@ -12,7 +13,7 @@ export interface Battery {
 export interface BatteryCycle {
   id: number;
   date: Date;
-  batteryId: string;
+  batteryName: string;
   state: BatteryState;
   flightId?: string;
   voltage?: number;

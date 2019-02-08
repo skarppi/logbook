@@ -20,10 +20,10 @@ export default class BatteryRepository {
   static list(): Promise<Battery[]> {
     return db
       .manyOrNone(
-        "SELECT distinct on (b.id) b.*, c.id as cycle_id, c.state, c.date, c.flight_id " +
+        "SELECT distinct on (b.name) b.*, c.id as cycle_id, c.state, c.date, c.flight_id " +
           "FROM batteries b " +
-          "LEFT JOIN batterycycles c on c.battery_id = b.id " +
-          "ORDER BY b.id asc, c.date desc"
+          "LEFT JOIN batterycycles c on c.battery_name = b.name " +
+          "ORDER BY b.name asc, c.date desc"
       )
       .then(rows =>
         rows.map(row => {
@@ -39,9 +39,9 @@ export default class BatteryRepository {
       .manyOrNone(
         "SELECT b.*, c.id as cycle_id, c.state, c.date, c.flight_id " +
           "FROM batteries b " +
-          "LEFT JOIN batterycycles c on c.battery_id = b.id " +
-          "WHERE b.id = $1 " +
-          "ORDER BY b.id asc, c.date desc",
+          "LEFT JOIN batterycycles c on c.battery_name = b.name " +
+          "WHERE b.name = $1 " +
+          "ORDER BY b.name asc, c.date desc",
         id
       )
       .then(cycles => {
@@ -60,8 +60,8 @@ export default class BatteryRepository {
 
   static insert(battery: Battery): Promise<Battery> {
     return db.one(
-      "INSERT INTO batteries (id, purchase_date, type, cells, capacity) " +
-        "VALUES (${id}, ${purchaseDate}, ${type}, ${cells}, ${capacity}) " +
+      "INSERT INTO batteries (name, purchase_date, type, cells, capacity) " +
+        "VALUES (${name}, ${purchaseDate}, ${type}, ${cells}, ${capacity}) " +
         "RETURNING *",
       battery
     );
@@ -70,14 +70,14 @@ export default class BatteryRepository {
   static update(id: number, battery: Battery): Promise<Battery> {
     return db.one(
       "UPDATE batteries SET " +
-        " id = ${id}," +
+        " name = ${name}," +
         " purchase_date = ${purchaseDate}," +
         " type = ${type}," +
         " cells = ${cells}," +
-        " capacity = ${capacity}," +
+        " capacity = ${capacity} " +
         "WHERE id = ${id} " +
         "RETURNING *",
-      { ...battery, id }
+      { ...battery }
     );
   }
 }

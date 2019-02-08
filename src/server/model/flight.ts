@@ -9,7 +9,7 @@ export default class FlightRepository {
   static enrich(flight: Flight) {
     return BatteryCycleRepository.listByFlight(flight.id).then(batteries => {
       flight.batteries = batteries;
-      flight.batteryIds = batteries.map(b => b.batteryId).join(",");
+      flight.batteryNames = batteries.map(b => b.batteryName).join(",");
 
       flight.videos = readdirSync(VIDEO_FOLDER).filter(file =>
         file.startsWith(flight.id)
@@ -33,7 +33,7 @@ export default class FlightRepository {
   static listByDay(day: Date): Promise<Flight[]> {
     return db.manyOrNone(
       "SELECT f.id, f.plane, f.start_date, f.end_date, " +
-        " f.duration, f.armed_time, f.flight_time, string_agg(distinct c.battery_id, ', ' ORDER BY c.battery_id) as battery_ids " +
+        " f.duration, f.armed_time, f.flight_time, string_agg(distinct c.battery_name, ', ' ORDER BY c.battery_name) as battery_names " +
         "FROM flights f " +
         "LEFT JOIN batterycycles c on c.flight_id = f.id " +
         "WHERE f.start_date::date = $1" +

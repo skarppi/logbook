@@ -8,10 +8,11 @@ import {
   TableCell,
   TableHead,
   TableBody,
-  IconButton
+  IconButton,
+  Tooltip
 } from "@material-ui/core";
 import * as React from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, Route, Link } from "react-router-dom";
 import { fetchBatteries, insertBatteryCycle } from "../actions";
 import { connect } from "react-redux";
 import { RootState } from "../../../app";
@@ -19,6 +20,7 @@ import { formatDate, formatDateTime } from "../../../../shared/utils/date";
 import { Battery } from "../../../../shared/batteries/types";
 import Loading from "../../loading/Loading/Loading";
 
+import NewBatteryIcon from "@material-ui/icons/Add";
 import FullChargeIcon from "@material-ui/icons/BatteryChargingFull";
 import StorageChargeIcon from "@material-ui/icons/BatteryCharging50";
 import { BatteryState } from "../../../../shared/batteries";
@@ -61,12 +63,12 @@ class BatteriesList extends React.Component<
     return (
       <>
         <IconButton
-          onClick={_ => this.charge(battery.id, BatteryState.storage)}
+          onClick={_ => this.charge(battery.name, BatteryState.storage)}
         >
           <StorageChargeIcon />
         </IconButton>
         <IconButton
-          onClick={_ => this.charge(battery.id, BatteryState.charged)}
+          onClick={_ => this.charge(battery.name, BatteryState.charged)}
         >
           <FullChargeIcon />
         </IconButton>
@@ -74,11 +76,11 @@ class BatteriesList extends React.Component<
     );
   }
 
-  charge = (id, state) => {
+  charge = (name, state) => {
     this.props.insertBatteryCycle({
       id: -1,
       date: new Date(),
-      batteryId: id,
+      batteryName: name,
       flightId: null,
       state: state,
       voltage: null,
@@ -92,10 +94,10 @@ class BatteriesList extends React.Component<
 
     const rows = Object.keys(batteries).map(id => {
       const battery = batteries[id];
-      return (
+      return [
         <TableRow key={String(id)}>
           <TableCell>
-            <NavLink to={`/batteries/${id}`}>{id}</NavLink>
+            <NavLink to={`/batteries/${id}`}>{battery.name}</NavLink>
           </TableCell>
           <TableCell>
             {battery.type} {battery.cells}s {battery.capacity}mAh
@@ -104,14 +106,25 @@ class BatteriesList extends React.Component<
           <TableCell>{this.lastUsed(battery)}</TableCell>
           <TableCell>{this.batteryOps(battery)}</TableCell>
         </TableRow>
-      );
+      ];
     });
+
+    const AddLink = props => <Link to="/batteries/add" {...props} />;
 
     return (
       <>
         <Grid item xs={12}>
           <Card>
-            <CardHeader title="Batteries" />
+            <CardHeader
+              title="Batteries"
+              action={
+                <Tooltip title="Add new battery">
+                  <IconButton component={AddLink}>
+                    <NewBatteryIcon />
+                  </IconButton>
+                </Tooltip>
+              }
+            />
             <CardContent className={css.loadingParent}>
               <Table>
                 <TableHead>

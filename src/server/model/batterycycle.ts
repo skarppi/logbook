@@ -19,7 +19,7 @@ export default class BatteryCycleRepository {
       "SELECT * " +
         "FROM batterycycles " +
         "WHERE flight_id = $1" +
-        "ORDER BY battery_id desc",
+        "ORDER BY battery_name desc",
       flightId
     );
   }
@@ -30,8 +30,8 @@ export default class BatteryCycleRepository {
 
   static insert(battery: BatteryCycle): Promise<BatteryCycle> {
     return db.one(
-      "INSERT INTO batterycycles (date, battery_id, state, flight_id, voltage, discharged, charged) " +
-        "VALUES (${date}, ${batteryId}, ${state}, ${flightId}, ${voltage}, ${discharged}, ${charged}) " +
+      "INSERT INTO batterycycles (date, battery_name, state, flight_id, voltage, discharged, charged) " +
+        "VALUES (${date}, ${batteryName}, ${state}, ${flightId}, ${voltage}, ${discharged}, ${charged}) " +
         "RETURNING *",
       this.nullify(battery)
     );
@@ -41,7 +41,7 @@ export default class BatteryCycleRepository {
     return db.one(
       "UPDATE batterycycles SET " +
         " date = ${date}," +
-        " battery_id = ${batteryId}," +
+        " battery_name = ${batteryName}," +
         " state = ${state}," +
         " flight_id = ${flightId}," +
         " voltage = ${voltage}," +
