@@ -29,12 +29,14 @@ type AllProps = BatteryProps & typeof mapDispatchToProps;
 
 class FlightBatteries extends React.Component<AllProps> {
   addBattery = _ => {
-    const { flight } = this.props;
+    const { cycles, flight } = this.props;
 
     const lastSegment = flight.segments.slice(-1)[0];
     const lastTelemetry = lastSegment.rows.slice(-1)[0];
 
-    const usedBatteries = flight.batteries.map(b => b.batteryName);
+    const usedBatteries = Object.keys(cycles).map(
+      key => cycles[key].batteryName
+    );
 
     this.props.insertBatteryCycle({
       id: -1,
@@ -68,10 +70,12 @@ class FlightBatteries extends React.Component<AllProps> {
       <>
         {rows}
         <FormControl className={css.formControl} margin="normal">
-          <Button onClick={this.addBattery}>
-            Add battery
-            <AddIcon />
-          </Button>
+          {rows.length < planes[flight.plane].batterySlots && (
+            <Button onClick={this.addBattery}>
+              Add battery
+              <AddIcon />
+            </Button>
+          )}
         </FormControl>
       </>
     );

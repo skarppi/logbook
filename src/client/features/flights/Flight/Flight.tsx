@@ -48,9 +48,11 @@ type AllProps = FlightDetailsProps & typeof mapDispatchToProps;
 
 export const planes: { [key: string]: Plane } = {
   Reverb: {
+    batterySlots: 1,
     batteries: ["cnhl1", "cnhl2", "tattu1", "tattu2", "tattu3", "tattu4"]
   },
   TWR: {
+    batterySlots: 1,
     batteries: [
       "mylipo1",
       "mylipo2",
@@ -64,6 +66,7 @@ export const planes: { [key: string]: Plane } = {
     ]
   },
   MOB7: {
+    batterySlots: 2,
     batteries: [
       "mylipo1",
       "mylipo2",

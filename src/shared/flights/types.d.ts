@@ -32,6 +32,7 @@ export interface FlightDay {
 }
 
 export interface Plane {
+  batterySlots: number;
   batteries: string[];
 }
 
