@@ -12,11 +12,7 @@ export function parseFile(filename: string): Promise<Flight[]> {
   });
 }
 
-export function parseData(
-  id: string,
-  items: object[],
-  existingNotes?: FlightNotes
-): Promise<Flight[]> {
+export function parseData(id: string, items: object[]): Promise<Flight[]> {
   const parsed = items.reduce<FlightParser>(
     (state: FlightParser, item2, index) => {
       const item = new SegmentItem(item2);
@@ -32,16 +28,19 @@ export function parseData(
   );
 
   return Promise.all(
-    parsed.flights.map(flight => {
-      if (existingNotes) {
-        flight.notes = existingNotes;
-      }
-
-      return FlightRepository.save(flight).catch(err => {
-        throw new Error(
-          `Flight ${flight.id} starting ${flight.startDate} failed ${err}`
-        );
-      });
-    })
+    parsed.flights.map(flight =>
+      FlightRepository.find(flight.id).then(existing => {
+        if (existing) {
+          flight.notes = existing.notes;
+        }
+        return FlightRepository.save(flight).catch(err => {
+          throw new Error(
+            `Flight ${flight.id} starting ${flight.startDate} failed ${err}`
+          );
+        });
+      })
+    )
   );
 }
+
+function save(flight: Flight) {}

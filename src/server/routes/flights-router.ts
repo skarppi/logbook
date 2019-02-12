@@ -23,7 +23,13 @@ export function flightsRouter() {
   router.get("/:day/:id", (req, res, next) => {
     const id = req.params.id;
     FlightRepository.find(id)
-      .then(flight => res.json(flight))
+      .then(flight => {
+        if (flight) {
+          res.json(flight);
+        } else {
+          res.sendStatus(404);
+        }
+      })
       .catch(next);
   });
 
@@ -60,8 +66,7 @@ export function flightsRouter() {
           flight.segments.reduce(
             (res, segment) => [...res, ...segment.rows],
             []
-          ),
-          flight.notes
+          )
         )
       )
       .then(updated => res.json(updated[0]))

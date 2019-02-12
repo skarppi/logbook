@@ -7,6 +7,10 @@ import { VIDEO_FOLDER } from "../config";
 
 export default class FlightRepository {
   static enrich(flight: Flight) {
+    if (!flight) {
+      return;
+    }
+
     return BatteryCycleRepository.listByFlight(flight.id).then(batteries => {
       flight.batteries = batteries;
       flight.batteryNames = batteries.map(b => b.batteryName).join(",");
@@ -43,9 +47,9 @@ export default class FlightRepository {
     );
   }
 
-  static find(id: string): Promise<Flight> {
+  static find(id: string): Promise<Flight | null> {
     return db
-      .one("SELECT * FROM flights f " + " WHERE f.id = $1", id)
+      .oneOrNone("SELECT * FROM flights f " + " WHERE f.id = $1", id)
       .then(this.enrich);
   }
 
