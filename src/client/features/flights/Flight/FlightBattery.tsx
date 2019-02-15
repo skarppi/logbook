@@ -10,7 +10,7 @@ import {
   InputAdornment
 } from "@material-ui/core";
 import { Flight } from "../../../../shared/flights/types";
-import { BatteryCycle } from "../../../../shared/batteries/types";
+import { Battery, BatteryCycle } from "../../../../shared/batteries/types";
 import { planes } from "./Flight";
 const css = require("../../../common/Form.css");
 
@@ -22,61 +22,122 @@ import { BatteryState } from "../../../../shared/batteries";
 
 interface BatteryProps {
   flight: Flight;
-  battery: BatteryCycle;
+  cycle: BatteryCycle;
+  battery: Battery;
   update: (object) => {};
   delete: (object) => {};
 }
 
 interface LocalState {
-  battery: BatteryCycle;
+  cycle: BatteryCycle;
 }
 
 export class FlightBattery extends React.Component<BatteryProps, LocalState> {
   constructor(props) {
     super(props);
     this.state = {
-      battery: this.props.battery
+      cycle: this.props.cycle
     };
   }
 
   componentWillReceiveProps(nextProps) {
     if (this.props !== nextProps) {
       this.setState({
-        battery: nextProps.battery
+        cycle: nextProps.cycle
       });
     }
   }
 
   changeBattery = event => {
     this.setState({
-      battery: {
-        ...this.state.battery,
+      cycle: {
+        ...this.state.cycle,
         [event.target.name]: event.target.value
+      }
+    } as any);
+  };
+
+  changeBatteryResistance = (index, value) => {
+    const { battery } = this.props;
+
+    console.log("RESI " + index + " to " + value);
+
+    const resistances =
+      (this.state.cycle.resistance && [...this.state.cycle.resistance]) ||
+      Array(battery.cells).fill("");
+
+    if (resistances.length < battery.cells) {
+      resistances.push(Array(battery.cells - resistances.length).fill(""));
+    }
+
+    resistances.splice(index, 1, value);
+
+    this.setState({
+      cycle: {
+        ...this.state.cycle,
+        resistance: resistances
       }
     } as any);
   };
 
   storeBatteryState = state => {
     this.props.update({
-      ...this.state.battery,
+      ...this.state.cycle,
       state: state
     });
   };
 
-  storeBattery = _ => this.props.update(this.state.battery);
+  storeBattery = _ => this.props.update(this.state.cycle);
 
-  removeBattery = _ => this.props.delete(this.state.battery);
+  removeBattery = _ => this.props.delete(this.state.cycle);
 
-  render() {
-    const { flight } = this.props;
-    const { battery } = this.state;
+  renderResistance(index: number) {
+    const { cycle } = this.state;
 
     return (
-      <div key={battery.id} className={css.container}>
+      <TextField
+        key={`resistance-${index}`}
+        label={`Cell ${index + 1}`}
+        placeholder={`Cell ${index + 1}`}
+        className={`${css.textField} ${css.tiny}`}
+        value={
+          (cycle.resistance &&
+            cycle.resistance.length >= index &&
+            cycle.resistance[index]) ||
+          ""
+        }
+        name={"resistance"}
+        type="number"
+        onChange={e => this.changeBatteryResistance(index, e.target.value)}
+        onBlur={this.storeBattery}
+        margin="normal"
+        InputProps={{
+          endAdornment: <InputAdornment position="end">Ω</InputAdornment>
+        }}
+      />
+    );
+  }
+
+  render() {
+    const { flight, battery } = this.props;
+    const { cycle } = this.state;
+
+    if (!battery) {
+      return <></>;
+    }
+
+    const resistances = Array(battery.cells)
+      .fill("")
+      .map((_, index) => {
+        return this.renderResistance(index);
+      });
+
+    return (
+      <div key={cycle.id} className={css.container}>
         <FormControl className={css.formControl} margin="normal">
           <InputLabel htmlFor="select-multiple-checkbox">Battery</InputLabel>
           <Select
-            value={battery.batteryName || ""}
+            value={cycle.batteryName || ""}
             name={"batteryName"}
             onChange={this.changeBattery}
             onBlur={this.storeBattery}
@@ -91,10 +152,10 @@ export class FlightBattery extends React.Component<BatteryProps, LocalState> {
         </FormControl>
         <TextField
           id="discharged"
-            label="Used"
+          label="Used"
           placeholder="Used"
-            className={`${css.textField} ${css.narrow}`}
-          value={battery.discharged || ""}
+          className={`${css.textField} ${css.narrow}`}
+          value={cycle.discharged || ""}
           name={"discharged"}
           type="number"
           onChange={this.changeBattery}
@@ -108,8 +169,8 @@ export class FlightBattery extends React.Component<BatteryProps, LocalState> {
           id="resting"
           label="Resting"
           placeholder="Resting"
-            className={`${css.textField} ${css.narrow}`}
-          value={battery.voltage || ""}
+          className={`${css.textField} ${css.narrow}`}
+          value={cycle.voltage || ""}
           name={"voltage"}
           type="number"
           onChange={this.changeBattery}
@@ -123,7 +184,7 @@ export class FlightBattery extends React.Component<BatteryProps, LocalState> {
         <IconButton
           onClick={_ => this.storeBatteryState(BatteryState.discharged)}
           color={
-            this.state.battery.state === BatteryState.discharged
+            this.state.cycle.state === BatteryState.discharged
               ? "primary"
               : "default"
           }
@@ -134,7 +195,7 @@ export class FlightBattery extends React.Component<BatteryProps, LocalState> {
         <IconButton
           onClick={_ => this.storeBatteryState(BatteryState.storage)}
           color={
-            this.state.battery.state === BatteryState.storage
+            this.state.cycle.state === BatteryState.storage
               ? "primary"
               : "default"
           }
@@ -144,7 +205,7 @@ export class FlightBattery extends React.Component<BatteryProps, LocalState> {
         <IconButton
           onClick={_ => this.storeBatteryState(BatteryState.charged)}
           color={
-            this.state.battery.state === BatteryState.charged
+            this.state.cycle.state === BatteryState.charged
               ? "primary"
               : "default"
           }
@@ -152,24 +213,28 @@ export class FlightBattery extends React.Component<BatteryProps, LocalState> {
           <FullChargeIcon />
         </IconButton>
 
-        {this.state.battery.state === BatteryState.charged && (
-          <TextField
-            id="charged"
-            label="Charged"
-            placeholder="Charged"
-                className={`${css.textField} ${css.narrow}`}
-            value={battery.charged || ""}
-            name={"charged"}
-            type="number"
-            onChange={this.changeBattery}
-            onBlur={this.storeBattery}
-            margin="normal"
-            InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">mAh</InputAdornment>
-                  )
-            }}
-          />
+        {this.state.cycle.state === BatteryState.charged && (
+          <>
+            <TextField
+              id="charged"
+              label="Charged"
+              placeholder="Charged"
+              className={`${css.textField} ${css.narrow}`}
+              value={cycle.charged || ""}
+              name={"charged"}
+              type="number"
+              onChange={this.changeBattery}
+              onBlur={this.storeBattery}
+              margin="normal"
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">mAh</InputAdornment>
+                )
+              }}
+            />
+
+            {resistances}
+          </>
         )}
 
         <IconButton onClick={this.removeBattery}>

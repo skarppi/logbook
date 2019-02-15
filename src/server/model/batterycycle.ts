@@ -6,8 +6,9 @@ export default class BatteryCycleRepository {
     const voltage = this.orNull(battery.voltage);
     const discharged = this.orNull(battery.discharged);
     const charged = this.orNull(battery.charged);
+    const resistance = this.orNull(battery.resistance);
 
-    return { ...battery, voltage, discharged, charged };
+    return { ...battery, voltage, discharged, charged, resistance };
   }
 
   static orNull(number: any) {
@@ -30,8 +31,8 @@ export default class BatteryCycleRepository {
 
   static insert(battery: BatteryCycle): Promise<BatteryCycle> {
     return db.one(
-      "INSERT INTO batterycycles (date, battery_name, state, flight_id, voltage, discharged, charged) " +
-        "VALUES (${date}, ${batteryName}, ${state}, ${flightId}, ${voltage}, ${discharged}, ${charged}) " +
+      "INSERT INTO batterycycles (date, battery_name, state, flight_id, voltage, discharged, charged, resistance) " +
+        "VALUES (${date}, ${batteryName}, ${state}, ${flightId}, ${voltage}, ${discharged}, ${charged}, ${resistance:json}) " +
         "RETURNING *",
       this.nullify(battery)
     );
@@ -46,7 +47,8 @@ export default class BatteryCycleRepository {
         " flight_id = ${flightId}," +
         " voltage = ${voltage}," +
         " discharged = ${discharged}," +
-        " charged = ${charged} " +
+        " charged = ${charged}," +
+        " resistance = ${resistance:json} " +
         "WHERE id = ${id} " +
         "RETURNING *",
       { ...this.nullify(battery), id }

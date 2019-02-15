@@ -19,4 +19,5 @@ export interface BatteryCycle {
   voltage?: number;
   discharged?: number;
   charged?: number;
+  resistance?: [number];
 }

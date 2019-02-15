@@ -6,13 +6,14 @@ import AddIcon from "@material-ui/icons/Add";
 import { RootState } from "../../../app";
 import { connect } from "react-redux";
 import {
+  fetchBatteries,
   insertBatteryCycle,
   deleteBatteryCycle,
   updateBatteryCycle
 } from "../../batteries/actions";
 import { planes } from "./Flight";
 import { BatteryState } from "../../../../shared/batteries";
-import { BatteryCycle } from "../../../../shared/batteries/types";
+import { Battery, BatteryCycle } from "../../../../shared/batteries/types";
 import { getFlight } from "../selectors";
 const css = require("../../../common/Form.css");
 
@@ -23,11 +24,16 @@ export interface OwnProps {
 interface BatteryProps {
   flight: Flight;
   cycles: { [key: string]: BatteryCycle };
+  batteries: { [key: string]: Battery };
 }
 
 type AllProps = BatteryProps & typeof mapDispatchToProps;
 
 class FlightBatteries extends React.Component<AllProps> {
+  public async componentWillMount() {
+    this.props.fetchBatteries();
+  }
+
   addBattery = _ => {
     const { cycles, flight } = this.props;
 
@@ -48,18 +54,29 @@ class FlightBatteries extends React.Component<AllProps> {
       state: BatteryState.discharged,
       voltage: lastTelemetry && lastTelemetry["VFAS(V)"],
       discharged: lastTelemetry && lastTelemetry["Fuel(mAh)"],
-      charged: null
+      charged: null,
+      resistance: null
     });
   };
 
+  batteryByName(name: string) {
+    const { batteries } = this.props;
+    const id = Object.keys(batteries).find(
+      batteryId => batteries[batteryId].name === name
+    );
+    return batteries[id];
+  }
+
   render() {
     const { cycles, flight } = this.props;
+
     const rows = Object.keys(cycles).map(id => {
       return (
         <FlightBattery
           key={id}
           flight={flight}
-          battery={cycles[id]}
+          cycle={cycles[id]}
+          battery={this.batteryByName(cycles[id].batteryName)}
           update={this.props.updateBatteryCycle}
           delete={this.props.deleteBatteryCycle}
         />
@@ -84,13 +101,15 @@ class FlightBatteries extends React.Component<AllProps> {
 
 const mapStateToProps = (state: RootState, ownProps: OwnProps) => ({
   flight: getFlight(state, ownProps.id),
-  cycles: state.batteries.cycles
+  cycles: state.batteries.cycles,
+  batteries: state.batteries.batteries
 });
 
 const mapDispatchToProps = {
   insertBatteryCycle: insertBatteryCycle.request,
   updateBatteryCycle: updateBatteryCycle.request,
-  deleteBatteryCycle: deleteBatteryCycle.request
+  deleteBatteryCycle: deleteBatteryCycle.request,
+  fetchBatteries: fetchBatteries.request
 };
 
 export default connect(

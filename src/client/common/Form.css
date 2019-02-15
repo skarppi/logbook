@@ -37,11 +37,16 @@
   width: 100%;
 }
 
+.container .textField.medium {
+  flex-grow: 1;
+}
+
 .container .textField.narrow {
   max-width: 80px;
   flex-grow: 1;
 }
 
-.container .textField.medium {
+.container .textField.tiny {
+  max-width: 50px;
   flex-grow: 1;
 }

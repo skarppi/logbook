@@ -44,6 +44,7 @@ CREATE TABLE BatteryCycles (
   voltage DECIMAL(5,3),
   discharged INTEGER,
   charged INTEGER,
+  resistance JSONB,
   UNIQUE (date, battery_name),
   UNIQUE (battery_name, flight_id)
 );
