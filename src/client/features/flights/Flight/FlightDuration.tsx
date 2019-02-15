@@ -69,19 +69,7 @@ export class FlightDuration extends React.Component<
     const { flight } = this.props;
     const { armedTime, flightTime, errors } = this.state;
     return (
-      <>
-        <TextField
-          required
-          InputProps={{
-            readOnly: true
-          }}
-          id="duration"
-          label="Duration"
-          className={css.textField}
-          value={formatDuration(flight.duration)}
-          margin="normal"
-        />
-
+      <div className={css.subContainer}>
         <TextField
           required
           error={errors.armedTime}
@@ -107,7 +95,7 @@ export class FlightDuration extends React.Component<
           onBlur={this.storeFlightDuration}
           margin="normal"
         />
-      </>
+      </div>
     );
   }
 }

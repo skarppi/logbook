@@ -63,7 +63,7 @@ class Flights extends React.Component<AllProps> {
 
     return (
       <div className={css.loadingParent}>
-        <Table>
+        <Table padding="none">
           <TableBody>{rows}</TableBody>
         </Table>
         <Loading actions={[fetchFlights]} overlay={true} />

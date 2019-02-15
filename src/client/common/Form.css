@@ -1,27 +1,47 @@
-.card {
-  margin: 1em 0 1em 0;
+@media (min-width: 600px) {
+  .card {
+    margin: 1em 0 1em 0;
+  }
 }
 
 .container {
   display: flex;
   flex-wrap: wrap;
+  justify-content: stretch;
+  flex-grow: 0;
 }
 
-.container .textField,
-.container .formControl {
-  margin-left: 10px;
-  margin-right: 10px;
-  width: 200px;
+.subContainer {
+  display: flex;
+  flex-grow: 1;
 }
 
-.container .textFieldWide {
-  margin-left: 10px;
-  margin-right: 10px;
+@media (max-width: 600px) {
+  .container .textField,
+  .container .formControl {
+    margin-left: 0px;
+    margin-right: 10px;
+    flex-grow: 1;
+  }
+}
+@media (min-width: 600px) {
+  .container .textField,
+  .container .formControl {
+    margin-left: 10px;
+    margin-right: 10px;
+    flex-grow: 5;
+  }
+}
+
+.container .textField.wide {
   width: 100%;
 }
 
-.container .textFieldNarrow {
-  margin-left: 10px;
-  margin-right: 10px;
-  width: 100px;
+.container .textField.narrow {
+  max-width: 80px;
+  flex-grow: 1;
+}
+
+.container .textField.medium {
+  flex-grow: 1;
 }

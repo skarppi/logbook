@@ -91,9 +91,9 @@ export class FlightBattery extends React.Component<BatteryProps, LocalState> {
         </FormControl>
         <TextField
           id="discharged"
-          label="Fuel"
+            label="Used"
           placeholder="Used"
-          className={css.textFieldNarrow}
+            className={`${css.textField} ${css.narrow}`}
           value={battery.discharged || ""}
           name={"discharged"}
           type="number"
@@ -108,7 +108,7 @@ export class FlightBattery extends React.Component<BatteryProps, LocalState> {
           id="resting"
           label="Resting"
           placeholder="Resting"
-          className={css.textFieldNarrow}
+            className={`${css.textField} ${css.narrow}`}
           value={battery.voltage || ""}
           name={"voltage"}
           type="number"
@@ -157,7 +157,7 @@ export class FlightBattery extends React.Component<BatteryProps, LocalState> {
             id="charged"
             label="Charged"
             placeholder="Charged"
-            className={css.textFieldNarrow}
+                className={`${css.textField} ${css.narrow}`}
             value={battery.charged || ""}
             name={"charged"}
             type="number"
@@ -165,7 +165,9 @@ export class FlightBattery extends React.Component<BatteryProps, LocalState> {
             onBlur={this.storeBattery}
             margin="normal"
             InputProps={{
-              endAdornment: <InputAdornment position="end">mAh</InputAdornment>
+                  endAdornment: (
+                    <InputAdornment position="end">mAh</InputAdornment>
+                  )
             }}
           />
         )}

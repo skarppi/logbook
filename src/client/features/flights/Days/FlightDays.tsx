@@ -74,11 +74,11 @@ class FlightDays extends React.Component<AllProps> {
 
     return (
       <>
-        <Grid item xs={12}>
+        <Grid item xs={12} className={css.grid}>
           <Card>
             <CardHeader title="Flights List" />
             <CardContent className={css.loadingParent}>
-              <Table>
+              <Table padding="none">
                 <TableHead>
                   <TableRow>
                     <TableCell>Date</TableCell>

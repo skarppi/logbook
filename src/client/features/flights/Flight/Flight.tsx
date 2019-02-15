@@ -4,10 +4,10 @@ import {
   CardHeader,
   IconButton,
   TextField,
-  Tooltip
+  Tooltip,
+  Divider
 } from "@material-ui/core";
 import * as React from "react";
-import { parseDurationIntoSeconds } from "../../../../shared/utils/date";
 import { Plane, Flight } from "../../../../shared/flights/types";
 import { RootState } from "../../../app";
 import {
@@ -121,7 +121,9 @@ class FlightDetails extends React.Component<AllProps> {
           <div className={css.container}>
             <FlightDate flight={flight} />
             <FlightDuration flight={flight} save={this.props.save} />
+          </div>
 
+          <div className={css.container}>
             <TextField
               id="osd"
               label="OSD"
@@ -145,14 +147,18 @@ class FlightDetails extends React.Component<AllProps> {
               margin="normal"
             />
           </div>
+
+          <Divider variant="middle" />
+
           <FlightBatteries id={flight.id} />
+
           <div className={css.container}>
             <TextField
               id="jornal"
               label="Journal"
               placeholder="Journal"
               multiline
-              className={css.textFieldWide}
+              className={`${css.textField} ${css.wide}`}
               value={(flight.notes && flight.notes.journal) || ""}
               name="journal"
               onChange={e => this.changeNotes(flight.id, e)}
