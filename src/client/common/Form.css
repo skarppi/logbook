@@ -50,3 +50,11 @@
   max-width: 50px;
   flex-grow: 1;
 }
+
+.container .last {
+  padding-right: 12px !important;
+}
+
+.container .zero {
+  padding-right: 0px !important;
+}
