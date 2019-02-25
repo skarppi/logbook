@@ -10,12 +10,14 @@ export type FlightsState = Readonly<{
   flightDays: FlightDay[];
   flights: { [key: string]: Flight };
   flightIds: string[];
+  locations: string[];
 }>;
 
 const initialState: FlightsState = {
   flightDays: [],
   flights: {},
-  flightIds: []
+  flightIds: [],
+  locations: []
 };
 
 function applyDefaults(flight: Flight) {
@@ -97,12 +99,19 @@ export const flightsReducer = function reducer(
       delete notes["chargeFuel"];
       delete notes["chargeVoltage"];
 
+      const locations = state.locations;
+      if (notes.location && locations.indexOf(notes.location) === -1) {
+        locations.push(notes.location);
+        locations.sort();
+      }
+
       return {
         ...state,
         flights: {
           ...state.flights,
           [id]: { ...flight, ...action.payload, notes: notes }
-        }
+        },
+        locations: locations
       };
     }
 
@@ -126,6 +135,13 @@ export const flightsReducer = function reducer(
         ...state,
         flights: flights,
         flightIds: state.flightIds.filter(id => id !== action.payload.id)
+      };
+    }
+
+    case getType(actions.fetchLocations.success): {
+      return {
+        ...state,
+        locations: action.payload
       };
     }
 

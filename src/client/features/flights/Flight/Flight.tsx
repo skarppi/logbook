@@ -22,6 +22,7 @@ import { connect } from "react-redux";
 import { FlightDate } from "./FlightDate";
 import { FlightDuration } from "./FlightDuration";
 import FlightBatteries from "./FlightBatteries";
+import { FlightLocation } from "./FlightLocation";
 
 import { Player, ControlBar, BigPlayButton } from "video-react";
 
@@ -42,6 +43,7 @@ export interface OwnProps {
 
 export interface FlightDetailsProps {
   flight: Flight;
+  locations: string[];
 }
 
 type AllProps = FlightDetailsProps & typeof mapDispatchToProps;
@@ -90,7 +92,7 @@ export const planes: { [key: string]: Plane } = {
 
 class FlightDetails extends React.Component<AllProps> {
   public render() {
-    const { flight } = this.props;
+    const { flight, locations } = this.props;
 
     return (
       <Card className={css.card}>
@@ -140,19 +142,14 @@ class FlightDetails extends React.Component<AllProps> {
               className={css.textField}
               value={(flight.notes && flight.notes.osd) || ""}
               name="osd"
-              onChange={e => this.changeNotes(flight.id, e)}
+              onChange={e => this.saveNotes(flight.id, e)}
               margin="normal"
             />
 
-            <TextField
-              id="location"
-              label="Location"
-              placeholder="Location"
-              className={css.textField}
-              value={(flight.notes && flight.notes.location) || ""}
-              name="location"
-              onChange={e => this.changeNotes(flight.id, e)}
-              margin="normal"
+            <FlightLocation
+              flight={flight}
+              locations={locations}
+              saveNotes={this.saveNotes}
             />
           </div>
 
@@ -169,7 +166,7 @@ class FlightDetails extends React.Component<AllProps> {
               className={`${css.textField} ${css.wide}`}
               value={(flight.notes && flight.notes.journal) || ""}
               name="journal"
-              onChange={e => this.changeNotes(flight.id, e)}
+              onChange={e => this.saveNotes(flight.id, e)}
               margin="normal"
             />
           </div>
@@ -189,14 +186,15 @@ class FlightDetails extends React.Component<AllProps> {
     this.props.fetchFlight(this.props.flight);
   }
 
-  changeNotes = (flightId, event) =>
+  saveNotes = (flightId, event) =>
     this.props.save(flightId, {
       notes: { [event.target.name]: event.target.value }
     });
 }
 
 const mapStateToProps = (state: RootState, ownProps: OwnProps) => ({
-  flight: getFlight(state, ownProps.id)
+  flight: getFlight(state, ownProps.id),
+  locations: state.flights.locations
 });
 
 const mapDispatchToProps = {

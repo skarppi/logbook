@@ -54,6 +54,10 @@ function* handledeleteFlight(action) {
   );
 }
 
+function* handleFetchLocations() {
+  return yield handleCall(actions.fetchLocations, "locations/");
+}
+
 function* watchFetchFlightDaysRequest() {
   yield takeEvery(actions.fetchFlightDays.request, handleFetchFlightDays);
 }
@@ -78,6 +82,10 @@ function* watchUpdateFlight() {
   yield takeLatest(actions.changeFlightFields, handleUpdateFlight);
 }
 
+function* watchFetchLocationsRequest() {
+  yield takeEvery(actions.fetchLocations.request, handleFetchLocations);
+}
+
 // We can also use `fork()` here to split our saga into multiple watchers.
 export function* flightsSaga() {
   yield all([
@@ -86,6 +94,7 @@ export function* flightsSaga() {
     fork(watchFetchFlightRequest),
     fork(watchResetFlightRequest),
     fork(watchUpdateFlight),
-    fork(watchDeleteFlightRequest)
+    fork(watchDeleteFlightRequest),
+    fork(watchFetchLocationsRequest)
   ]);
 }

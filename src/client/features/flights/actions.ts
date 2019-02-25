@@ -42,3 +42,9 @@ export const deleteFlight = createAsyncAction(
 export const changeFlightFields = createStandardAction("CHANGE_FLIGHT_FIELDS")<
   object
 >();
+
+export const fetchLocations = createAsyncAction(
+  "FETCH_FLIGHTLOCATIONS_REQUEST",
+  "FETCH_FLIGHTLOCATIONS_SUCCESS",
+  "FETCH_FLIGHTLOCATIONS_FAILURE"
+)<void, string[], string>();

@@ -37,7 +37,8 @@ export default class FlightRepository {
   static listByDay(day: Date): Promise<Flight[]> {
     return db.manyOrNone(
       "SELECT f.id, f.plane, f.start_date, f.end_date, " +
-        " f.duration, f.armed_time, f.flight_time, string_agg(distinct c.battery_name, ', ' ORDER BY c.battery_name) as battery_names " +
+        " f.duration, f.armed_time, f.flight_time, string_agg(distinct c.battery_name, ', ' ORDER BY c.battery_name) as battery_names, " +
+        " f.notes " +
         "FROM flights f " +
         "LEFT JOIN batterycycles c on c.flight_id = f.id " +
         "WHERE f.start_date::date = $1" +

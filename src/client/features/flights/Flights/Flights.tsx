@@ -47,7 +47,10 @@ class Flights extends React.Component<AllProps> {
           <TableCell>
             <NavLink to={current ? path : `${path}/${id}`}>
               {(current && <OpenedIcon />) || <ClosedIcon />}
-              {formatTime(flight.startDate)}
+              {formatTime(flight.startDate)}{" "}
+              {flight.notes &&
+                flight.notes.location &&
+                `(${flight.notes.location})`}
             </NavLink>
           </TableCell>
           <TableCell>{flightIds.length - index}</TableCell>
