@@ -1,0 +1,14 @@
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: auto;
+  width: 100%;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.7) 50%, transparent 100%);
+  z-index: 100;
+}
+
+.overlay h1 {
+  margin-left: 1em;
+  font-weight: 400;
+}

@@ -1,9 +1,7 @@
 import { formatDuration } from "../../shared/utils/date";
 import { FlightDay, Flight } from "../../shared/flights/types";
 import { db } from "../db";
-import { readdirSync } from "fs";
 import BatteryCycleRepository from "./batterycycle";
-import { VIDEO_FOLDER } from "../config";
 
 export default class FlightRepository {
   static enrich(flight: Flight) {
@@ -14,11 +12,6 @@ export default class FlightRepository {
     return BatteryCycleRepository.listByFlight(flight.id).then(batteries => {
       flight.batteries = batteries;
       flight.batteryNames = batteries.map(b => b.batteryName).join(",");
-
-      flight.videos = readdirSync(VIDEO_FOLDER).filter(file =>
-        file.startsWith(flight.id)
-      );
-
       return flight;
     });
   }
@@ -36,7 +29,7 @@ export default class FlightRepository {
 
   static listByDay(day: Date): Promise<Flight[]> {
     return db.manyOrNone(
-      "SELECT f.id, f.plane, f.start_date, f.end_date, " +
+      "SELECT f.id, f.plane, f.session, f.start_date, f.end_date, " +
         " f.duration, f.armed_time, f.flight_time, string_agg(distinct c.battery_name, ', ' ORDER BY c.battery_name) as battery_names, " +
         " f.notes " +
         "FROM flights f " +
@@ -62,10 +55,11 @@ export default class FlightRepository {
     console.log(flight);
     return db
       .one(
-        "INSERT INTO flights (id, plane, start_date, end_date,  duration, armed_time, flight_time, notes, segments) " +
-          "VALUES (${id}, ${plane}, ${startDate}, ${endDate}, ${duration}, ${armedTime}, ${flightTime}, ${notes:json}, ${segments:json}) " +
+        "INSERT INTO flights (id, plane, session, start_date, end_date,  duration, armed_time, flight_time, notes, segments) " +
+          "VALUES (${id}, ${plane}, ${session}, ${startDate}, ${endDate}, ${duration}, ${armedTime}, ${flightTime}, ${notes:json}, ${segments:json}) " +
           "ON CONFLICT (id) DO UPDATE SET " +
           " plane = ${plane}," +
+          " session = ${session}," +
           " start_date = ${startDate}," +
           " end_date = ${endDate}," +
           " duration = ${duration}," +

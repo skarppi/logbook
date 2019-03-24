@@ -49,6 +49,10 @@ yarn run dev
 - `yarn run build` - `dist` folder will include all the needed files, both client (Bundle) and server.
 - `yarn start` - Just runs `node ./dist/server/server.js`
 
+Upload DVR files from FatShark or similar googles to VIDEOS/ folder. Use flight ID as filename e.g. TWR-2018-10-09-Session1.mov or just TWR-2018-10-09.mov if the video is not specific to any single flight.
+
+Videos can also be stored in another server configured with VIDEO_SERVER env variable. See example PHP implementation at ```src/videoserver``` for Synology NAS running Web Station.
+
 ---
 
 #### Requirements

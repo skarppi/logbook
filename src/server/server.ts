@@ -17,7 +17,7 @@ app.use("/api/batteries", batteriesRouter());
 app.use("/api/dashboard", dashboardRouter());
 app.use("/api/flights", flightsRouter());
 app.use("/api/locations", locationsRouter());
-app.use("/videos", videosRouter());
+app.use("/api/videos", videosRouter());
 
 app.use(config.IS_PRODUCTION ? staticsRouter() : staticsDevRouter());
 

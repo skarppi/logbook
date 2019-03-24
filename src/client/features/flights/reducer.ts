@@ -1,9 +1,7 @@
 import { FlightDay, Flight } from "../../../shared/flights/types";
 import { getType } from "typesafe-actions";
 
-import * as batteryActions from "../batteries/actions";
 import * as actions from "./actions";
-import store from "../../app/store";
 import { RootAction } from "../../app";
 
 export type FlightsState = Readonly<{
@@ -11,13 +9,15 @@ export type FlightsState = Readonly<{
   flights: { [key: string]: Flight };
   flightIds: string[];
   locations: string[];
+  videos: string[];
 }>;
 
 const initialState: FlightsState = {
   flightDays: [],
   flights: {},
   flightIds: [],
-  locations: []
+  locations: [],
+  videos: []
 };
 
 function applyDefaults(flight: Flight) {
@@ -142,6 +142,13 @@ export const flightsReducer = function reducer(
       return {
         ...state,
         locations: action.payload
+      };
+    }
+
+    case getType(actions.fetchVideos.success): {
+      return {
+        ...state,
+        videos: action.payload
       };
     }
 

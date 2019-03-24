@@ -1,7 +1,12 @@
 import { all, fork, takeEvery, select, takeLatest } from "redux-saga/effects";
 import { delay } from "redux-saga";
 import * as actions from "./actions";
-import { handleCall, deleteApi, putApi } from "../../utils/api-facade";
+import {
+  handleCall,
+  deleteApi,
+  putApi,
+  getVideosApi
+} from "../../utils/api-facade";
 import { formatDate } from "../../../shared/utils/date";
 import { Flight } from "../../../shared/flights/types";
 import { getFlight } from "./selectors";
@@ -58,6 +63,15 @@ function* handleFetchLocations() {
   return yield handleCall(actions.fetchLocations, "locations/");
 }
 
+function* handleFetchVideos(action) {
+  return yield handleCall(
+    actions.fetchVideos,
+    "",
+    getVideosApi,
+    action.payload
+  );
+}
+
 function* watchFetchFlightDaysRequest() {
   yield takeEvery(actions.fetchFlightDays.request, handleFetchFlightDays);
 }
@@ -86,6 +100,10 @@ function* watchFetchLocationsRequest() {
   yield takeEvery(actions.fetchLocations.request, handleFetchLocations);
 }
 
+function* watchFetchVideosRequest() {
+  yield takeEvery(actions.fetchVideos.request, handleFetchVideos);
+}
+
 // We can also use `fork()` here to split our saga into multiple watchers.
 export function* flightsSaga() {
   yield all([
@@ -95,6 +113,7 @@ export function* flightsSaga() {
     fork(watchResetFlightRequest),
     fork(watchUpdateFlight),
     fork(watchDeleteFlightRequest),
-    fork(watchFetchLocationsRequest)
+    fork(watchFetchLocationsRequest),
+    fork(watchFetchVideosRequest)
   ]);
 }

@@ -35,7 +35,7 @@ export class FlightLocation extends React.Component<
 
   componentWillReceiveProps(nextProps) {
     this.setState({
-      location: nextProps.flight.notes.location
+      location: nextProps.flight.notes && nextProps.flight.notes.location
     });
   }
 

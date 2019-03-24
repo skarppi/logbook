@@ -4,6 +4,7 @@ import { BatteryCycle } from "../batteries/types";
 export interface Flight {
   id: string;
   plane: string;
+  session: number;
   startDate: Date;
   endDate: Date;
   duration: number;
@@ -13,7 +14,6 @@ export interface Flight {
   batteries?: BatteryCycle[];
   batteryNames?: string;
   notes?: FlightNotes;
-  videos?: string[];
 }
 
 export interface FlightNotes {

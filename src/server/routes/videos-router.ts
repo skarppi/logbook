@@ -1,9 +1,24 @@
 import { Router } from "express";
 import * as fs from "fs";
-import { VIDEO_FOLDER } from "../config";
+import { VIDEO_FOLDER, VIDEO_SERVER } from "../config";
+import { readdirSync } from "fs";
+
 
 export function videosRouter() {
   const router = Router();
+
+  router.get("/", function(req, res) {
+    if(VIDEO_SERVER) {
+      res.redirect(VIDEO_SERVER + "?" + require('url').parse(req.url).query)
+    } else {
+      const prefix = req.query.plane + "-" + req.query.date
+      const sessionPrefix = prefix + (req.query.session ? `-Session${req.query.session}` : '' )
+      const videos = readdirSync(VIDEO_FOLDER).filter(file =>
+        file.indexOf('-Session') === -1 ? file.startsWith(prefix) : file.startsWith(sessionPrefix)
+      );  
+      res.json(videos.map(v => `${req.protocol}://${req.get('Host')}${req.baseUrl}/${v}`));
+    }
+  })
 
   router.get("/:video", function(req, res) {
     const path = VIDEO_FOLDER + req.params.video;

@@ -2,6 +2,6 @@ dist
 .idea
 .vscode
 node_modules
-LOGS
-VIDEOS
-db
+/LOGS
+/VIDEOS
+/db

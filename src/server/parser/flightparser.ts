@@ -8,6 +8,7 @@ import { SegmentType } from "../../shared/flights";
 class FlightFromCsv implements Flight {
   id: string;
   plane: string;
+  session: number;
   startDate: Date;
   endDate: Date;
   duration: number;
@@ -16,9 +17,16 @@ class FlightFromCsv implements Flight {
   notes: FlightNotes = undefined;
   segments: Segment[];
 
-  constructor(id: string, plane: string, segments: Segment[]) {
-    this.id = id;
+  constructor(name: string, plane: string, session: number, segments: Segment[]) {
+
+    if (!name.includes("Session")) {
+      this.id = `${name}-Session${session}`;
+    } else {
+      this.id = name;
+    }
+    
     this.plane = plane;
+    this.session = session;
     this.segments = segments;
     this.startDate = segments[0].startDate;
     this.endDate = segments[segments.length - 1].endDate;
@@ -63,15 +71,6 @@ export default class FlightParser {
     this.currentSegment.appendItem(type, item);
   }
 
-  private generateId() {
-    this.sessionCounter++;
-    if (!this.name.includes("Session")) {
-      return `${this.name}-Session${this.sessionCounter}`;
-    }
-
-    return this.name;
-  }
-
   private get plane() {
     return this.name.split("-")[0];
   }
@@ -86,10 +85,10 @@ export default class FlightParser {
   endFlight() {
     this.endSegment();
 
-    const id = this.generateId();
+    this.sessionCounter++;
 
     if (this.currentSegments.length > 0) {
-      const flight = new FlightFromCsv(id, this.plane, this.currentSegments);
+      const flight = new FlightFromCsv(this.name, this.plane, this.sessionCounter, this.currentSegments);
 
       if (flight.flightTime === 0) {
         console.log(`Skipped empty flight ${flight}`);

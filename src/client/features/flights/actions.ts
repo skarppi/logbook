@@ -48,3 +48,9 @@ export const fetchLocations = createAsyncAction(
   "FETCH_FLIGHTLOCATIONS_SUCCESS",
   "FETCH_FLIGHTLOCATIONS_FAILURE"
 )<void, string[], string>();
+
+export const fetchVideos = createAsyncAction(
+  "FETCH_FLIGHTVIDEOS_REQUEST",
+  "FETCH_FLIGHTVIDEOS_SUCCESS",
+  "FETCH_FLIGHTVIDEOS_FAILURE"
+)<object, string[], string>();
