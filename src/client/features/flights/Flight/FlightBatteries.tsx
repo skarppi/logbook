@@ -44,6 +44,9 @@ class FlightBatteries extends React.Component<AllProps> {
       key => cycles[key].batteryName
     );
 
+    const voltage = lastTelemetry && lastTelemetry["VFAS(V)"]
+    const useCellVoltage = planes[flight.plane].batterySlots > 1 && voltage > 4.5
+
     this.props.insertBatteryCycle({
       id: -1,
       date: flight.startDate,
@@ -52,7 +55,7 @@ class FlightBatteries extends React.Component<AllProps> {
       ),
       flightId: flight.id,
       state: BatteryState.discharged,
-      voltage: lastTelemetry && lastTelemetry["VFAS(V)"],
+      voltage: useCellVoltage ? voltage / planes[flight.plane].batterySlots : voltage,
       discharged: lastTelemetry && lastTelemetry["Fuel(mAh)"],
       charged: null,
       resistance: null
