@@ -1,5 +1,6 @@
-import { IMain, IDatabase } from "pg-promise";
-import * as pgPromise from "pg-promise";
+import { IMain, IDatabase } from 'pg-promise';
+import * as pgPromise from 'pg-promise';
+import { DB_HOST } from './config';
 
 const pgOptions = {
   receive: data => {
@@ -23,4 +24,6 @@ const camelizeColumns = data => {
 
 const pgp: IMain = pgPromise(pgOptions);
 
-export const db: IDatabase<any> = pgp("postgres://localhost:5432/logbook");
+console.log(`postgres://${DB_HOST}:5432/logbook`);
+
+export const db: IDatabase<any> = pgp(`postgres://${DB_HOST}:5432/logbook`);
