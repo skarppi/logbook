@@ -13,7 +13,10 @@ const plugins = [
     favicon: "favicon.ico",
     filename: "index.html",
     template: "index.ejs",
-    publicUrl: process.env.PUBLIC_URL
+    publicUrl: config.PUBLIC_URL
+  }),
+  new webpack.DefinePlugin({
+    'process.env.PUBLIC_URL': JSON.stringify(config.PUBLIC_URL)
   })
 ];
 
@@ -28,7 +31,7 @@ module.exports = {
   output: {
     path: path.join(projectRoot, "dist", "public"),
     filename: `[name]-${version}-bundle.js`,
-    publicPath: "./public/"
+    publicPath: config.PUBLIC_URL + "/public/",
   },
   resolve: {
     extensions: [".js", ".ts", ".tsx"]

@@ -5,7 +5,6 @@ import { createRootReducer, rootSaga } from ".";
 import { composeWithDevTools } from "redux-devtools-extension";
 import { createBrowserHistory } from "history";
 import { routerMiddleware } from "connected-react-router";
-import { basename } from 'path';
 
 // create the composing function for our middlewares
 const composeEnhancers = composeWithDevTools({});
@@ -13,7 +12,7 @@ const composeEnhancers = composeWithDevTools({});
 const sagaMiddleware = createSagaMiddleware();
 
 export const history = createBrowserHistory({
-  basename: process.env.PUBLIC_URL,
+  basename: process.env.PUBLIC_URL
 });
 
 export const rootReducer = createRootReducer(history);

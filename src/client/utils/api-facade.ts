@@ -3,6 +3,8 @@ import axios from "axios";
 import { call, put } from "redux-saga/effects";
 import { push } from "connected-react-router";
 
+const apiPath = `${process.env.PUBLIC_URL}/api`;
+
 export function* handleCall(
   action,
   path,
@@ -32,24 +34,24 @@ export function* handleCall(
 }
 
 export function getApi<T>(path: string, params: object = {}): Promise<T> {
-  return axios.get(`/api/${path}`, { params }).then(res => res.data as T);
+  return axios.get(`${apiPath}/${path}`, { params }).then(res => res.data as T);
 }
 
 export function putApi<T>(path: string, body?: any): Promise<T> {
-  return axios.put(`/api/${path}`, body).then(res => res.data as T);
+  return axios.put(`${apiPath}/${path}`, body).then(res => res.data as T);
 }
 
 export function postApi<T>(path: string, body?: any): Promise<T> {
-  return axios.post(`/api/${path}`, body).then(res => res.data as T);
+  return axios.post(`${apiPath}/${path}`, body).then(res => res.data as T);
 }
 
 export function deleteApi<T>(path: string): Promise<T> {
-  return axios.delete(`/api/${path}`).then(res => res.data as T);
+  return axios.delete(`${apiPath}/${path}`).then(res => res.data as T);
 }
 
 export function getVideosApi<T>(path: string, params: object = {}): Promise<T> {
   return axios
-    .get(`/api/videos`, { params })
+    .get(`${apiPath}/videos`, { params })
     .then(res => res.data as T);
 }
 
@@ -57,7 +59,7 @@ export function uploadFlightsAPI(
   data: FormData,
   onUploadProgress: (progressEvent: any) => void
 ) {
-  return axios.post(`/api/flights`, data, {
+  return axios.post(`${apiPath}/flights`, data, {
     onUploadProgress: onUploadProgress
   });
 }
