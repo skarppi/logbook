@@ -12,7 +12,8 @@ const plugins = [
     title: "OpenTX Logbook",
     favicon: "favicon.ico",
     filename: "index.html",
-    template: "index.ejs"
+    template: "index.ejs",
+    publicUrl: process.env.PUBLIC_URL
   })
 ];
 
@@ -27,7 +28,7 @@ module.exports = {
   output: {
     path: path.join(projectRoot, "dist", "public"),
     filename: `[name]-${version}-bundle.js`,
-    publicPath: "/public/"
+    publicPath: "./public/"
   },
   resolve: {
     extensions: [".js", ".ts", ".tsx"]
