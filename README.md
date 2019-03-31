@@ -38,6 +38,12 @@ cd <MyProjectName>
 yarn install
 
 createdb logbook
+
+sudo -u postgres psql
+create database logbook;
+create user logbook with password 'logbook';
+grant all privileges on database logbook to logbook;
+
 psql -d logbook -f init.sql
 
 yarn run dev
