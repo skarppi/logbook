@@ -77,11 +77,11 @@ function colorize(datasets: Dataset[]) {
 
 function sizesForUnit(unit: DashboardUnit) {
   if (unit === DashboardUnit.day) {
-    return [7, 14, 30];
+    return [7, 14, 30, 60, 90, 180, 365];
   } else if (unit === DashboardUnit.month) {
-    return [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+    return [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 24, 48];
   } else {
-    return [1, 2, 3, 4, 5, 6];
+    return [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
   }
 }
 
@@ -200,7 +200,7 @@ class Dashboard extends React.Component<
     // TODO: modify somewhere else
     graph.datasets = colorize(graph.datasets);
 
-    const sizes = sizesForUnit(DashboardUnit.month).map(value => (
+    const sizes = sizesForUnit(query.unit).map(value => (
       <MenuItem value={value}>{value}</MenuItem>
     ));
 
@@ -209,9 +209,9 @@ class Dashboard extends React.Component<
         <Card>
           <CardHeader title="OpenTX Logbook" />
           <CardContent>
-            <Typography variant="subheading">Overview of flights </Typography>
+            <Typography variant="subheading">Overview of flight</Typography>
             <Typography variant="subheading">
-              <Select value={query.size} onChange={this.props.handleSizeChange}>
+              <Select value={query.size || sizes[2]} onChange={this.props.handleSizeChange}>
                 {sizes}
               </Select>
               <Select value={query.unit} onChange={this.props.handleUnitChange}>

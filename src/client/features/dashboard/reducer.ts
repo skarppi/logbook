@@ -13,7 +13,7 @@ export type DashboardState = Readonly<{
 
 const initialState: DashboardState = {
   graph: { labels: [], max: 0, datasets: [] },
-  query: { unit: DashboardUnit.month, size: 3 },
+  query: { unit: DashboardUnit.month, size: 12 },
   isLoading: false
 };
 
@@ -43,9 +43,11 @@ export const dashboardReducer = function reducer(
     }
 
     case getType(actions.changeDashboardUnit): {
+      const size = action.payload === DashboardUnit.day ? 30 :
+        (action.payload === DashboardUnit.month ? 12  : 5) // years
       return {
         ...state,
-        query: { ...state.query, unit: action.payload }
+        query: { unit: action.payload, size: size }
       };
     }
 
