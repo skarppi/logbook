@@ -11,6 +11,7 @@ Current functionalities include
 - Graphs presenting flights and flight times
 - Watch DVR or other related videos for flights
 - Battery cycles and state
+- iOS app for easy syncing of new flights
 
 Ongoing and future ideas
 
@@ -25,7 +26,7 @@ In your transmitter setup "SD Logs" Special Function to enable logging of teleme
 
 I use two-stage arming. Switch SA is a safety switch and also turns on the logging, then switch SB arms the quadcopter. Flight timer starts when the quad is armed and throttle is increased. A new flight is created when logging is turned off for more than 30 seconds and restarted again.
 
-After flying is done, connect your transmitter to a computer and drag&drop latest csv files from SD card LOGS directory to Upload-tab of the service.
+After flying is done, connect your transmitter to a computer and drag&drop latest csv files from SD card LOGS directory to Upload-tab of the service. A separate uploader iOS app can be used to automatically upload new files using wireless card reader (Kingston MobileLite Wireless or similar). Check out code at ```uploader``` folder.
 
 For more information read [Working with Log Files](http://open-txu.org/home/special-interests/telemetry/working-with-log-files/).
 
