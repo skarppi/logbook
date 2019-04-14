@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C051A2A722635FD800D38254 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = C051A2A622635FD800D38254 /* README.md */; };
 		C0FD748F220F8324003261AB /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0FD748E220F8324003261AB /* AppDelegate.swift */; };
 		C0FD7491220F8324003261AB /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0FD7490220F8324003261AB /* ViewController.swift */; };
 		C0FD7494220F8324003261AB /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C0FD7492220F8324003261AB /* Main.storyboard */; };
@@ -41,6 +42,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		C051A2A622635FD800D38254 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		C0FD748B220F8324003261AB /* Logbook.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Logbook.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C0FD748E220F8324003261AB /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		C0FD7490220F8324003261AB /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -95,6 +97,7 @@
 		C0FD7482220F8324003261AB = {
 			isa = PBXGroup;
 			children = (
+				C051A2A622635FD800D38254 /* README.md */,
 				C0FD74BC220F8395003261AB /* Cartfile */,
 				C0FD748D220F8324003261AB /* Logbook */,
 				C0FD74A2220F8326003261AB /* LogbookTests */,
@@ -265,6 +268,7 @@
 			files = (
 				C0FD7499220F8326003261AB /* LaunchScreen.storyboard in Resources */,
 				C0FD7496220F8326003261AB /* Assets.xcassets in Resources */,
+				C051A2A722635FD800D38254 /* README.md in Resources */,
 				C0FD74BD220F8395003261AB /* Cartfile in Resources */,
 				C0FD7494220F8324003261AB /* Main.storyboard in Resources */,
 			);

@@ -30,6 +30,24 @@ class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        if let smbName = UserDefaults.standard.string(forKey: "smbName") {
+            self.smbName.text = smbName
+        }
+        
+        if let logbookApiUrl = UserDefaults.standard.string(forKey: "logbookApiUrl") {
+            self.logbookApiUrl.text = logbookApiUrl
+        }
+    }
+    
+    @IBAction func saveSmbName() {
+        UserDefaults.standard.set(self.smbName.text!, forKey: "smbName")
+        UserDefaults.standard.synchronize()
+    }
+    
+    @IBAction func saveLogbookApiUrl() {
+        UserDefaults.standard.set(self.logbookApiUrl.text!, forKey: "logbookApiUrl")
+        UserDefaults.standard.synchronize()
     }
     
     private func log(_ text: String) {
@@ -114,6 +132,12 @@ class ViewController: UIViewController {
             self.log("DONE")
         }
     }
-    
+}
+
+extension ViewController: UITextFieldDelegate {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
+    }
 }
 
