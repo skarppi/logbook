@@ -15,7 +15,7 @@ Automates synching of OpenTX logfiles to Logbook service when using wireless car
 - App uploads these flights to Logbook
 - Existing flights are refreshed with the latest data but metadata (battery info, notes, etc) stays intact.
 
-![screenshot](https://github.com/skarppi/logbook/uploader/raw/master/screenshot.jpg "Screenshot")
+![screenshot](https://github.com/skarppi/logbook/raw/master/uploader/screenshot.jpg "Screenshot")
 
 ### Installation
 
