@@ -1,3 +1,9 @@
+@media (max-width: 600px) {
+  .grid {
+    padding: 0 !important;
+  }
+}
+
 .loadingParent {
   min-height: 200px;
   position: relative;

@@ -21,7 +21,7 @@ export const App = ({ history }: AppProps) => (
         <Switch>
           <Route exact path="/" component={Dashboard} />
           <Route path="/flights/:date?" component={FlightDays} />
-          <Route path="/batteries" component={BatteriesList} />
+          <Route path="/batteries/:id?" component={BatteriesList} />
           <Route path="/upload/:id?" component={FlightsUpload} />
         </Switch>
       </Grid>

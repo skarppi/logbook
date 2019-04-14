@@ -44,10 +44,13 @@ class FlightDays extends React.Component<AllProps> {
       const dayRow = (
         <TableRow key={String(flightDay.date)}>
           <TableCell>
-            <NavLink to={`/flights/${flightDay.date}`}>
-              {(current && <OpenedIcon />) || <ClosedIcon />}
+            {(current && <NavLink to={'/flights'}>
+              <OpenedIcon />
               {flightDay.date}
-            </NavLink>
+            </NavLink>) || <NavLink to={`/flights/${flightDay.date}`}>
+                <ClosedIcon />
+                {flightDay.date}
+              </NavLink>}
           </TableCell>
           <TableCell>{flightDay.flights}</TableCell>
           <TableCell>{flightDay.planes}</TableCell>

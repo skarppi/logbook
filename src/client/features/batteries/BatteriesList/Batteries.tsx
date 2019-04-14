@@ -13,6 +13,7 @@ import {
 } from "@material-ui/core";
 import * as React from "react";
 import { NavLink, Route, Link } from "react-router-dom";
+import { RouteComponentProps } from "react-router";
 import { fetchBatteries, insertBatteryCycle } from "../actions";
 import { connect } from "react-redux";
 import { RootState } from "../../../app";
@@ -21,6 +22,9 @@ import { Battery } from "../../../../shared/batteries/types";
 import Loading from "../../loading/Loading/Loading";
 import BatteryDetails from "../Battery/Battery";
 
+import ClosedIcon from "@material-ui/icons/KeyboardArrowRight";
+import OpenedIcon from "@material-ui/icons/KeyboardArrowDown";
+
 import NewBatteryIcon from "@material-ui/icons/Add";
 import FullChargeIcon from "@material-ui/icons/BatteryChargingFull";
 import StorageChargeIcon from "@material-ui/icons/BatteryCharging50";
@@ -28,13 +32,17 @@ import { BatteryState } from "../../../../shared/batteries";
 
 const css = require("./Batteries.css");
 
+interface RouteParams {
+  id: number;
+}
+
 interface BatteryProps {
   batteries: { [key: string]: Battery };
 }
 
 class BatteriesList extends React.Component<
-  BatteryProps & typeof mapDispatchToProps
-> {
+  BatteryProps & typeof mapDispatchToProps & RouteComponentProps<RouteParams>
+  > {
   lastUsed(battery) {
     if (!battery.lastCycle) {
       return;
@@ -49,7 +57,7 @@ class BatteriesList extends React.Component<
       <NavLink
         to={`/flights/${formatDate(battery.lastCycle.date)}/${
           battery.lastCycle.flightId
-        }`}
+          }`}
       >
         {timestamp}
       </NavLink>
@@ -91,19 +99,15 @@ class BatteriesList extends React.Component<
   };
 
   details(id: number, path: string) {
-    return (
-      <Route
-        key={"new-route"}
-        path={"/batteries/:id(" + path + ")"}
-        render={_ => (
-          <TableRow key={id + "-battery"} className={css.opened}>
-            <TableCell colSpan={5}>
-              <BatteryDetails id={id} />
-            </TableCell>
-          </TableRow>
-        )}
-      />
-    );
+    if (this.props.match.params.id === path) {
+      return (<TableRow key={id + "-battery"} className={css.opened}>
+        <TableCell colSpan={5}>
+          <BatteryDetails id={id} />
+        </TableCell>
+      </TableRow>)
+    } else {
+      return (<></>);
+    }
   }
 
   public render() {
@@ -111,10 +115,17 @@ class BatteriesList extends React.Component<
 
     const rows = Object.keys(batteries).map(id => {
       const battery = batteries[id];
+      const current = this.props.match.params.id === id;
       return [
         <TableRow key={String(id)}>
           <TableCell>
-            <NavLink to={`/batteries/${id}`}>{battery.name}</NavLink>
+            {(current && <NavLink to={'/batteries'}>
+              <OpenedIcon />
+              {battery.name}
+            </NavLink>) || <NavLink to={`/batteries/${id}`}>
+                <ClosedIcon />
+                {battery.name}
+              </NavLink>}
           </TableCell>
           <TableCell>
             {battery.type} {battery.cells}s {battery.capacity}mAh
@@ -131,7 +142,7 @@ class BatteriesList extends React.Component<
 
     return (
       <>
-        <Grid item xs={12}>
+        <Grid item xs={12} className={css.grid}>
           <Card>
             <CardHeader
               title="Batteries"
@@ -144,7 +155,7 @@ class BatteriesList extends React.Component<
               }
             />
             <CardContent className={css.loadingParent}>
-              <Table>
+              <Table padding="none">
                 <TableHead>
                   <TableRow>
                     <TableCell>ID</TableCell>

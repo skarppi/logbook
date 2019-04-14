@@ -32,7 +32,7 @@ import { getBattery } from "../selectors";
 import Loading from "../../loading/Loading/Loading";
 import { formatDate } from "../../../../shared/utils/date";
 
-const batteryTypes = ["LiPo", "HiHV"];
+const batteryTypes = ["LiPo", "LiHV"];
 const cellCounts = [1, 2, 3, 4, 5, 6];
 
 export interface OwnProps {
