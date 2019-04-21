@@ -1,11 +1,15 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "target": "es6",
     "sourceMap": true,
     "module": "commonjs",
     "importHelpers": true,
     "outDir": "../../dist/client",
-    "lib": ["es2015", "dom"],
+    "lib": [
+      "es2016",
+      "dom",
+      "esnext.asynciterable"
+    ],
     "jsx": "react"
   },
   "files": [

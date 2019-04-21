@@ -9,6 +9,10 @@ import { staticsRouter } from './routes/statics-router';
 import { staticsDevRouter } from './routes/statics-dev-router';
 import * as config from './config';
 
+const { postgraphile } = require("postgraphile");
+const ConnectionFilterPlugin = require("postgraphile-plugin-connection-filter");
+
+
 const app = express();
 
 app.use(bodyParser.json());
@@ -21,9 +25,15 @@ app.use(`${publicUrl}/api/flights`, flightsRouter());
 app.use(`${publicUrl}/api/locations`, locationsRouter());
 app.use(`${publicUrl}/api/videos`, videosRouter());
 
+app.use(`${publicUrl}/api/`,
+  postgraphile(`postgres://${config.DB_HOST}:5432/logbook`, {
+    appendPlugins: [ConnectionFilterPlugin]
+  })
+);
+
 app.use(publicUrl, config.IS_PRODUCTION ? staticsRouter() : staticsDevRouter());
 
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
   console.log(err, err.stack);
   res.status(500).send(String(err));
 });

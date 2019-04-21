@@ -34,7 +34,7 @@ module.exports = {
     publicPath: config.PUBLIC_URL + "/public/",
   },
   resolve: {
-    extensions: [".js", ".ts", ".tsx"]
+    extensions: [".mjs", ".js", ".ts", ".tsx"]
   },
   optimization: {
     splitChunks: {

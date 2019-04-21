@@ -44,10 +44,10 @@ export const dashboardReducer = function reducer(
 
     case getType(actions.changeDashboardUnit): {
       const size = action.payload === DashboardUnit.day ? 30 :
-        (action.payload === DashboardUnit.month ? 12  : 5) // years
+        (action.payload === DashboardUnit.month ? 12 : 5); // years
       return {
         ...state,
-        query: { unit: action.payload, size: size }
+        query: { unit: action.payload, size }
       };
     }
 

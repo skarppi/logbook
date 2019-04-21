@@ -53,3 +53,39 @@ CREATE TABLE BatteryCycles (
 CREATE INDEX batterycycles_battery_index ON BatteryCycles(battery_name);
 CREATE INDEX battercycles_date_index ON BatteryCycles(date);
 CREATE INDEX battercycles_flight_index ON BatteryCycles(flight_id);
+
+DROP VIEW totals;
+CREATE VIEW totals as
+    SELECT plane, CAST(count(*) as integer)  as flights, CAST(sum(flight_time) as integer) as total_time
+    FROM flights
+    group by plane;
+
+DROP VIEW FLIGHTS_BY_DAY;
+CREATE VIEW FLIGHTS_BY_DAY as
+SELECT to_char(start_date, 'YYYY-MM-DD') as date,
+          plane,
+          cast(sum(flight_time) as integer) as total_time, 
+          cast(count(*) as integer) as flights 
+      FROM flights 
+      GROUP BY 1,2 
+      ORDER BY date;
+
+DROP VIEW FLIGHTS_BY_MONTH;
+CREATE VIEW FLIGHTS_BY_MONTH as
+SELECT to_char(start_date, 'YYYY-MM-01') as date,
+          plane,
+          cast(sum(flight_time) as integer) as total_time, 
+          cast(count(*) as integer) as flights 
+      FROM flights 
+      GROUP BY 1,2 
+      ORDER BY date;
+
+DROP VIEW FLIGHTS_BY_YEAR;
+CREATE VIEW FLIGHTS_BY_YEAR as
+SELECT to_char(start_date, 'YYYY-01-01') as date,
+          plane,
+          cast(sum(flight_time) as integer) as total_time, 
+          cast(count(*) as integer) as flights 
+      FROM flights 
+      GROUP BY 1,2 
+      ORDER BY date;
