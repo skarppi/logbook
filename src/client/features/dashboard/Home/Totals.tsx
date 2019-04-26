@@ -7,50 +7,19 @@ import TableFooter from '@material-ui/core/TableFooter';
 import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
 
-import { useQuery } from 'urql';
-import gql from 'graphql-tag';
-
 import { formatDuration } from '../../../../shared/utils/date';
 
-import { FC } from 'react';
+interface ITotalProps {
+  planes: IPlaneTotals[];
+}
 
-const TotalsQuery = gql`
-  query {
-    allTotals {
-      nodes {
-        plane
-        flights
-        totalTime
-      }
-    }
-  }
-`;
-
-interface IPlaneTotals {
+export interface IPlaneTotals {
   plane: string;
   flights: number;
   totalTime: number;
 }
 
-interface IQueryResponse {
-  allTotals: {
-    nodes: IPlaneTotals[]
-  };
-}
-
-export const Totals: FC = () => {
-
-  const [res] = useQuery<IQueryResponse>({ query: TotalsQuery });
-
-  if (res.fetching || !res.data) {
-    return (<b>Loading</b>);
-  }
-
-  if (res.error) {
-    return (<b>{res.error.message}</b>)
-  }
-
-  const planes = res.data.allTotals.nodes
+export const Totals = ({ planes }) => {
 
   const rows = planes.map(plane =>
     <TableRow key={plane.plane}>

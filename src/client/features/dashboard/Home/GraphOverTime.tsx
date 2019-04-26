@@ -4,12 +4,8 @@ import { defaults, Bar } from 'react-chartjs-2';
 import * as Color from 'color';
 import { formatDuration } from '../../../../shared/utils/date';
 import { cloneDeep } from 'lodash';
-import { Dataset, DashboardQuery } from '../../../../shared/dashboard/types';
-import { FC } from 'react';
-import gql from 'graphql-tag';
-import { useQuery } from 'urql';
+import { Dataset } from '../../../../shared/dashboard/types';
 import { DashboardUnit } from '../../../../shared/dashboard';
-import { startOfYear, addYears, startOfMonth, addMonths, startOfDay, addDays } from 'date-fns';
 
 const css = require('./Home.css');
 
@@ -61,7 +57,7 @@ function colorize(datasets: Dataset[]) {
   });
 }
 
-const chartOptions = (max: number, query: DashboardQuery) => {
+const chartOptions = (max: number, unit: DashboardUnit) => {
 
   return {
     offset: true,
@@ -120,9 +116,9 @@ const chartOptions = (max: number, query: DashboardQuery) => {
         {
           type: 'time',
           time: {
-            unit: query.unit,
+            unit: unit,
             unitStepSize: 1,
-            round: query.unit,
+            round: unit,
             tooltipFormat: 'D MMMM YYYY',
             displayFormats: {}
           },
@@ -170,74 +166,19 @@ const chartOptions = (max: number, query: DashboardQuery) => {
   };
 }
 
-interface IProps { query: DashboardQuery; }
-
-function startDateFrom(query: DashboardQuery) {
-  let now = new Date();
-  if (query.unit === DashboardUnit.year) {
-    return startOfYear(addYears(now, -query.size + 1));
-  } else if (query.unit === DashboardUnit.month) {
-    return startOfMonth(addMonths(now, -query.size + 1));
-  } else {
-    return startOfDay(addDays(now, -query.size + 1));
-  }
-}
-
-const currentResource = (query: DashboardQuery) => {
-  return `allFlightsBy${query.unit[0].toUpperCase() + query.unit.substring(1)}s`
-}
-
-const Query = (query: DashboardQuery) => {
-  const from = query.size;
-  return gql`
-  query {
-    ${currentResource(query)}(filter:
-      {date: {
-        greaterThanOrEqualTo: "${startDateFrom(query).toISOString()}"
-      }}) {
-      nodes {
-        date
-        plane
-        flights
-        totalTime
-      }
-    }
-  }
-`};
-
-interface IRowsTotals {
+export interface ITotalRows {
   date: Date;
   plane: string;
   flights: number;
   totalTime: number;
 }
 
-interface IQueryResponse {
-  allFlightsByMonths: {
-    nodes: IRowsTotals[]
-  };
+interface IProps {
+  rows: ITotalRows[];
+  unit: DashboardUnit;
 }
 
-
-export const GraphOverTime = (props: IProps) => {
-
-  const { query } = props;
-
-  if (!query.unit) {
-    return (<b>Loading</b>);
-  }
-
-  const [res] = useQuery<IQueryResponse>({ query: Query(query) });
-
-  if (res.fetching || !res.data || !res.data[currentResource(query)]) {
-    return (<b>Loading</b>);
-  }
-
-  if (res.error) {
-    return (<b>{res.error.message}</b>)
-  }
-
-  const rows = res.data[currentResource(query)].nodes
+export const GraphOverTime = ({ rows, unit }: IProps) => {
 
   const labels = rows.reduce((uniqueDates, row) => {
     if (uniqueDates.indexOf(row.date) === -1) {
@@ -302,7 +243,7 @@ export const GraphOverTime = (props: IProps) => {
 
   console.log(graph);
 
-  const options = chartOptions(maxFlightTime, query);
+  const options = chartOptions(maxFlightTime, unit);
 
   return <Bar data={graph} options={options} />
 }

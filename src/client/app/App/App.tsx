@@ -3,7 +3,7 @@ import * as React from "react";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 // Pages
 import { Header } from "../Header/Header";
-import Dashboard from "../../features/dashboard/Home/Home";
+import { Dashboard } from "../../features/dashboard/Home/Home";
 import FlightDays from "../../features/flights/Days/FlightDays";
 import BatteriesList from "../../features/batteries/BatteriesList/Batteries";
 import FlightsUpload from "../../features/flights/Upload/FlightsUpload";

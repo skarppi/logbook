@@ -1,6 +1,4 @@
 import * as React from 'react';
-import { connect } from 'react-redux';
-import { useEffect } from 'react';
 
 import MenuItem from '@material-ui/core/MenuItem';
 import Grid from '@material-ui/core/Grid';
@@ -9,20 +7,26 @@ import CardHeader from '@material-ui/core/CardHeader';
 import CardContent from '@material-ui/core/CardContent';
 import Select from '@material-ui/core/Select';
 
-import { DashboardState } from '../reducer';
-import {
-  fetchDashboard,
-  changeDashboardSize,
-  changeDashboardUnit
-} from '../actions';
-import { RootState } from '../../../app';
+import { startOfYear, addYears, startOfMonth, addMonths, startOfDay, addDays } from 'date-fns';
 
 import { DashboardUnit } from '../../../../shared/dashboard';
 
-import { Totals } from './Totals'
-import { GraphOverTime } from './GraphOverTime'
+import { Totals, IPlaneTotals } from './Totals'
+import { GraphOverTime, ITotalRows } from './GraphOverTime'
+import gql from 'graphql-tag';
+import { useQuery } from 'urql';
 
 const css = require('./Home.css');
+
+function defaultSize(unit: DashboardUnit) {
+  if (unit === DashboardUnit.day) {
+    return 30;
+  } else if (unit === DashboardUnit.month) {
+    return 12;
+  } else {
+    return 5;
+  }
+}
 
 function sizesForUnit(unit: DashboardUnit) {
   if (unit === DashboardUnit.day) {
@@ -34,56 +38,112 @@ function sizesForUnit(unit: DashboardUnit) {
   }
 }
 
-const Dashboard = (props: DashboardState & typeof mapDispatchToProps) => {
+function startDateFrom(unit: DashboardUnit, size: number) {
+  let now = new Date();
+  if (unit === DashboardUnit.year) {
+    return startOfYear(addYears(now, -size + 1));
+  } else if (unit === DashboardUnit.month) {
+    return startOfMonth(addMonths(now, -size + 1));
+  } else {
+    return startOfDay(addDays(now, -size + 1));
+  }
+}
 
-  const { query } = props;
+const currentResource = (unit: DashboardUnit) => {
+  return `allFlightsBy${unit[0].toUpperCase() + unit.substring(1)}s`
+}
 
-  const sizes = sizesForUnit(query.unit).map(value => (
+const Query = (unit: DashboardUnit, size: number) => {
+  return gql`
+  query GetDashboard($since: String!) {
+    allTotals {
+      nodes {
+        plane
+        flights
+        totalTime
+      }
+    }
+    ${currentResource(unit)}(filter:
+      {date: {
+        greaterThanOrEqualTo: $since
+      }}) {
+      nodes {
+        date
+        plane
+        flights
+        totalTime
+      }
+    }
+  }
+`};
+
+interface IQueryResponse {
+  allFlightsByDays: {
+    nodes: ITotalRows[]
+  };
+  allFlightsByMonths: {
+    nodes: ITotalRows[]
+  };
+  allFlightsByYears: {
+    nodes: ITotalRows[]
+  };
+  allTotals: {
+    nodes: IPlaneTotals[]
+  };
+}
+
+const EMPTY = { nodes: [] };
+
+export const Dashboard = () => {
+
+  const [unit, setUnit] = React.useState(DashboardUnit.month);
+  const [size, setSize] = React.useState(12);
+
+  const sizes = sizesForUnit(unit).map(value => (
     <MenuItem value={value}>{value}</MenuItem>
   ));
 
-  // useEffect(() => {
-  //   props.fetchDashboard(query);
-  // }, [query]);
+  const since = startDateFrom(unit, size).toISOString();
+  const [res] = useQuery<IQueryResponse>({
+    query: Query(unit, size),
+    variables: {
+      since
+    }
+  });
+
+  const data = res.data ? res.data : { allTotals: EMPTY };
+
+  if (res.error) {
+    return (<b>{res.error.message}</b>)
+  }
+
+  const flights = data[currentResource(unit)] || EMPTY;
 
   return (
     <Grid item xs={12} >
       <Card>
         <CardHeader title='Total Flights' />
-        <CardContent><Totals></Totals></CardContent>
+        <CardContent><Totals planes={data.allTotals.nodes}></Totals></CardContent>
       </Card>
       <Card>
         <CardHeader title='Flights Over Time' />
         <CardContent>
           <span>Compare: </span>
-          <Select value={query.size || sizes[2]} onChange={props.handleSizeChange}>
+          <Select value={size || sizes[2]} onChange={e => setSize(Number(e.target.value))}>
             {sizes}
           </Select>
-          <Select value={query.unit} onChange={props.handleUnitChange}>
+          <Select value={unit} onChange={e => {
+            const newUnit = DashboardUnit[e.target.value];
+            setUnit(newUnit);
+            setSize(defaultSize(newUnit));
+          }}>
             <MenuItem value={DashboardUnit.day}>Days</MenuItem>
             <MenuItem value={DashboardUnit.month}>Months</MenuItem>
             <MenuItem value={DashboardUnit.year}>Years</MenuItem>
           </Select>
-          <GraphOverTime query={query} />
+          <GraphOverTime rows={flights.nodes} unit={unit} />
         </CardContent>
       </Card>
     </Grid >
   );
 }
-
-const mapStateToProps = (state: RootState) => ({
-  graph: state.dashboard.graph,
-  query: state.dashboard.query,
-  isLoading: state.dashboard.isLoading
-});
-
-const mapDispatchToProps = {
-  fetchDashboard: fetchDashboard.request,
-  handleUnitChange: event => changeDashboardUnit(event.target.value),
-  handleSizeChange: event => changeDashboardSize(event.target.value)
-};
-
-export default connect<any, any>(
-  mapStateToProps,
-  mapDispatchToProps
-)(Dashboard);

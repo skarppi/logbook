@@ -10,8 +10,3 @@ export interface Dashboard {
   max: number;
   datasets: Dataset[];
 }
-
-export interface DashboardQuery {
-  unit: DashboardUnit;
-  size: number;
-}
