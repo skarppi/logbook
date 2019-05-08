@@ -1,6 +1,5 @@
 import * as express from 'express';
 import * as bodyParser from 'body-parser';
-import { batteriesRouter } from './routes/batteries-router';
 import { flightsRouter } from './routes/flights-router';
 import { locationsRouter } from './routes/locations-router';
 import { videosRouter } from './routes/videos-router';
@@ -11,21 +10,21 @@ import * as config from './config';
 const { postgraphile } = require("postgraphile");
 const ConnectionFilterPlugin = require("postgraphile-plugin-connection-filter");
 
-
 const app = express();
 
 app.use(bodyParser.json());
 
 const publicUrl = config.PUBLIC_URL;
 
-app.use(`${publicUrl}/api/batteries`, batteriesRouter());
 app.use(`${publicUrl}/api/flights`, flightsRouter());
 app.use(`${publicUrl}/api/locations`, locationsRouter());
 app.use(`${publicUrl}/api/videos`, videosRouter());
 
 app.use(`${publicUrl}/api/`,
   postgraphile(`postgres://${config.DB_HOST}:5432/logbook`, {
-    appendPlugins: [ConnectionFilterPlugin]
+    appendPlugins: [ConnectionFilterPlugin],
+    exportGqlSchemaPath: './schema.gql',
+    watchPg: true
   })
 );
 

@@ -1,16 +1,21 @@
 import React = require("react");
 import { connect } from "react-redux";
-import { CircularProgress, IconButton, Tooltip } from "@material-ui/core";
+import CircularProgress from "@material-ui/core/CircularProgress";
+import IconButton from "@material-ui/core/IconButton";
+import Tooltip from "@material-ui/core/Tooltip";
 import { RootState } from "../../../app";
 
 import { getError, isLoading } from "../selector";
 import { AsyncActionBuilder } from "typesafe-actions/dist/create-async-action";
 
 import WarningIcon from "@material-ui/icons/Warning";
+import { CombinedError } from 'urql';
 const css = require("./Loading.css");
 
 interface OwnProps {
-  actions: AsyncActionBuilder<any, any, any, any, any, any>[];
+  actions?: AsyncActionBuilder<any, any, any, any, any, any>[];
+  spinning?: boolean;
+  error?: CombinedError;
   overlay: boolean;
 }
 
@@ -31,11 +36,11 @@ class Loading extends React.Component<LoadingProps> {
       const content = spinning ? (
         <CircularProgress />
       ) : (
-        <div className={css.overlayError}>
-          <WarningIcon color="error" fontSize="large" />
-          <span>{error}</span>
-        </div>
-      );
+          <div className={css.overlayError}>
+            <WarningIcon color="error" fontSize="large" />
+            <span>{error}</span>
+          </div>
+        );
 
       return <div className={css.overlayContainer}>{content}</div>;
     } else if (spinning) {
@@ -57,8 +62,8 @@ class Loading extends React.Component<LoadingProps> {
 }
 
 const mapStateToProps = (state: RootState, ownProps: OwnProps) => ({
-  spinning: isLoading(state, ownProps.actions.map(a => a.request)),
-  error: getError(state, ownProps.actions.map(a => a.failure)),
+  spinning: ownProps.actions ? isLoading(state, ownProps.actions.map(a => a.request)) : ownProps.spinning || false,
+  error: ownProps.actions ? getError(state, ownProps.actions.map(a => a.failure)) : ownProps.error && ownProps.error!.message || '',
   overlay: ownProps.overlay
 });
 

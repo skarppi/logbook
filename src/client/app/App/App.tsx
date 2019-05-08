@@ -5,7 +5,7 @@ import { BrowserRouter, Route, Switch } from "react-router-dom";
 import { Header } from "../Header/Header";
 import { Dashboard } from "../../features/dashboard/Home/Home";
 import FlightDays from "../../features/flights/Days/FlightDays";
-import BatteriesList from "../../features/batteries/BatteriesList/Batteries";
+import { BatteriesList } from "../../features/batteries/BatteriesList/Batteries";
 import FlightsUpload from "../../features/flights/Upload/FlightsUpload";
 import { ConnectedRouter } from "connected-react-router";
 

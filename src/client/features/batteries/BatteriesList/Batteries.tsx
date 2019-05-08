@@ -1,62 +1,106 @@
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  Grid,
-  Table,
-  TableRow,
-  TableCell,
-  TableHead,
-  TableBody,
-  IconButton,
-  Tooltip
-} from "@material-ui/core";
-import * as React from "react";
-import { NavLink, Route, Link } from "react-router-dom";
-import { RouteComponentProps } from "react-router";
-import { fetchBatteries, insertBatteryCycle } from "../actions";
-import { connect } from "react-redux";
-import { RootState } from "../../../app";
-import { formatDate, formatDateTime } from "../../../../shared/utils/date";
-import { Battery } from "../../../../shared/batteries/types";
-import Loading from "../../loading/Loading/Loading";
-import BatteryDetails from "../Battery/Battery";
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
+import CardHeader from '@material-ui/core/CardHeader';
+import Grid from '@material-ui/core/Grid';
+import Table from '@material-ui/core/Table';
+import TableRow from '@material-ui/core/TableRow';
+import TableCell from '@material-ui/core/TableCell';
+import TableHead from '@material-ui/core/TableHead';
+import TableBody from '@material-ui/core/TableBody';
+import IconButton from '@material-ui/core/IconButton';
+import Tooltip from '@material-ui/core/Tooltip';
 
-import ClosedIcon from "@material-ui/icons/KeyboardArrowRight";
-import OpenedIcon from "@material-ui/icons/KeyboardArrowDown";
+import * as React from 'react';
+import { NavLink, Link } from 'react-router-dom';
+import { formatDate, formatDateTime } from '../../../../shared/utils/date';
+import { Battery } from '../../../../shared/batteries/types';
+import Loading from '../../loading/Loading/Loading';
+import { BatteryDetails } from '../Battery/Battery';
 
-import NewBatteryIcon from "@material-ui/icons/Add";
-import FullChargeIcon from "@material-ui/icons/BatteryChargingFull";
-import StorageChargeIcon from "@material-ui/icons/BatteryCharging50";
-import { BatteryState } from "../../../../shared/batteries";
+import ClosedIcon from '@material-ui/icons/KeyboardArrowRight';
+import OpenedIcon from '@material-ui/icons/KeyboardArrowDown';
 
-const css = require("./Batteries.css");
+import NewBatteryIcon from '@material-ui/icons/Add';
+import FullChargeIcon from '@material-ui/icons/BatteryChargingFull';
+import StorageChargeIcon from '@material-ui/icons/BatteryCharging50';
+import { BatteryState } from '../../../../shared/batteries';
 
-interface RouteParams {
+import gql from 'graphql-tag';
+import { useQuery, useMutation } from 'urql';
+import { insertBatteryCycle } from '../actions';
+
+const css = require('./Batteries.css');
+
+const Query = gql`
+  query {
+    allBatteries(orderBy: NAME_ASC) {
+      nodes {
+        id
+			  name
+        type
+        cells
+        capacity
+        batteryCyclesByBatteryName(first:1, orderBy: DATE_DESC) {
+          nodes {
+            id
+            date
+            state
+            flightId
+          }
+        }
+      }
+    }
+  }`;
+
+interface IQueryResponse {
+  allBatteries: {
+    nodes: Battery[]
+  };
+}
+
+const Charge = gql`
+  mutation ($batteryCycle: BatteryCycleInput!) {
+    createBatteryCycle(input: {batteryCycle: $batteryCycle}) {
+      batteryCycle {
+        id
+        date
+        batteryName
+        flightId
+        state
+        voltage
+        discharged
+        charged
+      }
+    }
+  }`;
+
+
+interface IRouteParams {
   id: number;
 }
 
-interface BatteryProps {
-  batteries: { [key: string]: Battery };
-}
+const NEWID = 'add';
 
-class BatteriesList extends React.Component<
-  BatteryProps & typeof mapDispatchToProps & RouteComponentProps<RouteParams>
-  > {
-  lastUsed(battery) {
-    if (!battery.lastCycle) {
+export const BatteriesList = ({ match: { params } }) => {
+
+  // const { params }: { params: IRouteParams } = match;
+
+  function lastUsed({ nodes }) {
+    const [cycle] = nodes;
+    if (!cycle) {
       return;
     }
-    const timestamp = formatDateTime(battery.lastCycle.date);
 
-    if (!battery.lastCycle.flightId) {
+    const timestamp = formatDateTime(cycle.date);
+
+    if (!cycle.flightId) {
       return timestamp;
     }
 
     return (
       <NavLink
-        to={`/flights/${formatDate(battery.lastCycle.date)}/${
-          battery.lastCycle.flightId
+        to={`/flights/${formatDate(cycle.date)}/${
+          cycle.flightId
           }`}
       >
         {timestamp}
@@ -64,20 +108,30 @@ class BatteriesList extends React.Component<
     );
   }
 
-  batteryOps(battery) {
-    if (!battery.lastCycle) {
-      return;
-    }
+  const [charged, chargeBattery] = useMutation(Charge);
 
+  function batteryOps(battery) {
     return (
       <>
         <IconButton
-          onClick={_ => this.charge(battery.name, BatteryState.storage)}
+          onClick={_ => chargeBattery({
+            batteryCycle: {
+              date: new Date(),
+              batteryName: battery.name,
+              state: BatteryState.storage,
+            }
+          })}
         >
           <StorageChargeIcon />
         </IconButton>
         <IconButton
-          onClick={_ => this.charge(battery.name, BatteryState.charged)}
+          onClick={_ => chargeBattery({
+            batteryCycle: {
+              date: new Date(),
+              batteryName: battery.name,
+              state: BatteryState.charged,
+            }
+          })}
         >
           <FullChargeIcon />
         </IconButton>
@@ -85,114 +139,81 @@ class BatteriesList extends React.Component<
     );
   }
 
-  charge = (name, state) => {
-    this.props.insertBatteryCycle({
-      id: -1,
-      date: new Date(),
-      batteryName: name,
-      flightId: null,
-      state: state,
-      voltage: null,
-      discharged: null,
-      charged: null
-    });
-  };
-
-  details(id: number, path: string) {
-    if (this.props.match.params.id === path) {
-      return (<TableRow key={id + "-battery"} className={css.opened}>
-        <TableCell colSpan={5}>
-          <BatteryDetails id={id} />
-        </TableCell>
-      </TableRow>)
-    } else {
-      return (<></>);
-    }
+  function details(id: number) {
+    return (<TableRow className={css.opened}>
+      <TableCell colSpan={5}>
+        <BatteryDetails id={id} />
+      </TableCell>
+    </TableRow>);
   }
 
-  public render() {
-    const { batteries } = this.props;
+  const [res] = useQuery<IQueryResponse>({ query: Query });
 
-    const rows = Object.keys(batteries).map(id => {
-      const battery = batteries[id];
-      const current = this.props.match.params.id === id;
-      return [
-        <TableRow key={String(id)}>
-          <TableCell>
-            {(current && <NavLink to={'/batteries'}>
-              <OpenedIcon />
+  const batteries = res.data && res.data.allBatteries ? res.data.allBatteries.nodes : [];
+
+  const rows = batteries.map(battery => {
+    const current = params.id === battery.id;
+    return <React.Fragment key={String(battery.id)}>
+      <TableRow>
+        <TableCell>
+          {(current && <NavLink to={'/batteries'}>
+            <OpenedIcon />
+            {battery.name}
+          </NavLink>) || <NavLink to={`/batteries/${battery.id}`}>
+              <ClosedIcon />
               {battery.name}
-            </NavLink>) || <NavLink to={`/batteries/${id}`}>
-                <ClosedIcon />
-                {battery.name}
-              </NavLink>}
+            </NavLink>}
+        </TableCell>
+        <TableCell>
+          {battery.type} {battery.cells}s {battery.capacity}mAh
           </TableCell>
-          <TableCell>
-            {battery.type} {battery.cells}s {battery.capacity}mAh
-          </TableCell>
-          <TableCell>{battery.lastCycle && battery.lastCycle.state}</TableCell>
-          <TableCell>{this.lastUsed(battery)}</TableCell>
-          <TableCell>{this.batteryOps(battery)}</TableCell>
-        </TableRow>,
-        this.details(battery.id, `${battery.id}`)
-      ];
-    });
+        <TableCell>{battery.lastCycle && battery.lastCycle.state}</TableCell>
+        <TableCell>{lastUsed(battery.batteryCyclesByBatteryName)}</TableCell>
+        <TableCell>{batteryOps(battery)}</TableCell>
+      </TableRow>
+      {params.id === String(battery.id) && details(battery.id)}
+    </React.Fragment>;
+  });
 
-    const AddLink = props => <Link to="/batteries/add" {...props} />;
+  const AddLink = props => <Link to={`/batteries/${NEWID}`} {...props} />;
 
-    return (
-      <>
-        <Grid item xs={12} className={css.grid}>
-          <Card>
-            <CardHeader
-              title="Batteries"
-              action={
-                <Tooltip title="Add new battery">
-                  <IconButton component={AddLink}>
-                    <NewBatteryIcon />
-                  </IconButton>
-                </Tooltip>
-              }
-            />
-            <CardContent className={css.loadingParent}>
-              <Table padding="none">
-                <TableHead>
-                  <TableRow>
-                    <TableCell>ID</TableCell>
-                    <TableCell>Type</TableCell>
-                    <TableCell>Current status</TableCell>
-                    <TableCell>Last used</TableCell>
-                    <TableCell>Actions</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {this.details(-1, "add")}
-                  {rows}
-                </TableBody>
-              </Table>
-              <Loading actions={[fetchBatteries]} overlay={true} />
-            </CardContent>
-          </Card>
-        </Grid>
-      </>
-    );
-  }
-
-  public async componentWillMount() {
-    this.props.fetchBatteries();
-  }
-}
-
-const mapStateToProps = (state: RootState) => ({
-  batteries: state.batteries.batteries
-});
-
-const mapDispatchToProps = {
-  fetchBatteries: fetchBatteries.request,
-  insertBatteryCycle: insertBatteryCycle.request
+  return (
+    <>
+      <Grid item xs={12} className={css.grid}>
+        <Card>
+          <CardHeader
+            title='Batteries'
+            action={
+              <Tooltip title='Add new battery'>
+                <IconButton component={AddLink}>
+                  <NewBatteryIcon />
+                </IconButton>
+              </Tooltip>
+            }
+          />
+          <CardContent className={css.loadingParent}>
+            <Table padding='none'>
+              <TableHead>
+                <TableRow>
+                  <TableCell>ID</TableCell>
+                  <TableCell>Type</TableCell>
+                  <TableCell>Current status</TableCell>
+                  <TableCell>Last used</TableCell>
+                  <TableCell>Actions</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {params.id === NEWID && details(-1)}
+                {rows}
+              </TableBody>
+            </Table>
+            <Loading
+              spinning={res.fetching || charged.fetching}
+              error={res.error || charged.error}
+              overlay={true} />
+          </CardContent>
+        </Card>
+      </Grid>
+    </>
+  );
 };
-
-export default connect<any, any>(
-  mapStateToProps,
-  mapDispatchToProps
-)(BatteriesList);

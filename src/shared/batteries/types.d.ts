@@ -1,13 +1,16 @@
 import { BatteryState } from "./index";
 
 export interface Battery {
-  id: number;
+  id?: number;
   name: string;
   purchaseDate: Date;
   type: string;
   cells: number;
   capacity: number;
   lastCycle?: BatteryCycle;
+  batteryCyclesByBatteryName?: {
+    nodes: BatteryCycle[]
+  }
 }
 
 export interface BatteryCycle {

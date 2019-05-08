@@ -32,15 +32,15 @@ CREATE TABLE Batteries (
 
 CREATE INDEX batteries_battery_index ON Batteries(id);
 
-DROP TYPE if EXISTS BatteryState;
-CREATE TYPE BatteryState AS ENUM ('discharged', 'storage', 'charged');
+DROP TYPE if EXISTS Battery_State;
+CREATE TYPE Battery_State AS ENUM ('discharged', 'storage', 'charged');
 
-DROP TABLE if EXISTS BatteryCycles;
-CREATE TABLE BatteryCycles (
+DROP TABLE if EXISTS Battery_Cycles;
+CREATE TABLE Battery_Cycles (
   id SERIAL NOT NULL PRIMARY KEY,
   DATE TIMESTAMP WITH TIME ZONE NOT NULL,
   battery_name VARCHAR(64) NOT NULL REFERENCES Batteries(name),
-  state BatteryState NOT NULL,
+  state Battery_State NOT NULL,
   flight_id VARCHAR(64) REFERENCES Flights(id),
   voltage DECIMAL(5,3),
   discharged INTEGER,
@@ -50,9 +50,18 @@ CREATE TABLE BatteryCycles (
   UNIQUE (battery_name, flight_id)
 );
 
-CREATE INDEX batterycycles_battery_index ON BatteryCycles(battery_name);
-CREATE INDEX battercycles_date_index ON BatteryCycles(date);
-CREATE INDEX battercycles_flight_index ON BatteryCycles(flight_id);
+CREATE INDEX battery_cycles_battery_index ON Battery_Cycles(battery_name);
+CREATE INDEX batter_cycles_date_index ON Battery_Cycles(date);
+CREATE INDEX batter_cycles_flight_index ON Battery_Cycles(flight_id);
+
+-- battery cycle deletion
+
+CREATE FUNCTION delete_battery_cycles_by_battery_id(battery_id integer) RETURNS batteries AS $$
+  delete from battery_cycles where battery_name = (select name from batteries where id = delete_battery_cycles_by_battery_id.battery_id);
+  delete from batteries where id = delete_battery_cycles_by_battery_id.battery_id returning *;
+$$ LANGUAGE sql VOLATILE;
+
+-- dashboard views
 
 DROP VIEW totals;
 CREATE VIEW totals as

@@ -1,5 +1,5 @@
 export enum BatteryState {
-  discharged = "discharged",
-  storage = "storage",
-  charged = "charged"
+  discharged = 'DISCHARGED',
+  storage = 'STORAGE',
+  charged = 'CHARGED'
 }
