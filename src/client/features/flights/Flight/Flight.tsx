@@ -1,12 +1,10 @@
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  IconButton,
-  TextField,
-  Tooltip,
-  Divider
-} from "@material-ui/core";
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
+import CardHeader from '@material-ui/core/CardHeader';
+import IconButton from '@material-ui/core/IconButton';
+import TextField from '@material-ui/core/TextField';
+import Tooltip from '@material-ui/core/Tooltip';
+import Divider from '@material-ui/core/Divider';
 import * as React from "react";
 import { Plane, Flight } from "../../../../shared/flights/types";
 import { RootState } from "../../../app";

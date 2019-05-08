@@ -1,12 +1,10 @@
 import * as React from "react";
-import {
-  TextField,
-  FormControl,
-  InputLabel,
-  Select,
-  Input,
-  MenuItem
-} from "@material-ui/core";
+import TextField from '@material-ui/core/TextField';
+import FormControl from '@material-ui/core/FormControl';
+import InputLabel from '@material-ui/core/InputLabel';
+import Select from '@material-ui/core/Select';
+import Input from '@material-ui/core/Input';
+import MenuItem from '@material-ui/core/MenuItem';
 import { Flight } from "../../../../shared/flights/types";
 const css = require("../../../common/Form.css");
 

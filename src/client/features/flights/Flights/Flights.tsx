@@ -1,4 +1,7 @@
-import { Table, TableRow, TableCell, TableBody } from "@material-ui/core";
+import Table from "@material-ui/core/Table";
+import TableRow from "@material-ui/core/TableRow";
+import TableCell from "@material-ui/core/TableCell";
+import TableBody from "@material-ui/core/TableBody";
 import * as React from "react";
 import { NavLink } from "react-router-dom";
 import { RouteComponentProps } from "react-router";

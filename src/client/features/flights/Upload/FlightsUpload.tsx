@@ -1,15 +1,13 @@
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  Grid,
-  Table,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableBody,
-  TableFooter
-} from "@material-ui/core";
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
+import CardHeader from '@material-ui/core/CardHeader';
+import Grid from '@material-ui/core/Grid';
+import Table from '@material-ui/core/Table';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
+import TableCell from '@material-ui/core/TableCell';
+import TableBody from '@material-ui/core/TableBody';
+import TableFooter from '@material-ui/core/TableFooter';
 import * as React from "react";
 import { addFlights } from "../actions";
 import classNames from "classnames";
@@ -71,20 +69,20 @@ class FlightsUpload extends React.Component<AllProps, LocalState> {
         {isDragActive ? (
           <p>Drop files here...</p>
         ) : (
-          <div>
-            <p hidden={this.state.loaded > 0 || this.state.error !== undefined}>
-              Drag and drop log files or <u>click</u>
+            <div>
+              <p hidden={this.state.loaded > 0 || this.state.error !== undefined}>
+                Drag and drop log files or <u>click</u>
+              </p>
+              <p
+                hidden={this.state.loaded === 0 || this.state.error !== undefined}
+              >
+                Uploaded {this.state.loaded} %. Drag and drop more.
             </p>
-            <p
-              hidden={this.state.loaded === 0 || this.state.error !== undefined}
-            >
-              Uploaded {this.state.loaded} %. Drag and drop more.
+              <p hidden={this.state.error === undefined}>
+                Failed with message "{this.state.error}". Try again.
             </p>
-            <p hidden={this.state.error === undefined}>
-              Failed with message "{this.state.error}". Try again.
-            </p>
-          </div>
-        )}
+            </div>
+          )}
       </div>
     );
   }

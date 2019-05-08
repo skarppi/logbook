@@ -1,5 +1,6 @@
 import * as React from "react";
-import { Button, FormControl } from "@material-ui/core";
+import Button from "@material-ui/core/Button";
+import FormControl from "@material-ui/core/FormControl";
 import { Flight } from "../../../../shared/flights/types";
 import FlightBattery from "./FlightBattery";
 import AddIcon from "@material-ui/icons/Add";

@@ -1,17 +1,15 @@
 import * as React from "react";
-import {
-  TextField,
-  FormControl,
-  InputLabel,
-  Select,
-  Input,
-  MenuItem,
-  IconButton,
-  InputAdornment,
-  ExpansionPanel,
-  ExpansionPanelSummary,
-  ExpansionPanelDetails
-} from "@material-ui/core";
+import TextField from '@material-ui/core/TextField';
+import FormControl from '@material-ui/core/FormControl';
+import InputLabel from '@material-ui/core/InputLabel';
+import Select from '@material-ui/core/Select';
+import Input from '@material-ui/core/Input';
+import MenuItem from '@material-ui/core/MenuItem';
+import IconButton from '@material-ui/core/IconButton';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import ExpansionPanel from '@material-ui/core/ExpansionPanel';
+import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
+import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import { Flight } from "../../../../shared/flights/types";
 import { Battery, BatteryCycle } from "../../../../shared/batteries/types";
 import { planes } from "./Flight";

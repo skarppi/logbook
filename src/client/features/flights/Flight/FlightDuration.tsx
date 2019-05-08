@@ -1,5 +1,5 @@
 import * as React from "react";
-import { TextField } from "@material-ui/core";
+import TextField from "@material-ui/core/TextField";
 import {
   formatDuration,
   parseDurationIntoSeconds
@@ -24,7 +24,7 @@ interface LocalState {
 export class FlightDuration extends React.Component<
   FlightDurationProps,
   LocalState
-> {
+  > {
   constructor(props) {
     super(props);
     this.state = {

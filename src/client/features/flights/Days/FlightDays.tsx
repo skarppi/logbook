@@ -1,14 +1,12 @@
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  Grid,
-  Table,
-  TableRow,
-  TableCell,
-  TableHead,
-  TableBody
-} from "@material-ui/core";
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
+import CardHeader from '@material-ui/core/CardHeader';
+import Grid from '@material-ui/core/Grid';
+import Table from '@material-ui/core/Table';
+import TableRow from '@material-ui/core/TableRow';
+import TableCell from '@material-ui/core/TableCell';
+import TableHead from '@material-ui/core/TableHead';
+import TableBody from '@material-ui/core/TableBody';
 import * as React from "react";
 import { NavLink, Route } from "react-router-dom";
 import { RouteComponentProps } from "react-router";
