@@ -9,11 +9,13 @@ import { BatteryState } from '../../../../shared/batteries';
 import { Battery } from '../../../../shared/batteries/types';
 import gql from 'graphql-tag';
 import { useMutation } from 'urql';
+import Loading from '../../loading/Loading/Loading';
 const css = require('../../../common/Form.css');
 
 interface IBatteryProps {
   flight: Flight;
   batteries: Battery[];
+  refreshFlight: () => void;
 }
 
 const Create = gql`
@@ -33,7 +35,7 @@ const Create = gql`
   }`;
 
 
-export const FlightBatteries = ({ flight, batteries }: IBatteryProps) => {
+export const FlightBatteries = ({ flight, batteries, refreshFlight }: IBatteryProps) => {
 
   const plane = planes[flight.plane]
 
@@ -62,7 +64,7 @@ export const FlightBatteries = ({ flight, batteries }: IBatteryProps) => {
       discharged: lastTelemetry && Number(lastTelemetry['Fuel(mAh)']),
     };
 
-    createCycle({ cycle });
+    createCycle({ cycle }).then(refreshFlight);
   };
 
   const rows = cycles.map(cycle =>
@@ -80,10 +82,17 @@ export const FlightBatteries = ({ flight, batteries }: IBatteryProps) => {
       {rows}
       <FormControl className={css.formControl} margin='normal'>
         {rows.length < plane.batterySlots && (
-          <Button onClick={addBattery}>
-            Add battery
-              <AddIcon />
-          </Button>
+          <>
+            <Button onClick={addBattery}>
+              Add battery
+            <AddIcon />
+            </Button>
+            <Loading
+              spinning={create.fetching}
+              error={create.error}
+              overlay={false}
+            />
+          </>
         )}
       </FormControl>
     </>

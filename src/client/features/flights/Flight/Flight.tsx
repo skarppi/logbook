@@ -137,7 +137,7 @@ export const planes: { [key: string]: Plane } = {
 
 const FlightDetailsComponent = ({ entry, locations, history }) => {
 
-  const [read] = useQuery<IQueryResponse>({
+  const [read, refreshFlight] = useQuery<IQueryResponse>({
     query: Query,
     variables: { id: entry.id }
   });
@@ -229,6 +229,7 @@ const FlightDetailsComponent = ({ entry, locations, history }) => {
         <FlightBatteries
           flight={flight}
           batteries={read.data && read.data.allBatteries.nodes || []}
+          refreshFlight={() => refreshFlight({ requestPolicy: 'network-only' })}
         />
 
         <div className={css.container}>

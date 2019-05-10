@@ -21,6 +21,7 @@ import ClearIcon from '@material-ui/icons/Clear';
 import { BatteryState } from '../../../../shared/batteries';
 import gql from 'graphql-tag';
 import { useMutation } from 'urql';
+import Loading from '../../loading/Loading/Loading';
 
 interface IFlightBatteryProps {
   plane: Plane;
@@ -228,6 +229,11 @@ const FlightBatteryComponent = ({ plane, flightCycle, battery }: IFlightBatteryP
         <IconButton onClick={removeBattery} className={css.last}>
           <ClearIcon />
         </IconButton>
+        <Loading
+          spinning={update.fetching || del.fetching}
+          error={update.error || del.error}
+          overlay={false}
+        />
       </ExpansionPanelSummary>
 
       <ExpansionPanelDetails>
