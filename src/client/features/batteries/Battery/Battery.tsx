@@ -22,7 +22,6 @@ const css = require('../../../common/Form.css');
 import DeleteIcon from '@material-ui/icons/Delete';
 import Loading from '../../loading/Loading/Loading';
 import { formatDate } from '../../../../shared/utils/date';
-import { valueFromAST } from 'graphql';
 
 const batteryTypes = ['LiPo', 'LiHV'];
 const cellCounts = [1, 2, 3, 4, 5, 6];
@@ -99,9 +98,11 @@ const BatteryDetailsComponent = ({ id, history }) => {
 
   // local state
   const [battery, setBattery] = React.useState(NEW_BATTERY);
-  if (read.data && read.data.batteryById && !battery.id) {
-    setBattery(read.data.batteryById);
-  }
+  React.useEffect(() => {
+    if (read.data && read.data.batteryById) {
+      setBattery(read.data.batteryById);
+    }
+  }, [read]);
 
   // modify local state
   const changeNumber = ({ target: { name, value } }) =>

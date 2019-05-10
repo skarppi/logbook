@@ -1,79 +1,70 @@
-import * as React from "react";
+import * as React from 'react';
 import TextField from '@material-ui/core/TextField';
 import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
 import Select from '@material-ui/core/Select';
 import Input from '@material-ui/core/Input';
 import MenuItem from '@material-ui/core/MenuItem';
-import { Flight } from "../../../../shared/flights/types";
-const css = require("../../../common/Form.css");
+import { Flight } from '../../../../shared/flights/types';
+const css = require('../../../common/Form.css');
 
-interface FlightLocationProps {
+interface IFlightLocationProps {
   flight: Flight;
   locations: string[];
-  saveNotes: (id, object) => {};
+  save: (object) => {};
 }
 
-interface LocalState {
-  location: string;
-  createNew: boolean;
-}
+export const FlightLocation = ({ flight, locations, save }: IFlightLocationProps) => {
 
-export class FlightLocation extends React.Component<
-  FlightLocationProps,
-  LocalState
-> {
-  constructor(props) {
-    super(props);
-    this.state = {
-      location: "",
-      createNew: false
-    };
-  }
+  const [location, setLocation] = React.useState(flight.notes && flight.notes.location || '');
+  const [createNew, setCreateNew] = React.useState(false);
 
-  componentWillReceiveProps(nextProps) {
-    this.setState({
-      location: nextProps.flight.notes && nextProps.flight.notes.location
-    });
-  }
-
-  changeFlightLocation = event => {
-    if (event.target.value === "new") {
-      this.setState({ createNew: true });
+  const changeFlightLocation = ({ target: { value } }) => {
+    if (value === 'new') {
+      setCreateNew(true);
     } else {
-      this.setState({
-        [event.target.name]: event.target.value
-      } as any);
+      setLocation(value);
     }
   };
 
-  storeFlightLocation = event => {
-    this.setState({ createNew: false });
-    this.props.saveNotes(this.props.flight.id, event);
+  const storeFlightLocation = () => {
+    setCreateNew(false)
+    save({
+      id: flight.id,
+      patch: {
+        notes: {
+          ...flight.notes,
+          location
+        }
+      }
+    });
   };
 
-  renderExistingLocations() {
-    const { locations } = this.props;
-    const { location } = this.state;
+  const renderExistingLocations = () => {
+    if (locations.indexOf(location) === -1) {
+      locations.push(location);
+      locations.sort();
+    }
+
     return (
-      <FormControl className={css.formControl} margin="normal">
-        <InputLabel htmlFor="select-multiple-checkbox" shrink>
+      <FormControl className={css.formControl} margin='normal'>
+        <InputLabel htmlFor='select-multiple-checkbox' shrink>
           Location
         </InputLabel>
         <Select
           value={location}
-          name={"location"}
-          onChange={this.changeFlightLocation}
-          onBlur={this.storeFlightLocation}
-          input={<Input id="select-multiple-checkbox" />}
+          name='location'
+          onChange={changeFlightLocation}
+          onBlur={storeFlightLocation}
+          input={<Input id='select-multiple-checkbox' />}
         >
-          <MenuItem key="new" value="new">
+          <MenuItem key='new' value='new'>
             Other...
           </MenuItem>
 
-          {locations.map(location => (
-            <MenuItem key={location} value={location}>
-              {location}
+          {locations.map(loc => (
+            <MenuItem key={loc} value={loc}>
+              {loc}
             </MenuItem>
           ))}
         </Select>
@@ -81,29 +72,26 @@ export class FlightLocation extends React.Component<
     );
   }
 
-  renderNewLocation() {
-    const { location } = this.state;
+  const renderNewLocation = () => {
     return (
       <TextField
-        id="location"
-        label="Location"
-        placeholder="Location"
+        id='location'
+        label='Location'
+        placeholder='Location'
         className={css.textField}
         value={location}
-        name="location"
-        onChange={this.changeFlightLocation}
-        onBlur={this.storeFlightLocation}
-        margin="normal"
+        name='location'
+        onChange={changeFlightLocation}
+        onBlur={storeFlightLocation}
+        margin='normal'
+        inputRef={((input) => input && input.focus())}
       />
     );
   }
 
-  render() {
-    const { createNew } = this.state;
-    if (createNew) {
-      return this.renderNewLocation();
-    } else {
-      return this.renderExistingLocations();
-    }
+  if (createNew) {
+    return renderNewLocation();
+  } else {
+    return renderExistingLocations();
   }
 }

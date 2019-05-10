@@ -19,7 +19,7 @@ import { Flight } from "../../../../shared/flights/types";
 import { uploadFlightsAPI } from "../../../utils/api-facade";
 import { RootState } from "../../../app";
 import { FlightsState } from "../reducer";
-import FlightDetails from "../Flight/Flight";
+import { FlightDetails } from "../Flight/Flight";
 import {
   formatDate,
   formatDuration,

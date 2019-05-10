@@ -27,7 +27,6 @@ import { BatteryState } from '../../../../shared/batteries';
 
 import gql from 'graphql-tag';
 import { useQuery, useMutation } from 'urql';
-import { insertBatteryCycle } from '../actions';
 
 const css = require('./Batteries.css');
 

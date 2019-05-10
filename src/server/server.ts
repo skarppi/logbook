@@ -24,7 +24,8 @@ app.use(`${publicUrl}/api/`,
   postgraphile(`postgres://${config.DB_HOST}:5432/logbook`, {
     appendPlugins: [ConnectionFilterPlugin],
     exportGqlSchemaPath: './schema.gql',
-    watchPg: true
+    watchPg: true,
+    dynamicJson: true
   })
 );
 

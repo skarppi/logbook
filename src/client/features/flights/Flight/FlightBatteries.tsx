@@ -1,122 +1,91 @@
-import * as React from "react";
-import Button from "@material-ui/core/Button";
-import FormControl from "@material-ui/core/FormControl";
-import { Flight } from "../../../../shared/flights/types";
-import FlightBattery from "./FlightBattery";
-import AddIcon from "@material-ui/icons/Add";
-import { RootState } from "../../../app";
-import { connect } from "react-redux";
-import {
-  fetchBatteries,
-  insertBatteryCycle,
-  deleteBatteryCycle,
-  updateBatteryCycle
-} from "../../batteries/actions";
-import { planes } from "./Flight";
-import { BatteryState } from "../../../../shared/batteries";
-import { Battery, BatteryCycle } from "../../../../shared/batteries/types";
-import { getFlight } from "../selectors";
-const css = require("../../../common/Form.css");
+import * as React from 'react';
+import Button from '@material-ui/core/Button';
+import FormControl from '@material-ui/core/FormControl';
+import { Flight } from '../../../../shared/flights/types';
+import { FlightBattery } from './FlightBattery';
+import AddIcon from '@material-ui/icons/Add';
+import { planes } from './Flight';
+import { BatteryState } from '../../../../shared/batteries';
+import { Battery } from '../../../../shared/batteries/types';
+import gql from 'graphql-tag';
+import { useMutation } from 'urql';
+const css = require('../../../common/Form.css');
 
-export interface OwnProps {
-  id: string;
-}
-
-interface BatteryProps {
+interface IBatteryProps {
   flight: Flight;
-  cycles: { [key: string]: BatteryCycle };
-  batteries: { [key: string]: Battery };
+  batteries: Battery[];
 }
 
-type AllProps = BatteryProps & typeof mapDispatchToProps;
+const Create = gql`
+  mutation($cycle:BatteryCycleInput!) {
+    createBatteryCycle(input: {batteryCycle: $cycle}) {
+      batteryCycle {
+        id
+        date
+        batteryName
+        flightId
+        state
+        voltage
+        discharged
+        charged
+      }
+    }
+  }`;
 
-class FlightBatteries extends React.Component<AllProps> {
-  public async componentWillMount() {
-    this.props.fetchBatteries();
-  }
 
-  addBattery = _ => {
-    const { cycles, flight } = this.props;
+export const FlightBatteries = ({ flight, batteries }: IBatteryProps) => {
+
+  const plane = planes[flight.plane]
+
+  const cycles = flight.batteryCyclesByFlightId && flight.batteryCyclesByFlightId.nodes || [];
+
+  const [create, createCycle] = useMutation(Create);
+
+  const addBattery = () => {
 
     const lastSegment = flight.segments.slice(-1)[0];
     const lastTelemetry = lastSegment.rows.slice(-1)[0];
 
-    const usedBatteries = Object.keys(cycles).map(
-      key => cycles[key].batteryName
-    );
+    const usedBatteries = cycles.map(c => c.batteryName);
 
-    const voltage = lastTelemetry && lastTelemetry["VFAS(V)"]
-    const useCellVoltage = planes[flight.plane].batterySlots > 1 && voltage > 4.5
+    const voltage = lastTelemetry && lastTelemetry['VFAS(V)']
+    const useCellVoltage = plane.batterySlots > 1 && voltage > 4.5
 
-    this.props.insertBatteryCycle({
-      id: -1,
+    const cycle = {
       date: flight.startDate,
-      batteryName: planes[flight.plane].batteries.find(
+      batteryName: plane.batteries.find(
         name => usedBatteries.indexOf(name) === -1
       ),
       flightId: flight.id,
       state: BatteryState.discharged,
-      voltage: useCellVoltage ? voltage / planes[flight.plane].batterySlots : voltage,
-      discharged: lastTelemetry && lastTelemetry["Fuel(mAh)"],
-      charged: null,
-      resistance: null
-    });
+      voltage: useCellVoltage ? voltage / plane.batterySlots : voltage,
+      discharged: lastTelemetry && Number(lastTelemetry['Fuel(mAh)']),
+    };
+
+    createCycle({ cycle });
   };
 
-  batteryByName(name: string) {
-    const { batteries } = this.props;
-    const id = Object.keys(batteries).find(
-      batteryId => batteries[batteryId].name === name
-    );
-    return batteries[id];
-  }
+  const rows = cycles.map(cycle =>
+    <FlightBattery
+      key={cycle.id}
+      plane={plane}
+      flightCycle={cycle}
+      battery={batteries.find(b => b.name === cycle.batteryName)}
+    />
+  );
 
-  render() {
-    const { cycles, flight } = this.props;
 
-    const rows = Object.keys(cycles).map(id => {
-      return (
-        <FlightBattery
-          key={id}
-          flight={flight}
-          cycle={cycles[id]}
-          battery={this.batteryByName(cycles[id].batteryName)}
-          update={this.props.updateBatteryCycle}
-          delete={this.props.deleteBatteryCycle}
-        />
-      );
-    });
-
-    return (
-      <>
-        {rows}
-        <FormControl className={css.formControl} margin="normal">
-          {rows.length < planes[flight.plane].batterySlots && (
-            <Button onClick={this.addBattery}>
-              Add battery
+  return (
+    <>
+      {rows}
+      <FormControl className={css.formControl} margin='normal'>
+        {rows.length < plane.batterySlots && (
+          <Button onClick={addBattery}>
+            Add battery
               <AddIcon />
-            </Button>
-          )}
-        </FormControl>
-      </>
-    );
-  }
+          </Button>
+        )}
+      </FormControl>
+    </>
+  );
 }
-
-const mapStateToProps = (state: RootState, ownProps: OwnProps) => ({
-  flight: getFlight(state, ownProps.id),
-  cycles: state.batteries.cycles,
-  batteries: state.batteries.batteries
-});
-
-const mapDispatchToProps = {
-  insertBatteryCycle: insertBatteryCycle.request,
-  updateBatteryCycle: updateBatteryCycle.request,
-  deleteBatteryCycle: deleteBatteryCycle.request,
-  fetchBatteries: fetchBatteries.request
-};
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(FlightBatteries);

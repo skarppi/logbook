@@ -1,101 +1,76 @@
-import * as React from "react";
-import TextField from "@material-ui/core/TextField";
+import * as React from 'react';
+import TextField from '@material-ui/core/TextField';
 import {
   formatDuration,
   parseDurationIntoSeconds
-} from "../../../../shared/utils/date";
-import { Flight } from "../../../../shared/flights/types";
-const css = require("../../../common/Form.css");
+} from '../../../../shared/utils/date';
+import { Flight } from '../../../../shared/flights/types';
+const css = require('../../../common/Form.css');
 
-interface FlightDurationProps {
+interface IFlightDurationProps {
   flight: Flight;
-  save: (id, object) => {};
+  save: (object) => {};
 }
 
-interface LocalState {
-  armedTime: string;
-  flightTime: string;
-  errors: {
-    armedTime: boolean;
-    flightTime: boolean;
-  };
-}
+export const FlightDuration = ({ flight, save }: IFlightDurationProps) => {
 
-export class FlightDuration extends React.Component<
-  FlightDurationProps,
-  LocalState
-  > {
-  constructor(props) {
-    super(props);
-    this.state = {
-      armedTime: "",
-      flightTime: "",
-      errors: {
-        armedTime: false,
-        flightTime: false
-      }
-    };
+  const [armedTime, setArmedTime] = React.useState('');
+  const [flightTime, setFlightTime] = React.useState('');
+
+  React.useEffect(() => {
+    setArmedTime(formatDuration(flight.armedTime))
+  }, [flight.armedTime]);
+
+  React.useEffect(() => {
+    setFlightTime(formatDuration(flight.flightTime))
+  }, [flight.flightTime]);
+
+  const changeArmedTime = ({ target: { value } }) => {
+    setArmedTime(value);
+  }
+  const changeFlightTime = ({ target: { value } }) => {
+    setFlightTime(value);
   }
 
-  componentWillReceiveProps(nextProps) {
-    this.setState({
-      armedTime: formatDuration(nextProps.flight.armedTime),
-      flightTime: formatDuration(nextProps.flight.flightTime)
-    });
-  }
-
-  changeFlightDuration = event => {
-    const errors = {
-      ...this.state.errors,
-      [event.target.name]: parseDurationIntoSeconds(event.target.value) === null
-    } as any;
-
-    this.setState({
-      [event.target.name]: event.target.value,
-      errors: errors
-    } as any);
-  };
-
-  storeFlightDuration = event => {
-    const seconds = parseDurationIntoSeconds(event.target.value);
+  const store = ({ target: { name, value } }) => {
+    const seconds = parseDurationIntoSeconds(value);
     if (seconds) {
-      this.props.save(this.props.flight.id, {
-        [event.target.name]: seconds
+      save({
+        id: flight.id,
+        patch: {
+          [name]: seconds
+        }
       });
     }
   };
 
-  render() {
-    const { flight } = this.props;
-    const { armedTime, flightTime, errors } = this.state;
-    return (
-      <div className={css.subContainer}>
-        <TextField
-          required
-          error={errors.armedTime}
-          id="armedTime"
-          label="Armed time"
-          className={css.textField}
-          value={armedTime}
-          name="armedTime"
-          onChange={this.changeFlightDuration}
-          onBlur={this.storeFlightDuration}
-          margin="normal"
-        />
+  return (
+    <div className={css.subContainer}>
+      <TextField
+        required
+        error={parseDurationIntoSeconds(armedTime) === null}
+        id='armedTime'
+        label='Armed time'
+        className={css.textField}
+        value={armedTime}
+        name='armedTime'
+        onChange={changeArmedTime}
+        onBlur={store}
+        margin='normal'
+      />
 
-        <TextField
-          required
-          error={errors.flightTime}
-          id="flightTime"
-          label="Flight time"
-          className={css.textField}
-          value={flightTime}
-          name="flightTime"
-          onChange={this.changeFlightDuration}
-          onBlur={this.storeFlightDuration}
-          margin="normal"
-        />
-      </div>
-    );
-  }
+      <TextField
+        required
+        error={parseDurationIntoSeconds(flightTime) === null}
+        id='flightTime'
+        label='Flight time'
+        className={css.textField}
+        value={flightTime}
+        name='flightTime'
+        onChange={changeFlightTime}
+        onBlur={store}
+        margin='normal'
+      />
+    </div>
+  );
 }

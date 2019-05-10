@@ -5,202 +5,254 @@ import IconButton from '@material-ui/core/IconButton';
 import TextField from '@material-ui/core/TextField';
 import Tooltip from '@material-ui/core/Tooltip';
 import Divider from '@material-ui/core/Divider';
-import * as React from "react";
-import { Plane, Flight } from "../../../../shared/flights/types";
-import { RootState } from "../../../app";
-import {
-  fetchFlight,
-  deleteFlight,
-  resetFlight,
-  changeFlightFields,
-  updateFlight
-} from "../actions";
-import { connect } from "react-redux";
+import * as React from 'react';
+import { Plane, Flight } from '../../../../shared/flights/types';
+import { withRouter } from 'react-router-dom';
 
-import { FlightDate } from "./FlightDate";
-import { FlightDuration } from "./FlightDuration";
-import FlightBatteries from "./FlightBatteries";
-import { FlightLocation } from "./FlightLocation";
+import { FlightDate } from './FlightDate';
+import { FlightDuration } from './FlightDuration';
+import { FlightBatteries } from './FlightBatteries';
+import { FlightLocation } from './FlightLocation';
 
-import Videos from "../Videos/Videos";
+import Videos from '../Videos/Videos';
 
-const css = require("../../../common/Form.css");
-import DeleteIcon from "@material-ui/icons/Delete";
-import RefreshIcon from "@material-ui/icons/Refresh";
-import { getFlight } from "../selectors";
-import Loading from "../../loading/Loading/Loading";
-import {
-  insertBatteryCycle,
-  updateBatteryCycle,
-  deleteBatteryCycle
-} from "../../batteries/actions";
+const css = require('../../../common/Form.css');
+import DeleteIcon from '@material-ui/icons/Delete';
+import RefreshIcon from '@material-ui/icons/Refresh';
+import Loading from '../../loading/Loading/Loading';
+import { useQuery, useMutation } from 'urql';
+import gql from 'graphql-tag';
+import { Battery } from '../../../../shared/batteries/types';
+import { formatDate } from '../../../../shared/utils/date';
 
-export interface OwnProps {
-  id: string;
+const Query = gql`
+  query($id:String!) {
+    flightById(id: $id) {
+      id
+      plane
+      session
+      startDate
+      endDate
+      duration
+      armedTime
+      flightTime
+      notes
+      segments
+      batteryCyclesByFlightId {
+        nodes {
+          id
+          date
+          batteryName
+          flightId
+          state
+          voltage
+          discharged
+          charged
+          resistance
+        }
+      }
+    }
+    allBatteries(orderBy:NAME_ASC) {
+      nodes {
+        name
+      }
+    }
+  }`;
+
+const Update = gql`
+  mutation($id:String!, $patch:FlightPatch!) {
+    updateFlightById(input: {id: $id, flightPatch: $patch}) {
+      flight {
+        id
+        plane
+        session
+        startDate
+        endDate
+        duration
+        armedTime
+        flightTime
+        notes
+      }
+    }
+  }`;
+
+const Delete = gql`
+  mutation($id:String!) {
+    deleteFlightById(input: {id: $id}) {
+      flight {
+        id
+      }
+    }
+  }`;
+
+
+interface IQueryResponse {
+  flightById: Flight;
+  allBatteries: {
+    nodes: Battery[];
+  }
 }
-
-export interface FlightDetailsProps {
-  flight: Flight;
-  locations: string[];
-}
-
-type AllProps = FlightDetailsProps & typeof mapDispatchToProps;
 
 export const planes: { [key: string]: Plane } = {
   Reverb: {
     batterySlots: 1,
     batteries: [
-      "tattu1",
-      "tattu2",
-      "tattu3",
-      "tattu4",
-      "tattu5",
-      "cnhl1",
-      "cnhl2"
+      'tattu1',
+      'tattu2',
+      'tattu3',
+      'tattu4',
+      'tattu5',
+      'cnhl1',
+      'cnhl2'
     ]
   },
   TWR: {
     batterySlots: 1,
     batteries: [
-      "mylipo1",
-      "mylipo2",
-      "mylipo3",
-      "mylipo4",
-      "mylipo5",
-      "happy1",
-      "happy2",
-      "happy3",
-      "happy4"
+      'mylipo1',
+      'mylipo2',
+      'mylipo3',
+      'mylipo4',
+      'mylipo5',
+      'happy1',
+      'happy2',
+      'happy3',
+      'happy4'
     ]
   },
   MOB7: {
     batterySlots: 2,
     batteries: [
-      "mylipo1",
-      "mylipo2",
-      "mylipo3",
-      "mylipo4",
-      "happy1",
-      "happy2",
-      "happy3",
-      "happy4"
+      'mylipo1',
+      'mylipo2',
+      'mylipo3',
+      'mylipo4',
+      'happy1',
+      'happy2',
+      'happy3',
+      'happy4'
     ]
   }
 };
 
-class FlightDetails extends React.Component<AllProps> {
-  public render() {
-    const { flight, locations } = this.props;
+const FlightDetailsComponent = ({ entry, locations, history }) => {
 
-    return (
-      <Card className={css.card}>
-        <CardHeader
-          title={`Flight: ${flight.id}`}
-          action={
-            <>
-              <Loading
-                actions={[
-                  fetchFlight,
-                  updateFlight,
-                  resetFlight,
-                  deleteFlight,
-                  insertBatteryCycle,
-                  updateBatteryCycle,
-                  deleteBatteryCycle
-                ]}
-                overlay={false}
-              />
+  const [read] = useQuery<IQueryResponse>({
+    query: Query,
+    variables: { id: entry.id }
+  });
+  const [update, updateFlight] = useMutation(Update);
+  const [del, deleteFlight] = useMutation(Delete);
 
-              <Tooltip title="Reset flight">
-                <IconButton onClick={_ => this.props.resetFlight(flight)}>
-                  <RefreshIcon />
-                </IconButton>
-              </Tooltip>
+  // local state
+  const [flight, setFlight] = React.useState<Flight>(entry);
+  React.useEffect(() => {
+    if (read.data) {
+      setFlight(read.data.flightById);
+    }
+  }, [read.data]);
 
-              <Tooltip title="Delete flight">
-                <IconButton onClick={_ => this.props.deleteFlight(flight)}>
-                  <DeleteIcon />
-                </IconButton>
-              </Tooltip>
-            </>
-          }
-        />
-        <CardContent>
-          <div className={css.container}>
-            <FlightDate flight={flight} />
-            <FlightDuration flight={flight} save={this.props.save} />
-          </div>
-
-          <div className={css.container}>
-            <TextField
-              id="osd"
-              label="OSD"
-              placeholder="OSD"
-              multiline
-              className={css.textField}
-              value={(flight.notes && flight.notes.osd) || ""}
-              name="osd"
-              onChange={e => this.saveNotes(flight.id, e)}
-              margin="normal"
-            />
-
-            <FlightLocation
-              flight={flight}
-              locations={locations}
-              saveNotes={this.saveNotes}
-            />
-          </div>
-
-          <Divider variant="middle" />
-
-          <FlightBatteries id={flight.id} />
-
-          <div className={css.container}>
-            <TextField
-              id="jornal"
-              label="Journal"
-              placeholder="Journal"
-              multiline
-              className={`${css.textField} ${css.wide}`}
-              value={(flight.notes && flight.notes.journal) || ""}
-              name="journal"
-              onChange={e => this.saveNotes(flight.id, e)}
-              margin="normal"
-            />
-          </div>
-          <Videos
-            date={flight.startDate}
-            plane={flight.plane}
-            session={flight.session}
-          />
-        </CardContent>
-      </Card>
-    );
-  }
-
-  public async componentWillMount() {
-    this.props.fetchFlight(this.props.flight);
-  }
-
-  saveNotes = (flightId, event) =>
-    this.props.save(flightId, {
-      notes: { [event.target.name]: event.target.value }
+  const changeNotes = ({ target: { name, value } }) =>
+    setFlight({
+      ...flight,
+      notes: { ...flight.notes, [name]: value }
     });
+
+  const saveNotes = () => updateFlight({
+    id: flight.id,
+    patch: { notes: flight.notes }
+  });
+
+  const executeDelete = _ => {
+    deleteFlight({ id: flight.id }).then(res => {
+      if (!res.error) {
+        history.push(`/flights/${formatDate(flight.startDate)}`);
+      }
+    });
+  };
+
+  return (
+    <Card className={css.card}>
+      <CardHeader
+        title={`Flight: ${flight.id}`}
+        action={
+          <>
+            <Loading
+              spinning={read.fetching || update.fetching || del.fetching}
+              error={read.error || update.error || del.error}
+              overlay={false}
+            />
+
+            <Tooltip title='Reset flight'>
+              <IconButton onClick={_ => this.props.resetFlight(flight)}>
+                <RefreshIcon />
+              </IconButton>
+            </Tooltip>
+
+            <Tooltip title='Delete flight'>
+              <IconButton onClick={executeDelete}>
+                <DeleteIcon />
+              </IconButton>
+            </Tooltip>
+          </>
+        }
+      />
+      <CardContent>
+        <div className={css.container}>
+          <FlightDate flight={flight} />
+          <FlightDuration flight={flight} save={updateFlight} />
+        </div>
+
+        <div className={css.container}>
+          <TextField
+            id='osd'
+            label='OSD'
+            placeholder='OSD'
+            multiline
+            className={css.textField}
+            value={(flight.notes && flight.notes.osd) || ''}
+            name='osd'
+            onChange={changeNotes}
+            onBlur={saveNotes}
+            margin='normal'
+          />
+
+          <FlightLocation
+            flight={flight}
+            locations={locations}
+            save={updateFlight}
+          />
+        </div>
+
+        <Divider variant='middle' />
+
+        <FlightBatteries
+          flight={flight}
+          batteries={read.data && read.data.allBatteries.nodes || []}
+        />
+
+        <div className={css.container}>
+          <TextField
+            id='jornal'
+            label='Journal'
+            placeholder='Journal'
+            multiline
+            className={`${css.textField} ${css.wide}`}
+            value={(flight.notes && flight.notes.journal) || ''}
+            name='journal'
+            onChange={changeNotes}
+            onBlur={saveNotes}
+            margin='normal'
+          />
+        </div>
+        <Videos
+          date={flight.startDate}
+          plane={flight.plane}
+          session={flight.session}
+        />
+      </CardContent>
+    </Card>
+  );
 }
 
-const mapStateToProps = (state: RootState, ownProps: OwnProps) => ({
-  flight: getFlight(state, ownProps.id),
-  locations: state.flights.locations
-});
-
-const mapDispatchToProps = {
-  fetchFlight: fetchFlight.request,
-  resetFlight: resetFlight.request,
-  deleteFlight: deleteFlight.request,
-  save: (id, obj) => changeFlightFields({ ...obj, id })
-};
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(FlightDetails);
+export const FlightDetails = withRouter(FlightDetailsComponent);

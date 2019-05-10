@@ -14,6 +14,9 @@ export interface Flight {
   batteries?: BatteryCycle[];
   batteryNames?: string;
   notes?: FlightNotes;
+  batteryCyclesByFlightId?: {
+    nodes: BatteryCycle[]
+  }
 }
 
 export interface FlightNotes {
@@ -44,4 +47,4 @@ export interface Segment {
   duration: number;
 }
 
-export interface SegmentItem {}
+export interface SegmentItem { }

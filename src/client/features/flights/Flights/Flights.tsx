@@ -10,7 +10,7 @@ import { FlightsState } from "../reducer";
 import { RootState } from "../../../app";
 import { fetchFlights } from "../actions";
 import { connect } from "react-redux";
-import FlightDetails from "../Flight/Flight";
+import { FlightDetails } from "../Flight/Flight";
 
 import ClosedIcon from "@material-ui/icons/ArrowRight";
 import OpenedIcon from "@material-ui/icons/ArrowDropDown";
@@ -29,7 +29,7 @@ type AllProps = FlightsState &
 
 class Flights extends React.Component<AllProps> {
   public render() {
-    const { flights, flightIds } = this.props;
+    const { flights, flightIds, locations } = this.props;
 
     const path = `/flights/${this.props.match.params.date}`;
 
@@ -40,7 +40,7 @@ class Flights extends React.Component<AllProps> {
       const detailsRow = current && (
         <TableRow key={id + "-details"} className={css.opened}>
           <TableCell colSpan={5}>
-            <FlightDetails id={id} />
+            <FlightDetails entry={flight} locations={locations} />
           </TableCell>
         </TableRow>
       );
@@ -84,7 +84,8 @@ class Flights extends React.Component<AllProps> {
 
 const mapStateToProps = (state: RootState) => ({
   flights: state.flights.flights,
-  flightIds: state.flights.flightIds
+  flightIds: state.flights.flightIds,
+  locations: state.flights.locations
 });
 
 const mapDispatchToProps = {
