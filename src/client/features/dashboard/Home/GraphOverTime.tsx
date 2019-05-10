@@ -164,7 +164,7 @@ const chartOptions = (max: number, unit: DashboardUnit) => {
       ]
     }
   };
-}
+};
 
 export interface ITotalRows {
   date: Date;
@@ -185,7 +185,7 @@ export const GraphOverTime = ({ rows, unit }: IProps) => {
       uniqueDates.push(row.date);
     }
     return uniqueDates;
-  }, [])
+  }, []);
 
   const flightTimesPerGroup = labels.map(label =>
     rows.reduce((total, row) => {
@@ -198,12 +198,10 @@ export const GraphOverTime = ({ rows, unit }: IProps) => {
 
   const planes = rows.reduce((groups, row) => {
     const values = groups[row.plane] || [];
-    values.push(row)
+    values.push(row);
     groups[row.plane] = values;
     return groups;
   }, {});
-
-  console.log(planes);
 
   const datasets = [];
 
@@ -237,13 +235,11 @@ export const GraphOverTime = ({ rows, unit }: IProps) => {
   const maxFlightTime = Math.max(...flightTimesPerGroup) / 60;
 
   const graph = {
-    labels: labels,
+    labels,
     datasets: colorize(datasets)
-  }
-
-  console.log(graph);
+  };
 
   const options = chartOptions(maxFlightTime, unit);
 
-  return <Bar data={graph} options={options} />
-}
+  return <Bar data={graph} options={options} />;
+};

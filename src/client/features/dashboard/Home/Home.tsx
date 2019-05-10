@@ -39,7 +39,7 @@ function sizesForUnit(unit: DashboardUnit) {
 }
 
 function startDateFrom(unit: DashboardUnit, size: number) {
-  let now = new Date();
+  const now = new Date();
   if (unit === DashboardUnit.year) {
     return startOfYear(addYears(now, -size + 1));
   } else if (unit === DashboardUnit.month) {
@@ -100,7 +100,7 @@ export const Dashboard = () => {
   const [size, setSize] = React.useState(12);
 
   const sizes = sizesForUnit(unit).map(value => (
-    <MenuItem value={value}>{value}</MenuItem>
+    <MenuItem key={value} value={value}>{value}</MenuItem>
   ));
 
   const since = startDateFrom(unit, size).toISOString();

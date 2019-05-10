@@ -19,7 +19,7 @@ export interface IPlaneTotals {
   totalTime: number;
 }
 
-export const Totals = ({ planes }) => {
+export const Totals = ({ planes }: ITotalProps) => {
 
   const rows = planes.map(plane =>
     <TableRow key={plane.plane}>
