@@ -1,5 +1,6 @@
 {
   "name": "opentx-logbook",
+  "sideEffects": false,
   "version": "1.0.0",
   "description": "Flight logbook from OpenTX logs",
   "main": "index.js",
@@ -11,12 +12,14 @@
     "lint": "tslint -c tslint.json 'src/**/*.ts' 'src/**/*.tsx'",
     "start": "node ./dist/server/server/server.js",
     "start:prod": "cross-env NODE_ENV=production node ./dist/server/server/server.js",
-    "build-client": "cd ./src/client && cross-env NODE_ENV=production webpack -p",
-    "dev-client": "cd ./src/client && webpack-dev-server -w",
+    "build-client": "cd ./src/client && cross-env NODE_ENV=production webpack -p --display-modules",
+    "dev-client": "cd ./src/client && webpack-dev-server -w --display-modules",
     "build-server": "tsc -p ./src/server",
     "dev-server": "tsc-watch -p ./src/server --onSuccess \"node ./dist/server/server/server.js\"",
     "dev": "npm run clean && concurrently --prefix \"[{name}]\" --names \"SERVER,CLIENT\" -c \"bgBlue.bold,bgGreen.bold\" \"npm run dev-server\" \"npm run dev-client\"",
-    "build": "npm run clean && concurrently --prefix \"[{name}]\" --names \"SERVER,CLIENT\" -c \"bgBlue.bold,bgGreen.bold\" \"npm run build-server\" \"npm run build-client\""
+    "build": "npm run clean && concurrently --prefix \"[{name}]\" --names \"SERVER,CLIENT\" -c \"bgBlue.bold,bgGreen.bold\" \"npm run build-server\" \"npm run build-client\"",
+    "profile": "cd ./src/client && cross-env NODE_ENV=production webpack -p --json --profile > /tmp/webpack-build-log.json",
+    "analyze": "webpack-bundle-analyzer /tmp/webpack-build-log.json dist/public/"
   },
   "keywords": [
     "typescript",
@@ -84,6 +87,7 @@
     "typescript": "^3.2.2",
     "url-loader": "^1.1.2",
     "webpack": "^4.28.3",
+    "webpack-bundle-analyzer": "^3.3.2",
     "webpack-cli": "^3.1.2",
     "webpack-dev-server": "^3.1.14"
   }

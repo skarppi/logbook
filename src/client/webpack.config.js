@@ -17,7 +17,8 @@ const plugins = [
   }),
   new webpack.DefinePlugin({
     'process.env.PUBLIC_URL': JSON.stringify(config.PUBLIC_URL)
-  })
+  }),
+  new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/)
 ];
 
 // if (!config.IS_PRODUCTION) {
@@ -51,7 +52,10 @@ module.exports = {
     rules: [
       {
         test: /\.tsx?$/,
-        use: "awesome-typescript-loader"
+        loader: "awesome-typescript-loader",
+        options: {
+          "silent": true
+        }
       },
       {
         test: /\.css$/,
