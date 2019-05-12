@@ -6,18 +6,24 @@ import Select from '@material-ui/core/Select';
 import Input from '@material-ui/core/Input';
 import MenuItem from '@material-ui/core/MenuItem';
 import { Flight } from '../../../../shared/flights/types';
+import { useState, useEffect } from 'react';
+import { getApi } from '../../../utils/api-facade';
 const css = require('../../../common/Form.css');
 
 interface IFlightLocationProps {
   flight: Flight;
-  locations: string[];
   save: (object) => {};
 }
 
-export const FlightLocation = ({ flight, locations, save }: IFlightLocationProps) => {
+export const FlightLocation = ({ flight, save }: IFlightLocationProps) => {
 
-  const [location, setLocation] = React.useState(flight.notes && flight.notes.location || '');
-  const [createNew, setCreateNew] = React.useState(false);
+  const [locations, setLocations] = useState<string[]>([]);
+  const [location, setLocation] = useState(flight.notes && flight.notes.location || '');
+  const [createNew, setCreateNew] = useState(false);
+
+  useEffect(() => {
+    getApi('locations').then(setLocations);
+  }, []);
 
   const changeFlightLocation = ({ target: { value } }) => {
     if (value === 'new') {
@@ -41,7 +47,7 @@ export const FlightLocation = ({ flight, locations, save }: IFlightLocationProps
   };
 
   const renderExistingLocations = () => {
-    if (locations.indexOf(location) === -1) {
+    if (location.length > 0 && locations.indexOf(location) === -1) {
       locations.push(location);
       locations.sort();
     }

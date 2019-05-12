@@ -41,13 +41,6 @@ export const flightsReducer = function reducer(
   }
 
   switch (action.type) {
-    case getType(actions.addFlights): {
-      return {
-        ...state,
-        ...normalize(action.payload)
-      };
-    }
-
     // DAYS
 
     case getType(actions.fetchFlightDays.success): {
@@ -69,22 +62,6 @@ export const flightsReducer = function reducer(
       return {
         ...state,
         ...normalize(action.payload)
-      };
-    }
-
-    // SINGLE FLIGHT
-
-    case getType(actions.fetchLocations.success): {
-      return {
-        ...state,
-        locations: action.payload
-      };
-    }
-
-    case getType(actions.fetchVideos.success): {
-      return {
-        ...state,
-        videos: action.payload
       };
     }
 

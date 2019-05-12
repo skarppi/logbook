@@ -3,7 +3,6 @@ import * as actions from "./actions";
 import {
   handleCall,
   putApi,
-  getVideosApi
 } from "../../utils/api-facade";
 import { formatDate } from "../../../shared/utils/date";
 import { Flight } from "../../../shared/flights/types";
@@ -28,19 +27,6 @@ function* handleResetFlight(action) {
   );
 }
 
-function* handleFetchLocations() {
-  return yield handleCall(actions.fetchLocations, "locations/");
-}
-
-function* handleFetchVideos(action) {
-  return yield handleCall(
-    actions.fetchVideos,
-    "",
-    getVideosApi,
-    action.payload
-  );
-}
-
 function* watchFetchFlightDaysRequest() {
   yield takeEvery(actions.fetchFlightDays.request, handleFetchFlightDays);
 }
@@ -53,21 +39,11 @@ function* watchResetFlightRequest() {
   yield takeEvery(actions.resetFlight.request, handleResetFlight);
 }
 
-function* watchFetchLocationsRequest() {
-  yield takeEvery(actions.fetchLocations.request, handleFetchLocations);
-}
-
-function* watchFetchVideosRequest() {
-  yield takeEvery(actions.fetchVideos.request, handleFetchVideos);
-}
-
 // We can also use `fork()` here to split our saga into multiple watchers.
 export function* flightsSaga() {
   yield all([
     fork(watchFetchFlightDaysRequest),
     fork(watchFetchFlightsRequest),
-    fork(watchResetFlightRequest),
-    fork(watchFetchLocationsRequest),
-    fork(watchFetchVideosRequest)
+    fork(watchResetFlightRequest)
   ]);
 }

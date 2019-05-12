@@ -10,7 +10,7 @@ import TableBody from '@material-ui/core/TableBody';
 import * as React from "react";
 import { NavLink, Route } from "react-router-dom";
 import { RouteComponentProps } from "react-router";
-import { fetchFlightDays, fetchLocations } from "../actions";
+import { fetchFlightDays } from "../actions";
 import { FlightsState } from "../reducer";
 import { connect } from "react-redux";
 import { RootState } from "../../../app";
@@ -100,7 +100,6 @@ class FlightDays extends React.Component<AllProps> {
 
   public async componentWillMount() {
     this.props.fetchFlightDays();
-    this.props.fetchLocations();
   }
 }
 
@@ -109,8 +108,7 @@ const mapStateToProps = (state: RootState) => ({
 });
 
 const mapDispatchToProps = {
-  fetchFlightDays: fetchFlightDays.request,
-  fetchLocations: fetchLocations.request
+  fetchFlightDays: fetchFlightDays.request
 };
 
 export default connect<any, any>(

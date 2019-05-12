@@ -14,7 +14,7 @@ import { FlightDuration } from './FlightDuration';
 import { FlightBatteries } from './FlightBatteries';
 import { FlightLocation } from './FlightLocation';
 
-import Videos from '../Videos/Videos';
+import { Videos } from '../Videos/Videos';
 
 const css = require('../../../common/Form.css');
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -135,7 +135,7 @@ export const planes: { [key: string]: Plane } = {
   }
 };
 
-const FlightDetailsComponent = ({ entry, locations, history }) => {
+const FlightDetailsComponent = ({ entry, history }) => {
 
   const [read, refreshFlight] = useQuery<IQueryResponse>({
     query: Query,
@@ -219,7 +219,6 @@ const FlightDetailsComponent = ({ entry, locations, history }) => {
 
           <FlightLocation
             flight={flight}
-            locations={locations}
             save={updateFlight}
           />
         </div>

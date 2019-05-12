@@ -49,12 +49,6 @@ export function deleteApi<T>(path: string): Promise<T> {
   return axios.delete(`${apiPath}/${path}`).then(res => res.data as T);
 }
 
-export function getVideosApi<T>(path: string, params: object = {}): Promise<T> {
-  return axios
-    .get(`${apiPath}/videos`, { params })
-    .then(res => res.data as T);
-}
-
 export function uploadFlightsAPI(
   data: FormData,
   onUploadProgress: (progressEvent: any) => void
