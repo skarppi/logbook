@@ -6,8 +6,9 @@ import Select from '@material-ui/core/Select';
 import Input from '@material-ui/core/Input';
 import MenuItem from '@material-ui/core/MenuItem';
 import { Flight } from '../../../../shared/flights/types';
-import { useState, useEffect } from 'react';
-import { getApi } from '../../../utils/api-facade';
+import { useState } from 'react';
+import { useQuery } from 'urql';
+import gql from 'graphql-tag';
 const css = require('../../../common/Form.css');
 
 interface IFlightLocationProps {
@@ -15,15 +16,32 @@ interface IFlightLocationProps {
   save: (object) => {};
 }
 
+const Query = gql`
+  query {
+    allLocations {
+      nodes {
+        location
+        flights
+      }
+    }
+  }`;
+
+interface IQueryResponse {
+  allLocations: {
+    nodes: Array<{
+      location: string,
+      flights: number
+    }>;
+  };
+}
+
+
 export const FlightLocation = ({ flight, save }: IFlightLocationProps) => {
 
-  const [locations, setLocations] = useState<string[]>([]);
+  const [query] = useQuery<IQueryResponse>({ query: Query });
+
   const [location, setLocation] = useState(flight.notes && flight.notes.location || '');
   const [createNew, setCreateNew] = useState(false);
-
-  useEffect(() => {
-    getApi('locations').then(setLocations);
-  }, []);
 
   const changeFlightLocation = ({ target: { value } }) => {
     if (value === 'new') {
@@ -47,6 +65,9 @@ export const FlightLocation = ({ flight, save }: IFlightLocationProps) => {
   };
 
   const renderExistingLocations = () => {
+    const locations = query.data && query.data.allLocations.nodes.map(l =>
+      l.location) || [];
+
     if (location.length > 0 && locations.indexOf(location) === -1) {
       locations.push(location);
       locations.sort();

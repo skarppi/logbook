@@ -70,7 +70,7 @@ export const FlightsUpload = ({ match: { params: { id } } }) => {
     const detailsRow = current && (
       <TableRow key={flight.id + '-details'}>
         <TableCell colSpan={5}>
-          <FlightDetails entry={flight} locations={[]} />
+          <FlightDetails entry={flight} />
         </TableCell>
       </TableRow>
     );

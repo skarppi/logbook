@@ -29,7 +29,7 @@ type AllProps = FlightsState &
 
 class Flights extends React.Component<AllProps> {
   public render() {
-    const { flights, flightIds, locations } = this.props;
+    const { flights, flightIds } = this.props;
 
     const path = `/flights/${this.props.match.params.date}`;
 
@@ -40,7 +40,7 @@ class Flights extends React.Component<AllProps> {
       const detailsRow = current && (
         <TableRow key={id + "-details"} className={css.opened}>
           <TableCell colSpan={5}>
-            <FlightDetails entry={flight} locations={locations} />
+            <FlightDetails entry={flight} />
           </TableCell>
         </TableRow>
       );
@@ -84,8 +84,7 @@ class Flights extends React.Component<AllProps> {
 
 const mapStateToProps = (state: RootState) => ({
   flights: state.flights.flights,
-  flightIds: state.flights.flightIds,
-  locations: state.flights.locations
+  flightIds: state.flights.flightIds
 });
 
 const mapDispatchToProps = {

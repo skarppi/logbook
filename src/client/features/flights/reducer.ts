@@ -8,16 +8,12 @@ export type FlightsState = Readonly<{
   flightDays: FlightDay[];
   flights: { [key: string]: Flight };
   flightIds: string[];
-  locations: string[];
-  videos: string[];
 }>;
 
 const initialState: FlightsState = {
   flightDays: [],
   flights: {},
-  flightIds: [],
-  locations: [],
-  videos: []
+  flightIds: []
 };
 
 /*

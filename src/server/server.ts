@@ -1,7 +1,6 @@
 import * as express from 'express';
 import * as bodyParser from 'body-parser';
 import { flightsRouter } from './routes/flights-router';
-import { locationsRouter } from './routes/locations-router';
 import { videosRouter } from './routes/videos-router';
 import { staticsRouter } from './routes/statics-router';
 import { staticsDevRouter } from './routes/statics-dev-router';
@@ -17,7 +16,6 @@ app.use(bodyParser.json());
 const publicUrl = config.PUBLIC_URL;
 
 app.use(`${publicUrl}/api/flights`, flightsRouter());
-app.use(`${publicUrl}/api/locations`, locationsRouter());
 app.use(`${publicUrl}/api/videos`, videosRouter());
 
 app.use(`${publicUrl}/api/`,

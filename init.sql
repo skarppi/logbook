@@ -98,3 +98,14 @@ SELECT to_char(start_date, 'YYYY-01-01') as date,
       FROM flights 
       GROUP BY 1,2 
       ORDER BY date;
+
+
+--- locations
+
+DROP VIEW locations;
+CREATE VIEW locations as
+  SELECT notes->>'location' as location, count(*) as flights
+    from flights 
+    where notes->>'location' is not null and notes->>'location' != '' 
+    group by location
+    order by location;
