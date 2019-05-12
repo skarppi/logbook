@@ -21,7 +21,7 @@ import ClearIcon from '@material-ui/icons/Clear';
 import { BatteryState } from '../../../../shared/batteries';
 import gql from 'graphql-tag';
 import { useMutation } from 'urql';
-import Loading from '../../loading/Loading/Loading';
+import { Loading } from '../../loading/Loading';
 
 interface IFlightBatteryProps {
   plane: Plane;

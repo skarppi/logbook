@@ -9,7 +9,7 @@ import { BatteryState } from '../../../../shared/batteries';
 import { Battery } from '../../../../shared/batteries/types';
 import gql from 'graphql-tag';
 import { useMutation } from 'urql';
-import Loading from '../../loading/Loading/Loading';
+import { Loading } from '../../loading/Loading';
 const css = require('../../../common/Form.css');
 
 interface IBatteryProps {

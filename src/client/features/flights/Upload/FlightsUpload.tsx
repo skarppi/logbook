@@ -11,7 +11,7 @@ import TableFooter from '@material-ui/core/TableFooter';
 import * as React from 'react';
 import classNames from 'classnames';
 import Dropzone from 'react-dropzone';
-import { NavLink, Route } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import { Flight } from '../../../../shared/flights/types';
 import { uploadFlightsAPI } from '../../../utils/api-facade';
 import { FlightDetails } from '../Flight/Flight';

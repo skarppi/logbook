@@ -14,7 +14,7 @@ import * as React from 'react';
 import { NavLink, Link } from 'react-router-dom';
 import { formatDate, formatDateTime } from '../../../../shared/utils/date';
 import { Battery } from '../../../../shared/batteries/types';
-import Loading from '../../loading/Loading/Loading';
+import { Loading } from '../../loading/Loading';
 import { BatteryDetails } from '../Battery/Battery';
 
 import ClosedIcon from '@material-ui/icons/KeyboardArrowRight';

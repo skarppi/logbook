@@ -19,7 +19,7 @@ import { Videos } from '../Videos/Videos';
 const css = require('../../../common/Form.css');
 import DeleteIcon from '@material-ui/icons/Delete';
 import RefreshIcon from '@material-ui/icons/Refresh';
-import Loading from '../../loading/Loading/Loading';
+import { Loading } from '../../loading/Loading';
 import { useQuery, useMutation } from 'urql';
 import gql from 'graphql-tag';
 import { Battery } from '../../../../shared/batteries/types';

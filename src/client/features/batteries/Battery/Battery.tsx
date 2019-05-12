@@ -20,7 +20,7 @@ import { useQuery, useMutation } from 'urql';
 
 const css = require('../../../common/Form.css');
 import DeleteIcon from '@material-ui/icons/Delete';
-import Loading from '../../loading/Loading/Loading';
+import { Loading } from '../../loading/Loading';
 import { formatDate } from '../../../../shared/utils/date';
 
 const batteryTypes = ['LiPo', 'LiHV'];

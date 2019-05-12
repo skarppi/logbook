@@ -1,97 +1,107 @@
-import Table from "@material-ui/core/Table";
-import TableRow from "@material-ui/core/TableRow";
-import TableCell from "@material-ui/core/TableCell";
-import TableBody from "@material-ui/core/TableBody";
-import * as React from "react";
-import { NavLink } from "react-router-dom";
-import { RouteComponentProps } from "react-router";
-import { formatDuration, formatTime } from "../../../../shared/utils/date";
-import { FlightsState } from "../reducer";
-import { RootState } from "../../../app";
-import { fetchFlights } from "../actions";
-import { connect } from "react-redux";
-import { FlightDetails } from "../Flight/Flight";
+import Table from '@material-ui/core/Table';
+import TableRow from '@material-ui/core/TableRow';
+import TableCell from '@material-ui/core/TableCell';
+import TableBody from '@material-ui/core/TableBody';
+import * as React from 'react';
+import { NavLink } from 'react-router-dom';
+import { formatDuration, formatTime, formatDate } from '../../../../shared/utils/date';
+import { FlightDetails } from '../Flight/Flight';
 
-import ClosedIcon from "@material-ui/icons/ArrowRight";
-import OpenedIcon from "@material-ui/icons/ArrowDropDown";
-import Loading from "../../loading/Loading/Loading";
+import ClosedIcon from '@material-ui/icons/ArrowRight';
+import OpenedIcon from '@material-ui/icons/ArrowDropDown';
+import { Loading } from '../../loading/Loading';
+import gql from 'graphql-tag';
+import { Flight } from '../../../../shared/flights/types';
+import { useQuery } from 'urql';
+import { addDays } from 'date-fns';
+import { withRouter } from 'react-router-dom';
 
-const css = require("./Flights.css");
+const css = require('./Flights.css');
 
-interface RouteParams {
-  date: string;
-  id?: string;
+const Query = gql`
+  query($from:Datetime!,$to:Datetime!) {
+    allFlights(filter: {startDate: {
+        greaterThanOrEqualTo: $from,
+        lessThan: $to
+      }}) {
+      nodes {
+        id
+        plane
+        session
+        startDate
+        endDate
+        duration
+        armedTime
+        flightTime
+        notes
+        batteryCyclesByFlightId {
+          nodes {
+            batteryName
+          }
+        }
+      }
+    }
+  }`;
+
+interface IQueryResponse {
+  allFlights: {
+    nodes: Flight[];
+  }
 }
 
-type AllProps = FlightsState &
-  typeof mapDispatchToProps &
-  RouteComponentProps<RouteParams>;
+const FlightsComponent = ({ match: { params: { date, id } } }) => {
 
-class Flights extends React.Component<AllProps> {
-  public render() {
-    const { flights, flightIds } = this.props;
+  const [read] = useQuery<IQueryResponse>({
+    query: Query,
+    variables: { from: date, to: formatDate(addDays(new Date(date), 1)) }
+  });
 
-    const path = `/flights/${this.props.match.params.date}`;
+  const path = `/flights/${date}`;
 
-    const rows = flightIds.map((id, index) => {
-      const flight = flights[id];
-      const current = this.props.match.params.id === flight.id;
+  const flights = read.data && read.data.allFlights.nodes || [];
 
-      const detailsRow = current && (
-        <TableRow key={id + "-details"} className={css.opened}>
+  const rows = flights.map((flight, index) => {
+    const isCurrent = id === flight.id;
+
+    const batteries = flight.batteryCyclesByFlightId.nodes
+      .map(b => b.batteryName)
+      .join(',');
+
+    return <React.Fragment key={flight.id}>
+      <TableRow>
+        <TableCell>
+          <NavLink to={isCurrent ? path : `${path}/${flight.id}`}>
+            {(isCurrent && <OpenedIcon />) || <ClosedIcon />}
+            {formatTime(flight.startDate)}{' '}
+            {flight.notes &&
+              flight.notes.location &&
+              `(${flight.notes.location})`}
+          </NavLink>
+        </TableCell>
+        <TableCell>{flights.length - index}</TableCell>
+        <TableCell>
+          {flight.plane} {batteries && `(${batteries})`}
+        </TableCell>
+        <TableCell>{formatDuration(flight.flightTime)}</TableCell>
+      </TableRow>
+      {isCurrent && (
+        <TableRow className={css.opened}>
           <TableCell colSpan={5}>
             <FlightDetails entry={flight} />
           </TableCell>
         </TableRow>
-      );
+      )}
+    </React.Fragment >;
+  });
 
-      return [
-        <TableRow key={id}>
-          <TableCell>
-            <NavLink to={current ? path : `${path}/${id}`}>
-              {(current && <OpenedIcon />) || <ClosedIcon />}
-              {formatTime(flight.startDate)}{" "}
-              {flight.notes &&
-                flight.notes.location &&
-                `(${flight.notes.location})`}
-            </NavLink>
-          </TableCell>
-          <TableCell>{flightIds.length - index}</TableCell>
-          <TableCell>
-            {flight.plane} {flight.batteryNames && `(${flight.batteryNames})`}
-          </TableCell>
-          <TableCell>{formatDuration(flight.flightTime)}</TableCell>
-          {flight.status && <TableCell>{flight.status}</TableCell>}
-        </TableRow>,
-        detailsRow
-      ];
-    });
-
-    return (
-      <div className={css.loadingParent}>
-        <Table padding="none">
-          <TableBody>{rows}</TableBody>
-        </Table>
-        <Loading actions={[fetchFlights]} overlay={true} />
-      </div>
-    );
-  }
-
-  public async componentWillMount() {
-    this.props.fetchFlights(this.props.match.params.date);
-  }
+  return (
+    <div className={css.loadingParent}>
+      <Table padding='none'>
+        <TableBody>{rows}</TableBody>
+      </Table>
+      <Loading spinning={read.fetching} error={read.error} overlay={true} />
+    </div>
+  );
 }
 
-const mapStateToProps = (state: RootState) => ({
-  flights: state.flights.flights,
-  flightIds: state.flights.flightIds
-});
-
-const mapDispatchToProps = {
-  fetchFlights: fetchFlights.request
-};
-
-export default connect<any, any>(
-  mapStateToProps,
-  mapDispatchToProps
-)(Flights);
+export const Flights = withRouter(FlightsComponent);

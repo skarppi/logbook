@@ -1,13 +1,13 @@
-import csv from "./csv";
-import FlightRepository from "../model/flight";
-import * as config from "../config";
-import SegmentItem from "../model/segmentitem";
-import FlightParser from "./flightparser";
-import { Flight, FlightNotes } from "../../shared/flights/types";
+import csv from './csv';
+import FlightRepository from '../model/flight';
+import * as config from '../config';
+import SegmentItem from '../model/segmentitem';
+import FlightParser from './flightparser';
+import { Flight } from '../../shared/flights/types';
 
 export function parseFile(filename: string): Promise<Flight[]> {
   return csv(`${config.CSV_FOLDER}${filename}`).then(items => {
-    const name = filename.substring(0, filename.lastIndexOf("."));
+    const name = filename.substring(0, filename.lastIndexOf('.'));
     return parseData(name, items);
   });
 }
@@ -43,4 +43,4 @@ export function parseData(id: string, items: object[]): Promise<Flight[]> {
   );
 }
 
-function save(flight: Flight) {}
+function save(flight: Flight) { }

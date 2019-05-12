@@ -7,111 +7,104 @@ import TableRow from '@material-ui/core/TableRow';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableBody from '@material-ui/core/TableBody';
-import * as React from "react";
-import { NavLink, Route } from "react-router-dom";
-import { RouteComponentProps } from "react-router";
-import { fetchFlightDays } from "../actions";
-import { FlightsState } from "../reducer";
-import { connect } from "react-redux";
-import { RootState } from "../../../app";
-import { formatDuration } from "../../../../shared/utils/date";
+import * as React from 'react';
+import { NavLink } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
+import { formatDuration, formatDate } from '../../../../shared/utils/date';
 
-import Flights from "../Flights/Flights";
+import { Flights } from '../Flights/Flights';
 
-import ClosedIcon from "@material-ui/icons/KeyboardArrowRight";
-import OpenedIcon from "@material-ui/icons/KeyboardArrowDown";
-import Loading from "../../loading/Loading/Loading";
+import ClosedIcon from '@material-ui/icons/KeyboardArrowRight';
+import OpenedIcon from '@material-ui/icons/KeyboardArrowDown';
+import { Loading } from '../../loading/Loading';
+import { useQuery } from 'urql';
+import { ITotalRows } from '../../dashboard/Home/GraphOverTime';
+import gql from 'graphql-tag';
 
-const css = require("./FlightDays.css");
+const css = require('./FlightDays.css');
 
-interface RouteParams {
-  date: string;
+const Query = gql`
+  query {
+    allFlightsByDays(orderBy:DATE_DESC) {
+      nodes {
+        date
+        plane
+        flights
+        totalTime
+      }
+    }
+  }
+`;
+
+interface IQueryResponse {
+  allFlightsByDays: {
+    nodes: ITotalRows[]
+  };
 }
 
-type AllProps = FlightsState &
-  typeof mapDispatchToProps &
-  RouteComponentProps<RouteParams>;
+const FlightDaysComponent = ({ match: { params: { date } } }) => {
+  const [read] = useQuery<IQueryResponse>({ query: Query });
 
-class FlightDays extends React.Component<AllProps> {
-  public render() {
-    const { flightDays } = this.props;
+  const flightDaysAndPlanes = read.data && read.data.allFlightsByDays.nodes || [];
 
-    const rows = flightDays.map(flightDay => {
-      const current = this.props.match.params.date === flightDay.date;
+  const flightDays = flightDaysAndPlanes.reduce((objectsByKeyValue, obj) => {
+    const value = formatDate(obj.date);
+    objectsByKeyValue[value] = (objectsByKeyValue[value] || []).concat(obj);
+    return objectsByKeyValue;
+  }, {});
 
-      const dayRow = (
-        <TableRow key={String(flightDay.date)}>
-          <TableCell>
-            {(current && <NavLink to={'/flights'}>
-              <OpenedIcon />
-              {flightDay.date}
-            </NavLink>) || <NavLink to={`/flights/${flightDay.date}`}>
-                <ClosedIcon />
-                {flightDay.date}
-              </NavLink>}
+  const rows = Object.keys(flightDays).map(flightDay => {
+    const planes = flightDays[flightDay];
+    const isCurrent = date === flightDay;
+
+    return <React.Fragment key={flightDay + '-day'}>
+      <TableRow>
+        <TableCell>
+          {(isCurrent && <NavLink to={'/flights'}>
+            <OpenedIcon />
+            {flightDay}
+          </NavLink>) || <NavLink to={`/flights/${flightDay}`}>
+              <ClosedIcon />
+              {flightDay}
+            </NavLink>}
+        </TableCell>
+        <TableCell>{planes.reduce((sum, plane) => sum + plane.flights, 0)}</TableCell>
+        <TableCell>{planes.map(plane => plane.plane).join(', ')}</TableCell>
+        <TableCell>{formatDuration(planes.reduce((sum, plane) => sum + plane.totalTime, 0))}</TableCell>
+      </TableRow>
+      {isCurrent && (
+        <TableRow className={css.opened}>
+          <TableCell colSpan={4}>
+            <Flights />
           </TableCell>
-          <TableCell>{flightDay.flights}</TableCell>
-          <TableCell>{flightDay.planes}</TableCell>
-          <TableCell>{formatDuration(flightDay.flightTime)}</TableCell>
         </TableRow>
-      );
+      )}
+    </React.Fragment>;
+  });
 
-      const flightsRow = (
-        <Route
-          key={flightDay.date + "-route"}
-          path={"/flights/:date(" + flightDay.date + ")/:id?"}
-          render={props => (
-            <TableRow key={flightDay.date + "-flights"} className={css.opened}>
-              <TableCell colSpan={4}>
-                <Flights {...props} />
-              </TableCell>
-            </TableRow>
-          )}
-        />
-      );
-
-      return [dayRow, flightsRow];
-    });
-
-    return (
-      <>
-        <Grid item xs={12} className={css.grid}>
-          <Card>
-            <CardHeader title="Flights List" />
-            <CardContent className={css.loadingParent}>
-              <Table padding="none">
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Date</TableCell>
-                    <TableCell>#</TableCell>
-                    <TableCell>Plane</TableCell>
-                    <TableCell>Flight Time</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>{rows}</TableBody>
-              </Table>
-              <Loading actions={[fetchFlightDays]} overlay={true} />
-            </CardContent>
-          </Card>
-        </Grid>
-      </>
-    );
-  }
-
-  public async componentWillMount() {
-    this.props.fetchFlightDays();
-  }
+  return (
+    <>
+      <Grid item xs={12} className={css.grid}>
+        <Card>
+          <CardHeader title='Flights List' />
+          <CardContent className={css.loadingParent}>
+            <Table padding='none'>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Date</TableCell>
+                  <TableCell>#</TableCell>
+                  <TableCell>Plane</TableCell>
+                  <TableCell>Flight Time</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>{rows}</TableBody>
+            </Table>
+            <Loading spinning={read.fetching} error={read.error} overlay={true} />
+          </CardContent>
+        </Card>
+      </Grid>
+    </>
+  );
 }
 
-const mapStateToProps = (state: RootState) => ({
-  flightDays: state.flights.flightDays
-});
-
-const mapDispatchToProps = {
-  fetchFlightDays: fetchFlightDays.request
-};
-
-export default connect<any, any>(
-  mapStateToProps,
-  mapDispatchToProps
-)(FlightDays);
+export const FlightDays = withRouter(FlightDaysComponent);

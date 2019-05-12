@@ -1,37 +1,34 @@
 import axios from "axios";
 
-import { call, put } from "redux-saga/effects";
-import { push } from "connected-react-router";
-
 const apiPath = `${process.env.PUBLIC_URL}/api`;
 
-export function* handleCall(
-  action,
-  path,
-  api = getApi,
-  body?: any,
-  navigate?: (any) => string
-) {
-  try {
-    const res = yield call(api, path, body);
+// export function* handleCall(
+//   action,
+//   path,
+//   api = getApi,
+//   body?: any,
+//   navigate?: (any) => string
+// ) {
+//   try {
+//     const res = yield call(api, path, body);
 
-    if (res.error) {
-      yield put(action.failure(res.error));
-    } else {
-      yield put(action.success(res));
-      if (navigate) {
-        yield put(push(navigate(res)));
-      }
-    }
-  } catch (err) {
-    if (err instanceof Error) {
-      const msg = (err["response"] && err["response"]["data"]) || err.message;
-      yield put(action.failure(msg));
-    } else {
-      yield put(action.failure("An unknown error occured."));
-    }
-  }
-}
+//     if (res.error) {
+//       yield put(action.failure(res.error));
+//     } else {
+//       yield put(action.success(res));
+//       if (navigate) {
+//         // yield put(push(navigate(res)));
+//       }
+//     }
+//   } catch (err) {
+//     if (err instanceof Error) {
+//       const msg = (err["response"] && err["response"]["data"]) || err.message;
+//       yield put(action.failure(msg));
+//     } else {
+//       yield put(action.failure("An unknown error occured."));
+//     }
+//   }
+// }
 
 export function getApi<T>(path: string, params: object = {}): Promise<T> {
   return axios.get(`${apiPath}/${path}`, { params }).then(res => res.data as T);
