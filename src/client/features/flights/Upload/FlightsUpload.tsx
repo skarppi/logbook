@@ -23,6 +23,8 @@ import {
 import ClosedIcon from '@material-ui/icons/ArrowRight';
 import OpenedIcon from '@material-ui/icons/ArrowDropDown';
 import { useState } from 'react';
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
 
 const css = require('./FlightsUpload.css');
 
@@ -31,6 +33,8 @@ export const FlightsUpload = ({ match: { params: { id } } }) => {
   const [flights, setFlights] = useState<Flight[]>([]);
   const [loaded, setLoaded] = useState(0);
   const [error, setError] = useState<string>(undefined);
+
+  const [splitSeconds, setSplitSeconds] = React.useState(30);
 
   const dropRendered = (getRootProps, getInputProps, isDragActive) => {
     return (
@@ -99,7 +103,7 @@ export const FlightsUpload = ({ match: { params: { id } } }) => {
     const data = new FormData();
     files.forEach(file => data.append('flight', file, file.name));
 
-    uploadFlightsAPI(data, (progressEvent: any) => {
+    uploadFlightsAPI(data, splitSeconds, (progressEvent: any) => {
       setLoaded((progressEvent.loaded / progressEvent.total) * 100);
     }).then(res => {
       setFlights(res.data.map(f => {
@@ -111,13 +115,21 @@ export const FlightsUpload = ({ match: { params: { id } } }) => {
     });
   }
 
-
   return (
     <>
       <Grid item xs={12}>
         <Card>
           <CardHeader title='Upload New Flights' />
           <CardContent>
+            <span>Split flights after a gap of </span>
+            <Select value={splitSeconds} onChange={({ target: { value } }) => {
+              setSplitSeconds(Number(value));
+            }}>
+              <MenuItem value={5}>5 seconds</MenuItem>
+              <MenuItem value={15}>15 seconds</MenuItem>
+              <MenuItem value={30}>30 seconds</MenuItem>
+              <MenuItem value={60}>1 minute</MenuItem>
+            </Select>
             <Dropzone onDrop={handleDrop}>
               {({ getRootProps, getInputProps, isDragActive }) =>
                 dropRendered(getRootProps, getInputProps, isDragActive)

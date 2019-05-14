@@ -48,9 +48,13 @@ export function deleteApi<T>(path: string): Promise<T> {
 
 export function uploadFlightsAPI(
   data: FormData,
+  split: number,
   onUploadProgress: (progressEvent: any) => void
 ) {
   return axios.post(`${apiPath}/flights`, data, {
+    headers: {
+      SPLIT_FLIGHTS_AFTER_SECONDS: split
+    },
     onUploadProgress: onUploadProgress
   });
 }

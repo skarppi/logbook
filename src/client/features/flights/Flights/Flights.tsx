@@ -20,7 +20,7 @@ const css = require('./Flights.css');
 
 const Query = gql`
   query($from:Datetime!,$to:Datetime!) {
-    allFlights(filter: {startDate: {
+    allFlights(orderBy:START_DATE_DESC, filter: {startDate: {
         greaterThanOrEqualTo: $from,
         lessThan: $to
       }}) {

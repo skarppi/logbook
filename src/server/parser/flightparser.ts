@@ -24,7 +24,7 @@ class FlightFromCsv implements Flight {
     } else {
       this.id = name;
     }
-    
+
     this.plane = plane;
     this.session = session;
     this.segments = segments;
@@ -47,14 +47,16 @@ export default class FlightParser {
   currentSegment: SegmentParser = new SegmentParser();
   currentSegments: Segment[] = [];
   sessionCounter: number = 0;
+  splitFlightsAfterSeconds: number;
   flights: Flight[] = [];
 
-  constructor(name: string) {
+  constructor(name: string, splitFlightsAfterSeconds: number) {
     this.name = name;
+    this.splitFlightsAfterSeconds = splitFlightsAfterSeconds;
   }
 
   appendItem(item: SegmentItem) {
-    if (this.currentSegment.splitFlightAt(item.timestamp)) {
+    if (this.currentSegment.splitFlightAt(item.timestamp, this.splitFlightsAfterSeconds)) {
       console.log(`Split flight at ${item.timestamp}`);
       this.endFlight();
     }

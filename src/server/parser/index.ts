@@ -5,14 +5,14 @@ import SegmentItem from '../model/segmentitem';
 import FlightParser from './flightparser';
 import { Flight } from '../../shared/flights/types';
 
-export function parseFile(filename: string): Promise<Flight[]> {
+export function parseFile(filename: string, splitFlightsAfterSeconds: number): Promise<Flight[]> {
   return csv(`${config.CSV_FOLDER}${filename}`).then(items => {
     const name = filename.substring(0, filename.lastIndexOf('.'));
-    return parseData(name, items);
+    return parseData(name, items, splitFlightsAfterSeconds);
   });
 }
 
-export function parseData(id: string, items: object[]): Promise<Flight[]> {
+export function parseData(id: string, items: object[], splitFlightsAfterSeconds: number): Promise<Flight[]> {
   const parsed = items.reduce<FlightParser>(
     (state: FlightParser, item2, index) => {
       const item = new SegmentItem(item2);
@@ -24,7 +24,7 @@ export function parseData(id: string, items: object[]): Promise<Flight[]> {
 
       return state;
     },
-    new FlightParser(id)
+    new FlightParser(id, splitFlightsAfterSeconds)
   );
 
   return Promise.all(

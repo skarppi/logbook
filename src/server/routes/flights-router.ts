@@ -16,7 +16,8 @@ export function flightsRouter() {
           flight.segments.reduce(
             (res, segment) => [...res, ...segment.rows],
             []
-          )
+          ),
+          Number.MAX_VALUE
         )
       )
       .then(updated => res.json(updated[0]))
@@ -42,7 +43,10 @@ export function flightsRouter() {
   const upload = multer({ storage: storage, fileFilter: fileFilter });
 
   router.post("", upload.array("flight"), (req: any, res, next) => {
-    Promise.all(req.files.map(file => parseFile(file.originalname)))
+
+    const splitFlightsAfterSeconds = req.headers.split_flights_after_seconds || 30;
+
+    Promise.all(req.files.map(file => parseFile(file.originalname, splitFlightsAfterSeconds)))
       .then(flights => {
         const flatten = []
           .concat(...flights)

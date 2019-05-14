@@ -113,6 +113,10 @@ class LogDelegate: NSObject, SessionDownloadTaskDelegate {
     }
 }
 
-struct SambaError: Error {
+struct SambaError: Error, LocalizedError {
     let text: String
+    
+    var errorDescription: String? {
+        return text
+    }
 }

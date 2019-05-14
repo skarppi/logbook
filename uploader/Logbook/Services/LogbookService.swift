@@ -19,36 +19,48 @@ class LogbookService {
         self.dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
     }
     
-    private func flightsUrl(logbookApi: String) -> String {
-        return logbookApi + (logbookApi.last! == "/" ? "" : "/") + "api/flights"
+    private func apiUrl(logbookApi: String) -> String {
+        return logbookApi + (logbookApi.last! == "/" ? "" : "/") + "api/"
     }
     
     func fetchLatestFlight(logbookApi: String) -> Promise<Date?> {
-        let url = flightsUrl(logbookApi: logbookApi)
+        let url = apiUrl(logbookApi: logbookApi) + "graphql"
         
-        return fetch(url: url).then { flightDates -> Promise<Date?> in
-            if let flightDate = flightDates?.array?.first {
-                return self.fetch(url: "\(url)/\(flightDate["date"])").map { flights in
-                    if let flight = flights?.array?.first {
-                        return self.dateFormatter.date(from: flight["endDate"].stringValue)
-                    } else {
-                        return nil
+        let query = """
+            query {
+                allFlights(first:1, orderBy:START_DATE_DESC) {
+                    nodes {
+                        endDate
                     }
                 }
             }
-            return Promise.value(nil)
+"""
+        
+        return fetch(url: url, body: query).map { res -> Date? in
+            if let lastFlight = res?["data"]["allFlights"]["nodes"].array?.first?["endDate"].string {
+                return self.dateFormatter.date(from: lastFlight)
+            } else if let error = res?["errors"].arrayValue.first?["message"].string {
+                throw LogbookError(text: error)
+            }
+            return nil
         }
     }
     
-    private func fetch(url: String) -> Promise<JSON?> {
+    private func fetch(url: String, body: String) -> Promise<JSON?> {
         print("Fetching data from \(url)")
-        return URLSession.shared.dataTask(.promise, with: URL(string: url)!).map { data, _ -> JSON in
+        let url = URL(string: url)!
+        var rq = URLRequest(url: url)
+        rq.httpMethod = "POST"
+        rq.httpBody = body.data(using: String.Encoding.utf8)
+        rq.setValue("application/graphql", forHTTPHeaderField: "Content-Type")
+        
+        return URLSession.shared.dataTask(.promise, with: rq).map { data, _ -> JSON in
             return try JSON(data: data)
         }
     }
     
-    func upload(logbookApi: String, files: [URL]) -> Promise<[String]> {
-        let url = URL(string: flightsUrl(logbookApi: logbookApi))!
+    func upload(logbookApi: String, files: [URL], splitAfterSeconds: Int) -> Promise<[String]> {
+        let url = URL(string: apiUrl(logbookApi: logbookApi) + "flights")!
         var rq = URLRequest(url: url)
         rq.httpMethod = "POST"
         
@@ -67,6 +79,7 @@ class LogbookService {
             body.appendString("\r\n")
         }
         body.appendString("--".appending(boundary).appending("--\r\n"))
+        rq.setValue(String(splitAfterSeconds), forHTTPHeaderField: "SPLIT_FLIGHTS_AFTER_SECONDS")
         rq.httpBody = body as Data
         
         print("Fetching data from \(url)")
@@ -84,5 +97,13 @@ extension NSMutableData {
     func appendString(_ string: String) {
         let data = string.data(using: String.Encoding.utf8, allowLossyConversion: false)
         append(data!)
+    }
+}
+
+struct LogbookError: Error, LocalizedError {
+    let text: String
+  
+    var errorDescription: String? {
+        return text
     }
 }

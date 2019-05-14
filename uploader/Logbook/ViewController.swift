@@ -16,6 +16,8 @@ class ViewController: UIViewController {
     
     @IBOutlet weak var logbookApiUrl: UITextField!
     
+    @IBOutlet weak var splitFlightsAfterSeconds: UITextField!
+    
     @IBOutlet weak var statusLabel: UILabel!
     
     @IBOutlet weak var refreshButton: UIButton!
@@ -38,6 +40,10 @@ class ViewController: UIViewController {
         if let logbookApiUrl = UserDefaults.standard.string(forKey: "logbookApiUrl") {
             self.logbookApiUrl.text = logbookApiUrl
         }
+        
+        if let splitFlightsAfterSeconds = UserDefaults.standard.string(forKey: "splitFlightsAfterSeconds") {
+            self.splitFlightsAfterSeconds.text = splitFlightsAfterSeconds
+        }
     }
     
     @IBAction func saveSmbName() {
@@ -47,6 +53,11 @@ class ViewController: UIViewController {
     
     @IBAction func saveLogbookApiUrl() {
         UserDefaults.standard.set(self.logbookApiUrl.text!, forKey: "logbookApiUrl")
+        UserDefaults.standard.synchronize()
+    }
+
+    @IBAction func saveSplitFlightsAfterSeconds() {
+        UserDefaults.standard.set(self.splitFlightsAfterSeconds.text!, forKey: "splitFlightsAfterSeconds")
         UserDefaults.standard.synchronize()
     }
     
@@ -127,7 +138,8 @@ class ViewController: UIViewController {
     
     @IBAction func sync() {
         self.log("Uploading flights...")
-        logbook.upload(logbookApi: self.logbookApiUrl.text!, files: self.files).done { flights in
+        let split = self.splitFlightsAfterSeconds.text ?? ""
+        logbook.upload(logbookApi: self.logbookApiUrl.text!, files: self.files, splitAfterSeconds: Int(split) ?? 30).done { flights in
             self.log(flights.joined(separator: "\n"))
             self.log("DONE")
         }

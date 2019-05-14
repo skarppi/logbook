@@ -51,8 +51,8 @@ CREATE TABLE Battery_Cycles (
 );
 
 CREATE INDEX battery_cycles_battery_index ON Battery_Cycles(battery_name);
-CREATE INDEX batter_cycles_date_index ON Battery_Cycles(date);
-CREATE INDEX batter_cycles_flight_index ON Battery_Cycles(flight_id);
+CREATE INDEX battery_cycles_date_index ON Battery_Cycles(date);
+CREATE INDEX battery_cycles_flight_index ON Battery_Cycles(flight_id);
 
 -- battery cycle deletion
 
