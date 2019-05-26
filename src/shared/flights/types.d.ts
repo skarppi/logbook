@@ -48,4 +48,8 @@ export interface Segment {
   duration: number;
 }
 
-export interface SegmentItem { }
+export interface SegmentItem {
+  Date: string,
+  Thr: string,
+  Time: string, // "12:00:26.600"
+}

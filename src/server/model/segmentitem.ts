@@ -1,3 +1,5 @@
+import { SegmentItem } from '../../shared/flights/types';
+
 // flight timer stops when you disarm, and continues when you arm and apply at least 5% throttle
 const ARMED_SWITCH = "SB";
 const NOT_ARMED_VALUE = "-1";
@@ -6,13 +8,18 @@ const THR_TRESHOLD = 0.05;
 const THR_MIN = -1024;
 const THR_MAX = 1024;
 
-export default class SegmentItem {
+export default class SegmentItemImpl implements SegmentItem {
+
+  public Date: string;
+  public Thr: string;
+  public Time: string; // "12:00:26.600"
+
   constructor(args) {
     Object.assign(this, args);
   }
 
   get timestamp(): Date {
-    return new Date(`${this["Date"]} ${this["Time"]}`);
+    return new Date(`${this.Date} ${this.Time}`);
   }
 
   get armed(): boolean {

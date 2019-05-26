@@ -1,61 +1,29 @@
-import Segment from "../model/segment";
-import SegmentItem from "../model/segmentitem";
-import SegmentParser from "./segmentparser";
-import { Flight, FlightNotes } from "../../shared/flights/types";
-import { durationInSeconds } from "../../shared/utils/date";
-import { SegmentType } from "../../shared/flights";
-
-class FlightFromCsv implements Flight {
-  id: string;
-  plane: string;
-  session: number;
-  startDate: Date;
-  endDate: Date;
-  duration: number;
-  armedTime: number;
-  flightTime: number;
-  notes: FlightNotes = undefined;
-  segments: Segment[];
-
-  constructor(name: string, plane: string, session: number, segments: Segment[]) {
-
-    if (!name.includes("Session")) {
-      this.id = `${name}-Session${session}`;
-    } else {
-      this.id = name;
-    }
-
-    this.plane = plane;
-    this.session = session;
-    this.segments = segments;
-    this.startDate = segments[0].startDate;
-    this.endDate = segments[segments.length - 1].endDate;
-    this.duration = durationInSeconds(this.startDate, this.endDate);
-
-    this.armedTime = this.segments
-      .filter(segment => segment.type !== SegmentType.stopped)
-      .reduce((sum, segment) => sum + segment.duration, 0);
-
-    this.flightTime = this.segments
-      .filter(segment => segment.type === SegmentType.flying)
-      .reduce((sum, segment) => sum + segment.duration, 0);
-  }
-}
+import Segment from '../model/segment';
+import SegmentItem from '../model/segmentitem';
+import SegmentParser from './segmentparser';
+import { Flight } from '../../shared/flights/types';
+import { SegmentType } from '../../shared/flights';
+import { FlightImpl } from './flight';
+import { flightsRouter } from '../routes/flights-router';
 
 export default class FlightParser {
-  name: string;
-  currentSegment: SegmentParser = new SegmentParser();
-  currentSegments: Segment[] = [];
-  sessionCounter: number = 0;
-  splitFlightsAfterSeconds: number;
-  flights: Flight[] = [];
+  private name: string;
+  private currentSegment: SegmentParser = new SegmentParser();
+  private currentSegments: Segment[] = [];
+  private sessionCounter: number = 0;
+  private splitFlightsAfterSeconds: number;
+  private flights: Flight[] = [];
 
   constructor(name: string, splitFlightsAfterSeconds: number) {
     this.name = name;
     this.splitFlightsAfterSeconds = splitFlightsAfterSeconds;
   }
 
-  appendItem(item: SegmentItem) {
+  public getFlights(): Flight[] {
+    return this.flights;
+  }
+
+  public appendItem(item: SegmentItem) {
     if (this.currentSegment.splitFlightAt(item.timestamp, this.splitFlightsAfterSeconds)) {
       console.log(`Split flight at ${item.timestamp}`);
       this.endFlight();
@@ -73,24 +41,13 @@ export default class FlightParser {
     this.currentSegment.appendItem(type, item);
   }
 
-  private get plane() {
-    return this.name.split("-")[0];
-  }
-
-  private endSegment() {
-    const segment = this.currentSegment.endSegment();
-    if (segment) {
-      this.currentSegments.push(segment);
-    }
-  }
-
-  endFlight() {
+  public endFlight() {
     this.endSegment();
 
     this.sessionCounter++;
 
     if (this.currentSegments.length > 0) {
-      const flight = new FlightFromCsv(this.name, this.plane, this.sessionCounter, this.currentSegments);
+      const flight = new FlightImpl(this.name, this.plane, this.sessionCounter, this.currentSegments);
 
       if (flight.flightTime === 0) {
         console.log(`Skipped empty flight ${flight}`);
@@ -100,5 +57,16 @@ export default class FlightParser {
       }
     }
     this.currentSegments = [];
+  }
+
+  private get plane() {
+    return this.name.split('-')[0];
+  }
+
+  private endSegment() {
+    const segment = this.currentSegment.endSegment();
+    if (segment) {
+      this.currentSegments.push(segment);
+    }
   }
 }

@@ -1,16 +1,16 @@
-import { durationInSeconds, formatDuration } from "../../shared/utils/date";
-import SegmentItem from "./segmentitem";
-import { Segment as ISegment } from "../../shared/flights/types";
-import { SegmentType } from "../../shared/flights";
+import { durationInSeconds, formatDuration } from '../../shared/utils/date';
+import { Segment } from '../../shared/flights/types';
+import { SegmentType } from '../../shared/flights';
+import SegmentItemImpl from './segmentitem';
 
-export default class Segment implements ISegment {
-  type: SegmentType;
-  rows: SegmentItem[];
-  startDate: Date;
-  endDate: Date;
-  duration: number;
+export default class SegmentImpl implements Segment {
+  public type: SegmentType;
+  public rows: SegmentItemImpl[];
+  public startDate: Date;
+  public endDate: Date;
+  public duration: number;
 
-  constructor(type: SegmentType, rows: SegmentItem[]) {
+  constructor(type: SegmentType, rows: SegmentItemImpl[]) {
     this.type = type;
     this.rows = rows;
 
@@ -19,18 +19,18 @@ export default class Segment implements ISegment {
     this.duration = durationInSeconds(this.startDate, this.endDate);
   }
 
-  private get first(): SegmentItem {
-    return this.rows[0];
-  }
-
-  private get last(): SegmentItem {
-    return this.rows[this.rows.length - 1];
-  }
-
-  toString() {
+  public toString() {
     return `Segment ${this.type}
     segment start ${this.startDate}
     segment end ${this.endDate}
     segment duration ${formatDuration(this.duration)}`;
+  }
+
+  private get first(): SegmentItemImpl {
+    return this.rows[0];
+  }
+
+  private get last(): SegmentItemImpl {
+    return this.rows[this.rows.length - 1];
   }
 }
