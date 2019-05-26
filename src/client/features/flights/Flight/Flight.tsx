@@ -15,8 +15,11 @@ import { FlightBatteries } from './FlightBatteries';
 import { FlightLocation } from './FlightLocation';
 
 import { Videos } from '../Videos/Videos';
+import { FlightGraph } from './FlightGraph';
 
 const css = require('../../../common/Form.css');
+const flightCss = require('./Flight.css');
+
 import DeleteIcon from '@material-ui/icons/Delete';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import { Loading } from '../../loading/Loading';
@@ -104,7 +107,8 @@ export const planes: { [key: string]: Plane } = {
       'tattu5',
       'cnhl1',
       'cnhl2'
-    ]
+    ],
+    ignoreTelemetries: ['SA', 'SD', 'SE', 'SF', 'SG', 'SH', 'S1', 'S2', 'S3', 'LS', 'RS']
   },
   TWR: {
     batterySlots: 1,
@@ -118,7 +122,8 @@ export const planes: { [key: string]: Plane } = {
       'happy2',
       'happy3',
       'happy4'
-    ]
+    ],
+    ignoreTelemetries: ['SC', 'SD', 'SE', 'SF', 'SG', 'SH', 'S1', 'S2', 'S3', 'LS', 'RS']
   },
   MOB7: {
     batterySlots: 2,
@@ -131,7 +136,8 @@ export const planes: { [key: string]: Plane } = {
       'happy2',
       'happy3',
       'happy4'
-    ]
+    ],
+    ignoreTelemetries: ['SD', 'SE', 'SF', 'SG', 'SH', 'S1', 'S2', 'S3', 'LS', 'RS', 'RxBt(V)']
   }
 };
 
@@ -245,6 +251,11 @@ const FlightDetailsComponent = ({ entry, history }) => {
             margin='normal'
           />
         </div>
+
+        <div className={flightCss.graph}>
+          <FlightGraph segments={flight.segments || []} plane={planes[flight.plane]}></FlightGraph>
+        </div>
+
         <Videos
           date={flight.startDate}
           plane={flight.plane}

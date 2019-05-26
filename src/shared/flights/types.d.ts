@@ -37,6 +37,7 @@ export interface FlightDay {
 export interface Plane {
   batterySlots: number;
   batteries: string[];
+  ignoreTelemetries: string[];
 }
 
 export interface Segment {
