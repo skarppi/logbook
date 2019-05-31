@@ -1,4 +1,5 @@
 import { BatteryState } from "./index";
+import { Flight } from "../flights/types";
 
 export interface Battery {
   id?: number;
@@ -23,4 +24,5 @@ export interface BatteryCycle {
   discharged?: number;
   charged?: number;
   resistance?: [number];
+  flightByFlightId?: Flight;
 }

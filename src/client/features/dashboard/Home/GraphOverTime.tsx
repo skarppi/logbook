@@ -1,31 +1,13 @@
 import * as React from 'react';
 
 import { defaults, Bar } from 'react-chartjs-2';
-import * as Color from 'color';
 import { formatDuration } from '../../../../shared/utils/date';
 import { cloneDeep } from 'lodash';
 import { Dataset } from '../../../../shared/dashboard/types';
 import { DashboardUnit } from '../../../../shared/dashboard';
+import { chartColors } from '../../../utils/charts';
 
 const css = require('./Home.css');
-
-const chartColors = [
-  '#1f77b4',
-  '#ff7f0e',
-  '#2ca02c',
-  '#d62728',
-  '#9467bd',
-  '#8c564b',
-  '#e377c2',
-  '#7f7f7f'
-].map(color => {
-  return [
-    color,
-    Color(color)
-      .alpha(0.5)
-      .rgbString()
-  ];
-});
 
 defaults['global'].elements.line.fill = false;
 
@@ -116,7 +98,7 @@ const chartOptions = (max: number, unit: DashboardUnit) => {
         {
           type: 'time',
           time: {
-            unit: unit,
+            unit,
             unitStepSize: 1,
             round: unit,
             tooltipFormat: 'D MMMM YYYY',

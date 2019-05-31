@@ -12,16 +12,26 @@ import MenuItem from '@material-ui/core/MenuItem';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import * as React from 'react';
 import { Battery } from '../../../../shared/batteries/types';
+import { BatteryGraph } from './BatteryGraph';
 
 import { withRouter } from 'react-router-dom';
 
 import gql from 'graphql-tag';
 import { useQuery, useMutation } from 'urql';
 
+const batteryCss = require('./Battery.css');
 const css = require('../../../common/Form.css');
 import DeleteIcon from '@material-ui/icons/Delete';
 import { Loading } from '../../loading/Loading';
 import { formatDate } from '../../../../shared/utils/date';
+import Table from '@material-ui/core/Table';
+import TableHead from '@material-ui/core/TableHead';
+import TableCell from '@material-ui/core/TableCell';
+import TableBody from '@material-ui/core/TableBody';
+import TableFooter from '@material-ui/core/TableFooter';
+import TableRow from '@material-ui/core/TableRow';
+import Divider from '@material-ui/core/Divider';
+import { BatteryState } from '../../../../shared/batteries';
 
 const batteryTypes = ['LiPo', 'LiHV'];
 const cellCounts = [1, 2, 3, 4, 5, 6];
@@ -35,6 +45,21 @@ const Query = gql`
       type
       cells
       capacity
+      batteryCyclesByBatteryName(orderBy: DATE_ASC) {
+        nodes {
+          id
+          date
+          state
+          voltage
+          discharged
+          charged
+          resistance
+          flightByFlightId {
+            armedTime
+            flightTime
+          }
+        }
+      }
     }
   }`;
 
@@ -141,6 +166,10 @@ const BatteryDetailsComponent = ({ id, history }) => {
   //   this.onTop.current.scrollIntoView();
   // }
 
+  const cycles = battery.batteryCyclesByBatteryName && battery.batteryCyclesByBatteryName.nodes || [];
+
+  const voltages = cycles.filter(c => c.voltage);
+
   return (
     <Card className={css.card}>
       <CardHeader
@@ -243,6 +272,45 @@ const BatteryDetailsComponent = ({ id, history }) => {
             className={css.textField}
             margin='normal'
           />
+        </div>
+
+        <Divider variant='middle' />
+
+        <Table padding='none'>
+          <TableBody>
+            <TableRow>
+              <TableCell>
+                Flights
+                </TableCell>
+              <TableCell>
+                {cycles.filter(c => c.flightByFlightId).length}
+              </TableCell>
+            </TableRow>
+
+            <TableRow>
+              <TableCell>
+                Charge cycles
+                </TableCell>
+              <TableCell>
+                {cycles.filter(c => c.state === BatteryState.charged).length}
+              </TableCell>
+            </TableRow>
+
+            <TableRow>
+              <TableCell>
+                Average voltage
+                </TableCell>
+              <TableCell>
+                {
+                  voltages.length > 0 ? Math.round(voltages.reduce((sum, c) => sum + Number(c.voltage), 0) / voltages.length * 100) / 100 : '-'
+                }
+              </TableCell>
+            </TableRow>
+          </TableBody>
+        </Table>
+
+        <div className={batteryCss.graph}>
+          <BatteryGraph cycles={cycles}></BatteryGraph>
         </div>
       </CardContent>
     </Card>
