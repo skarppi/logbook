@@ -141,6 +141,12 @@ export const planes: { [key: string]: Plane } = {
   }
 };
 
+export const defaultPlane: Plane = {
+  batterySlots: 0,
+  batteries: [],
+  ignoreTelemetries: []
+};
+
 const FlightDetailsComponent = ({ entry, history }) => {
 
   const [read, refreshFlight] = useQuery<IQueryResponse>({
@@ -253,7 +259,7 @@ const FlightDetailsComponent = ({ entry, history }) => {
         </div>
 
         <div className={flightCss.graph}>
-          <FlightGraph segments={flight.segments || []} plane={planes[flight.plane]}></FlightGraph>
+          <FlightGraph segments={flight.segments || []} plane={planes[flight.plane] || defaultPlane}></FlightGraph>
         </div>
 
         <Videos

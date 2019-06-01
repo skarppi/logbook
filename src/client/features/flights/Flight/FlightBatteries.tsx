@@ -4,7 +4,7 @@ import FormControl from '@material-ui/core/FormControl';
 import { Flight } from '../../../../shared/flights/types';
 import { FlightBattery } from './FlightBattery';
 import AddIcon from '@material-ui/icons/Add';
-import { planes } from './Flight';
+import { planes, defaultPlane } from './Flight';
 import { BatteryState } from '../../../../shared/batteries';
 import { Battery } from '../../../../shared/batteries/types';
 import gql from 'graphql-tag';
@@ -37,7 +37,7 @@ const Create = gql`
 
 export const FlightBatteries = ({ flight, batteries, refreshFlight }: IBatteryProps) => {
 
-  const plane = planes[flight.plane]
+  const plane = planes[flight.plane] || defaultPlane;
 
   const cycles = flight.batteryCyclesByFlightId && flight.batteryCyclesByFlightId.nodes || [];
 
