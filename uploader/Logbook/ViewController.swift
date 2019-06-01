@@ -30,6 +30,8 @@ class ViewController: UIViewController {
     
     private var files: [URL] = []
     
+    private var lastSync: Date?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -77,6 +79,7 @@ class ViewController: UIViewController {
     }
     
     private func fetchNewFiles(after: Date) {
+        self.log("Fetching log files...")
         samba?.query(after: after).done { files in
             guard files.count > 0 else {
                 self.log("No new flights")
@@ -128,11 +131,16 @@ class ViewController: UIViewController {
             } else {
                 self.log("No previous flights")
             }
-
-            self.log("Fetching log files...")
+            
+            self.lastSync = lastSync
+            
             self.fetchNewFiles(after: lastSync)
         }.catch {error in
             self.log(error.localizedDescription)
+            
+            if let lastSync = self.lastSync {
+                self.fetchNewFiles(after: lastSync)
+            }
         }
     }
     
