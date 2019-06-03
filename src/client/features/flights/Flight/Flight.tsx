@@ -123,7 +123,7 @@ export const planes: { [key: string]: Plane } = {
       'happy3',
       'happy4'
     ],
-    ignoreTelemetries: ['SC', 'SD', 'SE', 'SF', 'SG', 'SH', 'S1', 'S2', 'S3', 'LS', 'RS']
+    ignoreTelemetries: ['SA', 'SC', 'SD', 'SE', 'SF', 'SG', 'SH', 'S1', 'S2', 'S3', 'LS', 'RS']
   },
   MOB7: {
     batterySlots: 2,
@@ -138,6 +138,12 @@ export const planes: { [key: string]: Plane } = {
       'happy4'
     ],
     ignoreTelemetries: ['SD', 'SE', 'SF', 'SG', 'SH', 'S1', 'S2', 'S3', 'LS', 'RS', 'RxBt(V)']
+  },
+  Salome: {
+    batterySlots: 0,
+    batteries: [
+    ],
+    ignoreTelemetries: ['Thr', 'SD', 'SF', 'SG', 'S2', 'S3', 'LS', 'RS']
   }
 };
 

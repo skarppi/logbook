@@ -103,7 +103,7 @@ const chartOptions = () => {
             display: true,
           },
           ticks: {
-            min: 0
+            suggestedMin: 0
           }
         },
         {
@@ -147,7 +147,7 @@ const axisMappings = {
   'Hdg(@)': 'stick'
 }
 
-const enabledTelemetries = ['Thr', 'Fuel(mAh)']
+const enabledTelemetries = ['Thr', 'Fuel(mAh)', 'Alt(m)']
 
 export const FlightGraph = ({ segments, plane }: IProps) => {
 

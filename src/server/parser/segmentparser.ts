@@ -1,11 +1,11 @@
-import { durationInSeconds } from "../../shared/utils/date";
-import Segment from "../model/segment";
-import SegmentItem from "../model/segmentitem";
-import { SegmentType } from "../../shared/flights";
+import { durationInSeconds } from '../../shared/utils/date';
+import Segment from '../model/segment';
+import SegmentItem from '../model/segmentitem';
+import { SegmentType } from '../../shared/flights';
 
 export default class SegmentParser {
-  type?: SegmentType;
-  items: SegmentItem[] = [];
+  private type?: SegmentType;
+  private items: SegmentItem[] = [];
 
   get last() {
     if (this.items.length > 0) {
@@ -13,19 +13,14 @@ export default class SegmentParser {
     }
   }
 
-  private startSegment(type: SegmentType) {
-    this.items = [];
-    this.type = type;
-  }
-
-  splitFlightAt(timestamp: Date, splitFlightsAfterSeconds: number) {
+  public splitFlightAt(timestamp: Date, splitFlightsAfterSeconds: number) {
     return (
       this.last &&
       durationInSeconds(this.last.timestamp, timestamp) > splitFlightsAfterSeconds
     );
   }
 
-  splitSegment(type: SegmentType, latest: SegmentItem) {
+  public splitSegment(type: SegmentType, latest: SegmentItem) {
     if (this.type === type) {
       return false;
     } else if (this.type === SegmentType.flying && type === SegmentType.armed) {
@@ -40,7 +35,7 @@ export default class SegmentParser {
     return true;
   }
 
-  endSegment() {
+  public endSegment() {
     let segment: Segment;
     if (this.type && this.items.length > 0) {
       console.log(
@@ -53,10 +48,16 @@ export default class SegmentParser {
     return segment;
   }
 
-  appendItem(type: SegmentType, item: SegmentItem) {
+  public appendItem(type: SegmentType, item: SegmentItem) {
     if (!this.type) {
       this.startSegment(type);
     }
     this.items.push(item);
   }
+
+  private startSegment(type: SegmentType) {
+    this.items = [];
+    this.type = type;
+  }
+
 }
