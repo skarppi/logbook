@@ -5,18 +5,19 @@ import { Flight } from '../../shared/flights/types';
 import { SegmentType } from '../../shared/flights';
 import { FlightImpl } from './flight';
 import { flightsRouter } from '../routes/flights-router';
+import { IParserOptions } from '.';
 
 export default class FlightParser {
   private name: string;
   private currentSegment: SegmentParser = new SegmentParser();
   private currentSegments: Segment[] = [];
   private sessionCounter: number = 0;
-  private splitFlightsAfterSeconds: number;
+  private options: IParserOptions;
   private flights: Flight[] = [];
 
-  constructor(name: string, splitFlightsAfterSeconds: number) {
+  constructor(name: string, options: IParserOptions) {
     this.name = name;
-    this.splitFlightsAfterSeconds = splitFlightsAfterSeconds;
+    this.options = options;
   }
 
   public getFlights(): Flight[] {
@@ -24,7 +25,7 @@ export default class FlightParser {
   }
 
   public appendItem(item: SegmentItem) {
-    if (this.currentSegment.splitFlightAt(item.timestamp, this.splitFlightsAfterSeconds)) {
+    if (this.currentSegment.splitFlightAt(item.timestamp, this.options.splitFlightsAfterSeconds)) {
       console.log(`Split flight at ${item.timestamp}`);
       this.endFlight();
     }

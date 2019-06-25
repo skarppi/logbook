@@ -1,13 +1,13 @@
-import { Router } from "express";
-import { CSV_FOLDER } from "../config";
-import * as multer from "multer";
-import { parseFile, parseData } from "../parser";
+import { Router } from 'express';
+import { CSV_FOLDER } from '../config';
+import * as multer from 'multer';
+import { parseFile, parseData } from '../parser';
 import FlightRepository from '../model/flight';
 
 export function flightsRouter() {
   const router = Router();
 
-  router.put("/:day/:id/reset", (req, res, next) => {
+  router.put('/:day/:id/reset', (req, res, next) => {
     const id = req.params.id;
     FlightRepository.find(id)
       .then(flight =>
@@ -17,7 +17,10 @@ export function flightsRouter() {
             (res, segment) => [...res, ...segment.rows],
             []
           ),
-          Number.MAX_VALUE
+          {
+            splitFlightsAfterSeconds: Number.MAX_VALUE,
+            timezoneOffset: 0
+          }
         )
       )
       .then(updated => res.json(updated[0]))
@@ -35,18 +38,19 @@ export function flightsRouter() {
 
   const fileFilter = (req, file, cb) => {
     if (!file.originalname.match(/\.(csv)$/)) {
-      return cb(new Error("Only csv files are allowed!"), false);
+      return cb(new Error('Only csv files are allowed!'), false);
     }
     cb(null, true);
   };
 
   const upload = multer({ storage: storage, fileFilter: fileFilter });
 
-  router.post("", upload.array("flight"), (req: any, res, next) => {
+  router.post('', upload.array('flight'), (req: any, res, next) => {
 
     const splitFlightsAfterSeconds = req.headers.split_flights_after_seconds || 30;
+    const timezoneOffset = req.headers.timezone_offset || 0;
 
-    Promise.all(req.files.map(file => parseFile(file.originalname, splitFlightsAfterSeconds)))
+    Promise.all(req.files.map(file => parseFile(file.originalname, { splitFlightsAfterSeconds, timezoneOffset })))
       .then(flights => {
         const flatten = []
           .concat(...flights)

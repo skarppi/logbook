@@ -35,6 +35,7 @@ export const FlightsUpload = ({ match: { params: { id } } }) => {
   const [error, setError] = useState<string>(undefined);
 
   const [splitSeconds, setSplitSeconds] = React.useState(30);
+  const [timezoneOffset, setTimezoneOffset] = React.useState(-new Date().getTimezoneOffset() / 60);
 
   const dropRendered = (getRootProps, getInputProps, isDragActive) => {
     return (
@@ -103,7 +104,7 @@ export const FlightsUpload = ({ match: { params: { id } } }) => {
     const data = new FormData();
     files.forEach(file => data.append('flight', file, file.name));
 
-    uploadFlightsAPI(data, splitSeconds, (progressEvent: any) => {
+    uploadFlightsAPI(data, splitSeconds, timezoneOffset, (progressEvent: any) => {
       setLoaded((progressEvent.loaded / progressEvent.total) * 100);
     }).then(res => {
       setFlights(res.data.map(f => {
@@ -129,6 +130,15 @@ export const FlightsUpload = ({ match: { params: { id } } }) => {
               <MenuItem value={15}>15 seconds</MenuItem>
               <MenuItem value={30}>30 seconds</MenuItem>
               <MenuItem value={60}>1 minute</MenuItem>
+            </Select>
+            <br />
+            <span>Timezone offset </span>
+            <Select value={timezoneOffset} onChange={({ target: { value } }) => {
+              setTimezoneOffset(Number(value));
+            }}>
+              {[...Array(25)].map((x, i) =>
+                <MenuItem value={i - 12}>{i - 12}</MenuItem>
+              )}
             </Select>
             <Dropzone onDrop={handleDrop}>
               {({ getRootProps, getInputProps, isDragActive }) =>

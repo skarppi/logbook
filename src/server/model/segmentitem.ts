@@ -18,12 +18,16 @@ export default class SegmentItemImpl implements SegmentItem {
   public Thr: string;
   public Time: string; // "12:00:26.600"
 
-  constructor(args) {
+  private timezoneOffset: number;
+
+  constructor(timezoneOffset: number, args) {
     Object.assign(this, args);
+    this.timezoneOffset = timezoneOffset;
   }
 
   get timestamp(): Date {
-    return new Date(`${this.Date} ${this.Time}`);
+    const tz = `GMT${this.timezoneOffset >= 0 ? '+' : '-'}${('00' + this.timezoneOffset).slice(-2)}00`;
+    return new Date(`${this.Date} ${this.Time} ${tz}`);
   }
 
   get armed(): boolean {
