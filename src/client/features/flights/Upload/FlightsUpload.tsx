@@ -15,6 +15,7 @@ import { NavLink } from 'react-router-dom';
 import { Flight } from '../../../../shared/flights/types';
 import { uploadFlightsAPI } from '../../../utils/api-facade';
 import { FlightDetails } from '../Flight/Flight';
+import { FlightTimezone } from '../Flight/FlightTimezone';
 import {
   formatDuration,
   formatDateTime
@@ -133,13 +134,8 @@ export const FlightsUpload = ({ match: { params: { id } } }) => {
             </Select>
             <br />
             <span>Timezone offset </span>
-            <Select value={timezoneOffset} onChange={({ target: { value } }) => {
-              setTimezoneOffset(Number(value));
-            }}>
-              {[...Array(25)].map((x, i) =>
-                <MenuItem value={i - 12}>{i - 12}</MenuItem>
-              )}
-            </Select>
+            <FlightTimezone offset={timezoneOffset} onChange={setTimezoneOffset} />
+
             <Dropzone onDrop={handleDrop}>
               {({ getRootProps, getInputProps, isDragActive }) =>
                 dropRendered(getRootProps, getInputProps, isDragActive)

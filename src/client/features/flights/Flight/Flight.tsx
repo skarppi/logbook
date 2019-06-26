@@ -3,7 +3,6 @@ import CardContent from '@material-ui/core/CardContent';
 import CardHeader from '@material-ui/core/CardHeader';
 import IconButton from '@material-ui/core/IconButton';
 import TextField from '@material-ui/core/TextField';
-import Tooltip from '@material-ui/core/Tooltip';
 import Divider from '@material-ui/core/Divider';
 import * as React from 'react';
 import { Plane, Flight } from '../../../../shared/flights/types';
@@ -20,13 +19,24 @@ import { FlightGraph } from './FlightGraph';
 const css = require('../../../common/Form.css');
 const flightCss = require('./Flight.css');
 
+import { differenceInHours } from 'date-fns';
+
 import DeleteIcon from '@material-ui/icons/Delete';
 import RefreshIcon from '@material-ui/icons/Refresh';
+import HamburgerIcon from '@material-ui/icons/MoreVert';
+
 import { Loading } from '../../loading/Loading';
 import { useQuery, useMutation } from 'urql';
 import gql from 'graphql-tag';
 import { Battery } from '../../../../shared/batteries/types';
 import { formatDate } from '../../../../shared/utils/date';
+import { putApi } from '../../../utils/api-facade';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+import Select from '@material-ui/core/Select';
+import { FlightTimezone } from './FlightTimezone';
 
 const Query = gql`
   query($id:String!) {
@@ -108,7 +118,7 @@ export const planes: { [key: string]: Plane } = {
       'cnhl1',
       'cnhl2'
     ],
-    ignoreTelemetries: ['SA', 'SD', 'SE', 'SF', 'SG', 'SH', 'S1', 'S2', 'S3', 'LS', 'RS']
+    ignoreTelemetries: ['SA', 'SD', 'SF', 'SG', 'SH', 'S2', 'S3', 'LS', 'RS']
   },
   TWR: {
     batterySlots: 1,
@@ -155,6 +165,9 @@ export const defaultPlane: Plane = {
 
 const FlightDetailsComponent = ({ entry, history }) => {
 
+  const [timezoneOffset, setTimezoneOffset] = React.useState(-new Date().getTimezoneOffset() / 60);
+  const [anchorEl, setAnchorEl] = React.useState(null);
+
   const [read, refreshFlight] = useQuery<IQueryResponse>({
     query: Query,
     variables: { id: entry.id }
@@ -166,9 +179,22 @@ const FlightDetailsComponent = ({ entry, history }) => {
   const [flight, setFlight] = React.useState<Flight>(entry);
   React.useEffect(() => {
     if (read.data) {
-      setFlight(read.data.flightById);
+      const flight = read.data.flightById;
+      setFlight(flight);
+
+      const row = flight.segments[0].rows[0];
+      const originalStartDate = new Date(`${row.Date} ${row.Time}`);
+      const currentStartDate = new Date(flight.startDate);
+
+      const offset = -(originalStartDate.getTimezoneOffset() / 60 + differenceInHours(currentStartDate, originalStartDate));
+
+      setTimezoneOffset(offset);
     }
   }, [read.data]);
+
+
+
+  const flightDate = formatDate(flight.startDate);
 
   const changeNotes = ({ target: { name, value } }) =>
     setFlight({
@@ -181,13 +207,31 @@ const FlightDetailsComponent = ({ entry, history }) => {
     patch: { notes: flight.notes }
   });
 
+  const executeReset = _ => {
+    setAnchorEl(null);
+    putApi(`flights/${flightDate}/${flight.id}/reset`, null, {
+      TIMEZONE_OFFSET: timezoneOffset
+    }).then(res =>
+      refreshFlight({ requestPolicy: 'network-only' })
+    );
+  };
+
   const executeDelete = _ => {
+    setAnchorEl(null);
     deleteFlight({ id: flight.id }).then(res => {
       if (!res.error) {
-        history.push(`/flights/${formatDate(flight.startDate)}`);
+        history.push(`/flights/${flightDate}`);
       }
     });
   };
+
+  function handleClick(event) {
+    setAnchorEl(event.currentTarget);
+  }
+
+  function handleClose() {
+    setAnchorEl(null);
+  }
 
   return (
     <Card className={css.card}>
@@ -201,17 +245,35 @@ const FlightDetailsComponent = ({ entry, history }) => {
               overlay={false}
             />
 
-            <Tooltip title='Reset flight'>
-              <IconButton onClick={_ => this.props.resetFlight(flight)}>
-                <RefreshIcon />
-              </IconButton>
-            </Tooltip>
+            <IconButton
+              aria-label='More'
+              aria-controls='hamburger'
+              aria-haspopup='true'
+              onClick={handleClick}
+            >
+              <HamburgerIcon />
+            </IconButton>
+            <Menu
+              id='hamburger'
+              anchorEl={anchorEl}
+              keepMounted
+              open={Boolean(anchorEl)}
+              onClose={handleClose}
+            >
 
-            <Tooltip title='Delete flight'>
-              <IconButton onClick={executeDelete}>
-                <DeleteIcon />
-              </IconButton>
-            </Tooltip>
+              <MenuItem key='Reset'>
+                <FlightTimezone offset={timezoneOffset} onChange={setTimezoneOffset} />
+                <ListItemText primary='Change timezone' onClick={executeReset} />
+              </MenuItem>
+
+
+              <MenuItem key='Delete' onClick={executeDelete}>
+                <ListItemIcon>
+                  <DeleteIcon />
+                </ListItemIcon>
+                <ListItemText primary='Delete Flight' />
+              </MenuItem>
+            </Menu>
           </>
         }
       />

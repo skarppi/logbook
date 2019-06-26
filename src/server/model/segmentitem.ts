@@ -26,7 +26,10 @@ export default class SegmentItemImpl implements SegmentItem {
   }
 
   get timestamp(): Date {
-    const tz = `GMT${this.timezoneOffset >= 0 ? '+' : '-'}${('00' + this.timezoneOffset).slice(-2)}00`;
+    const plusMinus = this.timezoneOffset >= 0 ? '+' : '-';
+    const hoursWithLeadingZero = ('00' + Math.abs(this.timezoneOffset)).slice(-2);
+
+    const tz = `GMT${plusMinus}${hoursWithLeadingZero}00`;
     return new Date(`${this.Date} ${this.Time} ${tz}`);
   }
 

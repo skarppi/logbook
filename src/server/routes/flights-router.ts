@@ -9,6 +9,8 @@ export function flightsRouter() {
 
   router.put('/:day/:id/reset', (req, res, next) => {
     const id = req.params.id;
+    const timezoneOffset: any = req.headers.timezone_offset || 0;
+
     FlightRepository.find(id)
       .then(flight =>
         parseData(
@@ -19,7 +21,7 @@ export function flightsRouter() {
           ),
           {
             splitFlightsAfterSeconds: Number.MAX_VALUE,
-            timezoneOffset: 0
+            timezoneOffset
           }
         )
       )
