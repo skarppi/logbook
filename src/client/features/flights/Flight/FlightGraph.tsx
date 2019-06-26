@@ -167,7 +167,7 @@ export const FlightGraph = ({ segments, plane }: IProps) => {
     data: items.map(i => {
       const now = new Date(`${i.Date} ${i.Time}`)
       const current = segments.find(seg => new Date(seg.startDate) <= now && new Date(seg.endDate) >= now);
-      return current && segmentTypeToYAxis[current.type] || 0;
+      return current && segmentTypeToYAxis[current.type] || segmentTypeToYAxis[SegmentType.stopped];
     }),
     backgroundColor: Color('#81c784').alpha(0.1).rgbString(),
     borderWidth: 0,

@@ -41,35 +41,32 @@ const chartOptions = () => {
           type: 'time',
           time: {
             unit: 'day',
-            unitStepSize: 1,
-            round: 'day',
+            // unitStepSize: 1,
+            // round: 'day',
             tooltipFormat: 'D MMMM YYYY',
-            displayFormats: {
-              second: 'D MMMM YYYY'
-            }
           },
           ticks: {
-            source: 'labels',
+            //   source: 'labels',
             autoSkip: true,
-            // maxTicksLimit: 20
+            maxTicksLimit: 20
           },
-          scaleLabel: {
-            display: true,
-            labelString: 'Date'
-          },
+          // scaleLabel: {
+          //   display: true,
+          //   labelString: 'Date'
+          // }
         }
       ],
       yAxes: [
         {
           id: 'time',
-          position: 'left',
-          scaleLabel: {
-            display: true,
-          },
+          // position: 'left',
+          // scaleLabel: {
+          //   display: true,
+          // },
           ticks: {
             callback: value => formatDuration(value),
-            // stepSize: 30,
-            // suggestedMax: 100,
+            stepSize: 60,
+            //   // suggestedMax: 100,
             min: 0
           },
           stacked: true
@@ -108,6 +105,8 @@ export const BatteryGraph = ({ cycles }: IProps) => {
     labels,
     datasets
   };
+
+  console.log(graph);
 
   const options = chartOptions();
 
