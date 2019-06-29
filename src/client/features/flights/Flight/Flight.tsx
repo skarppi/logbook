@@ -5,7 +5,8 @@ import IconButton from '@material-ui/core/IconButton';
 import TextField from '@material-ui/core/TextField';
 import Divider from '@material-ui/core/Divider';
 import * as React from 'react';
-import { Plane, Flight } from '../../../../shared/flights/types';
+import { Flight } from '../../../../shared/flights/types';
+import { planes, defaultPlane } from '../../../../shared/planes';
 import { withRouter } from 'react-router-dom';
 
 import { FlightDate } from './FlightDate';
@@ -35,7 +36,6 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import Select from '@material-ui/core/Select';
 import { FlightTimezone } from './FlightTimezone';
 
 const Query = gql`
@@ -105,63 +105,6 @@ interface IQueryResponse {
     nodes: Battery[];
   }
 }
-
-export const planes: { [key: string]: Plane } = {
-  Reverb: {
-    batterySlots: 1,
-    batteries: [
-      'tattu1',
-      'tattu2',
-      'tattu3',
-      'tattu4',
-      'tattu5',
-      'cnhl1',
-      'cnhl2'
-    ],
-    ignoreTelemetries: ['SA', 'SD', 'SF', 'SG', 'SH', 'S2', 'S3', 'LS', 'RS']
-  },
-  TWR: {
-    batterySlots: 1,
-    batteries: [
-      'mylipo1',
-      'mylipo2',
-      'mylipo3',
-      'mylipo4',
-      'mylipo5',
-      'happy1',
-      'happy2',
-      'happy3',
-      'happy4'
-    ],
-    ignoreTelemetries: ['SA', 'SC', 'SD', 'SE', 'SF', 'SG', 'SH', 'S1', 'S2', 'S3', 'LS', 'RS']
-  },
-  MOB7: {
-    batterySlots: 2,
-    batteries: [
-      'mylipo1',
-      'mylipo2',
-      'mylipo3',
-      'mylipo4',
-      'happy1',
-      'happy2',
-      'happy3',
-      'happy4'
-    ],
-    ignoreTelemetries: ['SD', 'SE', 'SF', 'SG', 'SH', 'S1', 'S2', 'S3', 'LS', 'RS', 'RxBt(V)']
-  },
-  Salome: {
-    batterySlots: 0,
-    batteries: [
-    ],
-    ignoreTelemetries: ['Thr', 'SD', 'SF', 'SG', 'S2', 'S3', 'LS', 'RS']
-  }
-};
-
-export const defaultPlane: Plane = {
-  batterySlots: 0,
-  batteries: [],
-  ignoreTelemetries: []
-};
 
 const FlightDetailsComponent = ({ entry, history }) => {
 

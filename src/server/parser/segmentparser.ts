@@ -4,7 +4,7 @@ import SegmentItem from '../model/segmentitem';
 import { SegmentType } from '../../shared/flights';
 
 export default class SegmentParser {
-  private type?: SegmentType;
+  public type?: SegmentType;
   private items: SegmentItem[] = [];
 
   get last() {

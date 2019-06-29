@@ -24,7 +24,7 @@ interface IProps {
   plane: Plane;
 }
 
-const chartOptions = () => {
+const chartOptions = (plane: Plane) => {
 
   return {
     offset: true,
@@ -40,6 +40,8 @@ const chartOptions = () => {
               return segmentTypeToYAxis[type] === tooltipItem.yLabel;
             })
             return `${label}: ${currentType}`;
+          } else if (label === 'FM' && plane.flightModes.length > tooltipItem.yLabel) {
+            return `${label}: ${plane.flightModes[tooltipItem.yLabel]}`;
           } else {
             return `${label}: ${tooltipItem.yLabel}`;
           }
@@ -195,7 +197,7 @@ export const FlightGraph = ({ segments, plane }: IProps) => {
     datasets: [flightTimeSet, ...datasets]
   };
 
-  const options = chartOptions();
+  const options = chartOptions(plane);
 
   return <Bar data={graph} options={options} />;
 };

@@ -4,7 +4,7 @@ import FormControl from '@material-ui/core/FormControl';
 import { Flight } from '../../../../shared/flights/types';
 import { FlightBattery } from './FlightBattery';
 import AddIcon from '@material-ui/icons/Add';
-import { planes, defaultPlane } from './Flight';
+import { planes, defaultPlane } from '../../../../shared/planes';
 import { BatteryState } from '../../../../shared/batteries';
 import { Battery } from '../../../../shared/batteries/types';
 import gql from 'graphql-tag';
