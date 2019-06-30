@@ -35,9 +35,14 @@ export interface FlightDay {
 }
 
 export interface LogicalSwitch {
-  op: LogicalFunction,
-  key: string,
-  value: number
+  id: string,
+  func: LogicalFunction,
+  v1: string,
+  v2?: string,
+  and?: string,
+  duration?: number,
+  delay?: number,
+  description?: string
 }
 
 export interface Plane {
@@ -48,8 +53,10 @@ export interface Plane {
   flightModes: string[];
   modes: {
     armed: LogicalSwitch,
-    startFlying: LogicalSwitch,
-    endFlying: LogicalSwitch,
+    flying: LogicalSwitch,
+    stopped: LogicalSwitch,
+    restart: LogicalSwitch,
+    stoppedStartsNewFlight: boolean
   }
 }
 

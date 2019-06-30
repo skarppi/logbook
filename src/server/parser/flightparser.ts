@@ -28,26 +28,28 @@ export default class FlightParser {
   }
 
   public appendItem(item: SegmentItem) {
-    if (this.currentSegment.splitFlightAt(item.timestamp, this.options.splitFlightsAfterSeconds)) {
-      console.log(`Split flight at ${item.timestamp}`);
-      this.endFlight();
+    let type = this.currentSegment.type || SegmentType.stopped;
+
+    if (type === SegmentType.flying && this.test(this.plane.modes.stopped, item)) {
+      type = SegmentType.stopped;
     }
 
-    let type = this.currentSegment.type;
-
-    if (this.enabled(this.plane.modes.armed, item)) {
-      if (this.enabled(this.plane.modes.startFlying, item)) {
+    if (this.test(this.plane.modes.armed, item)) {
+      if (this.test(this.plane.modes.flying, item)) {
         type = SegmentType.flying;
-      } else if (!this.currentSegment.type
-        || this.currentSegment.type === SegmentType.stopped
-        || this.currentSegment.type === SegmentType.flying && this.enabled(this.plane.modes.endFlying, item)) {
+      } else if (type === SegmentType.stopped) {
         type = SegmentType.armed;
       }
     } else {
       type = SegmentType.stopped;
     }
 
-    if (this.currentSegment.splitSegment(type, item)) {
+
+    // if (this.currentSegment.splitFlightAt(item.timestamp, this.options.splitFlightsAfterSeconds)) {
+    if (type === SegmentType.stopped && this.currentSegment.type !== SegmentType.stopped && this.plane.modes.stoppedStartsNewFlight
+      || this.test(this.plane.modes.restart, item)) {
+      this.endFlight();
+    } else if (this.currentSegment.type !== type) {
       this.endSegment();
     }
 
@@ -72,16 +74,39 @@ export default class FlightParser {
     this.currentSegments = [];
   }
 
-  private enabled(test: LogicalSwitch, item: SegmentItem): boolean {
-    const value = item[test.key];
-    if (test.op === LogicalFunction.greaterThan) {
-      return value > test.value;
-    } else if (test.op === LogicalFunction.lessThan) {
-      return value < test.value;
-    } else if (test.op === LogicalFunction.is) {
-      return value === test.value;
-    } else if (test.op === LogicalFunction.not) {
-      return value !== test.value;
+  private test(test: LogicalSwitch, item: SegmentItem): boolean {
+    if (test.duration > 0) {
+      const items = this.currentSegment.lastSecondsFromEnd(item.timestamp, test.duration)
+      if (!items) {
+        return this.testExpectNull(test);
+      }
+
+      return !items.find(current => !this.testItem(test, current))
+    } else {
+      return this.testItem(test, item);
+    }
+  }
+
+  private testExpectNull(test: LogicalSwitch): boolean {
+    return test.v1 === null;
+  }
+
+  private testItem(test: LogicalSwitch, item: SegmentItem): boolean {
+    if (!item) {
+      return this.testExpectNull(test);
+    }
+
+    const v1 = item[test.v1];
+    const v2 = Number(test.v2);
+
+    if (test.func === LogicalFunction.greaterThan) {
+      return v1 > v2;
+    } else if (test.func === LogicalFunction.lessThan) {
+      return v1 < v2;
+    } else if (test.func === LogicalFunction.is) {
+      return v1 === v2;
+    } else if (test.func === LogicalFunction.not) {
+      return v1 !== v2;
     }
   }
 

@@ -33,19 +33,17 @@ const chartOptions = (plane: Plane) => {
       intersect: false,
       callbacks: {
         label: (tooltipItem, data) => {
-          let label = data.datasets[tooltipItem.datasetIndex].label || '';
-
+          const label = data.datasets[tooltipItem.datasetIndex].label || '';
           if (label === 'Timer') {
             const currentType = Object.keys(segmentTypeToYAxis).find(type => {
               return segmentTypeToYAxis[type] === tooltipItem.yLabel;
-            })
+            });
             return `${label}: ${currentType}`;
           } else if (label === 'FM' && plane.flightModes.length > tooltipItem.yLabel) {
             return `${label}: ${plane.flightModes[tooltipItem.yLabel]}`;
           } else {
             return `${label}: ${tooltipItem.yLabel}`;
           }
-          return label;
         }
       }
     },

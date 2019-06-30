@@ -1,12 +1,16 @@
 export enum SegmentType {
   stopped = 'stopped',
-  flying = 'flying',
-  armed = 'armed'
+  armed = 'armed',
+  paused = 'paused',
+  flying = 'flying'
 }
 
 export enum LogicalFunction {
-  greaterThan = 'a>b',
-  is = 'a=b',
-  not = 'a~b',
-  lessThan = 'a<b'
+  greaterThan = 'a>x',
+  is = 'a=x',
+  not = 'a~x',
+  lessThan = 'a<x',
+  and = 'AND',
+  or = 'OR',
+  sticky = 'STICKY'
 }
