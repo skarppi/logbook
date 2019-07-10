@@ -12,7 +12,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 
 import * as React from 'react';
 import { NavLink, Link } from 'react-router-dom';
-import { formatDate, formatDateTime } from '../../../../shared/utils/date';
+import { formatDate, formatDateTime, formatTime, formatDuration } from '../../../../shared/utils/date';
 import { Plane } from '../../../../shared/planes/types';
 import { Loading } from '../../loading/Loading';
 import { PlaneDetails } from '../Plane/Plane';
@@ -33,6 +33,10 @@ const Query = gql`
       nodes {
         id
         type,
+        totalByPlane {
+          flights
+          totalTime
+        }
       }
     }
   }`;
@@ -119,8 +123,8 @@ export const PlanesList = ({ match: { params } }) => {
         <TableCell>
           {plane.type}
         </TableCell>
-        {/* <TableCell>{plane.lastCycle && plane.lastCycle.state}</TableCell> */}
-        {/* <TableCell>{lastUsed(plane.planeCyclesByPlaneName)}</TableCell> */}
+        <TableCell>{plane.totalByPlane && plane.totalByPlane.flights}</TableCell>
+        <TableCell>{plane.totalByPlane && formatDuration(plane.totalByPlane.totalTime)}</TableCell>
       </TableRow>
       {params.id === plane.id && details(plane.id)}
     </React.Fragment>;
@@ -148,8 +152,8 @@ export const PlanesList = ({ match: { params } }) => {
                 <TableRow>
                   <TableCell>ID</TableCell>
                   <TableCell>Type</TableCell>
-                  <TableCell>Current status</TableCell>
-                  <TableCell>Last used</TableCell>
+                  <TableCell>Flights</TableCell>
+                  <TableCell>Total Time</TableCell>
                   <TableCell>Actions</TableCell>
                 </TableRow>
               </TableHead>

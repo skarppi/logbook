@@ -102,6 +102,8 @@ CREATE VIEW totals as
     FROM flights
     group by plane;
 
+comment on view totals is E'@primaryKey plane\n@foreignKey (plane) references planes (id)';
+
 CREATE VIEW FLIGHTS_BY_DAY as
 SELECT to_char(start_date, 'YYYY-MM-DD') as date,
           plane,
@@ -110,6 +112,7 @@ SELECT to_char(start_date, 'YYYY-MM-DD') as date,
       FROM flights 
       GROUP BY 1,2 
       ORDER BY date;
+comment on view FLIGHTS_BY_DAY is E'@primaryKey date,plane\n@foreignKey (plane) references planes (id)';
 
 CREATE VIEW FLIGHTS_BY_MONTH as
 SELECT to_char(start_date, 'YYYY-MM-01') as date,
@@ -119,7 +122,7 @@ SELECT to_char(start_date, 'YYYY-MM-01') as date,
       FROM flights 
       GROUP BY 1,2 
       ORDER BY date;
-
+comment on view FLIGHTS_BY_MONTH is E'@primaryKey date,plane\n@foreignKey (plane) references planes (id)';
 
 CREATE VIEW FLIGHTS_BY_YEAR as
 SELECT to_char(start_date, 'YYYY-01-01') as date,
@@ -129,7 +132,7 @@ SELECT to_char(start_date, 'YYYY-01-01') as date,
       FROM flights 
       GROUP BY 1,2 
       ORDER BY date;
-
+comment on view FLIGHTS_BY_YEAR is E'@primaryKey date,plane\n@foreignKey (plane) references planes (id)';
 
 --- locations
 

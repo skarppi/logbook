@@ -11,7 +11,6 @@ import { startOfYear, addYears, startOfMonth, addMonths, startOfDay, addDays } f
 
 import { DashboardUnit } from '../../../../shared/dashboard';
 
-import { Totals, IPlaneTotals } from './Totals'
 import { GraphOverTime, ITotalRows } from './GraphOverTime'
 import gql from 'graphql-tag';
 import { useQuery } from 'urql';
@@ -56,13 +55,6 @@ const currentResource = (unit: DashboardUnit) => {
 const Query = (unit: DashboardUnit, size: number) => {
   return gql`
   query GetDashboard($since: String!) {
-    allTotals {
-      nodes {
-        plane
-        flights
-        totalTime
-      }
-    }
     ${currentResource(unit)}(filter:
       {date: {
         greaterThanOrEqualTo: $since
@@ -86,9 +78,6 @@ interface IQueryResponse {
   };
   allFlightsByYears: {
     nodes: ITotalRows[]
-  };
-  allTotals: {
-    nodes: IPlaneTotals[]
   };
 }
 
@@ -121,10 +110,6 @@ export const Dashboard = () => {
 
   return (
     <Grid item xs={12} >
-      <Card>
-        <CardHeader title='Total Flights' />
-        <CardContent><Totals planes={data.allTotals.nodes}></Totals></CardContent>
-      </Card>
       <Card>
         <CardHeader title='Flights Over Time' />
         <CardContent>

@@ -1,5 +1,11 @@
 import { LogicalFunction, PlaneType } from "./index";
 
+export interface IPlaneTotals {
+  plane: string;
+  flights: number;
+  totalTime: number;
+}
+
 export interface LogicalSwitch {
   id: string,
   func: LogicalFunction,
@@ -25,5 +31,6 @@ export interface Plane {
     restart: LogicalSwitch,
     stoppedStartsNewFlight: boolean
   }
+  totalByPlane?: IPlaneTotals
 }
 
