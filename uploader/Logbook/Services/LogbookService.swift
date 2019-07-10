@@ -80,6 +80,7 @@ class LogbookService {
         }
         body.appendString("--".appending(boundary).appending("--\r\n"))
         rq.setValue(String(splitAfterSeconds), forHTTPHeaderField: "SPLIT_FLIGHTS_AFTER_SECONDS")
+        rq.setValue(String(TimeZone.current.secondsFromGMT() / 3600), forHTTPHeaderField: "TIMEZONE_OFFSET")
         rq.httpBody = body as Data
         
         print("Fetching data from \(url)")
