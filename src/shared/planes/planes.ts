@@ -27,7 +27,7 @@ export const logicalSwitches: { [key: string]: LogicalSwitch } = {
     id: 'L13', func: LogicalFunction.lessThan, v1: 'SA', v2: '1', description: 'SA not down = back to launch mode'
   },
   L14: {
-    id: 'L14', func: LogicalFunction.is, v1: null, duration: 2, description: 'No data for 2 seconds'
+    id: 'L14', func: LogicalFunction.is, v1: null, duration: 10, description: 'No data for 2 seconds'
   }
 }
 
