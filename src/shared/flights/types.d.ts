@@ -1,4 +1,4 @@
-import { SegmentType, LogicalFunction } from "./index";
+import { SegmentType } from "./index";
 import { BatteryCycle } from "../batteries/types";
 
 export interface Flight {
@@ -32,32 +32,6 @@ export interface FlightDay {
   duration: number;
   armedTime: number;
   flightTime: number;
-}
-
-export interface LogicalSwitch {
-  id: string,
-  func: LogicalFunction,
-  v1: string,
-  v2?: string,
-  and?: string,
-  duration?: number,
-  delay?: number,
-  description?: string
-}
-
-export interface Plane {
-  name: string,
-  batterySlots: number;
-  batteries: string[];
-  ignoreTelemetries: string[];
-  flightModes: string[];
-  modes: {
-    armed: LogicalSwitch,
-    flying: LogicalSwitch,
-    stopped: LogicalSwitch,
-    restart: LogicalSwitch,
-    stoppedStartsNewFlight: boolean
-  }
 }
 
 export interface Segment {

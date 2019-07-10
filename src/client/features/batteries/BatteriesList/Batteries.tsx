@@ -151,7 +151,7 @@ export const BatteriesList = ({ match: { params } }) => {
   const batteries = res.data && res.data.allBatteries ? res.data.allBatteries.nodes : [];
 
   const rows = batteries.map(battery => {
-    const current = params.id === battery.id;
+    const current = params.id === String(battery.id);
     return <React.Fragment key={String(battery.id)}>
       <TableRow>
         <TableCell>

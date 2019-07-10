@@ -1,7 +1,57 @@
-DROP TABLE if EXISTS Flights;
+--- planes
+
+CREATE TABLE LogicalSwitches (
+  id VARCHAR(3) NOT NULL PRIMARY KEY,
+  func VARCHAR(16) NOT NULL,
+  v1 VARCHAR(16),
+  v2 VARCHAR(16),
+  and_switch VARCHAR(16),
+  duration DECIMAL(5,1),
+  delay DECIMAL(5,1),
+  description VARCHAR(128)
+);
+
+CREATE TABLE Planes (
+  id VARCHAR(12) NOT NULL PRIMARY KEY,
+  type VARCHAR(32) NOT NULL,
+  battery_slots INTEGER,
+  telemetries JSONB,
+  mode_armed VARCHAR(3) NOT NULL REFERENCES LogicalSwitches(id),
+  mode_flying VARCHAR(3) NOT NULL REFERENCES LogicalSwitches(id),
+  mode_stopped VARCHAR(3) NOT NULL REFERENCES LogicalSwitches(id),
+  mode_restart VARCHAR(3) NOT NULL REFERENCES LogicalSwitches(id),
+  mode_stopped_starts_new_flight BOOLEAN
+);
+
+-- batteries
+
+CREATE TABLE Batteries (
+  id SERIAL NOT NULL PRIMARY KEY,
+  name VARCHAR(64) NOT NULL,
+  purchase_date TIMESTAMP WITH TIME ZONE NOT NULL,
+  type VARCHAR(64) NOT NULL,
+  cells INTEGER NOT NULL,
+  capacity INTEGER NOT NULL,
+  UNIQUE(name)
+);
+
+
+CREATE INDEX batteries_battery_index ON Batteries(id);
+
+CREATE TYPE Battery_State AS ENUM ('discharged', 'storage', 'charged');
+
+-- planes and batteries
+
+CREATE TABLE PlaneBatteries (
+  plane_id VARCHAR(12) NOT NULL REFERENCES Planes(id),
+  battery_name VARCHAR(64) NOT NULL REFERENCES Batteries(name)
+);
+
+-- flights
+
 CREATE TABLE Flights (
   id VARCHAR(64) NOT NULL PRIMARY KEY,
-  plane VARCHAR(10) NOT NULL,
+  plane VARCHAR(12) NOT NULL REFERENCES Planes(id),
   session INTEGER NOT NULL,
   start_date TIMESTAMP WITH TIME ZONE NOT NULL,
   end_date TIMESTAMP WITH TIME ZONE NOT NULL,
@@ -18,24 +68,8 @@ CREATE INDEX flights_enddate_index ON Flights(end_date);
 CREATE INDEX flights_duration_index ON Flights(duration);
 CREATE INDEX flights_flighttime_index ON Flights(flight_time);
 
-DROP TABLE if EXISTS Batteries;
-CREATE TABLE Batteries (
-  id SERIAL NOT NULL PRIMARY KEY,
-  name VARCHAR(64) NOT NULL,
-  purchase_date TIMESTAMP WITH TIME ZONE NOT NULL,
-  type VARCHAR(64) NOT NULL,
-  cells INTEGER NOT NULL,
-  capacity INTEGER NOT NULL,
-  UNIQUE(name)
-);
+-- battery cycle
 
-
-CREATE INDEX batteries_battery_index ON Batteries(id);
-
-DROP TYPE if EXISTS Battery_State;
-CREATE TYPE Battery_State AS ENUM ('discharged', 'storage', 'charged');
-
-DROP TABLE if EXISTS Battery_Cycles;
 CREATE TABLE Battery_Cycles (
   id SERIAL NOT NULL PRIMARY KEY,
   DATE TIMESTAMP WITH TIME ZONE NOT NULL,
@@ -63,13 +97,11 @@ $$ LANGUAGE sql VOLATILE;
 
 -- dashboard views
 
-DROP VIEW totals;
 CREATE VIEW totals as
     SELECT plane, CAST(count(*) as integer)  as flights, CAST(sum(flight_time) as integer) as total_time
     FROM flights
     group by plane;
 
-DROP VIEW FLIGHTS_BY_DAY;
 CREATE VIEW FLIGHTS_BY_DAY as
 SELECT to_char(start_date, 'YYYY-MM-DD') as date,
           plane,
@@ -79,7 +111,6 @@ SELECT to_char(start_date, 'YYYY-MM-DD') as date,
       GROUP BY 1,2 
       ORDER BY date;
 
-DROP VIEW FLIGHTS_BY_MONTH;
 CREATE VIEW FLIGHTS_BY_MONTH as
 SELECT to_char(start_date, 'YYYY-MM-01') as date,
           plane,
@@ -89,7 +120,7 @@ SELECT to_char(start_date, 'YYYY-MM-01') as date,
       GROUP BY 1,2 
       ORDER BY date;
 
-DROP VIEW FLIGHTS_BY_YEAR;
+
 CREATE VIEW FLIGHTS_BY_YEAR as
 SELECT to_char(start_date, 'YYYY-01-01') as date,
           plane,
@@ -102,7 +133,7 @@ SELECT to_char(start_date, 'YYYY-01-01') as date,
 
 --- locations
 
-DROP VIEW locations;
+
 CREATE VIEW locations as
   SELECT notes->>'location' as location, count(*) as flights
     from flights 

@@ -19,6 +19,13 @@ export const Header = () => (
 
       <Button
         color="primary"
+        component={(p: any) => <Link to="/planes" {...p} />}
+      >
+        Planes
+      </Button>
+
+      <Button
+        color="primary"
         component={(p: any) => <Link to="/batteries" {...p} />}
       >
         Batteries

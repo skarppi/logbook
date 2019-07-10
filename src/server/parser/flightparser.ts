@@ -1,9 +1,11 @@
 import Segment from '../model/segment';
 import SegmentItem from '../model/segmentitem';
 import SegmentParser from './segmentparser';
-import { Flight, Plane, LogicalSwitch } from '../../shared/flights/types';
-import { SegmentType, LogicalFunction } from '../../shared/flights';
-import { planes, defaultPlane } from '../../shared/planes';
+import { Flight } from '../../shared/flights/types';
+import { Plane, LogicalSwitch } from '../../shared/planes/types';
+import { SegmentType } from '../../shared/flights';
+import { LogicalFunction } from '../../shared/planes';
+import { planes, defaultPlane } from '../../shared/planes/planes';
 import { FlightImpl } from './flight';
 import { IParserOptions } from '.';
 

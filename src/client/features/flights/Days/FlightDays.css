@@ -1,8 +1,3 @@
-@media (max-width: 600px) {
-  .grid {
-    padding: 0 !important;
-  }
-}
 
 .opened td {
   background-color: #fafafa;
@@ -17,9 +12,4 @@ td a {
 
 td a:visited {
   text-decoration: none;
-}
-
-.loadingParent {
-  min-height: 200px;
-  position: relative;
 }

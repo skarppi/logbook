@@ -6,7 +6,7 @@ import TextField from '@material-ui/core/TextField';
 import Divider from '@material-ui/core/Divider';
 import * as React from 'react';
 import { Flight } from '../../../../shared/flights/types';
-import { planes, defaultPlane } from '../../../../shared/planes';
+import { planes, defaultPlane } from '../../../../shared/planes/planes';
 import { withRouter } from 'react-router-dom';
 
 import { FlightDate } from './FlightDate';

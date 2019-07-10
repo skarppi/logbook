@@ -21,6 +21,7 @@ import { useQuery } from 'urql';
 import { ITotalRows } from '../../dashboard/Home/GraphOverTime';
 import gql from 'graphql-tag';
 
+const layout = require('../../../common/Layout.css');
 const css = require('./FlightDays.css');
 
 const Query = gql`
@@ -84,10 +85,10 @@ const FlightDaysComponent = ({ match: { params: { date } } }) => {
 
   return (
     <>
-      <Grid item xs={12} className={css.grid}>
+      <Grid item xs={12} className={layout.grid}>
         <Card>
           <CardHeader title='Flights List' />
-          <CardContent className={css.loadingParent}>
+          <CardContent className={layout.loadingParent}>
             <Table padding='none'>
               <TableHead>
                 <TableRow>

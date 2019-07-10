@@ -5,6 +5,7 @@ import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import { Header } from '../Header/Header';
 import { Dashboard } from '../../features/dashboard/Home/Home';
 import { FlightDays } from '../../features/flights/Days/FlightDays';
+import { PlanesList } from '../../features/planes/PlanesList/Planes';
 import { BatteriesList } from '../../features/batteries/BatteriesList/Batteries';
 import { FlightsUpload } from '../../features/flights/Upload/FlightsUpload';
 
@@ -16,6 +17,7 @@ export const App = () => (
         <Switch>
           <Route exact path='/' component={Dashboard} />
           <Route path='/flights/:date?/:id?' component={FlightDays} />
+          <Route path='/planes/:id?' component={PlanesList} />
           <Route path='/batteries/:id?' component={BatteriesList} />
           <Route path='/upload/:id?' component={FlightsUpload} />
         </Switch>

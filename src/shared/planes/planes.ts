@@ -1,5 +1,5 @@
-import { LogicalFunction } from './flights';
-import { Plane, LogicalSwitch } from './flights/types';
+import { LogicalFunction, PlaneType } from '.';
+import { Plane, LogicalSwitch } from './types';
 
 export const logicalSwitches: { [key: string]: LogicalSwitch } = {
   // default switches for quad with SB arming switch
@@ -10,13 +10,13 @@ export const logicalSwitches: { [key: string]: LogicalSwitch } = {
     id: 'L02', func: LogicalFunction.greaterThan, v1: 'Thr', v2: '-922', description: 'Throttle > 5% = flying'
   },
   L03: {
-    id: 'L03', func: LogicalFunction.lessThan, v1: 'Thr', v2: '-922', description: 'Throttle < 5% = stopped'
+    id: 'L03', func: LogicalFunction.lessThan, v1: 'Thr', v2: '-922', duration: 3, description: 'Throttle < 5% = stopped'
   },
   L04: {
     id: 'L04', func: LogicalFunction.is, v1: null, duration: 10, description: 'No data for 10 seconds = new flight'
   },
 
-  // default switches for dlg with SA launch switch (SoarOTX)
+  // default switches for glider with SA launch switch (SoarOTX)
   L11: {
     id: 'L11', func: LogicalFunction.greaterThan, v1: 'SA', v2: '-1', description: 'SA not up = armed/launch mode'
   },
@@ -32,7 +32,8 @@ export const logicalSwitches: { [key: string]: LogicalSwitch } = {
 }
 
 export const defaultPlane: Plane = {
-  name: '',
+  id: '',
+  type: PlaneType.drone,
   batterySlots: 0,
   batteries: [],
   ignoreTelemetries: [],
@@ -48,7 +49,8 @@ export const defaultPlane: Plane = {
 
 export const planes: { [key: string]: Plane } = {
   Reverb: {
-    name: 'Reverb',
+    id: 'Reverb',
+    type: PlaneType.drone,
     batterySlots: 1,
     batteries: [
       'tattu1',
@@ -64,7 +66,8 @@ export const planes: { [key: string]: Plane } = {
     modes: defaultPlane.modes
   },
   TWR: {
-    name: 'TWR',
+    id: 'TWR',
+    type: PlaneType.drone,
     batterySlots: 1,
     batteries: [
       'mylipo1',
@@ -79,10 +82,18 @@ export const planes: { [key: string]: Plane } = {
     ],
     ignoreTelemetries: ['SA', 'SC', 'SD', 'SE', 'SF', 'SG', 'SH', 'S1', 'S2', 'S3', 'LS', 'RS'],
     flightModes: [],
-    modes: defaultPlane.modes
+    modes: {
+      armed: logicalSwitches.L01,
+      flying: logicalSwitches.L02,
+      stopped: logicalSwitches.L04,
+      restart: logicalSwitches.L04,
+      stoppedStartsNewFlight: false
+    }
+
   },
   MOB7: {
-    name: 'MOB7',
+    id: 'MOB7',
+    type: PlaneType.drone,
     batterySlots: 2,
     batteries: [
       'mylipo1',
@@ -99,7 +110,8 @@ export const planes: { [key: string]: Plane } = {
     modes: defaultPlane.modes
   },
   Salome: {
-    name: 'Salome',
+    id: 'Salome',
+    type: PlaneType.glider,
     batterySlots: 0,
     batteries: [
     ],
@@ -114,7 +126,8 @@ export const planes: { [key: string]: Plane } = {
     }
   },
   F3K: {
-    name: 'F3K',
+    id: 'F3K',
+    type: PlaneType.glider,
     batterySlots: 0,
     batteries: [
     ],

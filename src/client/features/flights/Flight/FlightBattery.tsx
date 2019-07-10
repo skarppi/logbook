@@ -10,7 +10,7 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
-import { Flight, Plane } from '../../../../shared/flights/types';
+import { Plane } from '../../../../shared/planes/types';
 import { Battery, BatteryCycle } from '../../../../shared/batteries/types';
 const css = require('../../../common/Form.css');
 

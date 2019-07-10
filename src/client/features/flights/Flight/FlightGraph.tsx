@@ -2,7 +2,8 @@ import * as React from 'react';
 
 import { defaults, Bar } from 'react-chartjs-2';
 import * as Color from 'color';
-import { Segment, SegmentItem, Plane } from '../../../../shared/flights/types';
+import { Segment, SegmentItem } from '../../../../shared/flights/types';
+import { Plane } from '../../../../shared/planes/types';
 import { SegmentType } from '../../../../shared/flights';
 import { chartColors } from '../../../utils/charts';
 
