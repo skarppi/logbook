@@ -4,3 +4,13 @@
   width: 100%;
   height: 400px;
 }
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  max-width: 300px;
+}
+
+.chip {
+  margin: 2;
+}

@@ -22,20 +22,13 @@ import { useQuery, useMutation } from 'urql';
 
 const planeCss = require('./Plane.css');
 const css = require('../../../common/Form.css');
+
 import DeleteIcon from '@material-ui/icons/Delete';
 import { Loading } from '../../loading/Loading';
-import { formatDate } from '../../../../shared/utils/date';
-import Table from '@material-ui/core/Table';
-import TableHead from '@material-ui/core/TableHead';
-import TableCell from '@material-ui/core/TableCell';
-import TableBody from '@material-ui/core/TableBody';
-import TableFooter from '@material-ui/core/TableFooter';
-import TableRow from '@material-ui/core/TableRow';
 import Divider from '@material-ui/core/Divider';
 import { PlaneType } from '../../../../shared/planes';
-
-const planeTypes = ['LiPo', 'LiHV'];
-const cellCounts = [1, 2, 3, 4, 5, 6];
+import Chip from '@material-ui/core/Chip';
+import { Battery } from '../../../../shared/batteries/types';
 
 const Query = gql`
   query($id:String!) {
@@ -49,11 +42,32 @@ const Query = gql`
       modeStopped
       modeRestart
       modeStoppedStartsNewFlight
+      planeBatteriesByPlaneId {
+        nodes {
+          batteryName
+        }
+      }
+    }
+    allBatteries(orderBy:NAME_ASC) {
+      nodes {
+        name
+      }
     }
   }`;
 
+interface IPlaneQueryResponse extends Plane {
+  planeBatteriesByPlaneId: {
+    nodes: Array<{
+      batteryName: string
+    }>
+  }
+}
+
 interface IQueryResponse {
-  planeById: Plane;
+  planeById: IPlaneQueryResponse;
+  allBatteries: {
+    nodes: Battery[]
+  };
 }
 
 const Create = gql`
@@ -61,32 +75,31 @@ const Create = gql`
     createPlane(input: {plane: $plane}) {
       plane {
         id
-        name
-        purchaseDate
         type
-        cells
-        capacity
+        batterySlots
+        telemetries
       }
     }
   }`;
 
 const Update = gql`
-  mutation($id:Int!, $plane:PlanePatch!) {
+  mutation($id:String!, $plane:PlanePatch!, $batteries: [String]!) {
     updatePlaneById(input: {id: $id, planePatch: $plane}) {
       plane {
         id
-        name
-        purchaseDate
         type
-        cells
-        capacity
+        batterySlots
+        telemetries
       }
     }
-  }`;
+    updatePlaneBatteries(input: {plane: $id, batteries: $batteries}) {
+      strings
+    }
+   }`;
 
 const Delete = gql`
-  mutation($planeId:Int!) {
-    deletePlaneCyclesByPlaneId(input: {planeId: $planeId}) {
+  mutation($id:String!) {
+    deletePlaneById(input: {id: $id}) {
       plane {
         id
       }
@@ -152,7 +165,11 @@ const PlaneDetailsComponent = ({ id, history }) => {
   const [plane, setPlane] = React.useState(NEW_PLANE);
   React.useEffect(() => {
     if (read.data && read.data.planeById) {
-      setPlane(read.data.planeById);
+      const p = read.data.planeById;
+      p.batteries = p.planeBatteriesByPlaneId.nodes.map(b => b.batteryName);
+      delete p['planeBatteriesByPlaneId'];
+
+      setPlane(p);
     }
   }, [read]);
 
@@ -176,7 +193,9 @@ const PlaneDetailsComponent = ({ id, history }) => {
       });
     } else {
       delete plane['__typename'];
-      updatePlane({ id: plane.id, plane });
+
+      const { batteries, ...patch } = plane;
+      updatePlane({ id: plane.id, plane: patch, batteries });
     }
   };
   const executeDelete = _ => {
@@ -207,7 +226,7 @@ const PlaneDetailsComponent = ({ id, history }) => {
               required
               error={plane.id.length === 0}
               id='id'
-              placeholder='Name'
+              placeholder='Id'
               className={css.textField}
               value={plane.id}
               name='id'
@@ -245,7 +264,7 @@ const PlaneDetailsComponent = ({ id, history }) => {
               onBlur={save}
               input={<Input id='select-multiple-checkbox' />}
             >
-              {planeTypes.map(name => (
+              {Object.keys(PlaneType).sort().map(name => (
                 <MenuItem key={name} value={name}>
                   {name}
                 </MenuItem>
@@ -257,15 +276,44 @@ const PlaneDetailsComponent = ({ id, history }) => {
             <InputLabel htmlFor='select-multiple-checkbox'>Battery Slots</InputLabel>
             <Select
               value={plane.batterySlots}
-              name={'battery slots'}
+              name={'batterySlots'}
               onChange={changePlane}
               onBlur={save}
               input={<Input id='select-multiple-checkbox' />}
             >
-              {cellCounts.map(count => (
-                <MenuItem key={count} value={count}>
-                  {count}s
-                  </MenuItem>
+              <MenuItem key={0} value={0}>0</MenuItem>
+              <MenuItem key={1} value={1}>1</MenuItem>
+              <MenuItem key={2} value={2}>2</MenuItem>
+            </Select>
+          </FormControl>
+
+          <FormControl className={css.formControl} margin='normal'>
+            <InputLabel htmlFor='select-multiple-chip'>Available Batteries</InputLabel>
+            <Select
+              multiple
+              value={plane.batteries || []}
+              name={'batteries'}
+              onChange={changePlane}
+              onBlur={save}
+              input={<Input id='select-multiple-chip' />}
+              renderValue={selected => (
+                <div className={planeCss.chips}>
+                  {plane.batteries.map(battery => (
+                    <Chip key={battery} label={battery} className={planeCss.chip} />
+                  ))}
+                </div>
+              )}
+            // MenuProps={PaperProps: {
+            //   style: {
+            //     maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+            //     width: 250,
+            //   },
+            // },}
+            >
+              {read.data && read.data.allBatteries && read.data.allBatteries.nodes.map(battery => (
+                <MenuItem key={battery.name} value={battery.name}>
+                  {battery.name}
+                </MenuItem>
               ))}
             </Select>
           </FormControl>
@@ -302,39 +350,6 @@ const PlaneDetailsComponent = ({ id, history }) => {
         </div>
 
         <Divider variant='middle' />
-
-        <Table padding='none'>
-          <TableBody>
-            <TableRow>
-              <TableCell>
-                Flights
-                </TableCell>
-              <TableCell>
-                {cycles.filter(c => c.flightByFlightId).length}
-              </TableCell>
-            </TableRow>
-
-            <TableRow>
-              <TableCell>
-                Charge cycles
-                </TableCell>
-              <TableCell>
-                {/* {cycles.filter(c => c.state === PlaneState.charged).length} */}
-              </TableCell>
-            </TableRow>
-
-            <TableRow>
-              <TableCell>
-                Average voltage
-                </TableCell>
-              <TableCell>
-                {
-                  // voltages.length > 0 ? Math.round(voltages.reduce((sum, c) => sum + Number(c.voltage), 0) / voltages.length * 100) / 100 : '-'
-                }
-              </TableCell>
-            </TableRow>
-          </TableBody>
-        </Table>
 
         <div className={planeCss.graph}>
           <PlaneGraph cycles={cycles}></PlaneGraph>

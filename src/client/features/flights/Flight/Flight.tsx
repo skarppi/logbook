@@ -64,6 +64,15 @@ const Query = gql`
           resistance
         }
       }
+      planeByPlane {
+        type
+        batterySlots
+        planeBatteriesByPlaneId {
+          nodes {
+            batteryName
+          }
+        }
+      }
     }
     allBatteries(orderBy:NAME_ASC) {
       nodes {

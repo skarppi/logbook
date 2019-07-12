@@ -1,6 +1,6 @@
 export enum PlaneType {
-  drone,
-  glider
+  drone = 'drone',
+  glider = 'glider'
 }
 
 export enum LogicalFunction {

@@ -42,10 +42,34 @@ CREATE TYPE Battery_State AS ENUM ('discharged', 'storage', 'charged');
 
 -- planes and batteries
 
-CREATE TABLE PlaneBatteries (
+CREATE TABLE Plane_Batteries (
   plane_id VARCHAR(12) NOT NULL REFERENCES Planes(id),
-  battery_name VARCHAR(64) NOT NULL REFERENCES Batteries(name)
+  battery_name VARCHAR(64) NOT NULL REFERENCES Batteries(name),
+  primary key (plane_id, battery_name)
 );
+
+create or replace function update_plane_batteries(
+  plane varchar(12),
+  batteries varchar(64)[]
+)
+returns varchar(64)[]
+as $$
+  declare
+    a varchar(64);
+  begin
+
+    foreach a in array batteries loop
+      INSERT INTO Plane_Batteries (plane_id, battery_name)
+        VALUES (plane, a) 
+        ON CONFLICT (plane_id, battery_name)
+        DO NOTHING;
+    end loop;
+
+    delete from Plane_Batteries where plane_id = plane and battery_name != all (batteries);
+
+    return batteries;
+  end;
+$$ language plpgsql volatile strict set search_path from current;
 
 -- flights
 
