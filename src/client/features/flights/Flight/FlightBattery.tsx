@@ -37,7 +37,7 @@ interface IFlightBatteryProps {
 
 const Update = gql`
   mutation($id:Int!, $cycle:BatteryCyclePatch!) {
-    updateBatteryCycleById(input: {id: $id, batteryCyclePatch: $cycle}) {
+    updateBatteryCycle(input: {id: $id, batteryCyclePatch: $cycle}) {
       batteryCycle {
         id
         date
@@ -53,7 +53,7 @@ const Update = gql`
 
 const Delete = gql`
   mutation($id:Int!) {
-    deleteBatteryCycleById(input: {id: $id}) {
+    deleteBatteryCycle(input: {id: $id}) {
       batteryCycle {
         id
       }

@@ -40,7 +40,7 @@ import { FlightTimezone } from './FlightTimezone';
 
 const Query = gql`
   query($id:String!) {
-    flightById(id: $id) {
+    flight(id: $id) {
       id
       plane
       session
@@ -51,7 +51,7 @@ const Query = gql`
       flightTime
       notes
       segments
-      batteryCyclesByFlightId {
+      batteryCycles {
         nodes {
           id
           date
@@ -67,14 +67,14 @@ const Query = gql`
       planeByPlane {
         type
         batterySlots
-        planeBatteriesByPlaneId {
+        planeBatteries {
           nodes {
             batteryName
           }
         }
       }
     }
-    allBatteries(orderBy:NAME_ASC) {
+    batteries(orderBy:NAME_ASC) {
       nodes {
         name
       }
@@ -83,7 +83,7 @@ const Query = gql`
 
 const Update = gql`
   mutation($id:String!, $patch:FlightPatch!) {
-    updateFlightById(input: {id: $id, flightPatch: $patch}) {
+    updateFlight(input: {id: $id, patch: $patch}) {
       flight {
         id
         plane
@@ -100,7 +100,7 @@ const Update = gql`
 
 const Delete = gql`
   mutation($id:String!) {
-    deleteFlightById(input: {id: $id}) {
+    deleteFlight(input: {id: $id}) {
       flight {
         id
       }
@@ -109,8 +109,8 @@ const Delete = gql`
 
 
 interface IQueryResponse {
-  flightById: Flight;
-  allBatteries: {
+  flight: Flight;
+  batteries: {
     nodes: Battery[];
   }
 }
@@ -131,7 +131,7 @@ const FlightDetailsComponent = ({ entry, history }) => {
   const [flight, setFlight] = React.useState<Flight>(entry);
   React.useEffect(() => {
     if (read.data) {
-      const flight = read.data.flightById;
+      const flight = read.data.flight;
       setFlight(flight);
 
       const row = flight.segments[0].rows[0];
@@ -259,7 +259,7 @@ const FlightDetailsComponent = ({ entry, history }) => {
 
         <FlightBatteries
           flight={flight}
-          batteries={read.data && read.data.allBatteries.nodes || []}
+          batteries={read.data && read.data.batteries.nodes || []}
           refreshFlight={() => refreshFlight({ requestPolicy: 'network-only' })}
         />
 

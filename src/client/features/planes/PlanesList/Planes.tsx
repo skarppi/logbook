@@ -29,7 +29,7 @@ const layout = require('../../../common/Layout.css');
 
 const Query = gql`
   query {
-    allPlanes(orderBy: ID_ASC) {
+    planes(orderBy: ID_ASC) {
       nodes {
         id
         type,
@@ -42,7 +42,7 @@ const Query = gql`
   }`;
 
 interface IQueryResponse {
-  allPlanes: {
+  planes: {
     nodes: Plane[]
   };
 }
@@ -105,7 +105,7 @@ export const PlanesList = ({ match: { params } }) => {
 
   const [res] = useQuery<IQueryResponse>({ query: Query });
 
-  const planes = res.data && res.data.allPlanes ? res.data.allPlanes.nodes : [];
+  const planes = res.data && res.data.planes ? res.data.planes.nodes : [];
 
   const rows = planes.map(plane => {
     const current = params.id === plane.id;

@@ -20,7 +20,7 @@ const css = require('./Flights.css');
 
 const Query = gql`
   query($from:Datetime!,$to:Datetime!) {
-    allFlights(orderBy:START_DATE_DESC, filter: {startDate: {
+    flights(orderBy:START_DATE_DESC, filter: {startDate: {
         greaterThanOrEqualTo: $from,
         lessThan: $to
       }}) {
@@ -34,7 +34,7 @@ const Query = gql`
         armedTime
         flightTime
         notes
-        batteryCyclesByFlightId {
+        batteryCycles {
           nodes {
             batteryName
           }
@@ -44,7 +44,7 @@ const Query = gql`
   }`;
 
 interface IQueryResponse {
-  allFlights: {
+  flights: {
     nodes: Flight[];
   }
 }
@@ -58,12 +58,12 @@ const FlightsComponent = ({ match: { params: { date, id } } }) => {
 
   const path = `/flights/${date}`;
 
-  const flights = read.data && read.data.allFlights.nodes || [];
+  const flights = read.data && read.data.flights.nodes || [];
 
   const rows = flights.map((flight, index) => {
     const isCurrent = id === flight.id;
 
-    const batteries = flight.batteryCyclesByFlightId.nodes
+    const batteries = flight.batteryCycles.nodes
       .map(b => b.batteryName)
       .join(',');
 

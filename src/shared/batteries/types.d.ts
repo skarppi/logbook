@@ -24,5 +24,5 @@ export interface BatteryCycle {
   discharged?: number;
   charged?: number;
   resistance?: [number];
-  flightByFlightId?: Flight;
+  flight?: Flight;
 }

@@ -36,8 +36,10 @@ export const Loading = ({ spinning, error, overlay }: LoadingProps) => {
       </IconButton>
     );
   } else if (error) {
+    console.log(error);
+
     return (
-      <Tooltip title={error}>
+      <Tooltip title={error.message}>
         <IconButton>
           <WarningIcon color='error' />
         </IconButton>

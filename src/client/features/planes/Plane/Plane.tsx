@@ -32,7 +32,7 @@ import { Battery } from '../../../../shared/batteries/types';
 
 const Query = gql`
   query($id:String!) {
-    planeById(id: $id) {
+    plane(id: $id) {
       id
       type,
       batterySlots
@@ -42,13 +42,13 @@ const Query = gql`
       modeStopped
       modeRestart
       modeStoppedStartsNewFlight
-      planeBatteriesByPlaneId {
+      planeBatteries {
         nodes {
           batteryName
         }
       }
     }
-    allBatteries(orderBy:NAME_ASC) {
+    batteries(orderBy:NAME_ASC) {
       nodes {
         name
       }
@@ -56,7 +56,7 @@ const Query = gql`
   }`;
 
 interface IPlaneQueryResponse extends Plane {
-  planeBatteriesByPlaneId: {
+  planeBatteries: {
     nodes: Array<{
       batteryName: string
     }>
@@ -64,8 +64,8 @@ interface IPlaneQueryResponse extends Plane {
 }
 
 interface IQueryResponse {
-  planeById: IPlaneQueryResponse;
-  allBatteries: {
+  plane: IPlaneQueryResponse;
+  batteries: {
     nodes: Battery[]
   };
 }
@@ -84,7 +84,7 @@ const Create = gql`
 
 const Update = gql`
   mutation($id:String!, $plane:PlanePatch!, $batteries: [String]!) {
-    updatePlaneById(input: {id: $id, planePatch: $plane}) {
+    updatePlane(input: {id: $id, patch: $plane}) {
       plane {
         id
         type
@@ -99,7 +99,7 @@ const Update = gql`
 
 const Delete = gql`
   mutation($id:String!) {
-    deletePlaneById(input: {id: $id}) {
+    deletePlane(input: {id: $id}) {
       plane {
         id
       }
@@ -164,10 +164,10 @@ const PlaneDetailsComponent = ({ id, history }) => {
   // local state
   const [plane, setPlane] = React.useState(NEW_PLANE);
   React.useEffect(() => {
-    if (read.data && read.data.planeById) {
-      const p = read.data.planeById;
-      p.batteries = p.planeBatteriesByPlaneId.nodes.map(b => b.batteryName);
-      delete p['planeBatteriesByPlaneId'];
+    if (read.data && read.data.plane) {
+      const p = read.data.plane;
+      p.batteries = p.planeBatteries.nodes.map(b => b.batteryName);
+      delete p['planeBatteries'];
 
       setPlane(p);
     }
@@ -310,7 +310,7 @@ const PlaneDetailsComponent = ({ id, history }) => {
             //   },
             // },}
             >
-              {read.data && read.data.allBatteries && read.data.allBatteries.nodes.map(battery => (
+              {read.data && read.data.batteries && read.data.batteries.nodes.map(battery => (
                 <MenuItem key={battery.name} value={battery.name}>
                   {battery.name}
                 </MenuItem>

@@ -78,7 +78,7 @@ const chartOptions = () => {
 
 export const PlaneGraph = ({ cycles }: IProps) => {
 
-  const flights = cycles.filter(c => c.flightByFlightId);
+  const flights = cycles.filter(c => c.flight);
 
   const labels = flights.map(row => row.date);
 
@@ -87,7 +87,7 @@ export const PlaneGraph = ({ cycles }: IProps) => {
       label: 'Flight time',
       type: 'bar',
       yAxisID: 'time',
-      data: flights.map(c => c.flightByFlightId.flightTime),
+      data: flights.map(c => c.flight.flightTime),
       borderColor: chartColors[0][0],
       backgroundColor: chartColors[0][1],
     },
@@ -95,7 +95,7 @@ export const PlaneGraph = ({ cycles }: IProps) => {
       label: 'Armed time',
       type: 'bar',
       yAxisID: 'time',
-      data: flights.map(c => c.flightByFlightId.armedTime - c.flightByFlightId.flightTime),
+      data: flights.map(c => c.flight.armedTime - c.flight.flightTime),
       borderColor: chartColors[1][0],
       backgroundColor: chartColors[1][1],
     }

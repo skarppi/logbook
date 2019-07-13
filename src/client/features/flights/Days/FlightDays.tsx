@@ -26,7 +26,7 @@ const css = require('./FlightDays.css');
 
 const Query = gql`
   query {
-    allFlightsByDays(orderBy:DATE_DESC) {
+    flightsByDays(orderBy:DATE_DESC) {
       nodes {
         date
         plane
@@ -38,7 +38,7 @@ const Query = gql`
 `;
 
 interface IQueryResponse {
-  allFlightsByDays: {
+  flightsByDays: {
     nodes: ITotalRows[]
   };
 }
@@ -46,7 +46,7 @@ interface IQueryResponse {
 const FlightDaysComponent = ({ match: { params: { date } } }) => {
   const [read] = useQuery<IQueryResponse>({ query: Query });
 
-  const flightDaysAndPlanes = read.data && read.data.allFlightsByDays.nodes || [];
+  const flightDaysAndPlanes = read.data && read.data.flightsByDays.nodes || [];
 
   const flightDays = flightDaysAndPlanes.reduce((objectsByKeyValue, obj) => {
     const value = formatDate(obj.date);

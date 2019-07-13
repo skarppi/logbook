@@ -32,7 +32,7 @@ const css = require('./Batteries.css');
 
 const Query = gql`
   query {
-    allBatteries(orderBy: NAME_ASC) {
+    batteries(orderBy: NAME_ASC) {
       nodes {
         id
 			  name
@@ -52,7 +52,7 @@ const Query = gql`
   }`;
 
 interface IQueryResponse {
-  allBatteries: {
+  batteries: {
     nodes: Battery[]
   };
 }
@@ -63,7 +63,7 @@ const Charge = gql`
       batteryCycle {
         id
         date
-        batteryName
+        name
         flightId
         state
         voltage
@@ -148,7 +148,7 @@ export const BatteriesList = ({ match: { params } }) => {
 
   const [res] = useQuery<IQueryResponse>({ query: Query });
 
-  const batteries = res.data && res.data.allBatteries ? res.data.allBatteries.nodes : [];
+  const batteries = res.data && res.data.batteries ? res.data.batteries.nodes : [];
 
   const rows = batteries.map(battery => {
     const current = params.id === String(battery.id);

@@ -38,7 +38,7 @@ const cellCounts = [1, 2, 3, 4, 5, 6];
 
 const Query = gql`
   query($id:Int!) {
-    batteryById(id: $id) {
+    battery(id: $id) {
       id
       name
       purchaseDate
@@ -54,7 +54,7 @@ const Query = gql`
           discharged
           charged
           resistance
-          flightByFlightId {
+          flight {
             armedTime
             flightTime
           }
@@ -64,7 +64,7 @@ const Query = gql`
   }`;
 
 interface IQueryResponse {
-  batteryById: Battery;
+  battery: Battery;
 }
 
 const Create = gql`
@@ -83,7 +83,7 @@ const Create = gql`
 
 const Update = gql`
   mutation($id:Int!, $battery:BatteryPatch!) {
-    updateBatteryById(input: {id: $id, batteryPatch: $battery}) {
+    updateBattery(input: {id: $id, patch: $battery}) {
       battery {
         id
         name
@@ -124,8 +124,8 @@ const BatteryDetailsComponent = ({ id, history }) => {
   // local state
   const [battery, setBattery] = React.useState(NEW_BATTERY);
   React.useEffect(() => {
-    if (read.data && read.data.batteryById) {
-      setBattery(read.data.batteryById);
+    if (read.data && read.data.battery) {
+      setBattery(read.data.battery);
     }
   }, [read]);
 
@@ -149,6 +149,7 @@ const BatteryDetailsComponent = ({ id, history }) => {
       });
     } else {
       delete battery['__typename'];
+      delete battery.batteryCyclesByBatteryName;
       updateBattery({ id: battery.id, battery });
     }
   };
@@ -283,7 +284,7 @@ const BatteryDetailsComponent = ({ id, history }) => {
                 Flights
                 </TableCell>
               <TableCell>
-                {cycles.filter(c => c.flightByFlightId).length}
+                {cycles.filter(c => c.flight).length}
               </TableCell>
             </TableRow>
 

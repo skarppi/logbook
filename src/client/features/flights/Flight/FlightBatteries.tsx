@@ -39,7 +39,7 @@ export const FlightBatteries = ({ flight, batteries, refreshFlight }: IBatteryPr
 
   const plane = planes[flight.plane] || defaultPlane;
 
-  const cycles = flight.batteryCyclesByFlightId && flight.batteryCyclesByFlightId.nodes || [];
+  const cycles = flight.batteryCycles && flight.batteryCycles.nodes || [];
 
   const [create, createCycle] = useMutation(Create);
 

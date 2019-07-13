@@ -49,7 +49,7 @@ function startDateFrom(unit: DashboardUnit, size: number) {
 }
 
 const currentResource = (unit: DashboardUnit) => {
-  return `allFlightsBy${unit[0].toUpperCase() + unit.substring(1)}s`
+  return `flightsBy${unit[0].toUpperCase() + unit.substring(1)}s`
 }
 
 const Query = (unit: DashboardUnit, size: number) => {
@@ -70,13 +70,13 @@ const Query = (unit: DashboardUnit, size: number) => {
 `};
 
 interface IQueryResponse {
-  allFlightsByDays: {
+  flightsByDays: {
     nodes: ITotalRows[]
   };
-  allFlightsByMonths: {
+  flightsByMonths: {
     nodes: ITotalRows[]
   };
-  allFlightsByYears: {
+  flightsByYears: {
     nodes: ITotalRows[]
   };
 }
