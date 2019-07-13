@@ -39,7 +39,7 @@ const Query = gql`
         type
         cells
         capacity
-        batteryCyclesByBatteryName(first:1, orderBy: DATE_DESC) {
+        batteryCycles(first:1, orderBy: DATE_DESC) {
           nodes {
             id
             date
@@ -167,7 +167,7 @@ export const BatteriesList = ({ match: { params } }) => {
           {battery.type} {battery.cells}s {battery.capacity}mAh
           </TableCell>
         <TableCell>{battery.lastCycle && battery.lastCycle.state}</TableCell>
-        <TableCell>{lastUsed(battery.batteryCyclesByBatteryName)}</TableCell>
+        <TableCell>{lastUsed(battery.batteryCycles)}</TableCell>
         <TableCell>{batteryOps(battery)}</TableCell>
       </TableRow>
       {params.id === String(battery.id) && details(battery.id)}

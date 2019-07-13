@@ -45,7 +45,7 @@ const Query = gql`
       type
       cells
       capacity
-      batteryCyclesByBatteryName(orderBy: DATE_ASC) {
+      batteryCycles(orderBy: DATE_ASC) {
         nodes {
           id
           date
@@ -149,7 +149,7 @@ const BatteryDetailsComponent = ({ id, history }) => {
       });
     } else {
       delete battery['__typename'];
-      delete battery.batteryCyclesByBatteryName;
+      delete battery.batteryCycles;
       updateBattery({ id: battery.id, battery });
     }
   };
@@ -167,7 +167,7 @@ const BatteryDetailsComponent = ({ id, history }) => {
   //   this.onTop.current.scrollIntoView();
   // }
 
-  const cycles = battery.batteryCyclesByBatteryName && battery.batteryCyclesByBatteryName.nodes || [];
+  const cycles = battery.batteryCycles && battery.batteryCycles.nodes || [];
 
   const voltages = cycles.filter(c => c.voltage);
 

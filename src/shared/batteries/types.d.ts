@@ -9,7 +9,7 @@ export interface Battery {
   cells: number;
   capacity: number;
   lastCycle?: BatteryCycle;
-  batteryCyclesByBatteryName?: {
+  batteryCycles?: {
     nodes: BatteryCycle[]
   }
 }

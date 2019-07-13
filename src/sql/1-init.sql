@@ -112,6 +112,9 @@ CREATE INDEX battery_cycles_battery_index ON Battery_Cycles(battery_name);
 CREATE INDEX battery_cycles_date_index ON Battery_Cycles(date);
 CREATE INDEX battery_cycles_flight_index ON Battery_Cycles(flight_id);
 
+comment on constraint "battery_cycles_battery_name_fkey" on "battery_cycles" is
+  E'@foreignFieldName batteryCycles';
+
 -- battery cycle deletion
 
 CREATE FUNCTION delete_battery_cycles_by_battery_id(battery_id integer) RETURNS batteries AS $$
