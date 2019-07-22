@@ -4,7 +4,6 @@ import FormControl from '@material-ui/core/FormControl';
 import { Flight } from '../../../../shared/flights/types';
 import { FlightBattery } from './FlightBattery';
 import AddIcon from '@material-ui/icons/Add';
-import { planes, defaultPlane } from '../../../../shared/planes/planes';
 import { BatteryState } from '../../../../shared/batteries';
 import { Battery } from '../../../../shared/batteries/types';
 import gql from 'graphql-tag';
@@ -37,7 +36,7 @@ const Create = gql`
 
 export const FlightBatteries = ({ flight, batteries, refreshFlight }: IBatteryProps) => {
 
-  const plane = planes[flight.plane] || defaultPlane;
+  const plane = flight.plane;
 
   const cycles = flight.batteryCycles && flight.batteryCycles.nodes || [];
 
@@ -55,9 +54,9 @@ export const FlightBatteries = ({ flight, batteries, refreshFlight }: IBatteryPr
 
     const cycle = {
       date: flight.startDate,
-      batteryName: plane.batteries.find(
-        name => usedBatteries.indexOf(name) === -1
-      ),
+      batteryName: plane.planeBatteries.nodes.find(
+        name => usedBatteries.indexOf(name.batteryName) === -1
+      ).batteryName,
       flightId: flight.id,
       state: BatteryState.discharged,
       voltage: useCellVoltage ? voltage / plane.batterySlots : voltage,
@@ -69,32 +68,33 @@ export const FlightBatteries = ({ flight, batteries, refreshFlight }: IBatteryPr
 
   const rows = cycles.map(cycle =>
     <FlightBattery
-      key={cycle.id}
+      key={cycle.id || 0}
       plane={plane}
       flightCycle={cycle}
       battery={batteries.find(b => b.name === cycle.batteryName)}
     />
   );
 
+  const batteryControl =
+    <FormControl className={css.formControl} margin='normal'>
+      <Button onClick={addBattery}>
+        Add battery
+        <AddIcon />
+      </Button>
+      <Loading
+        spinning={create.fetching}
+        error={create.error}
+        overlay={false}
+      />
+    </FormControl>;
+
+  const batterySlots = plane && plane.batterySlots || 0;
+  const showControls = rows.length < batterySlots;
 
   return (
     <>
       {rows}
-      <FormControl className={css.formControl} margin='normal'>
-        {rows.length < plane.batterySlots && (
-          <>
-            <Button onClick={addBattery}>
-              Add battery
-            <AddIcon />
-            </Button>
-            <Loading
-              spinning={create.fetching}
-              error={create.error}
-              overlay={false}
-            />
-          </>
-        )}
-      </FormControl>
+      {showControls && batteryControl}
     </>
   );
 }

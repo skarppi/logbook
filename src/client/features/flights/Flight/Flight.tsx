@@ -6,7 +6,6 @@ import TextField from '@material-ui/core/TextField';
 import Divider from '@material-ui/core/Divider';
 import * as React from 'react';
 import { Flight } from '../../../../shared/flights/types';
-import { planes, defaultPlane } from '../../../../shared/planes/planes';
 import { withRouter } from 'react-router-dom';
 
 import { FlightDate } from './FlightDate';
@@ -42,7 +41,6 @@ const Query = gql`
   query($id:String!) {
     flight(id: $id) {
       id
-      plane
       session
       startDate
       endDate
@@ -64,8 +62,10 @@ const Query = gql`
           resistance
         }
       }
-      planeByPlane {
+      plane {
+        id
         type
+        telemetries
         batterySlots
         planeBatteries {
           nodes {
@@ -86,7 +86,6 @@ const Update = gql`
     updateFlight(input: {id: $id, patch: $patch}) {
       flight {
         id
-        plane
         session
         startDate
         endDate
@@ -279,12 +278,12 @@ const FlightDetailsComponent = ({ entry, history }) => {
         </div>
 
         <div className={flightCss.graph}>
-          <FlightGraph segments={flight.segments || []} plane={planes[flight.plane] || defaultPlane}></FlightGraph>
+          <FlightGraph segments={flight.segments || []} plane={flight.plane}></FlightGraph>
         </div>
 
         <Videos
           date={flight.startDate}
-          plane={flight.plane}
+          plane={flight.planeId}
           session={flight.session}
         />
       </CardContent>

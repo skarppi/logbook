@@ -5,10 +5,10 @@ import { Flight } from '../../shared/flights/types';
 import { Plane, LogicalSwitch } from '../../shared/planes/types';
 import { SegmentType } from '../../shared/flights';
 import { LogicalFunction } from '../../shared/planes';
-import { planes, defaultPlane } from '../../shared/planes/planes';
 import { FlightImpl } from './flight';
 import { IParserOptions } from '.';
-
+import { SERVER_PORT, PUBLIC_URL } from '../config';
+import { request } from 'graphql-request'
 
 export default class FlightParser {
   private name: string;
@@ -22,7 +22,55 @@ export default class FlightParser {
   constructor(name: string, options: IParserOptions) {
     this.name = name;
     this.options = options;
-    this.plane = planes[this.planeName] || defaultPlane;
+
+    const query = `query {
+      plane(id: '${this.planeName}') {
+        id
+        telemetries
+        batterySlots
+        logicalSwitchByModeArmed {
+          id
+          func
+          v1
+          v2
+          duration
+        }
+        logicalSwitchByModeFlying {
+          id
+          func
+          v1
+          v2
+          duration
+        }
+        logicalSwitchByModeArmed {
+          id
+          func
+          v1
+          v2
+          duration
+        }
+        logicalSwitchByModeArmed {
+          id
+          func
+          v1
+          v2
+          duration
+        }
+        stoppedStartsNewFlight
+      }
+    }`;
+
+    console.log(`http://localhost:${SERVER_PORT}/${PUBLIC_URL}api/graphql`);
+
+    request(`http://localhost:${SERVER_PORT}/${PUBLIC_URL}api/graphql`, query).then(data => {
+      console.log("query")
+      console.log(data['planes'].nodes);
+      this.plane = data['planes'].nodes;
+    }).catch(err => {
+      console.log(err);
+    });
+
+    // this.plane = planes[this.planeName] || defaultPlane;
   }
 
   public getFlights(): Flight[] {
@@ -32,12 +80,12 @@ export default class FlightParser {
   public appendItem(item: SegmentItem) {
     let type = this.currentSegment.type || SegmentType.stopped;
 
-    if (type === SegmentType.flying && this.test(this.plane.modes.stopped, item)) {
+    if (type === SegmentType.flying && this.test(this.plane.logicalSwitchByModeStopped, item)) {
       type = SegmentType.stopped;
     }
 
-    if (this.test(this.plane.modes.armed, item)) {
-      if (this.test(this.plane.modes.flying, item)) {
+    if (this.test(this.plane.logicalSwitchByModeArmed, item)) {
+      if (this.test(this.plane.logicalSwitchByModeFlying, item)) {
         type = SegmentType.flying;
       } else if (type === SegmentType.stopped) {
         type = SegmentType.armed;
@@ -48,8 +96,8 @@ export default class FlightParser {
 
 
     // if (this.currentSegment.splitFlightAt(item.timestamp, this.options.splitFlightsAfterSeconds)) {
-    if (type === SegmentType.stopped && this.currentSegment.type !== SegmentType.stopped && this.plane.modes.stoppedStartsNewFlight
-      || this.test(this.plane.modes.restart, item)) {
+    if (type === SegmentType.stopped && this.currentSegment.type !== SegmentType.stopped && this.plane.stoppedStartsNewFlight
+      || this.test(this.plane.logicalSwitchByModeRestart, item)) {
       this.endFlight();
     } else if (this.currentSegment.type !== type) {
       this.endSegment();
@@ -64,7 +112,7 @@ export default class FlightParser {
     this.sessionCounter++;
 
     if (this.currentSegments.length > 0) {
-      const flight = new FlightImpl(this.name, this.planeName, this.sessionCounter, this.currentSegments);
+      const flight = new FlightImpl(this.name, this.plane, this.sessionCounter, this.currentSegments);
 
       if (flight.flightTime === 0) {
         console.log(`Skipped empty flight ${flight}`);

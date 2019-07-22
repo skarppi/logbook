@@ -2,10 +2,12 @@ import Segment from '../model/segment';
 import { Flight, FlightNotes } from '../../shared/flights/types';
 import { durationInSeconds } from '../../shared/utils/date';
 import { SegmentType } from '../../shared/flights';
+import { Plane } from '../../shared/planes/types';
 
 export class FlightImpl implements Flight {
   public id: string;
-  public plane: string;
+  public planeId: string;
+  public plane: Plane;
   public session: number;
   public startDate: Date;
   public endDate: Date;
@@ -15,7 +17,7 @@ export class FlightImpl implements Flight {
   public notes: FlightNotes = undefined;
   public segments: Segment[];
 
-  constructor(name: string, plane: string, session: number, segments: Segment[]) {
+  constructor(name: string, plane: Plane, session: number, segments: Segment[]) {
 
     if (!name.includes('Session')) {
       this.id = `${name}-Session${session}`;

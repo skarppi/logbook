@@ -1,9 +1,11 @@
 import { SegmentType } from "./index";
 import { BatteryCycle } from "../batteries/types";
+import { Plane } from "../planes/types";
 
 export interface Flight {
   id: string;
-  plane: string;
+  planeId: string,
+  plane: Plane;
   session: number;
   startDate: Date;
   endDate: Date;

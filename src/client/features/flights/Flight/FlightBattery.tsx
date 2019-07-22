@@ -37,7 +37,7 @@ interface IFlightBatteryProps {
 
 const Update = gql`
   mutation($id:Int!, $cycle:BatteryCyclePatch!) {
-    updateBatteryCycle(input: {id: $id, batteryCyclePatch: $cycle}) {
+    updateBatteryCycle(input: {id: $id, patch: $cycle}) {
       batteryCycle {
         id
         date
@@ -68,6 +68,10 @@ const FlightBatteryComponent = ({ plane, flightCycle, battery }: IFlightBatteryP
 
   const [cycle, setCycle] = React.useState<BatteryCycle>(flightCycle);
   React.useEffect(() => setCycle(flightCycle), [flightCycle]);
+
+  if (!plane || !battery) {
+    return <></>;
+  }
 
   // modify local state
   const changeNumber = ({ target: { name, value } }) =>
@@ -128,10 +132,6 @@ const FlightBatteryComponent = ({ plane, flightCycle, battery }: IFlightBatteryP
     );
   }
 
-  if (!battery) {
-    return <></>;
-  }
-
   const resistances = Array(battery.cells)
     .fill('')
     .map((_, index) => {
@@ -156,9 +156,9 @@ const FlightBatteryComponent = ({ plane, flightCycle, battery }: IFlightBatteryP
             onBlur={storeBattery}
             input={<Input id='select-multiple-checkbox' />}
           >
-            {plane.batteries.map(name => (
-              <MenuItem key={name} value={name}>
-                {name}
+            {plane.planeBatteries.nodes.map(name => (
+              <MenuItem key={name.batteryName} value={name.batteryName}>
+                {name.batteryName}
               </MenuItem>
             ))}
           </Select>

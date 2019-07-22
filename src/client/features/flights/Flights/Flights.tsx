@@ -26,7 +26,7 @@ const Query = gql`
       }}) {
       nodes {
         id
-        plane
+        planeId
         session
         startDate
         endDate
@@ -80,7 +80,7 @@ const FlightsComponent = ({ match: { params: { date, id } } }) => {
         </TableCell>
         <TableCell>{flights.length - index}</TableCell>
         <TableCell>
-          {flight.plane} {batteries && `(${batteries})`}
+          {flight.planeId} {batteries && `(${batteries})`}
         </TableCell>
         <TableCell>{formatDuration(flight.flightTime)}</TableCell>
       </TableRow>

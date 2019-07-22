@@ -3,7 +3,7 @@ import * as React from 'react';
 import { defaults, Bar } from 'react-chartjs-2';
 import * as Color from 'color';
 import { Segment, SegmentItem } from '../../../../shared/flights/types';
-import { Plane } from '../../../../shared/planes/types';
+import { Plane, Telemetry } from '../../../../shared/planes/types';
 import { SegmentType } from '../../../../shared/flights';
 import { chartColors } from '../../../utils/charts';
 
@@ -123,7 +123,7 @@ const chartOptions = (plane: Plane) => {
   };
 };
 
-const alwaysIgnoreTelemetries = ['Date', 'Time', 'LSW'];
+// const alwaysIgnoreTelemetries = ['Date', 'Time', 'LSW'];
 
 const axisMappings = {
   Ail: 'stick',
@@ -148,15 +148,17 @@ const axisMappings = {
   'Hdg(@)': 'stick'
 }
 
-const enabledTelemetries = ['Thr', 'Fuel(mAh)', 'Alt(m)']
+// const enabledTelemetries = ['Thr', 'Fuel(mAh)', 'Alt(m)']
 
 export const FlightGraph = ({ segments, plane }: IProps) => {
 
-  const ignoreTelemetries = [...alwaysIgnoreTelemetries, ...plane.ignoreTelemetries];
+  const telemetries: Map<string, Telemetry> = plane && plane.telemetries || new Map();
+
+  // const ignoreTelemetries = [...alwaysIgnoreTelemetries, ...(plane && plane.ignoreTelemetries || [])];
 
   const items = segments.reduce<SegmentItem[]>((prev, cur) => [...prev, ...cur.rows], []);
 
-  const fields = Object.keys(items[0] || {}).filter(field => !ignoreTelemetries.includes(field));
+  const fields = Object.keys(items[0] || {}).filter(field => !telemetries.has(field) || !telemetries.get(field).ignore);
 
   const labels = items.map(row => row.Date + ' ' + row.Time);
 
@@ -177,11 +179,12 @@ export const FlightGraph = ({ segments, plane }: IProps) => {
 
   const datasets = fields.map((field, index) => {
     const colorIndex = index % chartColors.length;
+    const hidden = !telemetries.has(field) || !telemetries.get(field).default;
     return {
       label: field,
       type: 'line',
       fill: false,
-      hidden: !enabledTelemetries.find(t => t === field),
+      hidden,
       yAxisID: axisMappings[field] || 'default',
       data: items.map(i => i[field]),
       pointRadius: 0,

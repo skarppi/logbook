@@ -1,6 +1,6 @@
 --- planes
 
-CREATE TABLE LogicalSwitches (
+CREATE TABLE Logical_Switches (
   id VARCHAR(3) NOT NULL PRIMARY KEY,
   func VARCHAR(16) NOT NULL,
   v1 VARCHAR(16),
@@ -16,10 +16,10 @@ CREATE TABLE Planes (
   type VARCHAR(32) NOT NULL,
   battery_slots INTEGER,
   telemetries JSONB,
-  mode_armed VARCHAR(3) NOT NULL REFERENCES LogicalSwitches(id),
-  mode_flying VARCHAR(3) NOT NULL REFERENCES LogicalSwitches(id),
-  mode_stopped VARCHAR(3) NOT NULL REFERENCES LogicalSwitches(id),
-  mode_restart VARCHAR(3) NOT NULL REFERENCES LogicalSwitches(id),
+  mode_armed VARCHAR(3) NOT NULL REFERENCES Logical_Switches(id),
+  mode_flying VARCHAR(3) NOT NULL REFERENCES Logical_Switches(id),
+  mode_stopped VARCHAR(3) NOT NULL REFERENCES Logical_Switches(id),
+  mode_restart VARCHAR(3) NOT NULL REFERENCES Logical_Switches(id),
   mode_stopped_starts_new_flight BOOLEAN
 );
 
@@ -75,7 +75,7 @@ $$ language plpgsql volatile strict set search_path from current;
 
 CREATE TABLE Flights (
   id VARCHAR(64) NOT NULL PRIMARY KEY,
-  plane VARCHAR(12) NOT NULL REFERENCES Planes(id),
+  plane_id VARCHAR(12) NOT NULL REFERENCES Planes(id),
   session INTEGER NOT NULL,
   start_date TIMESTAMP WITH TIME ZONE NOT NULL,
   end_date TIMESTAMP WITH TIME ZONE NOT NULL,
@@ -86,7 +86,7 @@ CREATE TABLE Flights (
   segments JSONB NOT NULL
 );
 
-CREATE INDEX flights_plane_index ON Flights(plane);
+CREATE INDEX flights_plane_name_index ON Flights(plane_name);
 CREATE INDEX flights_startdate_index ON Flights(start_date);
 CREATE INDEX flights_enddate_index ON Flights(end_date);
 CREATE INDEX flights_duration_index ON Flights(duration);

@@ -55,16 +55,9 @@ const Query = gql`
     }
   }`;
 
-interface IPlaneQueryResponse extends Plane {
-  planeBatteries: {
-    nodes: Array<{
-      batteryName: string
-    }>
-  }
-}
 
 interface IQueryResponse {
-  plane: IPlaneQueryResponse;
+  plane: Plane;
   batteries: {
     nodes: Battery[]
   };
@@ -141,16 +134,16 @@ const NEW_PLANE: Plane = {
   id: '',
   type: PlaneType.drone,
   batterySlots: 0,
-  batteries: [],
-  ignoreTelemetries: [],
+  planeBatteries: {
+    nodes: []
+  },
+  telemetries: new Map(),
   flightModes: [],
-  modes: {
-    armed: logicalSwitches.L01,
-    flying: logicalSwitches.L02,
-    stopped: logicalSwitches.L03,
-    restart: logicalSwitches.L04,
-    stoppedStartsNewFlight: false
-  }
+  logicalSwitchByModeArmed: logicalSwitches.L01,
+  logicalSwitchByModeFlying: logicalSwitches.L02,
+  logicalSwitchByModeStopped: logicalSwitches.L03,
+  logicalSwitchByModeRestart: logicalSwitches.L04,
+  stoppedStartsNewFlight: false
 };
 
 const PlaneDetailsComponent = ({ id, history }) => {
@@ -166,8 +159,6 @@ const PlaneDetailsComponent = ({ id, history }) => {
   React.useEffect(() => {
     if (read.data && read.data.plane) {
       const p = read.data.plane;
-      p.batteries = p.planeBatteries.nodes.map(b => b.batteryName);
-      delete p['planeBatteries'];
 
       setPlane(p);
     }
@@ -183,6 +174,12 @@ const PlaneDetailsComponent = ({ id, history }) => {
   const changePlane = ({ target: { name, value } }) =>
     setPlane({ ...plane, [name]: value });
 
+  const changeBatteries = ({ target: { name, value } }) => {
+    const nodes = value.map(v => ({ batteryName: v }));
+
+    setPlane({ ...plane, [name]: { nodes } });
+  }
+
   // update to server
   const save = () => {
     if (!plane.id) {
@@ -194,8 +191,8 @@ const PlaneDetailsComponent = ({ id, history }) => {
     } else {
       delete plane['__typename'];
 
-      const { batteries, ...patch } = plane;
-      updatePlane({ id: plane.id, plane: patch, batteries });
+      const { planeBatteries, ...patch } = plane;
+      updatePlane({ id: plane.id, plane: patch, batteries: planeBatteries.nodes.map(n => n.batteryName) });
     }
   };
   const executeDelete = _ => {
@@ -211,6 +208,8 @@ const PlaneDetailsComponent = ({ id, history }) => {
   // componentDidMount() {
   //   this.onTop.current.scrollIntoView();
   // }
+
+  const batteries = plane.planeBatteries.nodes.map(b => b.batteryName);
 
   const cycles = [];//plane.planeCyclesByPlaneName && plane.planeCyclesByPlaneName.nodes || [];
 
@@ -291,27 +290,21 @@ const PlaneDetailsComponent = ({ id, history }) => {
             <InputLabel htmlFor='select-multiple-chip'>Available Batteries</InputLabel>
             <Select
               multiple
-              value={plane.batteries || []}
-              name={'batteries'}
-              onChange={changePlane}
+              value={batteries}
+              name={'planeBatteries'}
+              onChange={changeBatteries}
               onBlur={save}
               input={<Input id='select-multiple-chip' />}
               renderValue={selected => (
                 <div className={planeCss.chips}>
-                  {plane.batteries.map(battery => (
+                  {batteries.map(battery => (
                     <Chip key={battery} label={battery} className={planeCss.chip} />
                   ))}
                 </div>
               )}
-            // MenuProps={PaperProps: {
-            //   style: {
-            //     maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-            //     width: 250,
-            //   },
-            // },}
             >
               {read.data && read.data.batteries && read.data.batteries.nodes.map(battery => (
-                <MenuItem key={battery.name} value={battery.name}>
+                <MenuItem key={battery.name} value={battery.name} selected={batteries.indexOf(battery.name) !== -1}>
                   {battery.name}
                 </MenuItem>
               ))}
