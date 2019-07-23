@@ -23,14 +23,11 @@ const batteryCss = require('./Battery.css');
 const css = require('../../../common/Form.css');
 import DeleteIcon from '@material-ui/icons/Delete';
 import { Loading } from '../../loading/Loading';
-import { formatDate } from '../../../../shared/utils/date';
+import { formatDate, formatDuration } from '../../../../shared/utils/date';
 import Table from '@material-ui/core/Table';
-import TableHead from '@material-ui/core/TableHead';
 import TableCell from '@material-ui/core/TableCell';
 import TableBody from '@material-ui/core/TableBody';
-import TableFooter from '@material-ui/core/TableFooter';
 import TableRow from '@material-ui/core/TableRow';
-import Divider from '@material-ui/core/Divider';
 import { BatteryState } from '../../../../shared/batteries';
 
 const batteryTypes = ['LiPo', 'LiHV'];
@@ -275,8 +272,9 @@ const BatteryDetailsComponent = ({ id, history }) => {
           />
         </div>
 
-        <Divider variant='middle' />
+      </CardContent>
 
+      <CardContent hidden={battery.name === ''}>
         <Table padding='none'>
           <TableBody>
             <TableRow>
@@ -285,6 +283,15 @@ const BatteryDetailsComponent = ({ id, history }) => {
                 </TableCell>
               <TableCell>
                 {cycles.filter(c => c.flight).length}
+              </TableCell>
+            </TableRow>
+
+            <TableRow>
+              <TableCell>
+                Flight Time
+                </TableCell>
+              <TableCell>
+                {formatDuration(cycles.reduce((sum, c) => sum + (c.flight ? c.flight.flightTime : 0), 0))}
               </TableCell>
             </TableRow>
 

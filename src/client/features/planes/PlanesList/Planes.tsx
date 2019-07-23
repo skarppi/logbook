@@ -24,6 +24,7 @@ import NewPlaneIcon from '@material-ui/icons/Add';
 
 import gql from 'graphql-tag';
 import { useQuery, useMutation } from 'urql';
+import { Flight } from '../../../../shared/flights/types';
 
 const layout = require('../../../common/Layout.css');
 
@@ -37,13 +38,25 @@ const Query = gql`
           flights
           totalTime
         }
+        flights(orderBy: START_DATE_DESC, first: 1) {
+          nodes {
+            id
+            startDate
+          }
+        }
       }
     }
   }`;
 
+interface IPlaneResponse extends Plane {
+  flights: {
+    nodes: Flight[];
+  }
+}
+
 interface IQueryResponse {
   planes: {
-    nodes: Plane[]
+    nodes: IPlaneResponse[];
   };
 }
 
@@ -72,23 +85,16 @@ const NEWID = 'add';
 
 export const PlanesList = ({ match: { params } }) => {
 
-  function lastUsed({ nodes }) {
-    const [cycle] = nodes;
-    if (!cycle) {
+  function lastFlown({ nodes }) {
+    const [flight] = nodes;
+    if (!flight) {
       return;
     }
 
-    const timestamp = formatDateTime(cycle.date);
-
-    if (!cycle.flightId) {
-      return timestamp;
-    }
-
+    const timestamp = formatDateTime(flight.startDate);
     return (
       <NavLink
-        to={`/flights/${formatDate(cycle.date)}/${
-          cycle.flightId
-          }`}
+        to={`/flights/${formatDate(flight.startDate)}/${flight.id}`}
       >
         {timestamp}
       </NavLink>
@@ -125,6 +131,7 @@ export const PlanesList = ({ match: { params } }) => {
         </TableCell>
         <TableCell>{plane.totalByPlane && plane.totalByPlane.flights}</TableCell>
         <TableCell>{plane.totalByPlane && formatDuration(plane.totalByPlane.totalTime)}</TableCell>
+        <TableCell>{lastFlown(plane.flights)}</TableCell>
       </TableRow>
       {params.id === plane.id && details(plane.id)}
     </React.Fragment>;
@@ -154,7 +161,7 @@ export const PlanesList = ({ match: { params } }) => {
                   <TableCell>Type</TableCell>
                   <TableCell>Flights</TableCell>
                   <TableCell>Total Time</TableCell>
-                  <TableCell>Actions</TableCell>
+                  <TableCell>Last flight</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>

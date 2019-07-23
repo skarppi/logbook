@@ -62,13 +62,6 @@ const Charge = gql`
     createBatteryCycle(input: {batteryCycle: $batteryCycle}) {
       batteryCycle {
         id
-        date
-        name
-        flightId
-        state
-        voltage
-        discharged
-        charged
       }
     }
   }`;
@@ -83,6 +76,14 @@ const NEWID = 'add';
 export const BatteriesList = ({ match: { params } }) => {
 
   // const { params }: { params: IRouteParams } = match;
+
+  function lastState({ nodes }) {
+    const [cycle] = nodes;
+    if (!cycle) {
+      return;
+    }
+    return cycle.state;
+  }
 
   function lastUsed({ nodes }) {
     const [cycle] = nodes;
@@ -166,7 +167,7 @@ export const BatteriesList = ({ match: { params } }) => {
         <TableCell>
           {battery.type} {battery.cells}s {battery.capacity}mAh
           </TableCell>
-        <TableCell>{battery.lastCycle && battery.lastCycle.state}</TableCell>
+        <TableCell>{lastState(battery.batteryCycles)}</TableCell>
         <TableCell>{lastUsed(battery.batteryCycles)}</TableCell>
         <TableCell>{batteryOps(battery)}</TableCell>
       </TableRow>
