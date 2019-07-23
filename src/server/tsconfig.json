@@ -6,9 +6,14 @@
     "importHelpers": true,
     "allowJs": true,
     "outDir": "../../dist/server",
-    "lib": ["es6"],
+    "lib": [
+      "es2016",
+      "dom"
+    ],
     "moduleResolution": "node",
-    "types": ["node"]
+    "types": [
+      "node"
+    ]
   },
   "files": [
     "./server.ts"

@@ -148,9 +148,11 @@ const NEW_PLANE: Plane = {
 
 const PlaneDetailsComponent = ({ id, history }) => {
 
+  const requestPolicy = id === NEW_PLANE.id ? 'cache-only' : 'cache-first';
+
   // graphql CRUD operations
   const [create, createPlane] = useMutation(Create);
-  const [read] = useQuery<IQueryResponse>({ query: Query, variables: { id } });
+  const [read] = useQuery<IQueryResponse>({ query: Query, variables: { id }, requestPolicy });
   const [update, updatePlane] = useMutation(Update);
   const [del, deletePlane] = useMutation(Delete);
 
@@ -158,9 +160,7 @@ const PlaneDetailsComponent = ({ id, history }) => {
   const [plane, setPlane] = React.useState(NEW_PLANE);
   React.useEffect(() => {
     if (read.data && read.data.plane) {
-      const p = read.data.plane;
-
-      setPlane(p);
+      setPlane(read.data.plane);
     }
   }, [read]);
 
@@ -192,9 +192,10 @@ const PlaneDetailsComponent = ({ id, history }) => {
       delete plane['__typename'];
 
       const { planeBatteries, ...patch } = plane;
-      updatePlane({ id: plane.id, plane: patch, batteries: planeBatteries.nodes.map(n => n.batteryName) });
+      updatePlane({ id: id, plane: patch, batteries: planeBatteries.nodes.map(n => n.batteryName) });
     }
   };
+
   const executeDelete = _ => {
     deletePlane({ planeId: plane.id }).then(res => {
       if (!res.error) {
@@ -203,17 +204,7 @@ const PlaneDetailsComponent = ({ id, history }) => {
     });
   };
 
-  // private onTop = React.createRef<HTMLSpanElement>();
-
-  // componentDidMount() {
-  //   this.onTop.current.scrollIntoView();
-  // }
-
   const batteries = plane.planeBatteries.nodes.map(b => b.batteryName);
-
-  const cycles = [];//plane.planeCyclesByPlaneName && plane.planeCyclesByPlaneName.nodes || [];
-
-  // const voltages = cycles.filter(c => c.voltage);
 
   return (
     <Card className={css.card}>
@@ -223,7 +214,7 @@ const PlaneDetailsComponent = ({ id, history }) => {
             <span ref={this.onTop}>Plane: </span>
             <TextField
               required
-              error={plane.id.length === 0}
+              error={id === NEW_PLANE.id && plane.id.length === 0}
               id='id'
               placeholder='Id'
               className={css.textField}
@@ -311,41 +302,12 @@ const PlaneDetailsComponent = ({ id, history }) => {
             </Select>
           </FormControl>
 
-          {/* <TextField
-            type='number'
-            id='capacity'
-            label='Capacity'
-            placeholder='Capacity'
-            className={css.textField}
-            value={plane.batteries}
-            name='capacity'
-            onChange={changeNumber}
-            onBlur={save}
-            margin='normal'
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position='end'>mAh</InputAdornment>
-              )
-            }}
-          />
-
-          <TextField
-            id='purchaseDate'
-            name='purchaseDate'
-            type='date'
-            label='Purchase Date'
-            value={formatDate(plane.purchaseDate)}
-            onChange={changeDate}
-            onBlur={save}
-            className={css.textField}
-            margin='normal'
-          /> */}
         </div>
 
         <Divider variant='middle' />
 
         <div className={planeCss.graph}>
-          <PlaneGraph cycles={cycles}></PlaneGraph>
+          <PlaneGraph cycles={[]}></PlaneGraph>
         </div>
       </CardContent>
     </Card>

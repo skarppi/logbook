@@ -103,6 +103,7 @@ const Delete = gql`
 
 
 const NEW_BATTERY: Battery = {
+  id: -1,
   name: '',
   purchaseDate: new Date(),
   type: '',
@@ -176,7 +177,7 @@ const BatteryDetailsComponent = ({ id, history }) => {
             <span ref={this.onTop}>Battery: </span>
             <TextField
               required
-              error={battery.name.length === 0}
+              error={id === NEW_BATTERY.id && battery.name.length === 0}
               id='name'
               placeholder='Name'
               className={css.textField}
