@@ -12,7 +12,7 @@ export interface LogicalSwitch {
   func: LogicalFunction,
   v1: string,
   v2?: string,
-  and?: string,
+  andSwitch?: string,
   duration?: number,
   delay?: number,
   description?: string

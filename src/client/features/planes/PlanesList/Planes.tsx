@@ -13,9 +13,10 @@ import Tooltip from '@material-ui/core/Tooltip';
 import * as React from 'react';
 import { NavLink, Link } from 'react-router-dom';
 import { formatDate, formatDateTime, formatTime, formatDuration } from '../../../../shared/utils/date';
-import { Plane } from '../../../../shared/planes/types';
+import { Plane, LogicalSwitch } from '../../../../shared/planes/types';
 import { Loading } from '../../loading/Loading';
 import { PlaneDetails } from '../Plane/Plane';
+import { LogicalSwitches } from './LogicalSwitches';
 
 import ClosedIcon from '@material-ui/icons/KeyboardArrowRight';
 import OpenedIcon from '@material-ui/icons/KeyboardArrowDown';
@@ -46,6 +47,18 @@ const Query = gql`
         }
       }
     }
+    logicalSwitches {
+      nodes {
+        id
+        func
+        v1
+        v2
+        andSwitch
+        duration
+        delay
+        description
+      }
+    }
   }`;
 
 interface IPlaneResponse extends Plane {
@@ -58,24 +71,10 @@ interface IQueryResponse {
   planes: {
     nodes: IPlaneResponse[];
   };
+  logicalSwitches: {
+    nodes: LogicalSwitch[];
+  }
 }
-
-const Charge = gql`
-  mutation ($planeCycle: PlaneCycleInput!) {
-    createPlaneCycle(input: {planeCycle: $planeCycle}) {
-      planeCycle {
-        id
-        date
-        planeName
-        flightId
-        state
-        voltage
-        discharged
-        charged
-      }
-    }
-  }`;
-
 
 interface IRouteParams {
   id: number;
@@ -141,6 +140,7 @@ export const PlanesList = ({ match: { params } }) => {
 
   return (
     <>
+      <LogicalSwitches switches={res.data && res.data.logicalSwitches ? res.data.logicalSwitches.nodes : []} />
       <Grid item xs={12} className={layout.grid}>
         <Card>
           <CardHeader
