@@ -4,12 +4,6 @@ import CardHeader from '@material-ui/core/CardHeader';
 import IconButton from '@material-ui/core/IconButton';
 import TextField from '@material-ui/core/TextField';
 import Tooltip from '@material-ui/core/Tooltip';
-import FormControl from '@material-ui/core/FormControl';
-import InputLabel from '@material-ui/core/InputLabel';
-import Select from '@material-ui/core/Select';
-import Input from '@material-ui/core/Input';
-import MenuItem from '@material-ui/core/MenuItem';
-import InputAdornment from '@material-ui/core/InputAdornment';
 import * as React from 'react';
 import { Plane, LogicalSwitch } from '../../../../shared/planes/types';
 import { LogicalFunction } from '../../../../shared/planes/index';
@@ -27,8 +21,8 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import { Loading } from '../../loading/Loading';
 import Divider from '@material-ui/core/Divider';
 import { PlaneType } from '../../../../shared/planes';
-import Chip from '@material-ui/core/Chip';
 import { Battery } from '../../../../shared/batteries/types';
+import { PlaneForm } from './PlaneForm';
 
 const Query = gql`
   query($id:String!) {
@@ -174,12 +168,6 @@ const PlaneDetailsComponent = ({ id, history }) => {
   const changePlane = ({ target: { name, value } }) =>
     setPlane({ ...plane, [name]: value });
 
-  const changeBatteries = ({ target: { name, value } }) => {
-    const nodes = value.map(v => ({ batteryName: v }));
-
-    setPlane({ ...plane, [name]: { nodes } });
-  }
-
   // update to server
   const save = () => {
     if (!plane.id) {
@@ -203,8 +191,6 @@ const PlaneDetailsComponent = ({ id, history }) => {
       }
     });
   };
-
-  const batteries = plane.planeBatteries.nodes.map(b => b.batteryName);
 
   return (
     <Card className={css.card}>
@@ -245,63 +231,7 @@ const PlaneDetailsComponent = ({ id, history }) => {
       />
       <CardContent hidden={plane.id === ''}>
         <div className={css.container}>
-          <FormControl className={css.formControl} margin='normal'>
-            <InputLabel htmlFor='select-multiple-checkbox'>Type</InputLabel>
-            <Select
-              value={plane.type}
-              name={'type'}
-              onChange={changePlane}
-              onBlur={save}
-              input={<Input id='select-multiple-checkbox' />}
-            >
-              {Object.keys(PlaneType).sort().map(name => (
-                <MenuItem key={name} value={name}>
-                  {name}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-
-          <FormControl className={css.formControl} margin='normal'>
-            <InputLabel htmlFor='select-multiple-checkbox'>Battery Slots</InputLabel>
-            <Select
-              value={plane.batterySlots}
-              name={'batterySlots'}
-              onChange={changePlane}
-              onBlur={save}
-              input={<Input id='select-multiple-checkbox' />}
-            >
-              <MenuItem key={0} value={0}>0</MenuItem>
-              <MenuItem key={1} value={1}>1</MenuItem>
-              <MenuItem key={2} value={2}>2</MenuItem>
-            </Select>
-          </FormControl>
-
-          <FormControl className={css.formControl} margin='normal'>
-            <InputLabel htmlFor='select-multiple-chip'>Available Batteries</InputLabel>
-            <Select
-              multiple
-              value={batteries}
-              name={'planeBatteries'}
-              onChange={changeBatteries}
-              onBlur={save}
-              input={<Input id='select-multiple-chip' />}
-              renderValue={selected => (
-                <div className={planeCss.chips}>
-                  {batteries.map(battery => (
-                    <Chip key={battery} label={battery} className={planeCss.chip} />
-                  ))}
-                </div>
-              )}
-            >
-              {read.data && read.data.batteries && read.data.batteries.nodes.map(battery => (
-                <MenuItem key={battery.name} value={battery.name} selected={batteries.indexOf(battery.name) !== -1}>
-                  {battery.name}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-
+          <PlaneForm plane={plane} allBatteries={read.data && read.data.batteries.nodes || []} setPlane={setPlane} save={save} />
         </div>
 
         <Divider variant='middle' />

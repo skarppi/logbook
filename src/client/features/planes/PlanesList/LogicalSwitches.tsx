@@ -11,20 +11,9 @@ import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 
 import * as React from 'react';
-import { NavLink, Link } from 'react-router-dom';
-import { formatDate, formatDateTime, formatTime, formatDuration } from '../../../../shared/utils/date';
-import { Plane, LogicalSwitch } from '../../../../shared/planes/types';
-import { Loading } from '../../loading/Loading';
-import { PlaneDetails } from '../Plane/Plane';
-
-import ClosedIcon from '@material-ui/icons/KeyboardArrowRight';
-import OpenedIcon from '@material-ui/icons/KeyboardArrowDown';
+import { LogicalSwitch } from '../../../../shared/planes/types';
 
 import NewPlaneIcon from '@material-ui/icons/Add';
-
-import gql from 'graphql-tag';
-import { useQuery, useMutation } from 'urql';
-import { Flight } from '../../../../shared/flights/types';
 
 const layout = require('../../../common/Layout.css');
 
@@ -35,9 +24,6 @@ interface IProps {
 }
 
 export const LogicalSwitches = ({ switches }: IProps) => {
-
-  console.log(switches);
-
   if (!switches) {
     return <></>;
   }
