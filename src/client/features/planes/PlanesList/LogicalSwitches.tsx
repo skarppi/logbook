@@ -9,28 +9,29 @@ import TableHead from '@material-ui/core/TableHead';
 import TableBody from '@material-ui/core/TableBody';
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
+import Link from '@material-ui/core/Link';
+
+import { PlanesContext } from './Planes';
 
 import * as React from 'react';
-import { LogicalSwitch } from '../../../../shared/planes/types';
 
 import NewPlaneIcon from '@material-ui/icons/Add';
+import { useContext } from 'react';
 
 const layout = require('../../../common/Layout.css');
 
 const NEWID = 'add';
 
-interface IProps {
-  switches: LogicalSwitch[];
-}
+export const LogicalSwitches = () => {
 
-export const LogicalSwitches = ({ switches }: IProps) => {
-  if (!switches) {
+  const { logicalSwitches } = useContext(PlanesContext);
+  if (!logicalSwitches) {
     return <></>;
   }
 
   const AddLink = props => <Link to={`/planes/${NEWID}`} {...props} />;
 
-  const rows = switches.map(ls => {
+  const rows = logicalSwitches.map(ls => {
     return <React.Fragment key={ls.id}>
       <TableRow>
         <TableCell>

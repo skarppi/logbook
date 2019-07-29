@@ -82,7 +82,19 @@ interface IRouteParams {
 
 const NEWID = 'add';
 
+interface IPlanesContext {
+  planes: Plane[];
+  logicalSwitches: LogicalSwitch[];
+}
+
+export const PlanesContext = React.createContext<IPlanesContext>({ planes: [], logicalSwitches: [] });
+
 export const PlanesList = ({ match: { params } }) => {
+
+  const [res] = useQuery<IQueryResponse>({ query: Query });
+
+  const planes = res.data && res.data.planes ? res.data.planes.nodes : [];
+  const logicalSwitches = res.data && res.data.logicalSwitches ? res.data.logicalSwitches.nodes : [];
 
   function lastFlown({ nodes }) {
     const [flight] = nodes;
@@ -107,10 +119,6 @@ export const PlanesList = ({ match: { params } }) => {
       </TableCell>
     </TableRow>);
   }
-
-  const [res] = useQuery<IQueryResponse>({ query: Query });
-
-  const planes = res.data && res.data.planes ? res.data.planes.nodes : [];
 
   const rows = planes.map(plane => {
     const current = params.id === plane.id;
@@ -139,8 +147,7 @@ export const PlanesList = ({ match: { params } }) => {
   const AddLink = props => <Link to={`/planes/${NEWID}`} {...props} />;
 
   return (
-    <>
-      <LogicalSwitches switches={res.data && res.data.logicalSwitches ? res.data.logicalSwitches.nodes : []} />
+    <PlanesContext.Provider value={{ planes, logicalSwitches }} >
       <Grid item xs={12} className={layout.grid}>
         <Card>
           <CardHeader
@@ -176,6 +183,9 @@ export const PlanesList = ({ match: { params } }) => {
           </CardContent>
         </Card>
       </Grid>
-    </>
+
+      <LogicalSwitches />
+    </PlanesContext.Provider>
   );
 };
+

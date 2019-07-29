@@ -34,9 +34,13 @@ export interface Plane {
   }
   telemetries: Map<string, Telemetry>;
   flightModes: string[];
+  modeArmed: string,
   logicalSwitchByModeArmed: LogicalSwitch,
+  modeFlying: string,
   logicalSwitchByModeFlying: LogicalSwitch,
+  modeStopped: string,
   logicalSwitchByModeStopped: LogicalSwitch,
+  modeRestart: string,
   logicalSwitchByModeRestart: LogicalSwitch,
   stoppedStartsNewFlight: boolean
   totalByPlane?: IPlaneTotals

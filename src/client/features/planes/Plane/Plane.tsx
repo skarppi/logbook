@@ -23,6 +23,8 @@ import Divider from '@material-ui/core/Divider';
 import { PlaneType } from '../../../../shared/planes';
 import { Battery } from '../../../../shared/batteries/types';
 import { PlaneForm } from './PlaneForm';
+import { useContext } from 'react';
+import { PlanesContext } from '../PlanesList/Planes';
 
 const Query = gql`
   query($id:String!) {
@@ -93,54 +95,29 @@ const Delete = gql`
     }
   }`;
 
-const logicalSwitches: { [key: string]: LogicalSwitch } = {
-  // default switches for quad with SB arming switch
-  L01: {
-    id: 'L01', func: LogicalFunction.greaterThan, v1: 'SB', v2: '-1', description: 'SB not up = armed'
-  },
-  L02: {
-    id: 'L02', func: LogicalFunction.greaterThan, v1: 'Thr', v2: '-922', description: 'Throttle > 5% = flying'
-  },
-  L03: {
-    id: 'L03', func: LogicalFunction.lessThan, v1: 'Thr', v2: '-922', duration: 3, description: 'Throttle < 5% = stopped'
-  },
-  L04: {
-    id: 'L04', func: LogicalFunction.is, v1: null, duration: 10, description: 'No data for 10 seconds = new flight'
-  },
-
-  // default switches for glider with SA launch switch (SoarOTX)
-  L11: {
-    id: 'L11', func: LogicalFunction.greaterThan, v1: 'SA', v2: '-1', description: 'SA not up = armed/launch mode'
-  },
-  L12: {
-    id: 'L12', func: LogicalFunction.greaterThan, v1: 'VSpd(m/s)', v2: '1', description: 'Vertical speed more than 1m/s = flying'
-  },
-  L13: {
-    id: 'L13', func: LogicalFunction.lessThan, v1: 'SA', v2: '1', description: 'SA not down = back to launch mode'
-  },
-  L14: {
-    id: 'L14', func: LogicalFunction.is, v1: null, duration: 2, description: 'No data for 2 seconds'
-  }
-};
-
-
-const NEW_PLANE: Plane = {
-  id: '',
-  type: PlaneType.drone,
-  batterySlots: 0,
-  planeBatteries: {
-    nodes: []
-  },
-  telemetries: new Map(),
-  flightModes: [],
-  logicalSwitchByModeArmed: logicalSwitches.L01,
-  logicalSwitchByModeFlying: logicalSwitches.L02,
-  logicalSwitchByModeStopped: logicalSwitches.L03,
-  logicalSwitchByModeRestart: logicalSwitches.L04,
-  stoppedStartsNewFlight: false
-};
-
 const PlaneDetailsComponent = ({ id, history }) => {
+
+  const { logicalSwitches } = useContext(PlanesContext);
+
+  const NEW_PLANE: Plane = {
+    id: '',
+    type: PlaneType.drone,
+    batterySlots: 0,
+    planeBatteries: {
+      nodes: []
+    },
+    telemetries: new Map(),
+    flightModes: [],
+    modeArmed: 'L01',
+    logicalSwitchByModeArmed: logicalSwitches[0],
+    modeFlying: 'L02',
+    logicalSwitchByModeFlying: logicalSwitches[1],
+    modeStopped: 'L03',
+    logicalSwitchByModeStopped: logicalSwitches[2],
+    modeRestart: 'L04',
+    logicalSwitchByModeRestart: logicalSwitches[3],
+    stoppedStartsNewFlight: false
+  };
 
   const requestPolicy = id === NEW_PLANE.id ? 'cache-only' : 'cache-first';
 
@@ -230,9 +207,7 @@ const PlaneDetailsComponent = ({ id, history }) => {
         }
       />
       <CardContent hidden={plane.id === ''}>
-        <div className={css.container}>
-          <PlaneForm plane={plane} allBatteries={read.data && read.data.batteries.nodes || []} setPlane={setPlane} save={save} />
-        </div>
+        <PlaneForm plane={plane} allBatteries={read.data && read.data.batteries.nodes || []} setPlane={setPlane} save={save} />
 
         <Divider variant='middle' />
 

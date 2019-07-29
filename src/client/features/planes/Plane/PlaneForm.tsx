@@ -8,6 +8,8 @@ import Chip from '@material-ui/core/Chip';
 import { Plane } from '../../../../shared/planes/types';
 import { PlaneType } from '../../../../shared/planes';
 import { Battery } from '../../../../shared/batteries/types';
+import { useContext } from 'react';
+import { PlanesContext } from '../PlanesList/Planes';
 
 const planeCss = require('./Plane.css');
 const css = require('../../../common/Form.css');
@@ -17,6 +19,27 @@ interface IProps {
   allBatteries: Battery[];
   setPlane: (event) => void;
   save: (event) => void;
+}
+
+function RenderLogicalSwitch({ mode, label, plane, changePlane, save }) {
+  const { logicalSwitches } = useContext(PlanesContext);
+
+  return <FormControl className={css.formControl} margin='normal'>
+    <InputLabel htmlFor={mode}>{label}</InputLabel>
+    <Select
+      value={plane[mode] || ''}
+      name={mode}
+      onChange={changePlane}
+      onBlur={save}
+      input={<Input id={mode} />}
+    >
+      {logicalSwitches.map(ls => (
+        <MenuItem key={ls.id} value={ls.id}>
+          {ls.id}: {ls.description}
+        </MenuItem>
+      ))}
+    </Select>
+  </FormControl>;
 }
 
 export const PlaneForm = ({ plane, allBatteries, setPlane, save }: IProps) => {
@@ -32,61 +55,74 @@ export const PlaneForm = ({ plane, allBatteries, setPlane, save }: IProps) => {
   const batteries = plane.planeBatteries.nodes.map(b => b.batteryName);
 
   return <>
-    <FormControl className={css.formControl} margin='normal'>
-      <InputLabel htmlFor='select-multiple-checkbox'>Type</InputLabel>
-      <Select
-        value={plane.type}
-        name={'type'}
-        onChange={changePlane}
-        onBlur={save}
-        input={<Input id='select-multiple-checkbox' />}
-      >
-        {Object.keys(PlaneType).sort().map(name => (
-          <MenuItem key={name} value={name}>
-            {name}
-          </MenuItem>
-        ))}
-      </Select>
-    </FormControl>
+    <div className={css.container}>
+      <FormControl className={css.formControl} margin='normal'>
+        <InputLabel htmlFor='select-type-checkbox'>Type</InputLabel>
+        <Select
+          value={plane.type}
+          name={'type'}
+          onChange={changePlane}
+          onBlur={save}
+          input={<Input id='select-type-checkbox' />}
+        >
+          {Object.keys(PlaneType).sort().map(name => (
+            <MenuItem key={name} value={name}>
+              {name}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
 
-    <FormControl className={css.formControl} margin='normal'>
-      <InputLabel htmlFor='select-multiple-checkbox'>Battery Slots</InputLabel>
-      <Select
-        value={plane.batterySlots}
-        name={'batterySlots'}
-        onChange={changePlane}
-        onBlur={save}
-        input={<Input id='select-multiple-checkbox' />}
-      >
-        <MenuItem key={0} value={0}>0</MenuItem>
-        <MenuItem key={1} value={1}>1</MenuItem>
-        <MenuItem key={2} value={2}>2</MenuItem>
-      </Select>
-    </FormControl>
+      <FormControl className={css.formControl} margin='normal'>
+        <InputLabel htmlFor='select-slots-checkbox'>Battery Slots</InputLabel>
+        <Select
+          value={plane.batterySlots}
+          name={'batterySlots'}
+          onChange={changePlane}
+          onBlur={save}
+          input={<Input id='select-slots-checkbox' />}
+        >
+          <MenuItem key={0} value={0}>0</MenuItem>
+          <MenuItem key={1} value={1}>1</MenuItem>
+          <MenuItem key={2} value={2}>2</MenuItem>
+        </Select>
+      </FormControl>
 
-    <FormControl className={css.formControl} margin='normal'>
-      <InputLabel htmlFor='select-multiple-chip'>Available Batteries</InputLabel>
-      <Select
-        multiple
-        value={batteries}
-        name={'planeBatteries'}
-        onChange={changeBatteries}
-        onBlur={save}
-        input={<Input id='select-multiple-chip' />}
-        renderValue={selected => (
-          <div className={planeCss.chips}>
-            {batteries.map(battery => (
-              <Chip key={battery} label={battery} className={planeCss.chip} />
-            ))}
-          </div>
-        )}
-      >
-        {allBatteries.map(battery => (
-          <MenuItem key={battery.name} value={battery.name} selected={batteries.indexOf(battery.name) !== -1}>
-            {battery.name}
-          </MenuItem>
-        ))}
-      </Select>
-    </FormControl>
-  </>
+      <FormControl className={css.formControl} margin='normal'>
+        <InputLabel htmlFor='select-batteries-chip'>Available Batteries</InputLabel>
+        <Select
+          multiple
+          value={batteries}
+          name={'planeBatteries'}
+          onChange={changeBatteries}
+          onBlur={save}
+          input={<Input id='select-batteries-chip' />}
+          renderValue={selected => (
+            <div className={planeCss.chips}>
+              {batteries.map(battery => (
+                <Chip key={battery} label={battery} className={planeCss.chip} />
+              ))}
+            </div>
+          )}
+        >
+          {allBatteries.map(battery => (
+            <MenuItem key={battery.name} value={battery.name} selected={batteries.indexOf(battery.name) !== -1}>
+              {battery.name}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+    </div>
+
+    <div className={css.container}>
+      <RenderLogicalSwitch mode='modeArmed' label='Arm switch' plane={plane} changePlane={changePlane} save={save} />
+
+      <RenderLogicalSwitch mode='modeFlying' label='Start flying' plane={plane} changePlane={changePlane} save={save} />
+
+      <RenderLogicalSwitch mode='modeStopped' label='Pause flying' plane={plane} changePlane={changePlane} save={save} />
+
+      <RenderLogicalSwitch mode='modeRestart' label='Restart flight' plane={plane} changePlane={changePlane} save={save} />
+    </div>
+  </>;
 };
+
