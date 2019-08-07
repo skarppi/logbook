@@ -13,6 +13,10 @@ export default class SegmentParser {
     }
   }
 
+  public isEmpty() {
+    return this.items.length === 0;
+  }
+
   public lastSecondsFromEnd(now: Date, seconds: number) {
     const inTheRange = this.items.findIndex(item => {
       return durationInSeconds(item.timestamp, now) < seconds;

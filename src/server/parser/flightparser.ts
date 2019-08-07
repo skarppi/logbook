@@ -133,7 +133,8 @@ export default class FlightParser {
     if (test.duration > 0) {
       const items = this.currentSegment.lastSecondsFromEnd(item.timestamp, test.duration)
       if (!items) {
-        return this.testExpectNull(test);
+        const firstItem = this.currentSegments.length === 0 && this.currentSegment.isEmpty;
+        return !firstItem && this.testExpectNull(test);
       }
 
       return !items.find(current => !this.testItem(test, current))
