@@ -8,7 +8,7 @@ import { LogicalFunction } from '../../shared/planes';
 import { FlightImpl } from './flight';
 import { IParserOptions } from '.';
 import { SERVER_PORT, PUBLIC_URL } from '../config';
-import { request } from 'graphql-request'
+import { request } from 'graphql-request';
 
 export default class FlightParser {
   private name: string;
@@ -22,59 +22,14 @@ export default class FlightParser {
   constructor(name: string, options: IParserOptions) {
     this.name = name;
     this.options = options;
-
-    const query = `query {
-      plane(id: '${this.planeName}') {
-        id
-        telemetries
-        batterySlots
-        logicalSwitchByModeArmed {
-          id
-          func
-          v1
-          v2
-          duration
-        }
-        logicalSwitchByModeFlying {
-          id
-          func
-          v1
-          v2
-          duration
-        }
-        logicalSwitchByModeArmed {
-          id
-          func
-          v1
-          v2
-          duration
-        }
-        logicalSwitchByModeArmed {
-          id
-          func
-          v1
-          v2
-          duration
-        }
-        stoppedStartsNewFlight
-      }
-    }`;
-
-    console.log(`http://localhost:${SERVER_PORT}/${PUBLIC_URL}api/graphql`);
-
-    request(`http://localhost:${SERVER_PORT}/${PUBLIC_URL}api/graphql`, query).then(data => {
-      console.log("query")
-      console.log(data['planes'].nodes);
-      this.plane = data['planes'].nodes;
-    }).catch(err => {
-      console.log(err);
-    });
-
-    // this.plane = planes[this.planeName] || defaultPlane;
   }
 
   public getFlights(): Flight[] {
     return this.flights;
+  }
+
+  public getOptions(): IParserOptions {
+    return this.options;
   }
 
   public appendItem(item: SegmentItem) {
@@ -122,6 +77,56 @@ export default class FlightParser {
       }
     }
     this.currentSegments = [];
+  }
+
+  public async fetchPlane() {
+    const query = `query {
+      plane(id: "${this.planeName}") {
+        id
+        telemetries
+        batterySlots
+        logicalSwitchByModeArmed {
+          id
+          func
+          v1
+          v2
+          duration
+        }
+        logicalSwitchByModeFlying {
+          id
+          func
+          v1
+          v2
+          duration
+        }
+        logicalSwitchByModeStopped {
+          id
+          func
+          v1
+          v2
+          duration
+        }
+        logicalSwitchByModeRestart {
+          id
+          func
+          v1
+          v2
+          duration
+        }
+        modeStoppedStartsNewFlight
+      }
+    }`;
+
+    console.log(`http://localhost:${SERVER_PORT}/${PUBLIC_URL}api/graphql`);
+
+    try {
+      const data = await request(`http://localhost:${SERVER_PORT}/${PUBLIC_URL}api/graphql`, query);
+      console.log(data)
+      console.log(data['plane']);
+      this.plane = data['plane'];
+    } catch (err) {
+      console.trace(err);
+    }
   }
 
   private test(test: LogicalSwitch, item: SegmentItem): boolean {

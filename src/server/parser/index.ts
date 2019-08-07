@@ -18,34 +18,36 @@ export function parseFile(filename: string, options: IParserOptions): Promise<Fl
 }
 
 export function parseData(id: string, items: object[], options: IParserOptions): Promise<Flight[]> {
-  const parsed = items.reduce<FlightParser>(
-    (state: FlightParser, i, index) => {
-      const item = new SegmentItemImpl(options.timezoneOffset, i);
-      state.appendItem(item);
-
-      if (index === items.length - 1) {
-        state.endFlight();
-      }
-
-      return state;
-    },
-    new FlightParser(id, options)
-  );
-
-  return Promise.all(
-    parsed.getFlights().map(flight =>
-      FlightRepository.find(flight.id).then(existing => {
-        if (existing) {
-          flight.notes = existing.notes;
-        }
-        return FlightRepository.save(flight).catch(err => {
-          throw new Error(
-            `Flight ${flight.id} starting ${flight.startDate} failed ${err}`
-          );
-        });
-      })
-    )
-  );
+  const parser = new FlightParser(id, options);
+  return parser.fetchPlane().then(() =>
+    Promise.all(
+      getFlights(parser, items).map(storeFlight)
+    ))
 }
 
-function save(flight: Flight) { }
+function getFlights(parser: FlightParser, items: object[]): Flight[] {
+  const parsed = items.reduce<FlightParser>((state: FlightParser, i, index) => {
+    const item = new SegmentItemImpl(parser.getOptions().timezoneOffset, i);
+    state.appendItem(item);
+
+    if (index === items.length - 1) {
+      state.endFlight();
+    }
+
+    return state;
+  }, parser);
+  return parsed.getFlights();
+}
+
+function storeFlight(flight: Flight): Promise<Flight> {
+  return FlightRepository.find(flight.id).then(existing => {
+    if (existing) {
+      flight.notes = existing.notes;
+    }
+    return FlightRepository.save(flight).catch(err => {
+      throw new Error(
+        `Flight ${flight.id} starting ${flight.startDate} failed ${err}`
+      );
+    });
+  });
+}

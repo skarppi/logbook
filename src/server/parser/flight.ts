@@ -25,6 +25,7 @@ export class FlightImpl implements Flight {
       this.id = name;
     }
 
+    this.planeId = plane.id;
     this.plane = plane;
     this.session = session;
     this.segments = segments;

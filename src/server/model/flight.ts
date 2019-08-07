@@ -13,9 +13,9 @@ export default class FlightRepository {
     return db
       .one(
         'INSERT INTO flights (id, plane_id, session, start_date, end_date,  duration, armed_time, flight_time, notes, segments) ' +
-        'VALUES (${id}, ${plane_id}, ${session}, ${startDate}, ${endDate}, ${duration}, ${armedTime}, ${flightTime}, ${notes:json}, ${segments:json}) ' +
+        'VALUES (${id}, ${planeId}, ${session}, ${startDate}, ${endDate}, ${duration}, ${armedTime}, ${flightTime}, ${notes:json}, ${segments:json}) ' +
         'ON CONFLICT (id) DO UPDATE SET ' +
-        ' plane = ${plane},' +
+        ' plane_id = ${planeId},' +
         ' session = ${session},' +
         ' start_date = ${startDate},' +
         ' end_date = ${endDate},' +
