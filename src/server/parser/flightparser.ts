@@ -33,26 +33,11 @@ export default class FlightParser {
   }
 
   public appendItem(item: SegmentItem) {
-    let type = this.currentSegment.type || SegmentType.stopped;
+    const type = this.currentSegmentType(item);
 
-    if (type === SegmentType.flying && this.test(this.plane.logicalSwitchByModeStopped, item)) {
-      type = SegmentType.stopped;
-    }
+    const endFlightBecauseStopped = type === SegmentType.stopped && this.currentSegment.type !== SegmentType.stopped && this.plane.stoppedStartsNewFlight;
 
-    if (this.test(this.plane.logicalSwitchByModeArmed, item)) {
-      if (this.test(this.plane.logicalSwitchByModeFlying, item)) {
-        type = SegmentType.flying;
-      } else if (type === SegmentType.stopped) {
-        type = SegmentType.armed;
-      }
-    } else {
-      type = SegmentType.stopped;
-    }
-
-
-    // if (this.currentSegment.splitFlightAt(item.timestamp, this.options.splitFlightsAfterSeconds)) {
-    if (type === SegmentType.stopped && this.currentSegment.type !== SegmentType.stopped && this.plane.stoppedStartsNewFlight
-      || this.test(this.plane.logicalSwitchByModeRestart, item)) {
+    if (endFlightBecauseStopped || this.test(this.plane.logicalSwitchByModeRestart, item)) {
       this.endFlight();
     } else if (this.currentSegment.type !== type) {
       this.endSegment();
@@ -70,10 +55,10 @@ export default class FlightParser {
       const flight = new FlightImpl(this.name, this.plane, this.sessionCounter, this.currentSegments);
 
       if (flight.flightTime === 0) {
-        console.log(`Skipped empty flight ${flight}`);
+        console.log('Skipped empty flight', flight);
       } else {
         this.flights.push(flight);
-        console.log(`Ended flight ${flight}`);
+        console.log('Ended flight', flight);
       }
     }
     this.currentSegments = [];
@@ -126,6 +111,24 @@ export default class FlightParser {
       this.plane = data['plane'];
     } catch (err) {
       console.trace(err);
+    }
+  }
+
+  private currentSegmentType(item: SegmentItem): SegmentType {
+    if (this.test(this.plane.logicalSwitchByModeArmed, item)) {
+      if (this.test(this.plane.logicalSwitchByModeFlying, item)) {
+        // started flying
+        return SegmentType.flying;
+
+      } else if (this.currentSegment.type === SegmentType.flying) {
+        // check if we are still flying
+        return this.test(this.plane.logicalSwitchByModeStopped, item) ? SegmentType.stopped : SegmentType.flying;
+
+      } else {
+        return SegmentType.armed;
+      }
+    } else {
+      return SegmentType.stopped;
     }
   }
 
