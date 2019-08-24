@@ -21,7 +21,7 @@ interface IProps {
   save: (event) => void;
 }
 
-function RenderLogicalSwitch({ mode, label, plane, changePlane, save }) {
+function RenderLogicalSwitch({ mode, label, plane, changePlane, save, extra = <></> }) {
   const { logicalSwitches } = useContext(PlanesContext);
 
   return <FormControl className={css.formControl} margin='normal'>
@@ -39,12 +39,18 @@ function RenderLogicalSwitch({ mode, label, plane, changePlane, save }) {
         </MenuItem>
       ))}
     </Select>
+    {
+      extra
+    }
   </FormControl>;
 }
 
 export const PlaneForm = ({ plane, allBatteries, setPlane, save }: IProps) => {
   const changePlane = ({ target: { name, value } }) =>
     setPlane({ ...plane, [name]: value });
+
+  const changeBoolean = ({ target: { name, value } }) =>
+    setPlane({ ...plane, [name]: Boolean(value) });
 
   const changeBatteries = ({ target: { name, value } }) => {
     const nodes = value.map(v => ({ batteryName: v }));
@@ -121,7 +127,22 @@ export const PlaneForm = ({ plane, allBatteries, setPlane, save }: IProps) => {
 
       <RenderLogicalSwitch mode='modeStopped' label='Pause flying' plane={plane} changePlane={changePlane} save={save} />
 
-      <RenderLogicalSwitch mode='modeRestart' label='Restart flight' plane={plane} changePlane={changePlane} save={save} />
+      <RenderLogicalSwitch
+        mode='modeRestart'
+        label='Restart flight'
+        plane={plane}
+        changePlane={changePlane}
+        save={save}
+        extra={<Select
+          value={plane.modeStoppedStartsNewFlight}
+          name={'modeStoppedStartsNewFlight'}
+          onChange={changeBoolean}
+          onBlur={save}
+          input={<Input id='stops-checkbox' />}
+        >
+          <MenuItem value={'true'}>Also when stopped</MenuItem>
+          <MenuItem value={'false'}>-</MenuItem>
+        </Select>} />
     </div>
   </>;
 };

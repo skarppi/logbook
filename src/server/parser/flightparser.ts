@@ -35,7 +35,7 @@ export default class FlightParser {
   public appendItem(item: SegmentItem) {
     const type = this.currentSegmentType(item);
 
-    const endFlightBecauseStopped = type === SegmentType.stopped && this.currentSegment.type !== SegmentType.stopped && this.plane.stoppedStartsNewFlight;
+    const endFlightBecauseStopped = type === SegmentType.stopped && this.currentSegment.type !== SegmentType.stopped && this.plane.modeStoppedStartsNewFlight;
 
     if (endFlightBecauseStopped || this.test(this.plane.logicalSwitchByModeRestart, item)) {
       this.endFlight();
