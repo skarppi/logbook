@@ -9,13 +9,15 @@ export interface IPlaneTotals {
 
 export interface LogicalSwitch {
   id: string,
+  nodeId?: string,
   func: LogicalFunction,
   v1: string,
   v2?: string,
   andSwitch?: string,
   duration?: number,
   delay?: number,
-  description?: string
+  description?: string,
+  __typename?: string,
 }
 
 export interface Telemetry {
@@ -42,7 +44,7 @@ export interface Plane {
   logicalSwitchByModeStopped: LogicalSwitch,
   modeRestart: string,
   logicalSwitchByModeRestart: LogicalSwitch,
-  stoppedStartsNewFlight: boolean
+  modeStoppedStartsNewFlight: boolean
   totalByPlane?: IPlaneTotals
 }
 

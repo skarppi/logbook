@@ -116,7 +116,7 @@ const PlaneDetailsComponent = ({ id, history }) => {
     logicalSwitchByModeStopped: logicalSwitches[2],
     modeRestart: 'L04',
     logicalSwitchByModeRestart: logicalSwitches[3],
-    stoppedStartsNewFlight: false
+    modeStoppedStartsNewFlight: false
   };
 
   const requestPolicy = id === NEW_PLANE.id ? 'cache-only' : 'cache-first';

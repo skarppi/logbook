@@ -50,6 +50,7 @@ const Query = gql`
     logicalSwitches {
       nodes {
         id
+        nodeId
         func
         v1
         v2
