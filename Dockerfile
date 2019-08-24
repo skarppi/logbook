@@ -5,7 +5,7 @@ LABEL maintainer="juho.kolehmainen@iki.fi"
 RUN mkdir -p /src
 
 ADD package.json yarn.lock /tmp/
-RUN cd /tmp && yarn install --frozen-lockfile
+RUN cd /tmp && yarn install
 RUN cd /src && ln -s /tmp/node_modules
 
 ADD . /src
