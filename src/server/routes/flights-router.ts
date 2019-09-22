@@ -45,7 +45,7 @@ export function flightsRouter() {
     cb(null, true);
   };
 
-  const upload = multer({ storage: storage, fileFilter: fileFilter });
+  const upload = multer({ storage, fileFilter });
 
   router.post('', upload.array('flight'), (req: any, res, next) => {
 
@@ -56,7 +56,7 @@ export function flightsRouter() {
       .then(flights => {
         const flatten = []
           .concat(...flights)
-          .sort((a, b) => (a.id > b.id ? -1 : 1));
+          .sort((a, b) => (a.startDate > b.startDate ? -1 : 1));
         res.json(flatten);
       })
       .catch(next);

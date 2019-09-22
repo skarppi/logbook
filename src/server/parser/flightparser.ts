@@ -140,7 +140,7 @@ export default class FlightParser {
         return !firstItem && this.testExpectNull(test);
       }
 
-      return !items.find(current => !this.testItem(test, current))
+      return !items.find(current => !this.testItem(test, current));
     } else {
       return this.testItem(test, item);
     }
