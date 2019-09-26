@@ -50,7 +50,7 @@ export const PlaneForm = ({ plane, allBatteries, setPlane, save }: IProps) => {
     setPlane({ ...plane, [name]: value });
 
   const changeBoolean = ({ target: { name, value } }) =>
-    setPlane({ ...plane, [name]: Boolean(value) });
+    setPlane({ ...plane, [name]: value === 'true' });
 
   const changeBatteries = ({ target: { name, value } }) => {
     const nodes = value.map(v => ({ batteryName: v }));
