@@ -13,7 +13,8 @@ WORKDIR /src
 
 RUN ls -la
 
-RUN PUBLIC_URL=/logbook yarn run build
+ARG PUBLIC_URL=
+RUN PUBLIC_URL=$PUBLIC_URL yarn run build
 
 EXPOSE 3000
 

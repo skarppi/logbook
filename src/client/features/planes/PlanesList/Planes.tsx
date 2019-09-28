@@ -35,7 +35,7 @@ const Query = gql`
       nodes {
         id
         type,
-        totalByPlane {
+        totalByPlaneId {
           flights
           totalTime
         }

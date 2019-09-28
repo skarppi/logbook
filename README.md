@@ -33,7 +33,7 @@ For more information read [Working with Log Files](http://open-txu.org/home/spec
 ### Quick Start
 
 ```
-git clone https://github.com/skarppi/opentx-logbook.git <MyProjectName>
+git clone https://github.com/skarppi/logbook.git <MyProjectName>
 cd <MyProjectName>
 
 yarn install
@@ -59,6 +59,26 @@ yarn run dev
 Upload DVR files from FatShark or similar googles to VIDEOS/ folder. Use flight ID as filename e.g. TWR-2018-10-09-Session1.mov or just TWR-2018-10-09.mov if the video is not specific to any single flight.
 
 Videos can also be stored in another server configured with VIDEO_SERVER env variable. See example PHP implementation at ```src/videoserver``` for Synology NAS running Web Station.
+
+### Deployments
+
+See ```docker-build.sh``` and ```docker-run.sh``` scripts . Replace PUBLIC_URL with your path the service is hosted at, defaults to root.
+
+Example Apache configuration to proxy requests into Docker container.
+
+<VirtualHost *:443>
+        # Host videos from another server
+        ProxyPass /api/videos !
+        Redirect 301 /api/videos https://your.synology.ip/videoserver/search.php
+
+        # Service running at the root
+        ProxyPass / http://localhost:3000/
+        ProxyPassReverse / http://localhost:3000/
+
+        # Service running under some path (PUBLIC_URL)
+        # ProxyPass /logbook http://localhost:3000/logbook
+        # ProxyPassReverse /logbook http://localhost:3000/logbook
+</VirtualHost>
 
 ---
 

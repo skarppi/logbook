@@ -86,7 +86,7 @@ CREATE TABLE Flights (
   segments JSONB NOT NULL
 );
 
-CREATE INDEX flights_plane_name_index ON Flights(plane_name);
+CREATE INDEX flights_plane_index ON Flights(plane_id);
 CREATE INDEX flights_startdate_index ON Flights(start_date);
 CREATE INDEX flights_enddate_index ON Flights(end_date);
 CREATE INDEX flights_duration_index ON Flights(duration);
