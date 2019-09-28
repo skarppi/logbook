@@ -61,7 +61,7 @@ const Query = (unit: DashboardUnit, size: number) => {
       }}) {
       nodes {
         date
-        plane
+        planeId
         flights
         totalTime
       }

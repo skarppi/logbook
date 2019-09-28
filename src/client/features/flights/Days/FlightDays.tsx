@@ -29,7 +29,7 @@ const Query = gql`
     flightsByDays(orderBy:DATE_DESC) {
       nodes {
         date
-        plane
+        planeId
         flights
         totalTime
       }

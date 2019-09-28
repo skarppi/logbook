@@ -150,7 +150,7 @@ const chartOptions = (max: number, unit: DashboardUnit) => {
 
 export interface ITotalRows {
   date: Date;
-  plane: string;
+  planeId: string;
   flights: number;
   totalTime: number;
 }
@@ -179,9 +179,9 @@ export const GraphOverTime = ({ rows, unit }: IProps) => {
   );
 
   const planes = rows.reduce((groups, row) => {
-    const values = groups[row.plane] || [];
+    const values = groups[row.planeId] || [];
     values.push(row);
-    groups[row.plane] = values;
+    groups[row.planeId] = values;
     return groups;
   }, {});
 

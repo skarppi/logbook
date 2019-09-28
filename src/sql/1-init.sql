@@ -117,7 +117,7 @@ comment on constraint "battery_cycles_battery_name_fkey" on "battery_cycles" is
 
 -- battery cycle deletion
 
-CREATE FUNCTION delete_battery_cycles_by_battery_id(battery_id integer) RETURNS batteries AS $$
+CREATE OR REPLACE FUNCTION delete_battery_cycles_by_battery_id(battery_id integer) RETURNS batteries AS $$
   delete from battery_cycles where battery_name = (select name from batteries where id = delete_battery_cycles_by_battery_id.battery_id);
   delete from batteries where id = delete_battery_cycles_by_battery_id.battery_id returning *;
 $$ LANGUAGE sql VOLATILE;
@@ -125,41 +125,41 @@ $$ LANGUAGE sql VOLATILE;
 -- dashboard views
 
 CREATE VIEW totals as
-    SELECT plane, CAST(count(*) as integer)  as flights, CAST(sum(flight_time) as integer) as total_time
+    SELECT plane_id, CAST(count(*) as integer)  as flights, CAST(sum(flight_time) as integer) as total_time
     FROM flights
-    group by plane;
+    group by plane_id;
 
-comment on view totals is E'@primaryKey plane\n@foreignKey (plane) references planes (id)';
+comment on view totals is E'@primaryKey plane_id\n@foreignKey (plane_id) references planes (id)';
 
 CREATE VIEW FLIGHTS_BY_DAY as
 SELECT to_char(start_date, 'YYYY-MM-DD') as date,
-          plane,
+          plane_id,
           cast(sum(flight_time) as integer) as total_time, 
           cast(count(*) as integer) as flights 
       FROM flights 
       GROUP BY 1,2 
       ORDER BY date;
-comment on view FLIGHTS_BY_DAY is E'@primaryKey date,plane\n@foreignKey (plane) references planes (id)';
+comment on view FLIGHTS_BY_DAY is E'@primaryKey date,plane_id\n@foreignKey (plane_id) references planes (id)';
 
 CREATE VIEW FLIGHTS_BY_MONTH as
 SELECT to_char(start_date, 'YYYY-MM-01') as date,
-          plane,
+          plane_id,
           cast(sum(flight_time) as integer) as total_time, 
           cast(count(*) as integer) as flights 
       FROM flights 
       GROUP BY 1,2 
       ORDER BY date;
-comment on view FLIGHTS_BY_MONTH is E'@primaryKey date,plane\n@foreignKey (plane) references planes (id)';
+comment on view FLIGHTS_BY_MONTH is E'@primaryKey date,plane_id\n@foreignKey (plane_id) references planes (id)';
 
 CREATE VIEW FLIGHTS_BY_YEAR as
 SELECT to_char(start_date, 'YYYY-01-01') as date,
-          plane,
+          plane_id,
           cast(sum(flight_time) as integer) as total_time, 
           cast(count(*) as integer) as flights 
       FROM flights 
       GROUP BY 1,2 
       ORDER BY date;
-comment on view FLIGHTS_BY_YEAR is E'@primaryKey date,plane\n@foreignKey (plane) references planes (id)';
+comment on view FLIGHTS_BY_YEAR is E'@primaryKey date,plane_id\n@foreignKey (plane_id) references planes (id)';
 
 --- locations
 
