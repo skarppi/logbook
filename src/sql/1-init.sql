@@ -125,11 +125,11 @@ $$ LANGUAGE sql VOLATILE;
 -- dashboard views
 
 CREATE VIEW totals as
-    SELECT plane_id, CAST(count(*) as integer)  as flights, CAST(sum(flight_time) as integer) as total_time
+    SELECT plane_id as plane, CAST(count(*) as integer)  as flights, CAST(sum(flight_time) as integer) as total_time
     FROM flights
     group by plane_id;
 
-comment on view totals is E'@primaryKey plane_id\n@foreignKey (plane_id) references planes (id)';
+comment on view totals is E'@primaryKey plane\n@foreignKey (plane) references planes (id)';
 
 CREATE VIEW FLIGHTS_BY_DAY as
 SELECT to_char(start_date, 'YYYY-MM-DD') as date,

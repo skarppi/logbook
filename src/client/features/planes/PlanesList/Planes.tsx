@@ -35,7 +35,7 @@ const Query = gql`
       nodes {
         id
         type,
-        totalByPlaneId {
+        totalByPlane {
           flights
           totalTime
         }
@@ -65,7 +65,7 @@ const Query = gql`
 interface IPlaneResponse extends Plane {
   flights: {
     nodes: Flight[];
-  }
+  };
 }
 
 interface IQueryResponse {
@@ -74,7 +74,7 @@ interface IQueryResponse {
   };
   logicalSwitches: {
     nodes: LogicalSwitch[];
-  }
+  };
 }
 
 interface IRouteParams {
