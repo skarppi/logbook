@@ -28,7 +28,7 @@ class LogbookService {
         
         let query = """
             query {
-                allFlights(first:1, orderBy:START_DATE_DESC) {
+                flights(first:1, orderBy:START_DATE_DESC) {
                     nodes {
                         endDate
                     }
@@ -37,7 +37,7 @@ class LogbookService {
 """
         
         return fetch(url: url, body: query).map { res -> Date? in
-            if let lastFlight = res?["data"]["allFlights"]["nodes"].array?.first?["endDate"].string {
+            if let lastFlight = res?["data"]["flights"]["nodes"].array?.first?["endDate"].string {
                 return self.dateFormatter.date(from: lastFlight)
             } else if let error = res?["errors"].arrayValue.first?["message"].string {
                 throw LogbookError(text: error)
