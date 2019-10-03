@@ -8,11 +8,12 @@
     "node": ">=6.9.5"
   },
   "scripts": {
+    "clean": "rimraf server/dist",
     "lint": "tslint -c tslint.json 'src/**/*.ts' 'src/**/*.tsx'",
-    "start": "node ./server/dist/server/server.js",
-    "start:prod": "NODE_ENV=production node ./dist/server/server/server.js",
-    "dev": "concurrently --prefix \"[{name}]\" --names \"SERVER,CLIENT\" -c \"bgBlue.bold,bgGreen.bold\" \"cd server && npm run dev\" \"cd client && npm run dev\"",
-    "build": "concurrently --prefix \"[{name}]\" --names \"SERVER,CLIENT\" -c \"bgBlue.bold,bgGreen.bold\" \"cd server && npm run build\" \"cd client && npm run build\""
+    "install": "concurrently --prefix \"[{name}]\" --names \"SERVER,CLIENT\" -c \"bgBlue.bold,bgGreen.bold\" \"cd server && npm install\" \"cd client && npm install\"",
+    "build": "npm run clean && concurrently --prefix \"[{name}]\" --names \"SERVER,CLIENT\" -c \"bgBlue.bold,bgGreen.bold\" \"cd server && npm run build\" \"cd client && npm run build\"",
+    "start:prod": "NODE_ENV=production node ./server/dist/server/src/server.js",
+    "start": "npm run clean && concurrently --prefix \"[{name}]\" --names \"SERVER,CLIENT\" -c \"bgBlue.bold,bgGreen.bold\" \"cd server && npm start\" \"cd client && npm start\""
   },
   "keywords": [
     "typescript",
@@ -33,6 +34,7 @@
   "dependencies": {},
   "devDependencies": {
     "concurrently": "^3.6.1",
+    "rimraf": "^2.6.2",
     "tslint": "^5.12.0"
   }
 }

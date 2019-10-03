@@ -2,21 +2,24 @@ FROM node:11-alpine
 
 LABEL maintainer="juho.kolehmainen@iki.fi"
 
-RUN mkdir -p /src
+WORKDIR /app
 
-ADD package.json yarn.lock /tmp/
-RUN cd /tmp && yarn install
-RUN cd /src && ln -s /tmp/node_modules
+ADD package*.json /app/
+RUN npm install
 
-ADD . /src
-WORKDIR /src
+ADD server/package*.json /app/server/
+ADD client/package*.json /app/client/
+RUN npm run install
 
-RUN ls -la
+ADD /shared /app/shared
+ADD /server/src /app/server/src
+ADD /client/src /app/client/src
+ADD /client/webpack.config.js /app/client
 
 ARG PUBLIC_URL=
-RUN PUBLIC_URL=$PUBLIC_URL yarn run build
+RUN PUBLIC_URL=$PUBLIC_URL npm run build
 
 EXPOSE 3000
 
 ENV NODE_ENV production
-CMD ["node", "dist/server/server/server.js"]
+CMD ["node", "server/dist/server/src/server.js"]

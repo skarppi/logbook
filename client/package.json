@@ -6,9 +6,8 @@
     "node": ">=6.9.5"
   },
   "scripts": {
-    "clean": "rimraf dist",
-    "build": "cd ./src && NODE_ENV=production webpack -p --display-modules",
-    "dev": "cd ./src && webpack-dev-server -w --display-modules",
+    "build": "cd ./src && NODE_ENV=production webpack -p",
+    "start": "cd ./src && webpack-dev-server -w",
     "profile": "cd ./src && NODE_ENV=production webpack -p --json --profile > /tmp/webpack-build-log.json",
     "analyze": "webpack-bundle-analyzer /tmp/webpack-build-log.json dist/public/"
   },
@@ -58,7 +57,6 @@
     "file-loader": "^1.1.11",
     "html-webpack-plugin": "^3.2.0",
     "open-browser-webpack-plugin": "0.0.5",
-    "rimraf": "^2.6.2",
     "style-loader": "^0.21.0",
     "tsc-watch": "^1.0.31",
     "tslint": "^5.12.0",

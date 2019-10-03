@@ -5,7 +5,7 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 const OpenBrowserPlugin = require("open-browser-webpack-plugin");
 
 const config = require("../server/src/config");
-const projectRoot = path.join(__dirname, "..", "..");
+const outputPath = path.join(__dirname, "..", "server", "dist", "public");
 
 const plugins = [
   new HtmlWebpackPlugin({
@@ -30,7 +30,7 @@ module.exports = {
   devtool: config.IS_PRODUCTION ? "" : "inline-source-map",
   entry: ["babel-polyfill", "./client"],
   output: {
-    path: path.join(projectRoot, "dist", "public"),
+    path: outputPath,
     filename: `[name]-${version}-bundle.js`,
     publicPath: config.PUBLIC_URL + "/public/",
   },

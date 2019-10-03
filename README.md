@@ -36,7 +36,7 @@ For more information read [Working with Log Files](http://open-txu.org/home/spec
 git clone https://github.com/skarppi/logbook.git <MyProjectName>
 cd <MyProjectName>
 
-yarn install
+npm install
 
 createdb logbook
 
@@ -47,14 +47,14 @@ grant all privileges on database logbook to logbook;
 
 psql -d logbook -f init.sql
 
-yarn run dev
+npm run dev
 ```
 
 ### Usage
 
-- `yarn run dev` - Client and server are in watch mode with source maps, opens [http://localhost:3000](http://localhost:3000)
-- `yarn run build` - `dist` folder will include all the needed files, both client (Bundle) and server.
-- `yarn start` - Just runs `node ./dist/server/server.js`
+- `npm start` - Client and server are in watch mode with source maps, opens [http://localhost:3000](http://localhost:3000)
+- `npm run build` - `server/dist` folder will include all the needed files, both client (Bundle) and server.
+- `npm start:prod` - Just runs `node ./server/dist/server/src/server.js`
 
 Upload DVR files from FatShark or similar googles to VIDEOS/ folder. Use flight ID as filename e.g. TWR-2018-10-09-Session1.mov or just TWR-2018-10-09.mov if the video is not specific to any single flight.
 
