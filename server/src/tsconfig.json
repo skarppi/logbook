@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "target": "es6",
+    "sourceMap": true,
+    "module": "commonjs",
+    "importHelpers": true,
+    "allowJs": true,
+    "outDir": "../dist",
+    "lib": [
+      "es2016",
+      "dom"
+    ],
+    "moduleResolution": "node",
+    "types": [
+      "node"
+    ]
+  },
+  "files": [
+    "./server.ts"
+  ]
+}

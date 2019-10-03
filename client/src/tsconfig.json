@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "target": "es6",
+    "sourceMap": true,
+    "module": "commonjs",
+    "importHelpers": true,
+    "outDir": "../dist",
+    "lib": [
+      "es2016",
+      "dom",
+      "esnext.asynciterable"
+    ],
+    "jsx": "react"
+  },
+  "files": [
+    "./client.tsx"
+  ]
+}
