@@ -34,6 +34,12 @@ module.exports = {
     filename: `[name]-${version}-bundle.js`,
     publicPath: config.PUBLIC_URL + "/public/",
   },
+  watchOptions: {
+    ignored: /node_modules/
+  },
+  devServer: {
+    public: 'localhost:3000'
+  },
   resolve: {
     extensions: [".mjs", ".js", ".ts", ".tsx"]
   },

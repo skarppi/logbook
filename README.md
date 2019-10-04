@@ -47,7 +47,7 @@ grant all privileges on database logbook to logbook;
 
 psql -d logbook -f init.sql
 
-npm run dev
+npm start
 ```
 
 ### Usage
@@ -62,7 +62,7 @@ Videos can also be stored in another server configured with VIDEO_SERVER env var
 
 ### Deployments
 
-See ```docker-build.sh``` and ```docker-run.sh``` scripts . Replace PUBLIC_URL with your path the service is hosted at, defaults to root.
+Run ```docker-build.sh [dev/prod]``` and ```docker-run.sh``` scripts . Replace PUBLIC_URL with your path the service is hosted at, defaults to root.
 
 Example Apache configuration to proxy requests into Docker container.
 

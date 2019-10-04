@@ -11,6 +11,11 @@ export function staticsDevRouter() {
       target: 'http://localhost:8080/'
     }));
 
+  router.use('/sockjs-node/info', proxy({
+    target: 'http://localhost:8080',
+    ws: true
+  }));
+
   // Any route should render the web app html (hosted by by Webpack-dev-server)
   router.use('**', proxy(
     {

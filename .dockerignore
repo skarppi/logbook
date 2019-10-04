@@ -1,8 +1,9 @@
-*/node_modules
-/VIDEOS
-/LOGS
-/dist
 /.git
-/uploader
 /db
-/dist
+/LOGS
+*/node_modules
+/sql
+/uploader
+/VIDEOS
+/videoserver
+*/dist
