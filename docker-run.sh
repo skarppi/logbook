@@ -4,11 +4,22 @@ docker stop logbook
 
 docker rm logbook
 
-docker run --name=logbook -p 3000:3000 -e DB_HOST=logbook:logbook@127.0.0.1 --net=host \
-    -e NODE_ENV=production \
-    -v /etc/localtime:/etc/localtime \
+OPTS=""
+if [ `uname` = "Darwin" ]; then
+    DB_HOST=`whoami`@docker.for.mac.host.internal
+else
+    echo `uname`
+    DB_HOST="logbook:logbook@127.0.0.1"
+    OPTS="--net=host -v /etc/localtime:/etc/localtime"
+fi
+
+docker run --name=logbook -p 3000:3000  -p 3001:3001 \
+    -e DB_HOST=$DB_HOST \
+    $OPTS \
     -v ${PWD}/LOGS:/src/LOGS \
     -v ${PWD}/VIDEOS:/src/VIDEOS \
+    -v ${PWD}/shared:/app/shared \
+    -v ${PWD}/server/src:/app/server/src \
+    -v ${PWD}/client/src:/app/client/src \
+    -v ${PWD}/client/webpack.config.js:/app/client/webpack.config.js \
     -d skarppi/logbook
-    # set path other than root
-    # -e PUBLIC_URL=/logbook

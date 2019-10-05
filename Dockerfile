@@ -16,15 +16,15 @@ ADD /server/src /app/server/src
 ADD /client/src /app/client/src
 ADD /client/webpack.config.js /app/client
 
-ARG PUBLIC_URL=
+ARG PUBLIC_URL
+ENV PUBLIC_URL=$PUBLIC_URL
 
 # start or start:prod
 ARG SCRIPT=start
+ENV SCRIPT=$SCRIPT
 
 RUN if [ "$SCRIPT" = 'start:prod' ] ; then PUBLIC_URL=$PUBLIC_URL npm run build; else echo '---DEV MODE---'; fi
 
 EXPOSE 3000
 
-#ENV NODE_ENV production
-#CMD ["node", "server/dist/server/src/server.js"]
-CMD ["npm", ${SCRIPT}]
+CMD ["/bin/sh", "-c", "npm ${SCRIPT}"]

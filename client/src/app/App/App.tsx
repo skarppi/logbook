@@ -10,7 +10,7 @@ import { BatteriesList } from '../../features/batteries/BatteriesList/Batteries'
 import { FlightsUpload } from '../../features/flights/Upload/FlightsUpload';
 
 export const App = () => (
-  <BrowserRouter basename={process.env.PUBLIC_URL}>
+  <BrowserRouter basename={process.env.PUBLIC_PATH}>
     <div>
       <Grid container spacing={24}>
         <Header />

@@ -7,7 +7,7 @@ import { SegmentType } from '../../../shared/flights';
 import { LogicalFunction } from '../../../shared/planes';
 import { FlightImpl } from './flight';
 import { IParserOptions } from '.';
-import { SERVER_PORT, PUBLIC_URL } from '../config';
+import { SERVER_PORT, PUBLIC_PATH } from '../config';
 import { request } from 'graphql-request';
 
 export default class FlightParser {
@@ -102,10 +102,10 @@ export default class FlightParser {
       }
     }`;
 
-    console.log(`http://localhost:${SERVER_PORT}/${PUBLIC_URL}api/graphql`);
+    console.log(`http://localhost:${SERVER_PORT}/${PUBLIC_PATH}api/graphql`);
 
     try {
-      const data = await request(`http://localhost:${SERVER_PORT}/${PUBLIC_URL}api/graphql`, query);
+      const data = await request(`http://localhost:${SERVER_PORT}/${PUBLIC_PATH}api/graphql`, query);
       console.log(data)
       console.log(data['plane']);
       this.plane = data['plane'];

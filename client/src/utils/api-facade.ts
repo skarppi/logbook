@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const apiPath = `${process.env.PUBLIC_URL}/api`;
+const apiPath = `${process.env.PUBLIC_PATH}/api`;
 
 // export function* handleCall(
 //   action,

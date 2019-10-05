@@ -1,26 +1,22 @@
 import * as proxy from 'http-proxy-middleware';
 import { Router } from 'express';
-import { PUBLIC_URL } from '../config';
+import { PUBLIC_PATH } from '../config';
 
 export function staticsDevRouter() {
   const router = Router();
 
-  // All the assets are hosted by Webpack on localhost:8080 (Webpack-dev-server)
+  // All the assets are hosted by Webpack on localhost:3001 (Webpack-dev-server)
   router.use('/public', proxy(
     {
-      target: 'http://localhost:8080/'
+      target: 'http://localhost:3001/',
+      ws: true
     }));
-
-  router.use('/sockjs-node/info', proxy({
-    target: 'http://localhost:8080',
-    ws: true
-  }));
 
   // Any route should render the web app html (hosted by by Webpack-dev-server)
   router.use('**', proxy(
     {
-      target: 'http://localhost:8080/',
-      pathRewrite: path => `${PUBLIC_URL}/public/index.html`,
+      target: 'http://localhost:3001/',
+      pathRewrite: path => `${PUBLIC_PATH}/public/index.html`,
     }));
 
   return router;

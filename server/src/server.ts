@@ -14,12 +14,12 @@ const app = express();
 
 app.use(bodyParser.json());
 
-const publicUrl = config.PUBLIC_URL;
+const publicPath = config.PUBLIC_PATH;
 
-app.use(`${publicUrl}/api/flights`, flightsRouter());
-app.use(`${publicUrl}/api/videos`, videosRouter());
+app.use(`${publicPath}/api/flights`, flightsRouter());
+app.use(`${publicPath}/api/videos`, videosRouter());
 
-app.use(`${publicUrl}/api/`,
+app.use(`${publicPath}/api/`,
   postgraphile(`postgres://${config.DB_HOST}:5432/logbook`, {
     appendPlugins: [ConnectionFilterPlugin, PgSimplifyInflectorPlugin],
     exportGqlSchemaPath: './schema.gql',
@@ -28,7 +28,7 @@ app.use(`${publicUrl}/api/`,
   })
 );
 
-app.use(publicUrl, config.IS_PRODUCTION ? staticsRouter() : staticsDevRouter());
+app.use(publicPath, config.IS_PRODUCTION ? staticsRouter() : staticsDevRouter());
 
 app.use(function (err, req, res, next) {
   console.log(err, err.stack);
@@ -36,5 +36,5 @@ app.use(function (err, req, res, next) {
 });
 
 app.listen(config.SERVER_PORT, () => {
-  console.log(`App listening on port ${config.SERVER_PORT}!`);
+  console.log(`App listening on port=${config.SERVER_PORT}, path=${config.PUBLIC_PATH} at ${config.PUBLIC_URL}!`);
 });

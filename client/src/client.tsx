@@ -6,7 +6,7 @@ import { Provider, createClient } from 'urql';
 import 'video-react/dist/video-react.css';
 
 const client = createClient({
-  url: `${process.env.PUBLIC_URL}/api/graphql`
+  url: `${process.env.PUBLIC_PATH}/api/graphql`
 });
 
 ReactDOM.render(

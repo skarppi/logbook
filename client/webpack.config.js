@@ -13,10 +13,10 @@ const plugins = [
     favicon: "favicon.ico",
     filename: "index.html",
     template: "index.ejs",
-    publicUrl: config.PUBLIC_URL
+    publicUrl: config.PUBLIC_PATH
   }),
   new webpack.DefinePlugin({
-    'process.env.PUBLIC_URL': JSON.stringify(config.PUBLIC_URL)
+    'process.env.PUBLIC_PATH': JSON.stringify(config.PUBLIC_PATH)
   }),
   new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/)
 ];
@@ -32,13 +32,16 @@ module.exports = {
   output: {
     path: outputPath,
     filename: `[name]-${version}-bundle.js`,
-    publicPath: config.PUBLIC_URL + "/public/",
+    publicPath: `${config.PUBLIC_PATH}/public/`,
   },
   watchOptions: {
     ignored: /node_modules/
   },
   devServer: {
-    public: 'localhost:3000'
+    transportMode: 'ws',
+    public: config.PUBLIC_HOST,
+    publicPath: `${config.PUBLIC_PATH}/public/`,
+    port: 3001
   },
   resolve: {
     extensions: [".mjs", ".js", ".ts", ".tsx"]
