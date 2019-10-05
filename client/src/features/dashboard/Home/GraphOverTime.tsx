@@ -86,6 +86,7 @@ const chartOptions = (max: number, unit: DashboardUnit) => {
       }
     },
     responsive: true,
+    maintainAspectRatio: false,
     layout: {
       padding: {
         left: 0,

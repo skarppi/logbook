@@ -126,7 +126,10 @@ export const Dashboard = () => {
             <MenuItem value={DashboardUnit.month}>Months</MenuItem>
             <MenuItem value={DashboardUnit.year}>Years</MenuItem>
           </Select>
-          <GraphOverTime rows={flights.nodes} unit={unit} />
+
+          <div className={css.flights}>
+            <GraphOverTime rows={flights.nodes} unit={unit} />
+          </div>
         </CardContent>
       </Card>
     </Grid >

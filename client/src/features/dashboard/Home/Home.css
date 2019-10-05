@@ -6,3 +6,9 @@
     width: 150px;
     padding-bottom: 25px;
 }
+
+.flights {
+    height: 60vh;
+    width: 100vw;
+    position: relative;
+}

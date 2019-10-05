@@ -37,7 +37,7 @@
     "lodash": "^4.17.11",
     "multer": "^1.4.1",
     "react": "^16.7.0",
-    "react-chartjs-2": "^2.7.4",
+    "react-chartjs-2": "^2.8.0",
     "react-dom": "^16.7.0",
     "react-dropzone": "^8.0.3",
     "react-router": "^4.3.1",

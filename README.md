@@ -62,7 +62,7 @@ Videos can also be stored in another server configured with VIDEO_SERVER env var
 
 ### Deployments
 
-Run ```docker-build.sh [dev/prod]``` and ```docker-run.sh``` scripts . Replace PUBLIC_URL with your path the service is hosted at, defaults to root.
+Run ```docker-build.sh [dev/prod] http://host/path``` and ```docker-run.sh``` scripts. Set public url if your service is not running at the default https://localhost:3000.
 
 Example Apache configuration to proxy requests into Docker container.
 
@@ -72,12 +72,15 @@ Example Apache configuration to proxy requests into Docker container.
         Redirect 301 /api/videos https://your.synology.ip/videoserver/search.php
 
         # Service running at the root
+        ProxyPass /sockjs-node ws://localhost:3000/sockjs-node
+        ProxyPassReverse /sockjs-node ws://localhost:3000/sockjs-node
         ProxyPass / http://localhost:3000/
         ProxyPassReverse / http://localhost:3000/
 
         # Service running under some path (PUBLIC_URL)
         # ProxyPass /logbook http://localhost:3000/logbook
         # ProxyPassReverse /logbook http://localhost:3000/logbook
+
 </VirtualHost>
 
 ---
