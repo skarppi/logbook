@@ -31,7 +31,7 @@ export class FlightImpl implements Flight {
     this.segments = segments;
     this.startDate = segments[0].startDate;
     this.endDate = segments[segments.length - 1].endDate;
-    this.duration = differenceInSeconds(this.startDate, this.endDate);
+    this.duration = differenceInSeconds(this.endDate, this.startDate);
 
     this.armedTime = this.segments
       .filter(segment => segment.type !== SegmentType.stopped)

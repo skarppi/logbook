@@ -17,7 +17,7 @@ export default class SegmentImpl implements Segment {
 
     this.startDate = this.first.timestamp;
     this.endDate = this.last.timestamp;
-    this.duration = differenceInSeconds(this.startDate, this.endDate);
+    this.duration = differenceInSeconds(this.endDate, this.startDate);
   }
 
   public toString() {

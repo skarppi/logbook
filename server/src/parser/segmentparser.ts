@@ -19,7 +19,7 @@ export default class SegmentParser {
 
   public lastSecondsFromEnd(now: Date, seconds: number) {
     const inTheRange = this.items.findIndex(item => {
-      return differenceInSeconds(item.timestamp, now) < seconds;
+      return differenceInSeconds(now, item.timestamp) < seconds;
     });
     if (inTheRange >= 0) {
       return this.items.slice(inTheRange);
