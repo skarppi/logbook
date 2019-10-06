@@ -5,7 +5,7 @@ import Select from '@material-ui/core/Select';
 import Input from '@material-ui/core/Input';
 import MenuItem from '@material-ui/core/MenuItem';
 import Chip from '@material-ui/core/Chip';
-import { Plane } from '../../../../../shared/planes/types';
+import { Plane, Telemetry } from '../../../../../shared/planes/types';
 import { PlaneType } from '../../../../../shared/planes';
 import { Battery } from '../../../../../shared/batteries/types';
 import { useContext } from 'react';
@@ -58,7 +58,19 @@ export const PlaneForm = ({ plane, allBatteries, setPlane, save }: IProps) => {
     setPlane({ ...plane, [name]: { nodes } });
   };
 
+  const hideTelemetries = ({ target: { name, value } }) => {
+    const telemetries = plane.telemetries.map(telemetry => {
+      telemetry.ignore = value.indexOf(telemetry.id) !== -1;
+      return telemetry
+    });
+    setPlane({ ...plane, [name]: telemetries });
+  };
+
   const batteries = plane.planeBatteries.nodes.map(b => b.batteryName);
+
+  const telemetries = plane.telemetries;
+
+  const hiddenTelemetries = plane.telemetries.filter(telemetry => telemetry.ignore).map(telemetry => telemetry.id);
 
   return <>
     <div className={css.container}>
@@ -105,7 +117,7 @@ export const PlaneForm = ({ plane, allBatteries, setPlane, save }: IProps) => {
           input={<Input id='select-batteries-chip' />}
           renderValue={selected => (
             <div className={planeCss.chips}>
-              {batteries.map(battery => (
+              {(selected as string[]).map(battery => (
                 <Chip key={battery} label={battery} className={planeCss.chip} />
               ))}
             </div>
@@ -114,6 +126,33 @@ export const PlaneForm = ({ plane, allBatteries, setPlane, save }: IProps) => {
           {allBatteries.map(battery => (
             <MenuItem key={battery.name} value={battery.name} selected={batteries.indexOf(battery.name) !== -1}>
               {battery.name}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+    </div>
+
+    <div className={css.container}>
+    <FormControl className={css.formControl} margin='normal'>
+        <InputLabel htmlFor='select-hidden-telemetries-chip'>Hidden talemetries</InputLabel>
+        <Select
+          multiple
+          value={hiddenTelemetries}
+          name={'telemetries'}
+          onChange={hideTelemetries}
+          onBlur={save}
+          input={<Input id='select-hidden-telemetries-chip' />}
+          renderValue={selected => (
+            <div className={planeCss.chips}>
+              {(selected as string[]).map(id => (
+                <Chip key={id} label={id} className={planeCss.chip} />
+              ))}
+            </div>
+          )}
+        >
+          {telemetries.map(telemetry => (
+            <MenuItem key={telemetry.id} value={telemetry.id} selected={telemetry.ignore}>
+              {telemetry.id}
             </MenuItem>
           ))}
         </Select>

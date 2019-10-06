@@ -5,7 +5,7 @@ import IconButton from '@material-ui/core/IconButton';
 import TextField from '@material-ui/core/TextField';
 import Tooltip from '@material-ui/core/Tooltip';
 import * as React from 'react';
-import { Plane, LogicalSwitch } from '../../../../../shared/planes/types';
+import { Plane, LogicalSwitch, Telemetry} from '../../../../../shared/planes/types';
 import { LogicalFunction } from '../../../../../shared/planes/index';
 import { PlaneGraph } from './PlaneGraph';
 
@@ -41,6 +41,13 @@ const Query = gql`
       planeBatteries {
         nodes {
           batteryName
+        }
+      }
+      flights(orderBy: START_DATE_DESC, first: 1) {
+        nodes {
+          id
+          startDate
+          segments
         }
       }
     }
@@ -106,7 +113,7 @@ const PlaneDetailsComponent = ({ id, history }) => {
     planeBatteries: {
       nodes: []
     },
-    telemetries: new Map(),
+    telemetries: [],
     flightModes: [],
     modeArmed: 'L01',
     logicalSwitchByModeArmed: logicalSwitches[0],
@@ -116,7 +123,10 @@ const PlaneDetailsComponent = ({ id, history }) => {
     logicalSwitchByModeStopped: logicalSwitches[2],
     modeRestart: 'L04',
     logicalSwitchByModeRestart: logicalSwitches[3],
-    modeStoppedStartsNewFlight: false
+    modeStoppedStartsNewFlight: false,
+    flights: {
+      nodes: []
+    }
   };
 
   const requestPolicy = id === NEW_PLANE.id ? 'cache-only' : 'cache-first';
@@ -131,7 +141,27 @@ const PlaneDetailsComponent = ({ id, history }) => {
   const [plane, setPlane] = React.useState(NEW_PLANE);
   React.useEffect(() => {
     if (read.data && read.data.plane) {
-      setPlane(read.data.plane);
+      const plane = read.data.plane;
+      const flight = plane.flights.nodes && plane.flights.nodes[0];
+      if (flight != null) {
+        const items = flight.segments[0].rows[0];
+        plane.telemetries = Object.keys(items).map(id => {
+          if (plane.telemetries) {
+            // preserve old values
+            const oldTelemetry = plane.telemetries.find(telemetry => telemetry.id === id);
+            if (oldTelemetry) {
+              return oldTelemetry;
+            }
+          }
+          return {
+            id,
+            default: false,
+            ignore: false
+          };
+        });
+        delete plane.flights;
+      }
+      setPlane(plane);
     }
   }, [read]);
 

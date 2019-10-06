@@ -16,8 +16,8 @@ fi
 docker run --name=logbook -p 3000:3000  -p 3001:3001 \
     -e DB_HOST=$DB_HOST \
     $OPTS \
-    -v ${PWD}/LOGS:/src/LOGS \
-    -v ${PWD}/VIDEOS:/src/VIDEOS \
+    -v ${PWD}/LOGS:/app/server/LOGS \
+    -v ${PWD}/VIDEOS:/app/server/VIDEOS \
     -v ${PWD}/shared:/app/shared \
     -v ${PWD}/server/src:/app/server/src \
     -v ${PWD}/client/src:/app/client/src \

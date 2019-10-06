@@ -152,13 +152,19 @@ const axisMappings = {
 
 export const FlightGraph = ({ segments, plane }: IProps) => {
 
-  const telemetries: Map<string, Telemetry> = plane && plane.telemetries || new Map();
+  const telemetries: Telemetry[] = plane && plane.telemetries || [];
 
-  // const ignoreTelemetries = [...alwaysIgnoreTelemetries, ...(plane && plane.ignoreTelemetries || [])];
+  const defaultTelemetries = telemetries
+    .filter(telemetry => telemetry.default)
+    .map(telemetry => telemetry.id);
+
+  const ignoreTelemetries = telemetries
+    .filter(telemetry => telemetry.ignore)
+    .map(telemetry => telemetry.id);
 
   const items = segments.reduce<SegmentItem[]>((prev, cur) => [...prev, ...cur.rows], []);
 
-  const fields = Object.keys(items[0] || {}).filter(field => !telemetries.has(field) || !telemetries.get(field).ignore);
+  const fields = Object.keys(items[0] || {}).filter(field => ignoreTelemetries.indexOf(field) === -1);
 
   const labels = items.map(row => row.Date + ' ' + row.Time);
 
@@ -179,7 +185,7 @@ export const FlightGraph = ({ segments, plane }: IProps) => {
 
   const datasets = fields.map((field, index) => {
     const colorIndex = index % chartColors.length;
-    const hidden = !telemetries.has(field) || !telemetries.get(field).default;
+    const hidden = defaultTelemetries.indexOf(field) === -1;
     return {
       label: field,
       type: 'line',

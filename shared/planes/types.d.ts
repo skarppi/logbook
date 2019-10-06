@@ -1,5 +1,6 @@
 import { LogicalFunction, PlaneType } from "./index";
 import { Battery } from "../batteries/types";
+import { Segment, Flight } from "../flights/types";
 
 export interface IPlaneTotals {
   plane: string;
@@ -21,6 +22,7 @@ export interface LogicalSwitch {
 }
 
 export interface Telemetry {
+  id: string,
   default: boolean,
   ignore: boolean,
 }
@@ -34,7 +36,7 @@ export interface Plane {
       batteryName: string
     }>;
   }
-  telemetries: Map<string, Telemetry>;
+  telemetries: Telemetry[];
   flightModes: string[];
   modeArmed: string,
   logicalSwitchByModeArmed: LogicalSwitch,
@@ -45,6 +47,9 @@ export interface Plane {
   modeRestart: string,
   logicalSwitchByModeRestart: LogicalSwitch,
   modeStoppedStartsNewFlight: boolean
-  totalByPlane?: IPlaneTotals
+  totalByPlane?: IPlaneTotals,
+  flights: {
+    nodes: Array<Flight>;
+  }
 }
 
