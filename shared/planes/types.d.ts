@@ -29,27 +29,29 @@ export interface Telemetry {
 
 export interface Plane {
   id: string,
+  nodeId?: string,
   type: PlaneType,
   batterySlots: number;
-  planeBatteries: {
+  planeBatteries?: {
     nodes: Array<{
       batteryName: string
     }>;
   }
   telemetries: Telemetry[];
-  flightModes: string[];
+  flightModes?: string[];
   modeArmed: string,
-  logicalSwitchByModeArmed: LogicalSwitch,
+  logicalSwitchByModeArmed?: LogicalSwitch,
   modeFlying: string,
-  logicalSwitchByModeFlying: LogicalSwitch,
+  logicalSwitchByModeFlying?: LogicalSwitch,
   modeStopped: string,
-  logicalSwitchByModeStopped: LogicalSwitch,
+  logicalSwitchByModeStopped?: LogicalSwitch,
   modeRestart: string,
-  logicalSwitchByModeRestart: LogicalSwitch,
+  logicalSwitchByModeRestart?: LogicalSwitch,
   modeStoppedStartsNewFlight: boolean
   totalByPlane?: IPlaneTotals,
-  flights: {
+  flights?: {
     nodes: Array<Flight>;
-  }
+  },
+  __typename?: string,
 }
 

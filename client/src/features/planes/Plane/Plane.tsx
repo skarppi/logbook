@@ -103,7 +103,9 @@ const Delete = gql`
   }`;
 
 const mergePlaneTelemetries = (plane: Plane) => {
-  const flight = plane.flights.nodes && plane.flights.nodes[0];
+  const { flights, ...planeWithoutFlights } = plane;
+
+  const flight = flights.nodes && flights.nodes[0];
   if (flight != null) {
     const items = flight.segments[0].rows[0];
     plane.telemetries = Object.keys(items).map(id => {
@@ -120,11 +122,8 @@ const mergePlaneTelemetries = (plane: Plane) => {
         ignore: false
       };
     });
-
-    // existing flight will cause trouble when updating the plane later
-    delete plane.flights;
-    return plane;
   }
+  return planeWithoutFlights;
 };
 
 const PlaneDetailsComponent = ({ id, history }) => {
@@ -135,23 +134,12 @@ const PlaneDetailsComponent = ({ id, history }) => {
     id: '',
     type: PlaneType.drone,
     batterySlots: 0,
-    planeBatteries: {
-      nodes: []
-    },
     telemetries: [],
-    flightModes: [],
     modeArmed: 'L01',
-    logicalSwitchByModeArmed: logicalSwitches[0],
     modeFlying: 'L02',
-    logicalSwitchByModeFlying: logicalSwitches[1],
     modeStopped: 'L03',
-    logicalSwitchByModeStopped: logicalSwitches[2],
     modeRestart: 'L04',
-    logicalSwitchByModeRestart: logicalSwitches[3],
-    modeStoppedStartsNewFlight: false,
-    flights: {
-      nodes: []
-    }
+    modeStoppedStartsNewFlight: false
   };
 
   const requestPolicy = id === NEW_PLANE.id ? 'cache-only' : 'cache-first';
@@ -182,16 +170,14 @@ const PlaneDetailsComponent = ({ id, history }) => {
 
   // update to server
   const save = () => {
-    if (!plane.id) {
+    if (!plane.nodeId) {
       createPlane({ plane }).then(res => {
         if (!res.error) {
           history.push(`/planes/${res.data.createPlane.plane.id}`);
         }
       });
     } else {
-      delete plane['__typename'];
-
-      const { planeBatteries, ...patch } = plane;
+      const { planeBatteries, nodeId, ['__typename']: _, ...patch } = plane;
       updatePlane({ id: id, plane: patch, batteries: planeBatteries.nodes.map(n => n.batteryName) });
     }
   };

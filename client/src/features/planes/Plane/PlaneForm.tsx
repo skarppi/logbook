@@ -5,7 +5,7 @@ import Select from '@material-ui/core/Select';
 import Input from '@material-ui/core/Input';
 import MenuItem from '@material-ui/core/MenuItem';
 import Chip from '@material-ui/core/Chip';
-import { Plane, Telemetry } from '../../../../../shared/planes/types';
+import { Plane } from '../../../../../shared/planes/types';
 import { PlaneType } from '../../../../../shared/planes';
 import { Battery } from '../../../../../shared/batteries/types';
 import { useContext } from 'react';
@@ -59,22 +59,22 @@ export const PlaneForm = ({ plane, allBatteries, setPlane, save }: IProps) => {
   };
 
   const enableTelemetries = ({ target: { name, value } }) => {
-    const telemetries = plane.telemetries.map(telemetry => {
+    const updated = plane.telemetries.map(telemetry => {
       telemetry.default = value.indexOf(telemetry.id) !== -1;
       return telemetry
     });
-    setPlane({ ...plane, [name]: telemetries });
+    setPlane({ ...plane, [name]: updated });
   };
 
   const hideTelemetries = ({ target: { name, value } }) => {
-    const telemetries = plane.telemetries.map(telemetry => {
+    const updated = plane.telemetries.map(telemetry => {
       telemetry.ignore = value.indexOf(telemetry.id) !== -1;
       return telemetry
     });
-    setPlane({ ...plane, [name]: telemetries });
+    setPlane({ ...plane, [name]: updated });
   };
 
-  const batteries = plane.planeBatteries.nodes.map(b => b.batteryName);
+  const batteries = plane.planeBatteries && plane.planeBatteries.nodes.map(b => b.batteryName) || [];
 
   const telemetries = plane.telemetries;
 
@@ -144,7 +144,7 @@ export const PlaneForm = ({ plane, allBatteries, setPlane, save }: IProps) => {
 
     <div className={css.container}>
       <FormControl className={css.formControl} margin='normal'>
-        <InputLabel htmlFor='select-default-telemetries-chip'>Default talemetries</InputLabel>
+        <InputLabel htmlFor='select-default-telemetries-chip'>Default telemetries</InputLabel>
         <Select
           multiple
           value={defaultTelemetries}
@@ -171,7 +171,7 @@ export const PlaneForm = ({ plane, allBatteries, setPlane, save }: IProps) => {
       </FormControl>
 
       <FormControl className={css.formControl} margin='normal'>
-        <InputLabel htmlFor='select-hidden-telemetries-chip'>Hidden talemetries</InputLabel>
+        <InputLabel htmlFor='select-hidden-telemetries-chip'>Hidden telemetries</InputLabel>
         <Select
           multiple
           value={hiddenTelemetries}

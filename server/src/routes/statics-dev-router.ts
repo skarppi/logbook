@@ -6,7 +6,7 @@ export function staticsDevRouter() {
   const router = Router();
 
   // All the assets are hosted by Webpack on localhost:3001 (Webpack-dev-server)
-  router.use('/public', proxy(
+  router.use(['/public', '/sockjs-node'], proxy(
     {
       target: 'http://localhost:3001/',
       ws: true
