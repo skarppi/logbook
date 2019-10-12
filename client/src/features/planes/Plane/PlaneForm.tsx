@@ -58,6 +58,14 @@ export const PlaneForm = ({ plane, allBatteries, setPlane, save }: IProps) => {
     setPlane({ ...plane, [name]: { nodes } });
   };
 
+  const enableTelemetries = ({ target: { name, value } }) => {
+    const telemetries = plane.telemetries.map(telemetry => {
+      telemetry.default = value.indexOf(telemetry.id) !== -1;
+      return telemetry
+    });
+    setPlane({ ...plane, [name]: telemetries });
+  };
+
   const hideTelemetries = ({ target: { name, value } }) => {
     const telemetries = plane.telemetries.map(telemetry => {
       telemetry.ignore = value.indexOf(telemetry.id) !== -1;
@@ -69,6 +77,8 @@ export const PlaneForm = ({ plane, allBatteries, setPlane, save }: IProps) => {
   const batteries = plane.planeBatteries.nodes.map(b => b.batteryName);
 
   const telemetries = plane.telemetries;
+
+  const defaultTelemetries = plane.telemetries.filter(telemetry => telemetry.default).map(telemetry => telemetry.id);
 
   const hiddenTelemetries = plane.telemetries.filter(telemetry => telemetry.ignore).map(telemetry => telemetry.id);
 
@@ -133,7 +143,34 @@ export const PlaneForm = ({ plane, allBatteries, setPlane, save }: IProps) => {
     </div>
 
     <div className={css.container}>
-    <FormControl className={css.formControl} margin='normal'>
+      <FormControl className={css.formControl} margin='normal'>
+        <InputLabel htmlFor='select-default-telemetries-chip'>Default talemetries</InputLabel>
+        <Select
+          multiple
+          value={defaultTelemetries}
+          name={'telemetries'}
+          onChange={enableTelemetries}
+          onBlur={save}
+          input={<Input id='select-default-telemetries-chip' />}
+          renderValue={selected => (
+            <div className={planeCss.chips}>
+              {(selected as string[]).map(id => (
+                <Chip key={id} label={id} className={planeCss.chip} />
+              ))}
+            </div>
+          )}
+        >
+          {telemetries
+            .filter(telemetry => !telemetry.ignore)
+            .map(telemetry => (
+              <MenuItem key={telemetry.id} value={telemetry.id} selected={telemetry.ignore}>
+                {telemetry.id}
+              </MenuItem>
+            ))}
+        </Select>
+      </FormControl>
+
+      <FormControl className={css.formControl} margin='normal'>
         <InputLabel htmlFor='select-hidden-telemetries-chip'>Hidden talemetries</InputLabel>
         <Select
           multiple
@@ -157,6 +194,7 @@ export const PlaneForm = ({ plane, allBatteries, setPlane, save }: IProps) => {
           ))}
         </Select>
       </FormControl>
+
     </div>
 
     <div className={css.container}>
