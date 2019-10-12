@@ -1,14 +1,18 @@
-#  Logbook uploader for iOS
+#  Logbook uploader for iOS 13
 
-Automates synching of OpenTX logfiles to Logbook service when using wireless card readers such as Kingston MobileLite Wireless.
+Automates synching of OpenTX logfiles to Logbook service. Just connect transmitter to iOS device's usb port or wirelessly via card reader such as Kingston MobileLite Wireless. All new flights are synched to Logbook server in a click of a button.
 
 ### Usage instructions
 
-1. Connect you transmitter to MobileLite with USB cable and put it into Boot Loader mode so the contents of the SD-card can be accessed wirelessly.
+1. Put your transmitter it into Boot Loader mode
+
+2. a) Connect usb cable to your iOS 13 device either directly via USB-C or Camera connection kit. The source folder is selected when clicking Refresh-button the first time and stored for later use. The folder can be changed by editing the source field. 
+
+2. b) For wireless USB/SD-card readers configure name or ip address into source field (e.g. smb://MOBILITE)
 
 2. Click Refresh-button
 
-- App checks the timestamp of the latest flight from Logbook service
+- App checks the timestamp of the latest flight from configured Logbook service
 - Downloads all newer log files
 
 3. Click Sync-button

@@ -28,6 +28,8 @@ class ViewController: UIViewController {
     
     private var logbook = LogbookService()
     
+    private var sdCard: SdCardService!
+    
     private var files: [URL] = []
     
     private var lastSync: Date?
@@ -79,7 +81,7 @@ class ViewController: UIViewController {
     }
     
     private func fetchNewFiles(after: Date) {
-        self.log("Fetching log files...")
+        self.log("Fetching new log files...")
         samba?.query(after: after).done { files in
             guard files.count > 0 else {
                 self.log("No new flights")
@@ -97,6 +99,29 @@ class ViewController: UIViewController {
         }.catch { error in
             self.log(error.localizedDescription)
         }
+        
+        sdCard?.query(after: after).done { files in
+            guard files.count > 0 else {
+                self.log("No new flights")
+                return
+            }
+            files.forEach { url in
+                let keys = Set([URLResourceKey.fileSizeKey])
+                guard let resourceValues = try? url.resourceValues(forKeys: Set(keys)),
+                    let size = resourceValues.fileSize
+                    else {
+                        print("No properties for file \(url.path)")
+                        return
+                }
+                
+                self.log(url.lastPathComponent + " [\(size/1000)kb]")
+            }
+            self.syncButton.isEnabled = true
+            self.files = files
+        }.catch { error in
+            self.log(error.localizedDescription)
+        }
+
     }
     
     private func download(file: SMBFile) -> Promise<URL> {
@@ -116,13 +141,26 @@ class ViewController: UIViewController {
         dateFormatter.dateStyle = DateFormatter.Style.long
         dateFormatter.timeStyle = DateFormatter.Style.medium
 
-        samba = SambaClient(hostname: self.smbName.text!)
-        if(samba !== nil) {
-            statusLabel.text = "Connected to \(self.smbName.text!) (\(samba.server.ipAddressString))"
+        if self.smbName.text!.starts(with: "smb://") {
+            samba = SambaClient(hostname: self.smbName.text!)
+            
+            if samba !== nil {
+                statusLabel.text = "Connected to \(self.smbName.text!) (\(samba.server.ipAddressString))"
+            } else {
+                statusLabel.text = "Unable to connect to \(self.smbName.text!)"
+            }
         } else {
-            statusLabel.text = "Unable to connect to \(self.smbName.text!)"
+            sdCard = SdCardService()
+            
+            if let bookMark = sdCard.readBookmark() {
+                if bookMark.lastPathComponent != self.smbName.text {
+                    sdCard.open(self)
+                }
+            } else {
+                sdCard.open(self)
+            }
         }
-
+        
         logbook.fetchLatestFlight(logbookApi: self.logbookApiUrl.text!).done { date in
             let lastSync: Date = date ?? Date(timeIntervalSince1970: 0)
 
@@ -133,11 +171,9 @@ class ViewController: UIViewController {
             }
             
             self.lastSync = lastSync
-            
-            self.fetchNewFiles(after: lastSync)
-        }.catch {error in
+        }.catch { error in
             self.log(error.localizedDescription)
-            
+        }.finally {
             if let lastSync = self.lastSync {
                 self.fetchNewFiles(after: lastSync)
             }
@@ -161,3 +197,17 @@ extension ViewController: UITextFieldDelegate {
     }
 }
 
+extension ViewController: UIDocumentPickerDelegate {
+    func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
+        
+        if let url = sdCard.writeBookmark(urls: urls) {
+            statusLabel.text = "Selected folder \(url.lastPathComponent)"
+            self.smbName.text = url.lastPathComponent
+            saveSmbName()
+            
+            refresh()
+        } else {
+            statusLabel.text = "No selection"
+        }
+    }
+}
