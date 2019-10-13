@@ -233,13 +233,16 @@
 				TargetAttributes = {
 					C0FD748A220F8324003261AB = {
 						CreatedOnToolsVersion = 10.1;
+						LastSwiftMigration = 1100;
 					};
 					C0FD749E220F8326003261AB = {
 						CreatedOnToolsVersion = 10.1;
+						LastSwiftMigration = 1100;
 						TestTargetID = C0FD748A220F8324003261AB;
 					};
 					C0FD74A9220F8326003261AB = {
 						CreatedOnToolsVersion = 10.1;
+						LastSwiftMigration = 1100;
 						TestTargetID = C0FD748A220F8324003261AB;
 					};
 				};
@@ -519,7 +522,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = net.tusina.Logbook;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -542,7 +545,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = net.tusina.Logbook;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
@@ -562,7 +565,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = net.tusina.LogbookTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Logbook.app/Logbook";
 			};
@@ -583,7 +586,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = net.tusina.LogbookTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Logbook.app/Logbook";
 			};
@@ -603,7 +606,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = net.tusina.LogbookUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = Logbook;
 			};
@@ -623,7 +626,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = net.tusina.LogbookUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = Logbook;
 			};
