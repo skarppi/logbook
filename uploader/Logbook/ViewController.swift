@@ -34,6 +34,8 @@ class ViewController: UIViewController {
     
     private var lastSync: Date?
     
+    private let SMB_PREFIX = "smb://"
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -141,19 +143,21 @@ class ViewController: UIViewController {
         dateFormatter.dateStyle = DateFormatter.Style.long
         dateFormatter.timeStyle = DateFormatter.Style.medium
 
-        if self.smbName.text!.starts(with: "smb://") {
-            samba = SambaClient(hostname: self.smbName.text!)
+        let path = self.smbName.text!
+        
+        if path.starts(with: SMB_PREFIX) {
+            samba = SambaClient(hostname: String(path.dropFirst(SMB_PREFIX.count)))
             
             if samba !== nil {
-                statusLabel.text = "Connected to \(self.smbName.text!) (\(samba.server.ipAddressString))"
+                statusLabel.text = "Connected to \(path) (\(samba.server.ipAddressString))"
             } else {
-                statusLabel.text = "Unable to connect to \(self.smbName.text!)"
+                statusLabel.text = "Unable to connect to \(path)"
             }
         } else {
             sdCard = SdCardService()
             
             if let bookMark = sdCard.readBookmark() {
-                if bookMark.lastPathComponent != self.smbName.text {
+                if bookMark.lastPathComponent != path {
                     sdCard.open(self)
                 }
             } else {
