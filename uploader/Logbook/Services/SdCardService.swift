@@ -25,46 +25,9 @@ class SdCardService {
         delegate.present(documentPicker, animated: true, completion: nil)
     }
     
-    func writeBookmark(urls: [URL]) -> URL? {
-        guard let url = urls.first,
-            url.startAccessingSecurityScopedResource() else {
-                print("Bookmarking failed to open security")
-                return nil
-        }
-        defer { url.stopAccessingSecurityScopedResource() }
-        
-        do {
-            let bookmarkData = try url.bookmarkData(options: .minimalBookmark, includingResourceValuesForKeys: nil, relativeTo: nil)
-
-            try bookmarkData.write(to: getMyURLForBookmark())
-            
-            return url
-        } catch let error {
-            print("Bookmarking failed \(error)")
-            return nil
-        }
-    }
-
-    func readBookmark() -> URL? {
-        do {
-            let bookmarkData = try Data(contentsOf: getMyURLForBookmark())
-            var isStale = false
-            let url = try URL(resolvingBookmarkData: bookmarkData, bookmarkDataIsStale: &isStale)
-            
-            guard !isStale else {
-                return nil
-            }
-            
-            return url
-        } catch let error {
-            print("\(error)")
-            return nil
-        }
-    }
-    
     public func query(after: Date) -> Promise<[URL]> {
         
-        guard let url = readBookmark() else {
+        guard let url = Bookmark.read() else {
             return Promise(error: SambaError(text: "No bookmark"))
         }
         

@@ -156,7 +156,7 @@ class ViewController: UIViewController {
         } else {
             sdCard = SdCardService()
             
-            if let bookMark = sdCard.readBookmark() {
+            if let bookMark = Bookmark.read() {
                 if bookMark.lastPathComponent != path {
                     sdCard.open(self)
                 }
@@ -203,8 +203,14 @@ extension ViewController: UITextFieldDelegate {
 
 extension ViewController: UIDocumentPickerDelegate {
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
+        guard let url = urls.first,
+            url.startAccessingSecurityScopedResource() else {
+                print("Bookmarking failed to open security")
+                return
+        }
+        defer { url.stopAccessingSecurityScopedResource() }
         
-        if let url = sdCard.writeBookmark(urls: urls) {
+        if let url = Bookmark.write(url: url) {
             statusLabel.text = "Selected folder \(url.lastPathComponent)"
             self.smbName.text = url.lastPathComponent
             saveSmbName()
