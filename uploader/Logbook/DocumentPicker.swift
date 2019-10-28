@@ -15,8 +15,6 @@ struct DocumentPickerView: UIViewControllerRepresentable {
     
     @Binding var model: DocumentPickerViewModel
     
-    var sdCardService = SdCardService()
-    
     @EnvironmentObject var userSettings: UserSettings
         
     typealias UIViewControllerType = UIDocumentPickerViewController

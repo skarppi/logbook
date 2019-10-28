@@ -12,15 +12,17 @@ import PromiseKit
 
 public class SambaClient {
     
-    let server: SMBServer
+    var server: SMBServer!
     var session: SMBSession!
     
-    init?(hostname: String) {
-        if let server = SMBServer(hostname: hostname) {
-            self.server = server
-            self.session = SMBSession(server: server, credentials: .guest)
+    public func connect(hostname: String) -> Bool {
+        server = SMBServer(hostname: hostname)
+        if let server = server  {
+            session = SMBSession(server: server, credentials: .guest)
+            return true
         } else {
-            return nil
+            session = nil
+            return false
         }
     }
     

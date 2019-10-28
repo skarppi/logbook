@@ -11,30 +11,39 @@ import SwiftUI
 
 final class UserSettings: ObservableObject  {
     
+    private let sourceFolderKey = "smbName"
     @Published var sourceFolder = ""
+    
+    private let targetURLKey = "logbookApiUrl"
     @Published var targetURL = ""
     
+    private let SMB_PREFIX = "smb://"
+    
+    private var cancellables: [AnyCancellable] = []
+    
     init() {
-        sourceFolder = load(key: "smbName")
-        targetURL = load(key: "logbookApiUrl")
+        sourceFolder = load(key: sourceFolderKey, value: $sourceFolder)
+        targetURL = load(key: "logbookApiUrl", value: $targetURL)
     }
     
-    private func load(key: String) -> String {
+    deinit {
+        cancellables.forEach { $0.cancel() }
+    }
+    
+    private func load(key: String, value: Published<String>.Publisher) -> String {
+        cancellables.append(
+            value.debounce(for: 0.5, scheduler: DispatchQueue.main).sink { newText in
+                UserDefaults.standard.set(newText, forKey: key)
+                UserDefaults.standard.synchronize()
+            }
+        )
         return UserDefaults.standard.string(forKey: key) ?? ""
     }
-    
-    private func store(key: String, value: String) {
-        UserDefaults.standard.set(value, forKey: key)
-        UserDefaults.standard.synchronize()
-    }
-    
-    func setSourceFolder(_ value: String) {
-        sourceFolder = value
-        store(key: "smbName", value: value)
-    }
 
-    func setTargetURL(_ value: String) {
-        targetURL = value
-        store(key: "logbookApiUrl", value: value)
+    func getSmbPath() -> String? {
+        guard sourceFolder.starts(with: SMB_PREFIX) else {
+            return nil
+        }
+        return String(sourceFolder.dropFirst(SMB_PREFIX.count))
     }
 }

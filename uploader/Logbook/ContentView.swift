@@ -8,20 +8,21 @@
 
 import SwiftUI
 import MobileCoreServices
-//import UIKit
+import PromiseKit
+import SMBClient
 
 struct ContentView: View {
     @EnvironmentObject var userSettings: UserSettings
     
-    private var samba: SambaClient!
+    private var samba = SambaClient()
     
     private var logbook = LogbookService()
     
     private var sdCard = SdCardService()
     
-    private var files: [URL] = []
+    @State var files: [URL] = []
     
-    private var lastSync: Date?
+    @State var lastSync: Date?
     
     @State var output = ""
 
@@ -34,6 +35,8 @@ struct ContentView: View {
                 HStack {
                     TextField("Source or smb://hostname", text: $userSettings.sourceFolder)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
+                        .textContentType(UITextContentType.URL)
+                        .autocapitalization(UITextAutocapitalizationType.none)
                     Button(action: { self.documentPickerViewModel.isPresented.toggle()
                     }) {
                         HStack {
@@ -47,7 +50,7 @@ struct ContentView: View {
                     .onReceive(documentPickerViewModel.pickedDocumentSubject) { (url: URL) -> Void in
                         withAnimation {
                             self.output = "Selected folder \(url.lastPathComponent)"
-                            self.userSettings.setSourceFolder(url.lastPathComponent)
+                            self.userSettings.sourceFolder = url.lastPathComponent
                         }
                     }
                 }
@@ -68,20 +71,138 @@ struct ContentView: View {
                     Spacer()
                 }
             }
-            Button(action: {}) {
+            Button(action: refresh) {
                 Text("Refresh")
                     .padding()
             }
-            Button(action: {}) {
+            Button(action:sync) {
                 Text("Sync")
                     .padding()
-            }
+            }.disabled(files.isEmpty)
         }
         .padding()
         .background(
             Color(.systemBackground).edgesIgnoringSafeArea(.all)
         )
 
+    }
+    
+    func log(_ row: String) {
+        output += "\(row)\n"
+    }
+    
+    func refresh() {
+        files = []
+        
+        let dateFormatter = DateFormatter()
+        dateFormatter.timeZone = TimeZone.current
+        dateFormatter.dateStyle = DateFormatter.Style.long
+        dateFormatter.timeStyle = DateFormatter.Style.medium
+
+        if let smbPath = userSettings.getSmbPath() {
+            log("Connecting to \(smbPath)")
+            if samba.connect(hostname: smbPath) {
+                log("Connected to \(smbPath) (\(samba.server.ipAddressString))")
+            } else {
+                log("Unable to connect to \(smbPath)")
+            }
+            return
+        } else if let bookMark = Bookmark.read() {
+            if bookMark.lastPathComponent != userSettings.sourceFolder {
+                documentPickerViewModel.isPresented = true
+            }
+        } else {
+            documentPickerViewModel.isPresented = true
+        }
+
+        logbook.fetchLatestFlight(logbookApi: userSettings.targetURL).done { date in
+            let lastSync: Date = date ?? Date(timeIntervalSince1970: 0)
+
+            if let date = date {
+                self.log("Last flight \(dateFormatter.string(from: date))")
+            } else {
+                self.log("No previous flights")
+            }
+
+            self.lastSync = lastSync
+        }.catch { error in
+            self.log(error.localizedDescription)
+        }.finally {
+            if let lastSync = self.lastSync {
+                self.fetchNewFiles(after: lastSync)
+            }
+        }
+    }
+    
+    private func fetchNewFiles(after: Date) {
+        log("Fetching new log files...")
+        
+        if userSettings.getSmbPath() != nil {
+            samba.query(after: after).done { files in
+                guard files.count > 0 else {
+                    self.log("No new flights")
+                    return
+                }
+                
+                let promises = files.compactMap { file in self.download(file: file) }
+                
+                firstly {
+                    when(fulfilled: promises)
+                }.done { files in
+                    self.files = files
+                }
+            }.catch { error in
+                self.log(error.localizedDescription)
+            }
+        } else {
+            sdCard.query(after: after).done { files in
+                guard files.count > 0 else {
+                    self.log("No new flights")
+                    return
+                }
+                files.forEach { url in
+                    let keys = Set([URLResourceKey.fileSizeKey])
+                    guard let resourceValues = try? url.resourceValues(forKeys: Set(keys)),
+                        let size = resourceValues.fileSize
+                        else {
+                            print("No properties for file \(url.path)")
+                            return
+                    }
+                    
+                    self.log(url.lastPathComponent + " [\(size/1000)kb]")
+                }
+                self.files = files
+            }.catch { error in
+                self.log(error.localizedDescription)
+            }
+        }
+    }
+    
+    private func newFile(file: String, size: UInt64) {
+        self.log(file + " [0 / \(size/1000)kb]")
+    }
+    
+    private func fileProgress(file: String, current: Int) {
+        print("\(file) \(current)")
+        output = output.replacingOccurrences(of: "(\(file) \\[)([0-9]+)(\\s)", with: "$1\(Int(current/1000))$3", options: [.regularExpression])
+    }
+    
+    private func download(file: SMBFile) -> Promise<URL> {
+        newFile(file: file.name, size: file.fileSize)
+        
+        return self.samba.download(file: file, progress: { (bytes) in
+            self.fileProgress(file: file.name, current: bytes)
+        })
+    }
+    
+    func sync() {
+        log("Uploading flights...")
+        logbook.upload(logbookApi: userSettings.targetURL, files: self.files, splitAfterSeconds: 0).done { flights in
+            self.log(flights.joined(separator: "\n"))
+            self.log("DONE")
+        }.catch { err in
+            self.log(err.localizedDescription)
+        }
     }
 }
 

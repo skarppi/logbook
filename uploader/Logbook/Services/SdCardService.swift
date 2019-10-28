@@ -7,23 +7,9 @@
 //
 
 import MobileCoreServices
-import UIKit
 import PromiseKit
 
 class SdCardService {
-    
-    private func getMyURLForBookmark() -> URL {
-        return FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent("bookmark")
-    }
-    
-    func open(_ delegate: ViewController) {
-        let documentPicker =
-            UIDocumentPickerViewController(documentTypes: [kUTTypeFolder as String], in: .open)
-        documentPicker.delegate = delegate
-
-        // Present the document picker.
-        delegate.present(documentPicker, animated: true, completion: nil)
-    }
     
     public func query(after: Date) -> Promise<[URL]> {
         
@@ -53,6 +39,7 @@ class SdCardService {
         
         return fileList.compactMap { file in
             guard let sourceUrl = file as? URL,
+                sourceUrl.lastPathComponent.lowercased().hasSuffix(".csv"),
                 let resourceValues = try? sourceUrl.resourceValues(forKeys: Set(keys)),
                 let modified = resourceValues.contentModificationDate,
                 modified > after && resourceValues.isDirectory == false
