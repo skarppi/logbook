@@ -14,6 +14,7 @@ else
 fi
 
 docker run --name=logbook -p 3000:3000  -p 3001:3001 \
+    --restart always \
     -e DB_HOST=$DB_HOST \
     $OPTS \
     -v ${PWD}/LOGS:/app/server/LOGS \
