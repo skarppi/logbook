@@ -79,7 +79,7 @@ const FlightsComponent = ({ match: { params: { date, id } } }) => {
               `(${flight.notes.location})`}
           </NavLink>
         </TableCell>
-        <TableCell>{flights.length - index}</TableCell>
+        <TableCell>{flight.session}</TableCell>
         <TableCell>
           {flight.planeId} {batteries && `(${batteries})`}
         </TableCell>
