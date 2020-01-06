@@ -133,13 +133,15 @@ const FlightDetailsComponent = ({ entry, history }) => {
       const flight = read.data.flight;
       setFlight(flight);
 
-      const row = flight.segments[0].rows[0];
-      const originalStartDate = new Date(`${row.Date} ${row.Time}`);
-      const currentStartDate = new Date(flight.startDate);
+      if (flight.segments && flight.segments[0]) {
+        const row = flight.segments[0].rows[0];
+        const originalStartDate = new Date(`${row.Date} ${row.Time}`);
+        const currentStartDate = new Date(flight.startDate);
 
-      const offset = -(originalStartDate.getTimezoneOffset() / 60 + differenceInHours(currentStartDate, originalStartDate));
+        const offset = -(originalStartDate.getTimezoneOffset() / 60 + differenceInHours(currentStartDate, originalStartDate));
 
-      setTimezoneOffset(offset);
+        setTimezoneOffset(offset);
+      }
     }
   }, [read.data]);
 
