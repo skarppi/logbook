@@ -30,6 +30,7 @@ const Query = gql`
   query($id:String!) {
     plane(id: $id) {
       id
+      nodeId,
       type,
       batterySlots
       telemetries
