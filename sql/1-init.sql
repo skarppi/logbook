@@ -97,7 +97,7 @@ CREATE INDEX flights_flighttime_index ON Flights(flight_time);
 CREATE TABLE Battery_Cycles (
   id SERIAL NOT NULL PRIMARY KEY,
   DATE TIMESTAMP WITH TIME ZONE NOT NULL,
-  battery_name VARCHAR(64) NOT NULL REFERENCES Batteries(name),
+  battery_name VARCHAR(64) NOT NULL REFERENCES Batteries(name) DEFERRABLE,
   state Battery_State NOT NULL,
   flight_id VARCHAR(64) REFERENCES Flights(id),
   voltage DECIMAL(5,3),
