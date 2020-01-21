@@ -60,7 +60,7 @@ const FlightDaysComponent = ({ match: { params: { date } } }) => {
     const isCurrent = date === flightDay;
 
     return <React.Fragment key={flightDay + '-day'}>
-      <TableRow>
+      <TableRow className={isCurrent ? css.opened : css.white}>
         <TableCell>
           {(isCurrent && <NavLink to={'/flights'}>
             <OpenedIcon />
@@ -71,7 +71,7 @@ const FlightDaysComponent = ({ match: { params: { date } } }) => {
             </NavLink>}
         </TableCell>
         <TableCell>{planes.reduce((sum, plane) => sum + plane.flights, 0)}</TableCell>
-        <TableCell>{planes.map(plane => plane.plane).join(', ')}</TableCell>
+        <TableCell>{planes.map(plane => plane.planeId).join(', ')}</TableCell>
         <TableCell>{formatDuration(planes.reduce((sum, plane) => sum + plane.totalTime, 0))}</TableCell>
       </TableRow>
       {isCurrent && (
