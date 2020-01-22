@@ -16,7 +16,7 @@ class LogbookService {
     private let dateFormatter = DateFormatter()
     
     init() {
-        self.dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
+        self.dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
     }
     
     private func apiUrl(logbookApi: String) -> String {
@@ -38,7 +38,8 @@ class LogbookService {
         
         return fetch(url: url, body: query).map { res -> Date? in
             if let lastFlight = res?["data"]["flights"]["nodes"].array?.first?["endDate"].string {
-                return self.dateFormatter.date(from: lastFlight)
+                let withoutMilliseconds = lastFlight.replacingOccurrences(of: "\\.\\d+", with: "", options: .regularExpression)
+                return self.dateFormatter.date(from: withoutMilliseconds)
             } else if let error = res?["errors"].arrayValue.first?["message"].string {
                 throw LogbookError(text: error)
             }
