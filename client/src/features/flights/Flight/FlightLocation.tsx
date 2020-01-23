@@ -18,16 +18,18 @@ interface IFlightLocationProps {
 
 const Query = gql`
   query {
-    locations {
+    flightLocations {
       nodes {
         location
         flights
+        latitude,
+        longitude
       }
     }
   }`;
 
 interface IQueryResponse {
-  locations: {
+  flightLocations: {
     nodes: Array<{
       location: string,
       flights: number
@@ -65,7 +67,7 @@ export const FlightLocation = ({ flight, save }: IFlightLocationProps) => {
   };
 
   const renderExistingLocations = () => {
-    const locations = query.data && query.data.locations.nodes.map(l =>
+    const locations = query.data && query.data.flightLocations.nodes.map(l =>
       l.location) || [];
 
     if (location.length > 0 && locations.indexOf(location) === -1) {
