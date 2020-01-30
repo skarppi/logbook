@@ -25,7 +25,7 @@
   "license": "MIT",
   "author": "Juho Kolehmainen",
   "dependencies": {
-    "@material-ui/core": "^3.8.3",
+    "@material-ui/core": "^3.9.4",
     "@material-ui/icons": "^3.0.2",
     "axios": "^0.18.0",
     "chart.js": "2.5.0",
@@ -60,7 +60,7 @@
     "style-loader": "^0.21.0",
     "tsc-watch": "^1.0.31",
     "tslint": "^5.12.0",
-    "typescript": "^3.2.2",
+    "typescript": "^3.7.5",
     "url-loader": "^1.1.2",
     "webpack": "^4.28.3",
     "webpack-bundle-analyzer": "^3.3.2",
