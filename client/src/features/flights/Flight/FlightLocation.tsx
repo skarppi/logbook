@@ -6,6 +6,7 @@ import Select from '@material-ui/core/Select';
 import Input from '@material-ui/core/Input';
 import MenuItem from '@material-ui/core/MenuItem';
 import { Flight } from '../../../../../shared/flights/types';
+import { Location } from '../../../../../shared/locations/types';
 import { useState } from 'react';
 import { useQuery } from 'urql';
 import gql from 'graphql-tag';
@@ -18,10 +19,10 @@ interface IFlightLocationProps {
 
 const Query = gql`
   query {
-    flightLocations {
+    locations(orderBy:NAME_ASC) {
       nodes {
-        location
-        flights
+        id
+        name
         latitude,
         longitude
       }
@@ -29,11 +30,8 @@ const Query = gql`
   }`;
 
 interface IQueryResponse {
-  flightLocations: {
-    nodes: Array<{
-      location: string,
-      flights: number
-    }>;
+  locations: {
+    nodes: Location[];
   };
 }
 
@@ -42,38 +40,29 @@ export const FlightLocation = ({ flight, save }: IFlightLocationProps) => {
 
   const [query] = useQuery<IQueryResponse>({ query: Query });
 
-  const [location, setLocation] = useState(flight.notes && flight.notes.location || '');
+  const [locationId, setLocationId] = useState(flight.location?.id ?? '');
   const [createNew, setCreateNew] = useState(false);
 
   const changeFlightLocation = ({ target: { value } }) => {
     if (value === 'new') {
       setCreateNew(true);
     } else {
-      setLocation(value);
+      setLocationId(value);
     }
   };
 
   const storeFlightLocation = () => {
-    setCreateNew(false)
+    setCreateNew(false);
     save({
       id: flight.id,
       patch: {
-        notes: {
-          ...flight.notes,
-          location
-        }
+        locationId
       }
     });
   };
 
   const renderExistingLocations = () => {
-    const locations = query.data && query.data.flightLocations.nodes.map(l =>
-      l.location) || [];
-
-    if (location.length > 0 && locations.indexOf(location) === -1) {
-      locations.push(location);
-      locations.sort();
-    }
+    const locations = query.data?.locations?.nodes || [];
 
     return (
       <FormControl className={css.formControl} margin='normal'>
@@ -81,7 +70,7 @@ export const FlightLocation = ({ flight, save }: IFlightLocationProps) => {
           Location
         </InputLabel>
         <Select
-          value={location}
+          value={locationId}
           name='location'
           onChange={changeFlightLocation}
           onBlur={storeFlightLocation}
@@ -92,8 +81,8 @@ export const FlightLocation = ({ flight, save }: IFlightLocationProps) => {
           </MenuItem>
 
           {locations.map(loc => (
-            <MenuItem key={loc} value={loc}>
-              {loc}
+            <MenuItem key={loc.id} value={loc.id}>
+              {loc.name}
             </MenuItem>
           ))}
         </Select>
@@ -108,7 +97,7 @@ export const FlightLocation = ({ flight, save }: IFlightLocationProps) => {
         label='Location'
         placeholder='Location'
         className={css.textField}
-        value={location}
+        value={locationId}
         name='location'
         onChange={changeFlightLocation}
         onBlur={storeFlightLocation}

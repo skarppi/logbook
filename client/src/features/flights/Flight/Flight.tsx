@@ -48,6 +48,10 @@ const Query = gql`
       armedTime
       flightTime
       notes
+      location {
+        id
+        name
+      }
       segments
       batteryCycles {
         nodes {

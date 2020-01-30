@@ -34,7 +34,9 @@ const Query = gql`
         duration
         armedTime
         flightTime
-        notes
+        location {
+          name
+        }
         batteryCycles {
           nodes {
             batteryName
@@ -74,9 +76,8 @@ const FlightsComponent = ({ match: { params: { date, id } } }) => {
           <NavLink to={isCurrent ? path : `${path}/${flight.id}`}>
             {(isCurrent && <OpenedIcon />) || <ClosedIcon />}
             {formatTime(flight.startDate)}{' '}
-            {flight.notes &&
-              flight.notes.location &&
-              `(${flight.notes.location})`}
+            {flight.location &&
+              `(${flight.location.name})`}
           </NavLink>
         </TableCell>
         <TableCell>{flight.session}</TableCell>

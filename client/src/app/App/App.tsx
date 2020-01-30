@@ -7,6 +7,7 @@ import { Dashboard } from '../../features/dashboard/Home/Home';
 import { FlightDays } from '../../features/flights/Days/FlightDays';
 import { PlanesList } from '../../features/planes/PlanesList/Planes';
 import { BatteriesList } from '../../features/batteries/BatteriesList/Batteries';
+import { LocationsList } from '../../features/locations/LocationsList/Locations';
 import { FlightsUpload } from '../../features/flights/Upload/FlightsUpload';
 
 export const App = () => (
@@ -19,6 +20,7 @@ export const App = () => (
           <Route path='/flights/:date?/:id?' component={FlightDays} />
           <Route path='/planes/:id?' component={PlanesList} />
           <Route path='/batteries/:id?' component={BatteriesList} />
+          <Route path='/locations/:id?' component={LocationsList} />
           <Route path='/upload/:id?' component={FlightsUpload} />
         </Switch>
       </Grid>

@@ -33,6 +33,13 @@ export const Header = () => (
 
       <Button
         color="primary"
+        component={(p: any) => <Link to="/locations" {...p} />}
+      >
+        Locations
+      </Button>
+
+      <Button
+        color="primary"
         component={(p: any) => <Link to="/upload" {...p} />}
       >
         Upload

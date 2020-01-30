@@ -1,6 +1,7 @@
 import { SegmentType } from "./index";
 import { BatteryCycle } from "../batteries/types";
 import { Plane } from "../planes/types";
+import { Location } from "../locations/types";
 
 export interface Flight {
   id: string;
@@ -16,6 +17,7 @@ export interface Flight {
   batteries?: BatteryCycle[];
   batteryNames?: string;
   notes?: FlightNotes;
+  location?: Location,
   batteryCycles?: {
     nodes: BatteryCycle[]
   }
