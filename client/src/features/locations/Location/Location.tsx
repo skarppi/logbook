@@ -11,7 +11,6 @@ import Input from '@material-ui/core/Input';
 import MenuItem from '@material-ui/core/MenuItem';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import * as React from 'react';
-import { LocationGraph } from './LocationGraph';
 
 import { withRouter } from 'react-router-dom';
 

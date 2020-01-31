@@ -28,6 +28,8 @@ import NewLocationIcon from '@material-ui/icons/Add';
 import { Loading } from '../../loading/Loading';
 import { Location } from '../../../../../shared/locations/types';
 import { useContext } from 'react';
+import { Tab } from '@material-ui/core';
+import { Flight } from '../../../../../shared/flights/types';
 
 const Query = gql`
   query {
@@ -37,6 +39,13 @@ const Query = gql`
         name
         latitude
         longitude
+        flights(first:1, orderBy:START_DATE_DESC) {
+          totalCount
+          nodes {
+            id
+            startDate
+          }
+        }
       }
     }
   }`;
@@ -57,6 +66,22 @@ export const LocationsContext = React.createContext<ILocationsContext>({ locatio
 
 export const LocationsList = ({ match: { params } }) => {
 
+  function lastUsed(flight: Flight) {
+    if (!flight) {
+      return;
+    }
+
+    const timestamp = formatDateTime(flight.startDate);
+    return (
+      <NavLink
+        to={`/flights/${formatDate(flight.startDate)}/${flight.id}`}
+      >
+        {timestamp}
+      </NavLink>
+    );
+  }
+
+
   function details(location: Location) {
     return (<TableRow className={css.opened}>
       <TableCell colSpan={5}>
@@ -67,7 +92,7 @@ export const LocationsList = ({ match: { params } }) => {
 
   const [res] = useQuery<IQueryResponse>({ query: Query });
 
-  const locations = res.data && res.data.locations ? res.data.locations.nodes : [];
+  const locations = res.data?.locations?.nodes ?? [];
 
   const rows = locations.map(location => {
     const current = params.id === String(location.id);
@@ -83,7 +108,10 @@ export const LocationsList = ({ match: { params } }) => {
             </NavLink>}
         </TableCell>
         <TableCell>
-          {location.flights}
+          {location.flights?.totalCount}
+        </TableCell>
+        <TableCell>
+          {lastUsed(location.flights?.nodes[0])}
         </TableCell>
         <TableCell>
           {location.latitude}
@@ -118,6 +146,7 @@ export const LocationsList = ({ match: { params } }) => {
                 <TableRow>
                   <TableCell>Name</TableCell>
                   <TableCell>Flights</TableCell>
+                  <TableCell>Last flight</TableCell>
                   <TableCell>Latitude</TableCell>
                   <TableCell>Longitide</TableCell>
                 </TableRow>
