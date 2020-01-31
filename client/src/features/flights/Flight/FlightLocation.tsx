@@ -9,6 +9,7 @@ import { Flight } from '../../../../../shared/flights/types';
 import { Location } from '../../../../../shared/locations/types';
 import { useState } from 'react';
 import { useQuery } from 'urql';
+import { useStateAndListenChanges } from '../../../utils/hooks';
 import gql from 'graphql-tag';
 const css = require('../../../common/Form.css');
 
@@ -40,7 +41,8 @@ export const FlightLocation = ({ flight, save }: IFlightLocationProps) => {
 
   const [query] = useQuery<IQueryResponse>({ query: Query });
 
-  const [locationId, setLocationId] = useState(flight.location?.id ?? '');
+  const [locationId, setLocationId] = useStateAndListenChanges(flight.location?.id);
+
   const [createNew, setCreateNew] = useState(false);
 
   const changeFlightLocation = ({ target: { value } }) => {
@@ -70,7 +72,7 @@ export const FlightLocation = ({ flight, save }: IFlightLocationProps) => {
           Location
         </InputLabel>
         <Select
-          value={locationId}
+          value={locationId || 0}
           name='location'
           onChange={changeFlightLocation}
           onBlur={storeFlightLocation}
@@ -102,7 +104,7 @@ export const FlightLocation = ({ flight, save }: IFlightLocationProps) => {
         onChange={changeFlightLocation}
         onBlur={storeFlightLocation}
         margin='normal'
-        inputRef={((input) => input && input.focus())}
+        inputRef={(input => input?.focus())}
       />
     );
   }
