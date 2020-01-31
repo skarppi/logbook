@@ -38,7 +38,7 @@ export const FlightBatteries = ({ flight, batteries, refreshFlight }: IBatteryPr
 
   const plane = flight.plane;
 
-  const cycles = flight.batteryCycles && flight.batteryCycles.nodes || [];
+  const cycles = flight.batteryCycles?.nodes || [];
 
   const [create, createCycle] = useMutation(Create);
 
@@ -49,7 +49,7 @@ export const FlightBatteries = ({ flight, batteries, refreshFlight }: IBatteryPr
 
     const usedBatteries = cycles.map(c => c.batteryName);
 
-    const voltage = lastTelemetry && lastTelemetry['VFAS(V)']
+    const voltage = lastTelemetry?.['VFAS(V)']
     const useCellVoltage = plane.batterySlots > 1 && voltage > 4.5
 
     const cycle = {
@@ -66,13 +66,15 @@ export const FlightBatteries = ({ flight, batteries, refreshFlight }: IBatteryPr
     createCycle({ cycle }).then(refreshFlight);
   };
 
-  const rows = cycles.map(cycle =>
-    <FlightBattery
-      key={cycle.id || 0}
-      plane={plane}
-      flightCycle={cycle}
-      battery={batteries.find(b => b.name === cycle.batteryName)}
-    />
+  const rows = cycles.map(cycle => {
+    return cycle.id && (
+      <FlightBattery
+        key={cycle.id}
+        plane={plane}
+        flightCycle={cycle}
+        battery={batteries.find(b => b.name === cycle.batteryName)}
+      />)
+  }
   );
 
   const batteryControl =
@@ -88,7 +90,7 @@ export const FlightBatteries = ({ flight, batteries, refreshFlight }: IBatteryPr
       />
     </FormControl>;
 
-  const batterySlots = plane && plane.batterySlots || 0;
+  const batterySlots = plane?.batterySlots || 0;
   const showControls = rows.length < batterySlots;
 
   return (

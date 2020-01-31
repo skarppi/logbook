@@ -115,8 +115,7 @@ const FlightBatteryComponent = ({ plane, flightCycle, battery }: IFlightBatteryP
         placeholder={`Cell ${index + 1}`}
         className={`${css.textField} ${css.tiny}`}
         value={
-          (cycle.resistance &&
-            cycle.resistance.length >= index &&
+          (cycle.resistance?.length >= index &&
             cycle.resistance[index]) ||
           ''
         }

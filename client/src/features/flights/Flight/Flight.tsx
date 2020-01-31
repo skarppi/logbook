@@ -115,7 +115,7 @@ interface IQueryResponse {
   flight: Flight;
   batteries: {
     nodes: Battery[];
-  }
+  };
 }
 
 const FlightDetailsComponent = ({ entry, history }) => {
@@ -247,7 +247,7 @@ const FlightDetailsComponent = ({ entry, history }) => {
             placeholder='OSD'
             multiline
             className={css.textField}
-            value={(flight.notes && flight.notes.osd) || ''}
+            value={(flight.notes?.osd) || ''}
             name='osd'
             onChange={changeNotes}
             onBlur={saveNotes}
@@ -264,7 +264,7 @@ const FlightDetailsComponent = ({ entry, history }) => {
 
         <FlightBatteries
           flight={flight}
-          batteries={read.data && read.data.batteries.nodes || []}
+          batteries={read.data?.batteries.nodes || []}
           refreshFlight={() => refreshFlight({ requestPolicy: 'network-only' })}
         />
 
@@ -275,7 +275,7 @@ const FlightDetailsComponent = ({ entry, history }) => {
             placeholder='Journal'
             multiline
             className={`${css.textField} ${css.wide}`}
-            value={(flight.notes && flight.notes.journal) || ''}
+            value={(flight.notes?.journal) || ''}
             name='journal'
             onChange={changeNotes}
             onBlur={saveNotes}
