@@ -4,16 +4,16 @@ import { db } from '../db';
 
 export default class FlightRepository {
 
-  static find(id: string): Promise<Flight | null> {
+  public static find(id: string): Promise<Flight | null> {
     return db.oneOrNone('SELECT * FROM flights f ' + ' WHERE f.id = $1', id);
   }
 
-  static save(flight: Flight): Promise<Flight> {
+  public static save(flight: Flight): Promise<Flight> {
     console.log(flight);
     return db
       .one(
-        'INSERT INTO flights (id, plane_id, session, start_date, end_date,  duration, armed_time, flight_time, notes, segments) ' +
-        'VALUES (${id}, ${planeId}, ${session}, ${startDate}, ${endDate}, ${duration}, ${armedTime}, ${flightTime}, ${notes:json}, ${segments:json}) ' +
+        'INSERT INTO flights (id, plane_id, session, start_date, end_date,  duration, armed_time, flight_time, notes, location_id, segments) ' +
+        'VALUES (${id}, ${planeId}, ${session}, ${startDate}, ${endDate}, ${duration}, ${armedTime}, ${flightTime}, ${notes:json}, ${locationId}, ${segments:json}) ' +
         'ON CONFLICT (id) DO UPDATE SET ' +
         ' plane_id = ${planeId},' +
         ' session = ${session},' +
@@ -23,13 +23,14 @@ export default class FlightRepository {
         ' armed_time = ${armedTime},' +
         ' flight_time = ${flightTime},' +
         ' notes = ${notes:json},' +
+        ' location_id = ${locationId},' +
         ' segments = ${segments:json} ' +
         'RETURNING *',
         flight
       );
   }
 
-  toString(flight: Flight) {
+  public toString(flight: Flight) {
     return `flight ${flight.id} [
         flight start ${flight.startDate}
         flight end ${flight.endDate}

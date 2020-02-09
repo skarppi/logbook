@@ -8,6 +8,7 @@ import { Flight } from '../../../shared/flights/types';
 export interface IParserOptions {
   splitFlightsAfterSeconds: number;
   timezoneOffset: number;
+  locationId: number;
 }
 
 export function parseFile(filename: string, options: IParserOptions): Promise<Flight[]> {
@@ -43,8 +44,10 @@ function storeFlight(flight: Flight): Promise<Flight> {
   return FlightRepository.find(flight.id).then(existing => {
     if (existing) {
       flight.notes = existing.notes;
+      flight.location = existing.location;
     }
     return FlightRepository.save(flight).catch(err => {
+      console.log("Save failed", err, err.stack);
       throw new Error(
         `Flight ${flight.id} starting ${flight.startDate} failed ${err}`
       );

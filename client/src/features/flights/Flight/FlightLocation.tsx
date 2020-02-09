@@ -93,13 +93,15 @@ export const FlightLocation = ({ flight, save }: IFlightLocationProps) => {
   }
 
   const renderNewLocation = () => {
+    const locations = query.data?.locations?.nodes || [];
+
     return (
       <TextField
         id='location'
         label='Location'
         placeholder='Location'
         className={css.textField}
-        value={locationId}
+        value={locations.find(l => l.id === locationId)?.name || ''}
         name='location'
         onChange={changeFlightLocation}
         onBlur={storeFlightLocation}

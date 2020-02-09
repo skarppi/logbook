@@ -17,15 +17,42 @@ import { uploadFlightsAPI } from '../../../utils/api-facade';
 import { FlightDetails } from '../Flight/Flight';
 import { FlightTimezone } from '../Flight/FlightTimezone';
 import { formatDuration } from '../../../../../shared/utils/date';
+import { Location } from '../../../../../shared/locations/types';
 
 import ClosedIcon from '@material-ui/icons/ArrowRight';
 import OpenedIcon from '@material-ui/icons/ArrowDropDown';
 import { useState } from 'react';
+import { useQuery } from 'urql';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import { formatDateTime } from '../../../utils/date';
+import gql from 'graphql-tag';
+import Input from '@material-ui/core/Input';
 
 const css = require('./FlightsUpload.css');
+
+const Query = gql`
+  query($lat:Float, $lon:Float) {
+    locationsByCoordinate(lat: $lat, lon: $lon) {
+      nodes {
+        id
+        name
+        latitude
+        longitude
+        distance
+      }
+    }
+  }`;
+
+interface IQueryResponse {
+  locationsByCoordinate: {
+    nodes: Location[]
+  };
+}
+
+interface ILocationsContext {
+  locationsByCoordinate: Location[];
+}
 
 export const FlightsUpload = ({ match: { params: { id } } }) => {
 
@@ -35,6 +62,28 @@ export const FlightsUpload = ({ match: { params: { id } } }) => {
 
   const [splitSeconds, setSplitSeconds] = React.useState(30);
   const [timezoneOffset, setTimezoneOffset] = React.useState(-new Date().getTimezoneOffset() / 60);
+  const [locationId, setLocationId] = React.useState(-1);
+
+  const [currentLocation, setCurrentLocation] = useState({ lat: null, lon: null });
+
+  const [res, queryWithCoords] = useQuery<IQueryResponse>({ query: Query, variables: currentLocation });
+  const locations = res.data?.locationsByCoordinate?.nodes ?? [];
+
+  React.useEffect(() => {
+    if (locations.length > 0) {
+      setLocationId(locations[0].id);
+    }
+  }, [locations]);
+
+  navigator.geolocation.getCurrentPosition(position => {
+    console.log(position);
+    setCurrentLocation({
+      lat: position.coords.latitude,
+      lon: position.coords.longitude
+    });
+  },
+    err => console.log(err)
+  );
 
   const dropRendered = (getRootProps, getInputProps, isDragActive) => {
     return (
@@ -103,7 +152,7 @@ export const FlightsUpload = ({ match: { params: { id } } }) => {
     const data = new FormData();
     files.forEach(file => data.append('flight', file, file.name));
 
-    uploadFlightsAPI(data, splitSeconds, timezoneOffset, (progressEvent: any) => {
+    uploadFlightsAPI(data, splitSeconds, timezoneOffset, locationId, (progressEvent: any) => {
       setLoaded((progressEvent.loaded / progressEvent.total) * 100);
     }).then(res => {
       setFlights(res.data.map(f => {
@@ -113,7 +162,18 @@ export const FlightsUpload = ({ match: { params: { id } } }) => {
     }).catch(err => {
       setError((err.response && err.response.data) || err.message)
     });
-  }
+  };
+
+  const printDistance = (distance: number) => {
+    if (!distance) {
+      return '';
+    }
+    if (distance >= 10000) {
+      return `${Math.round(distance / 1000)} km`;
+    } else {
+      return `${Math.round(distance / 100) / 10} km`;
+    }
+  };
 
   return (
     <>
@@ -133,6 +193,21 @@ export const FlightsUpload = ({ match: { params: { id } } }) => {
             <br />
             <span>Timezone offset </span>
             <FlightTimezone offset={timezoneOffset} onChange={setTimezoneOffset} />
+
+            <br />
+            <span>Location </span>
+            <Select
+              value={locationId || 0}
+              name='location'
+              onChange={({ target: { name, value } }) => setLocationId(Number(value))}
+              input={<Input id='select-multiple-checkbox' />}
+            >
+              {locations.map(loc => (
+                <MenuItem key={loc.id} value={loc.id}>
+                  {loc.name} {printDistance(loc.distance)}
+                </MenuItem>
+              ))}
+            </Select>
 
             <Dropzone onDrop={handleDrop}>
               {({ getRootProps, getInputProps, isDragActive }) =>

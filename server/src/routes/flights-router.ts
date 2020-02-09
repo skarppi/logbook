@@ -10,6 +10,7 @@ export function flightsRouter() {
   router.put('/:day/:id/reset', (req, res, next) => {
     const id = req.params.id;
     const timezoneOffset: any = req.headers.timezone_offset || 0;
+    const locationId: any = req.headers.location_id;
 
     FlightRepository.find(id)
       .then(flight =>
@@ -21,7 +22,8 @@ export function flightsRouter() {
           ),
           {
             splitFlightsAfterSeconds: Number.MAX_VALUE,
-            timezoneOffset
+            timezoneOffset,
+            locationId
           }
         )
       )
@@ -51,8 +53,9 @@ export function flightsRouter() {
 
     const splitFlightsAfterSeconds = req.headers.split_flights_after_seconds || 30;
     const timezoneOffset = req.headers.timezone_offset || 0;
+    const locationId = req.headers.location_id;
 
-    Promise.all(req.files.map(file => parseFile(file.originalname, { splitFlightsAfterSeconds, timezoneOffset })))
+    Promise.all(req.files.map(file => parseFile(file.originalname, { splitFlightsAfterSeconds, timezoneOffset, locationId })))
       .then(flights => {
         const flatten = []
           .concat(...flights)

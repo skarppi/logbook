@@ -52,12 +52,14 @@ export function uploadFlightsAPI(
   data: FormData,
   split: number,
   timezoneOffset: number,
+  locationId: number,
   onUploadProgress: (progressEvent: any) => void
 ) {
   return axios.post(`${apiPath}/flights`, data, {
     headers: {
       SPLIT_FLIGHTS_AFTER_SECONDS: split,
-      TIMEZONE_OFFSET: timezoneOffset
+      TIMEZONE_OFFSET: timezoneOffset,
+      LOCATION_ID: locationId
     },
     onUploadProgress
   });

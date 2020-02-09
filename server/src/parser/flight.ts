@@ -15,9 +15,10 @@ export class FlightImpl implements Flight {
   public armedTime: number;
   public flightTime: number;
   public notes: FlightNotes = undefined;
+  public locationId?: number;
   public segments: Segment[];
 
-  constructor(name: string, plane: Plane, session: number, segments: Segment[]) {
+  constructor(name: string, plane: Plane, session: number, segments: Segment[], locationId?: number) {
 
     if (!name.includes('Session')) {
       this.id = `${name}-Session${session}`;
@@ -32,6 +33,10 @@ export class FlightImpl implements Flight {
     this.startDate = segments[0].startDate;
     this.endDate = segments[segments.length - 1].endDate;
     this.duration = differenceInSeconds(this.endDate, this.startDate);
+
+    if (locationId >= 0) {
+      this.locationId = locationId;
+    }
 
     this.armedTime = this.segments
       .filter(segment => segment.type !== SegmentType.stopped)

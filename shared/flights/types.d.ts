@@ -17,6 +17,7 @@ export interface Flight {
   batteries?: BatteryCycle[];
   batteryNames?: string;
   notes?: FlightNotes;
+  locationId?: number,
   location?: Location,
   batteryCycles?: {
     nodes: BatteryCycle[]

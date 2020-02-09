@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		C044DE21236468D80012BDEB /* DocumentPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = C044DE20236468D80012BDEB /* DocumentPicker.swift */; };
 		C051A2A722635FD800D38254 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = C051A2A622635FD800D38254 /* README.md */; };
+		C0523F2F23F08E4700C42F26 /* LocationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0523F2E23F08E4700C42F26 /* LocationService.swift */; };
 		C0932BC4234E658A00CD80EE /* SdCardService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0932BC3234E658A00CD80EE /* SdCardService.swift */; };
 		C0A1C12D2364DA6B00F67894 /* Bookmark.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0A1C12C2364DA6B00F67894 /* Bookmark.swift */; };
 		C0CF6F4B2352FC53007A6ACD /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0CF6F4A2352FC53007A6ACD /* ContentView.swift */; };
@@ -48,6 +49,7 @@
 /* Begin PBXFileReference section */
 		C044DE20236468D80012BDEB /* DocumentPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentPicker.swift; sourceTree = "<group>"; };
 		C051A2A622635FD800D38254 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		C0523F2E23F08E4700C42F26 /* LocationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationService.swift; sourceTree = "<group>"; };
 		C0932BC3234E658A00CD80EE /* SdCardService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SdCardService.swift; sourceTree = "<group>"; };
 		C0A1C12C2364DA6B00F67894 /* Bookmark.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bookmark.swift; sourceTree = "<group>"; };
 		C0CF6F4A2352FC53007A6ACD /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -177,6 +179,7 @@
 				C0FD74CC220FA641003261AB /* SambaClient.swift */,
 				C0FD74CE22105655003261AB /* LogbookService.swift */,
 				C0932BC3234E658A00CD80EE /* SdCardService.swift */,
+				C0523F2E23F08E4700C42F26 /* LocationService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -347,6 +350,7 @@
 			files = (
 				C0FD74CD220FA642003261AB /* SambaClient.swift in Sources */,
 				C0932BC4234E658A00CD80EE /* SdCardService.swift in Sources */,
+				C0523F2F23F08E4700C42F26 /* LocationService.swift in Sources */,
 				C0CF6F4B2352FC53007A6ACD /* ContentView.swift in Sources */,
 				C0FD74CF22105655003261AB /* LogbookService.swift in Sources */,
 				C044DE21236468D80012BDEB /* DocumentPicker.swift in Sources */,

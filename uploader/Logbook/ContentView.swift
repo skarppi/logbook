@@ -20,6 +20,8 @@ struct ContentView: View {
     
     private var sdCard = SdCardService()
     
+    private var location = LocationService()
+    
     @State var files: [URL] = []
     
     @State var lastSync: Date?
@@ -27,6 +29,8 @@ struct ContentView: View {
     @State var output = ""
 
     @State var documentPickerViewModel = DocumentPickerViewModel()
+    
+    @State var locationId: Int?
     
     var body: some View {
         VStack {
@@ -83,8 +87,11 @@ struct ContentView: View {
         .padding()
         .background(
             Color(.systemBackground).edgesIgnoringSafeArea(.all)
-        )
-
+        ).onAppear(perform: {
+            self.location.requestLocation(fulfill: { (coord) in
+                self.log("Got location \(coord.latitude), \(coord.longitude)")
+            }, reject: self.log)
+            })
     }
     
     func log(_ row: String) {
@@ -115,16 +122,25 @@ struct ContentView: View {
             documentPickerViewModel.isPresented = true
         }
 
-        logbook.fetchLatestFlight(logbookApi: userSettings.targetURL).done { date in
-            let lastSync: Date = date ?? Date(timeIntervalSince1970: 0)
+        logbook.fetchLatestFlight(logbookApi: userSettings.targetURL, location: location.latest).done { res in
+            let lastSync: Date = res.date ?? Date(timeIntervalSince1970: 0)
 
-            if let date = date {
+            if let date = res.date {
                 self.log("Last flight \(dateFormatter.string(from: date))")
             } else {
                 self.log("No previous flights")
             }
 
             self.lastSync = lastSync
+            
+            if let loc = res.closestLocation {
+                self.log("Closest location is \(loc.name) at \(loc.distance)km")
+                self.locationId = loc.id
+            } else {
+                self.log("Location not available")
+                self.locationId = nil
+            }
+            
         }.catch { error in
             self.log(error.localizedDescription)
         }.finally {
@@ -197,7 +213,7 @@ struct ContentView: View {
     
     func sync() {
         log("Uploading flights...")
-        logbook.upload(logbookApi: userSettings.targetURL, files: self.files, splitAfterSeconds: 0).done { flights in
+        logbook.upload(logbookApi: userSettings.targetURL, files: self.files, locationId: self.locationId).done { flights in
             self.log(flights.joined(separator: "\n"))
             self.log("DONE")
         }.catch { err in

@@ -35,6 +35,7 @@ const Query = gql`
         armedTime
         flightTime
         location {
+          id
           name
         }
         batteryCycles {

@@ -52,7 +52,7 @@ export default class FlightParser {
     this.sessionCounter++;
 
     if (this.currentSegments.length > 0) {
-      const flight = new FlightImpl(this.name, this.plane, this.sessionCounter, this.currentSegments);
+      const flight = new FlightImpl(this.name, this.plane, this.sessionCounter, this.currentSegments, this.options.locationId);
 
       if (flight.flightTime === 0) {
         console.log('Skipped empty flight', flight);
@@ -111,6 +111,11 @@ export default class FlightParser {
       this.plane = data['plane'];
     } catch (err) {
       console.trace(err);
+      throw err;
+    }
+
+    if (!this.plane) {
+      throw new Error(`Plane ${this.planeName} not found`);
     }
   }
 

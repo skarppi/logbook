@@ -99,8 +99,8 @@ const LocationDetailsComponent = ({ data, history }) => {
         }
       });
     } else {
-      delete location['__typename'];
-      updateLocation({ id: location.id, location });
+      const { ['__typename']: _, flights, ...patch } = location;
+      updateLocation({ id: location.id, location: patch });
     }
   };
   const executeDelete = _ => {

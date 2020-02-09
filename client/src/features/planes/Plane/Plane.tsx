@@ -179,7 +179,7 @@ const PlaneDetailsComponent = ({ id, history }) => {
       });
     } else {
       const { planeBatteries, nodeId, ['__typename']: _, ...patch } = plane;
-      updatePlane({ id: id, plane: patch, batteries: planeBatteries.nodes.map(n => n.batteryName) });
+      updatePlane({ id, plane: patch, batteries: planeBatteries.nodes.map(n => n.batteryName) });
     }
   };
 
