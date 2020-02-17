@@ -41,32 +41,21 @@ const chartOptions = () => {
           type: 'time',
           time: {
             unit: 'day',
-            // unitStepSize: 1,
-            // round: 'day',
             tooltipFormat: 'D MMMM YYYY',
           },
           ticks: {
-            //   source: 'labels',
             autoSkip: true,
             maxTicksLimit: 20
           },
-          // scaleLabel: {
-          //   display: true,
-          //   labelString: 'Date'
-          // }
+          stacked: true
         }
       ],
       yAxes: [
         {
           id: 'time',
-          // position: 'left',
-          // scaleLabel: {
-          //   display: true,
-          // },
           ticks: {
             callback: value => formatDuration(value),
             stepSize: 60,
-            //   // suggestedMax: 100,
             min: 0
           },
           stacked: true
@@ -80,7 +69,11 @@ export const BatteryGraph = ({ cycles }: IProps) => {
 
   const flights = cycles.filter(c => c.flight);
 
-  const labels = flights.map(row => row.date);
+  if (flights.length === 0) {
+    return <></>;
+  }
+
+  const labels = flights.map(row => row.date.substring(0, 10));
 
   const datasets = [
     {
@@ -90,6 +83,8 @@ export const BatteryGraph = ({ cycles }: IProps) => {
       data: flights.map(c => c.flight.flightTime),
       borderColor: chartColors[0][0],
       backgroundColor: chartColors[0][1],
+      barThickness: 6,
+      maxBarThickness: 8
     },
     {
       label: 'Armed time',
@@ -98,15 +93,15 @@ export const BatteryGraph = ({ cycles }: IProps) => {
       data: flights.map(c => c.flight.armedTime - c.flight.flightTime),
       borderColor: chartColors[1][0],
       backgroundColor: chartColors[1][1],
+      barThickness: 6,
+      maxBarThickness: 8
     }
-  ]
+  ];
 
   const graph = {
     labels,
     datasets
   };
-
-  console.log(graph);
 
   const options = chartOptions();
 
