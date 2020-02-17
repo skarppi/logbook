@@ -9,7 +9,7 @@ import { Plane, LogicalSwitch, Telemetry } from '../../../../../shared/planes/ty
 import { LogicalFunction } from '../../../../../shared/planes/index';
 import { PlaneGraph } from './PlaneGraph';
 
-import { withRouter } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 
 import gql from 'graphql-tag';
 import { useQuery, useMutation } from 'urql';
@@ -127,7 +127,9 @@ const mergePlaneTelemetries = (plane: Plane) => {
   return planeWithoutFlights;
 };
 
-const PlaneDetailsComponent = ({ id, history }) => {
+export const PlaneDetails = ({ id }) => {
+
+  const history = useHistory();
 
   const { logicalSwitches } = useContext(PlanesContext);
 
@@ -184,7 +186,7 @@ const PlaneDetailsComponent = ({ id, history }) => {
   };
 
   const executeDelete = _ => {
-    deletePlane({ planeId: plane.id }).then(res => {
+    deletePlane({ id: plane.id }).then(res => {
       if (!res.error) {
         history.push('/planes');
       }
@@ -240,5 +242,3 @@ const PlaneDetailsComponent = ({ id, history }) => {
     </Card>
   );
 };
-
-export const PlaneDetails = withRouter(PlaneDetailsComponent);

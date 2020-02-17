@@ -14,7 +14,7 @@ import { NavLink, Link } from 'react-router-dom';
 import { formatDate, formatDateTime } from '../../../utils/date';
 import { LocationDetails } from '../Location/Location';
 
-import { withRouter } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 
 import gql from 'graphql-tag';
 import { useQuery, useMutation } from 'urql';
@@ -64,7 +64,9 @@ interface ILocationsContext {
 
 export const LocationsContext = React.createContext<ILocationsContext>({ locations: [] });
 
-export const LocationsList = ({ match: { params } }) => {
+export const LocationsList = () => {
+
+  const { id } = useParams();
 
   function lastUsed(flight: Flight) {
     if (!flight) {
@@ -95,7 +97,7 @@ export const LocationsList = ({ match: { params } }) => {
   const locations = res.data?.locations?.nodes ?? [];
 
   const rows = locations.map(location => {
-    const current = params.id === String(location.id);
+    const current = id === String(location.id);
     return <React.Fragment key={String(location.id)}>
       <TableRow>
         <TableCell>
@@ -152,7 +154,7 @@ export const LocationsList = ({ match: { params } }) => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {params.id === NEWID && details(null)}
+                {id === NEWID && details(null)}
                 {rows}
               </TableBody>
             </Table>

@@ -14,7 +14,7 @@ import * as React from 'react';
 import { Battery } from '../../../../../shared/batteries/types';
 import { BatteryGraph } from './BatteryGraph';
 
-import { withRouter } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 
 import gql from 'graphql-tag';
 import { useQuery, useMutation } from 'urql';
@@ -112,7 +112,9 @@ const NEW_BATTERY: Battery = {
   capacity: 0
 };
 
-const BatteryDetailsComponent = ({ id, history }) => {
+export const BatteryDetails = ({ id }) => {
+
+  const history = useHistory();
 
   // graphql CRUD operations
   const [create, createBattery] = useMutation(Create);
@@ -326,5 +328,3 @@ const BatteryDetailsComponent = ({ id, history }) => {
     </Card>
   );
 };
-
-export const BatteryDetails = withRouter(BatteryDetailsComponent);

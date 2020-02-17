@@ -6,7 +6,7 @@ import TextField from '@material-ui/core/TextField';
 import Divider from '@material-ui/core/Divider';
 import * as React from 'react';
 import { Flight } from '../../../../../shared/flights/types';
-import { withRouter } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 
 import { FlightDate } from './FlightDate';
 import { FlightDuration } from './FlightDuration';
@@ -118,7 +118,9 @@ interface IQueryResponse {
   };
 }
 
-const FlightDetailsComponent = ({ entry, history }) => {
+export const FlightDetails = ({ entry }) => {
+
+  const history = useHistory();
 
   const [timezoneOffset, setTimezoneOffset] = React.useState(-new Date().getTimezoneOffset() / 60);
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -295,6 +297,4 @@ const FlightDetailsComponent = ({ entry, history }) => {
       </CardContent>
     </Card>
   );
-}
-
-export const FlightDetails = withRouter(FlightDetailsComponent);
+};

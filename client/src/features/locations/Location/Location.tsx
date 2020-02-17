@@ -12,7 +12,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import * as React from 'react';
 
-import { withRouter } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 
 import gql from 'graphql-tag';
 import { useQuery, useMutation } from 'urql';
@@ -73,7 +73,9 @@ const NEW_LOCATION: Location = {
   longitude: 0
 };
 
-const LocationDetailsComponent = ({ data, history }) => {
+export const LocationDetails = ({ data }) => {
+
+  const history = useHistory();
 
   // graphql CRUD operations
   const [create, createLocation] = useMutation(Create);
@@ -183,5 +185,3 @@ const LocationDetailsComponent = ({ data, history }) => {
     </Card>
   );
 };
-
-export const LocationDetails = withRouter(LocationDetailsComponent);

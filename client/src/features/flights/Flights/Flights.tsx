@@ -3,7 +3,7 @@ import TableRow from '@material-ui/core/TableRow';
 import TableCell from '@material-ui/core/TableCell';
 import TableBody from '@material-ui/core/TableBody';
 import * as React from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useParams } from 'react-router-dom';
 import { formatDuration } from '../../../../../shared/utils/date';
 import { FlightDetails } from '../Flight/Flight';
 
@@ -14,7 +14,6 @@ import gql from 'graphql-tag';
 import { Flight } from '../../../../../shared/flights/types';
 import { useQuery } from 'urql';
 import { addDays } from 'date-fns';
-import { withRouter } from 'react-router-dom';
 import { formatTime, formatDate } from '../../../utils/date';
 
 const css = require('./Flights.css');
@@ -53,7 +52,9 @@ interface IQueryResponse {
   }
 }
 
-const FlightsComponent = ({ match: { params: { date, id } } }) => {
+export const Flights = () => {
+
+  const { date, id } = useParams();
 
   const [read] = useQuery<IQueryResponse>({
     query: Query,
@@ -105,6 +106,4 @@ const FlightsComponent = ({ match: { params: { date, id } } }) => {
       <Loading spinning={read.fetching} error={read.error} overlay={true} />
     </div>
   );
-}
-
-export const Flights = withRouter(FlightsComponent);
+};

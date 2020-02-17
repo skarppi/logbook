@@ -9,7 +9,7 @@ import TableHead from '@material-ui/core/TableHead';
 import TableBody from '@material-ui/core/TableBody';
 import * as React from 'react';
 import { NavLink } from 'react-router-dom';
-import { withRouter } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { formatDuration } from '../../../../../shared/utils/date';
 
 import { Flights } from '../Flights/Flights';
@@ -44,7 +44,10 @@ interface IQueryResponse {
   };
 }
 
-const FlightDaysComponent = ({ match: { params: { date } } }) => {
+export const FlightDays = () => {
+
+  const { date } = useParams();
+
   const [read] = useQuery<IQueryResponse>({ query: Query });
 
   const flightDaysAndPlanes = read.data && read.data.flightsByDays.nodes || [];
@@ -107,6 +110,4 @@ const FlightDaysComponent = ({ match: { params: { date } } }) => {
       </Grid>
     </>
   );
-}
-
-export const FlightDays = withRouter(FlightDaysComponent);
+};
