@@ -2,7 +2,6 @@ import * as React from 'react';
 
 import { defaults, Bar } from 'react-chartjs-2';
 import { formatDuration } from '../../../../../shared/utils/date';
-import { cloneDeep } from 'lodash';
 import { Dataset } from '../../../../../shared/dashboard/types';
 import { DashboardUnit } from '../../../../../shared/dashboard';
 import { chartColors } from '../../../utils/charts';
@@ -66,22 +65,24 @@ const chartOptions = (max: number, unit: DashboardUnit) => {
       labels: {
         // show legend only once per plane
         filter: item => item.datasetIndex % 2 === 0,
-        generateLabels: item2 => {
+        generateLabels: chart => {
           // show only plane name
-          const item = cloneDeep(item2);
-          if (item2.data) {
-            item.data = cloneDeep(item2.data);
-            item.data.datasets = item.data.datasets.map(dataset => {
+          // const item = cloneDeep(item2);
+          if (chart.data) {
+            const originalDatasets = chart.data.datasets;
+            chart.data.datasets = chart.data.datasets.map(ds => {
+              const dataset = Object.assign({}, ds);
               const trimPoint = dataset.label.indexOf(' ');
               if (trimPoint > 0) {
                 dataset.label = dataset.label.substring(0, trimPoint);
               }
-
               return dataset;
             });
-          }
 
-          return defaults['global'].legend.labels.generateLabels(item);
+            const labels = defaults['global'].legend.labels.generateLabels(chart);
+            chart.data.datasets = originalDatasets;
+            return labels;
+          }
         }
       }
     },
