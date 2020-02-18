@@ -68,7 +68,7 @@ module.exports = {
       },
       {
         test: /\.css$/,
-        include: /(node_modules)/,
+        include: [/(node_modules)/, /(common\/global)/],
         use: [
           {
             loader: "style-loader"
@@ -80,7 +80,7 @@ module.exports = {
       },
       {
         test: /\.css$/,
-        exclude: /(node_modules)/,
+        exclude: [/(node_modules)/, /(common\/global)/],
         use: [
           {
             loader: "style-loader"

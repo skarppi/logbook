@@ -16,7 +16,7 @@ export interface Battery {
 
 export interface BatteryCycle {
   id: number;
-  date: Date;
+  date: string;
   batteryName: string;
   state: BatteryState;
   flightId?: string;

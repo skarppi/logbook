@@ -36,6 +36,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import { FlightTimezone } from './FlightTimezone';
+import { FlightTrack } from './FlightTrack';
 
 const Query = gql`
   query($id:String!) {
@@ -51,6 +52,8 @@ const Query = gql`
       location {
         id
         name
+        latitude
+        longitude
       }
       segments
       batteryCycles {
@@ -287,6 +290,10 @@ export const FlightDetails = ({ entry }) => {
 
         <div className={flightCss.graph}>
           <FlightGraph segments={flight.segments || []} plane={flight.plane}></FlightGraph>
+        </div>
+
+        <div className={flightCss.track}>
+          <FlightTrack flight={flight}></FlightTrack>
         </div>
 
         <Videos
