@@ -1,7 +1,6 @@
-import { Map, Marker, Popup, TileLayer, Polyline } from 'react-leaflet';
+import { Map, Marker, Popup, TileLayer } from 'react-leaflet';
 
 import * as React from 'react';
-import { Flight } from '../../../../../shared/flights/types';
 import { Location } from '../../../../../shared/locations/types';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { divIcon } from 'leaflet';
@@ -27,8 +26,10 @@ export const LocationMap = ({ locations }: IFlightLocationProps) => {
     iconSize: [24, 24]
   });
 
-  const centerLat = filtered.reduce((sum, l) => sum + l.latitude, 0) / filtered.length;
-  const centerLon = filtered.reduce((sum, l) => sum + l.longitude, 0) / filtered.length;
+  const minLat = filtered.reduce((prev, l) => Math.min(prev, l.latitude), 90);
+  const maxLat = filtered.reduce((prev, l) => Math.max(prev, l.latitude), -90);
+  const minLon = filtered.reduce((prev, l) => Math.min(prev, l.longitude), 180);
+  const maxLon = filtered.reduce((prev, l) => Math.max(prev, l.longitude), -180);
 
   const markers = filtered.map(location =>
     <Marker
@@ -42,8 +43,13 @@ export const LocationMap = ({ locations }: IFlightLocationProps) => {
     </Marker>
   ).filter(point => point);
 
+  const bounds = [
+    [minLat, minLon],
+    [maxLat, maxLon],
+  ];
+
   return (
-    <Map center={[centerLat, centerLon]} zoom={10}>
+    <Map bounds={bounds} boundsOptions={{ padding: [25, 25] }} >
       <TileLayer
         url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
       />
