@@ -12,12 +12,6 @@ interface IFlightLocationProps {
   flight: Flight;
 }
 
-interface IQueryResponse {
-  locations: {
-    nodes: Location[];
-  };
-}
-
 export const FlightTrack = ({ flight }: IFlightLocationProps) => {
 
   console.log(flight.location)

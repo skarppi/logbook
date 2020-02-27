@@ -27,8 +27,7 @@ import OpenedIcon from '@material-ui/icons/KeyboardArrowDown';
 import NewLocationIcon from '@material-ui/icons/Add';
 import { Loading } from '../../loading/Loading';
 import { Location } from '../../../../../shared/locations/types';
-import { useContext } from 'react';
-import { Tab } from '@material-ui/core';
+import { LocationMap } from './LocationMap';
 import { Flight } from '../../../../../shared/flights/types';
 
 const Query = gql`
@@ -143,6 +142,7 @@ export const LocationsList = () => {
             }
           />
           <CardContent className={css.loadingParent}>
+            <LocationMap locations={locations}></LocationMap>
             <Table padding='none'>
               <TableHead>
                 <TableRow>
