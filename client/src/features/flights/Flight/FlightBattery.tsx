@@ -31,10 +31,6 @@ interface IFlightBatteryProps {
   // delete: (object) => {};
 }
 
-// interface LocalState {
-//   cycle: BatteryCycle;
-// }
-
 const Update = gql`
   mutation($id:Int!, $cycle:BatteryCyclePatch!) {
     updateBatteryCycle(input: {id: $id, patch: $cycle}) {

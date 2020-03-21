@@ -1,7 +1,6 @@
 import * as React from 'react';
 
 import { defaults, Bar } from 'react-chartjs-2';
-import * as Color from 'color';
 import { chartColors } from '../../../utils/charts';
 import { BatteryCycle } from '../../../../../shared/batteries/types';
 import { formatDuration } from '../../../../../shared/utils/date';
@@ -32,7 +31,7 @@ const chartOptions = () => {
       padding: {
         left: 0,
         top: 50,
-        bottom: 0
+        bottom: 50
       }
     },
     scales: {

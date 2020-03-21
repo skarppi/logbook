@@ -25,4 +25,5 @@ export interface BatteryCycle {
   charged?: number;
   resistance?: [number];
   flight?: Flight;
+  __typename?: string;
 }

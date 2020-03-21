@@ -10,9 +10,13 @@ import Select from '@material-ui/core/Select';
 import Input from '@material-ui/core/Input';
 import MenuItem from '@material-ui/core/MenuItem';
 import InputAdornment from '@material-ui/core/InputAdornment';
+import ExpansionPanel from '@material-ui/core/ExpansionPanel';
+import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
+import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import * as React from 'react';
 import { Battery } from '../../../../../shared/batteries/types';
 import { BatteryGraph } from './BatteryGraph';
+import { BatteryCycles } from './BatteryCycles';
 
 import { useHistory } from 'react-router-dom';
 
@@ -22,6 +26,8 @@ import { useQuery, useMutation } from 'urql';
 const batteryCss = require('./Battery.css');
 const css = require('../../../common/Form.css');
 import DeleteIcon from '@material-ui/icons/Delete';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+
 import { Loading } from '../../loading/Loading';
 import { formatDate } from '../../../utils/date';
 import { formatDuration } from '../../../../../shared/utils/date';
@@ -30,6 +36,7 @@ import TableCell from '@material-ui/core/TableCell';
 import TableBody from '@material-ui/core/TableBody';
 import TableRow from '@material-ui/core/TableRow';
 import { BatteryState } from '../../../../../shared/batteries';
+import Link from '@material-ui/core/Link';
 
 const batteryTypes = ['LiPo', 'LiHV'];
 const cellCounts = [1, 2, 3, 4, 5, 6];
@@ -53,6 +60,9 @@ const Query = gql`
           charged
           resistance
           flight {
+            id
+            startDate
+            planeId
             armedTime
             flightTime
           }
@@ -324,6 +334,18 @@ export const BatteryDetails = ({ id }) => {
         <div className={batteryCss.graph}>
           <BatteryGraph cycles={cycles}></BatteryGraph>
         </div>
+
+        <ExpansionPanel
+          key={battery.id}
+          defaultExpanded={true}
+        >
+          <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+            Show Entries
+          </ExpansionPanelSummary>
+          <ExpansionPanelDetails>
+            <BatteryCycles battery={battery} cycles={cycles} />
+          </ExpansionPanelDetails>
+        </ExpansionPanel>
       </CardContent>
     </Card>
   );

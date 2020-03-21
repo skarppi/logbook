@@ -76,14 +76,11 @@ export const FlightsUpload = ({ match: { params: { id } } }) => {
   }, [locations]);
 
   navigator.geolocation.getCurrentPosition(position => {
-    console.log(position);
     setCurrentLocation({
       lat: position.coords.latitude,
       lon: position.coords.longitude
     });
-  },
-    err => console.log(err)
-  );
+  }, err => console.log(err));
 
   const dropRendered = (getRootProps, getInputProps, isDragActive) => {
     return (
