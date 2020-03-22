@@ -46,19 +46,25 @@ function RenderLogicalSwitch({ mode, label, plane, changePlane, save, extra = <>
 }
 
 export const PlaneForm = ({ plane, allBatteries, setPlane, save }: IProps) => {
-  const changePlane = ({ target: { name, value } }) =>
+  const changePlane = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const { name, value } = event.target;
     setPlane({ ...plane, [name]: value });
+  };
 
-  const changeBoolean = ({ target: { name, value } }) =>
+  const changeBoolean = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const { name, value } = event.target;
     setPlane({ ...plane, [name]: value === 'true' });
+  };
 
-  const changeBatteries = ({ target: { name, value } }) => {
+  const changeBatteries = (event: React.ChangeEvent<{ name: string, value: string[] }>) => {
+    const { name, value } = event.target;
     const nodes = value.map(v => ({ batteryName: v }));
 
     setPlane({ ...plane, [name]: { nodes } });
   };
 
-  const enableTelemetries = ({ target: { name, value } }) => {
+  const enableTelemetries = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const { name, value } = event.target;
     const updated = plane.telemetries.map(telemetry => {
       telemetry.default = value.indexOf(telemetry.id) !== -1;
       return telemetry
@@ -66,21 +72,22 @@ export const PlaneForm = ({ plane, allBatteries, setPlane, save }: IProps) => {
     setPlane({ ...plane, [name]: updated });
   };
 
-  const hideTelemetries = ({ target: { name, value } }) => {
+  const hideTelemetries = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const { name, value } = event.target;
     const updated = plane.telemetries.map(telemetry => {
       telemetry.ignore = value.indexOf(telemetry.id) !== -1;
-      return telemetry
+      return telemetry;
     });
     setPlane({ ...plane, [name]: updated });
   };
 
   const batteries = plane.planeBatteries && plane.planeBatteries.nodes.map(b => b.batteryName) || [];
 
-  const telemetries = plane.telemetries;
+  const telemetries = plane.telemetries ?? [];
 
-  const defaultTelemetries = plane.telemetries.filter(telemetry => telemetry.default).map(telemetry => telemetry.id);
+  const defaultTelemetries = telemetries.filter(telemetry => telemetry.default).map(telemetry => telemetry.id);
 
-  const hiddenTelemetries = plane.telemetries.filter(telemetry => telemetry.ignore).map(telemetry => telemetry.id);
+  const hiddenTelemetries = telemetries.filter(telemetry => telemetry.ignore).map(telemetry => telemetry.id);
 
   return <>
     <div className={css.container}>

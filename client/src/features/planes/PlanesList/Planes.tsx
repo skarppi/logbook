@@ -27,6 +27,7 @@ import gql from 'graphql-tag';
 import { useQuery, useMutation } from 'urql';
 import { Flight } from '../../../../../shared/flights/types';
 import { formatDateTime, formatDate } from '../../../utils/date';
+import { LinkProps } from '@material-ui/core/Link';
 
 const layout = require('../../../common/Layout.css');
 
@@ -146,7 +147,7 @@ export const PlanesList = ({ match: { params } }) => {
     </React.Fragment>;
   });
 
-  const AddLink = props => <Link to={`/planes/${NEWID}`} {...props} />;
+  const AddLink = React.forwardRef<HTMLAnchorElement, Partial<LinkProps>>((props, ref) => <Link to={`/planes/${NEWID}`} {...props} ref={ref} />);
 
   return (
     <PlanesContext.Provider value={{ planes, logicalSwitches }} >

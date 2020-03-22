@@ -141,18 +141,25 @@ export const BatteryDetails = ({ id }) => {
   }, [read]);
 
   // modify local state
-  const changeNumber = ({ target: { name, value } }) =>
+  const changeNumber = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
     setBattery({ ...battery, [name]: Number(value) });
+  };
 
-  const changeDate = ({ target: { name, value } }) =>
+  const changeDate = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
     setBattery({ ...battery, [name]: new Date(value) });
+  };
 
-  const changeBattery = ({ target: { name, value } }) =>
+  const changeBattery = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
     setBattery({ ...battery, [name]: value });
+  };
 
   // update to server
-  const save = () => {
-    if (!battery.id) {
+  const save = (_) => {
+    if (battery.id === NEW_BATTERY.id) {
+      delete battery.id;
       createBattery({ battery }).then(res => {
         if (!res.error) {
           history.push(`/batteries/${res.data.createBattery.battery.id}`);
@@ -197,7 +204,7 @@ export const BatteryDetails = ({ id }) => {
               value={battery.name}
               name='name'
               onChange={changeBattery}
-              onBlur={({ target: { value } }) => value.length > 0 && save()}
+              onBlur={(event: React.FocusEvent<HTMLInputElement>) => event.target.value.length > 0 && save(event)}
               margin='none'
             />
           </>

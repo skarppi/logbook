@@ -81,8 +81,10 @@ export const LogicalSwitches = () => {
 
   const [editing, setEditing] = React.useState<LogicalSwitch>(null);
 
-  const changeSwitch = ({ target: { name, value } }) =>
+  const changeSwitch = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
     setEditing({ ...editing, [name]: (value.length > 0 ? value : null) });
+  }
 
   // update to server
   const save = () => {

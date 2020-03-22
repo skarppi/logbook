@@ -13,7 +13,7 @@ import { FlightsUpload } from '../../features/flights/Upload/FlightsUpload';
 export const App = () => (
   <BrowserRouter basename={process.env.PUBLIC_PATH}>
     <div>
-      <Grid container spacing={24}>
+      <Grid container spacing={6}>
         <Header />
         <Switch>
           <Route exact path='/' component={Dashboard} />

@@ -117,7 +117,7 @@ export const Dashboard = () => {
           <Select value={size || sizes[2]} onChange={e => setSize(Number(e.target.value))}>
             {sizes}
           </Select>
-          <Select value={unit} onChange={e => {
+          <Select value={unit} onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
             const newUnit = DashboardUnit[e.target.value];
             setUnit(newUnit);
             setSize(defaultSize(newUnit));

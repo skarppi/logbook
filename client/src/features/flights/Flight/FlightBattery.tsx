@@ -73,8 +73,10 @@ const FlightBatteryComponent = ({ plane, flightCycle, battery }: IFlightBatteryP
   const changeNumber = ({ target: { name, value } }) =>
     setCycle({ ...cycle, [name]: Number(value) });
 
-  const changeCycle = ({ target: { name, value } }) =>
+  const changeCycle = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const { name, value } = event.target;
     setCycle({ ...cycle, [name]: value });
+  };
 
   const changeCycleResistance = (index, value) => {
 
