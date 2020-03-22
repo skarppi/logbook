@@ -50,7 +50,7 @@ const Query = gql`
       type
       cells
       capacity
-      batteryCycles(orderBy: DATE_ASC) {
+      batteryCycles(orderBy: DATE_DESC) {
         nodes {
           id
           date

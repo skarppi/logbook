@@ -12,9 +12,9 @@ import gql from 'graphql-tag';
 import { useMutation } from 'urql';
 
 const css = require('../../../common/Form.css');
-import EditPlaneIcon from '@material-ui/icons/Edit';
-import SavePlaneIcon from '@material-ui/icons/Save';
-
+import EditIcon from '@material-ui/icons/Edit';
+import SaveIcon from '@material-ui/icons/Save';
+import DeleteIcon from '@material-ui/icons/Delete';
 
 import { formatDate } from '../../../utils/date';
 import { formatDuration } from '../../../../../shared/utils/date';
@@ -35,9 +35,9 @@ mutation($id:Int!, $cycle:BatteryCyclePatch!) {
 }`;
 
 const Delete = gql`
-mutation($batteryCycleId:Int!) {
-  deleteBatteryCycle(input: {id: $batteryId}) {
-    battery {
+mutation($id:Int!) {
+  deleteBatteryCycle(input: {id: $id}) {
+    batteryCycle {
       id
     }
   }
@@ -63,7 +63,7 @@ export const BatteryCycles = ({ battery, cycles }: IBatteryCycleProps) => {
 
   // graphql CRUD operations
   const [update, updateCycle] = useMutation(Update);
-  const [del, deleteBattery] = useMutation(Delete);
+  const [del, deleteCycle] = useMutation(Delete);
 
   // local state
   const [editing, setEditing] = React.useState<BatteryCycle>(null);
@@ -79,6 +79,10 @@ export const BatteryCycles = ({ battery, cycles }: IBatteryCycleProps) => {
   const save = () => {
     const { ['__typename']: _, flight, ...cycle } = editing;
     updateCycle({ id: editing.id, cycle }).then(() => setEditing(null));
+  };
+
+  const remove = () => {
+    deleteCycle({ id: editing.id }).then(() => setEditing(null));
   };
 
   const renderFlight = (flight: Flight) =>
@@ -102,12 +106,23 @@ export const BatteryCycles = ({ battery, cycles }: IBatteryCycleProps) => {
 
   const renderButtons = (current: boolean, cycle: BatteryCycle) =>
     current ?
-      <IconButton onClick={save}>
-        <SavePlaneIcon />
-      </IconButton>
-      : <IconButton onClick={() => setEditing(cycle)}>
-        <EditPlaneIcon />
-      </IconButton>;
+      <>
+        <Tooltip title='Save entry'>
+          <IconButton onClick={save}>
+            <SaveIcon />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title='Remove entry'>
+          <IconButton onClick={remove}>
+            <DeleteIcon />
+          </IconButton>
+        </Tooltip>
+      </>
+      : <Tooltip title='Edit entry'>
+        <IconButton onClick={() => setEditing(cycle)}>
+          <EditIcon />
+        </IconButton>
+      </Tooltip>;
 
   const rows = cycles.map(cycle => {
     const current = editing && editing.id === cycle.id;
@@ -122,9 +137,7 @@ export const BatteryCycles = ({ battery, cycles }: IBatteryCycleProps) => {
         <BatteryCycleResistance editing={current} battery={battery} cycle={current ? editing : cycle} setCycle={setEditing} />
       </TableCell>
       <TableCell padding='none'>
-        <Tooltip title='Edit entry'>
-          {renderButtons(current, cycle)}
-        </Tooltip>
+        {renderButtons(current, cycle)}
       </TableCell>
     </TableRow>;
   });
