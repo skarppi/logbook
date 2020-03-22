@@ -3,6 +3,7 @@ import TextField from '@material-ui/core/TextField';
 import Tooltip from '@material-ui/core/Tooltip';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import * as React from 'react';
+import { useHotkeys } from 'react-hotkeys-hook';
 import { Battery, BatteryCycle } from '../../../../../shared/batteries/types';
 import { BatteryCycleResistance } from './BatteryCycleResistance';
 
@@ -73,6 +74,8 @@ export const BatteryCycles = ({ battery, cycles }: IBatteryCycleProps) => {
 
   const changeNumber = ({ target: { name, value } }) =>
     setEditing({ ...editing, [name]: value.length > 0 ? Number(value) : null });
+
+  useHotkeys('esc', () => setEditing(null));
 
   // update to server
 
