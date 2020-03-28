@@ -6,8 +6,6 @@ import { Dataset } from '../../../../../shared/dashboard/types';
 import { DashboardUnit } from '../../../../../shared/dashboard';
 import { chartColors } from '../../../utils/charts';
 
-const css = require('./Home.css');
-
 defaults['global'].elements.line.fill = false;
 
 function yAxisStepSize(max: number) {

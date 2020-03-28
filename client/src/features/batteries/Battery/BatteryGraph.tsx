@@ -24,14 +24,13 @@ const chartOptions = () => {
         }
       }
     },
-    responsive: true,
     maintainAspectRatio: false,
-    aspectRatio: 1,
     layout: {
       padding: {
         left: 0,
         top: 50,
-        bottom: 50
+        bottom: 50,
+        right: 0
       }
     },
     scales: {

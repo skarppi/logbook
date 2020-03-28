@@ -1,42 +1,9 @@
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import CardHeader from '@material-ui/core/CardHeader';
-import IconButton from '@material-ui/core/IconButton';
 import TextField from '@material-ui/core/TextField';
-import Tooltip from '@material-ui/core/Tooltip';
-import FormControl from '@material-ui/core/FormControl';
-import InputLabel from '@material-ui/core/InputLabel';
-import Select from '@material-ui/core/Select';
-import Input from '@material-ui/core/Input';
-import MenuItem from '@material-ui/core/MenuItem';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import * as React from 'react';
 import { Battery, BatteryCycle } from '../../../../../shared/batteries/types';
-import { BatteryGraph } from './BatteryGraph';
 
-import { useHistory, NavLink } from 'react-router-dom';
-
-import gql from 'graphql-tag';
-import { useQuery, useMutation } from 'urql';
-
-const batteryCss = require('./Battery.css');
 const css = require('../../../common/Form.css');
-import DeleteIcon from '@material-ui/icons/Delete';
-import NewSwitchIcon from '@material-ui/icons/Add';
-import EditPlaneIcon from '@material-ui/icons/Edit';
-import SavePlaneIcon from '@material-ui/icons/Save';
-
-
-import { Loading } from '../../loading/Loading';
-import { formatDate } from '../../../utils/date';
-import { formatDuration } from '../../../../../shared/utils/date';
-import Table from '@material-ui/core/Table';
-import TableCell from '@material-ui/core/TableCell';
-import TableBody from '@material-ui/core/TableBody';
-import TableRow from '@material-ui/core/TableRow';
-import { BatteryState } from '../../../../../shared/batteries';
-import { TableHead } from '@material-ui/core';
-import { Flight } from '../../../../../shared/flights/types';
 
 interface IResistanceProps {
   editing: boolean;

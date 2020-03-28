@@ -6,6 +6,7 @@ import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
 import CardContent from '@material-ui/core/CardContent';
 import Select from '@material-ui/core/Select';
+import makeStyles from '@material-ui/styles/makeStyles';
 
 import { startOfYear, addYears, startOfMonth, addMonths, startOfDay, addDays } from 'date-fns';
 
@@ -14,8 +15,6 @@ import { DashboardUnit } from '../../../../../shared/dashboard';
 import { GraphOverTime, ITotalRows } from './GraphOverTime'
 import gql from 'graphql-tag';
 import { useQuery } from 'urql';
-
-const css = require('./Home.css');
 
 function defaultSize(unit: DashboardUnit) {
   if (unit === DashboardUnit.day) {
@@ -83,6 +82,13 @@ interface IQueryResponse {
 
 const EMPTY = { nodes: [] };
 
+const useStyles = makeStyles({
+  flights: {
+    height: '60vh',
+    position: 'relative'
+  }
+});
+
 export const Dashboard = () => {
 
   const [unit, setUnit] = React.useState(DashboardUnit.month);
@@ -108,6 +114,7 @@ export const Dashboard = () => {
 
   const flights = data[currentResource(unit)] || EMPTY;
 
+  const css = useStyles();
   return (
     <Grid item xs={12} >
       <Card>

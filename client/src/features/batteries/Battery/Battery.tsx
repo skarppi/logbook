@@ -23,7 +23,6 @@ import { useHistory } from 'react-router-dom';
 import gql from 'graphql-tag';
 import { useQuery, useMutation } from 'urql';
 
-const batteryCss = require('./Battery.css');
 const css = require('../../../common/Form.css');
 import DeleteIcon from '@material-ui/icons/Delete';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
@@ -36,7 +35,7 @@ import TableCell from '@material-ui/core/TableCell';
 import TableBody from '@material-ui/core/TableBody';
 import TableRow from '@material-ui/core/TableRow';
 import { BatteryState } from '../../../../../shared/batteries';
-import Link from '@material-ui/core/Link';
+import makeStyles from '@material-ui/styles/makeStyles';
 
 const batteryTypes = ['LiPo', 'LiHV'];
 const cellCounts = [1, 2, 3, 4, 5, 6];
@@ -122,6 +121,13 @@ const NEW_BATTERY: Battery = {
   capacity: 0
 };
 
+const useStyles = makeStyles({
+  graph: {
+    height: '400px',
+    position: 'relative'
+  }
+});
+
 export const BatteryDetails = ({ id }) => {
 
   const history = useHistory();
@@ -188,6 +194,8 @@ export const BatteryDetails = ({ id }) => {
   const cycles = battery.batteryCycles && battery.batteryCycles.nodes || [];
 
   const voltages = cycles.filter(c => c.voltage);
+
+  const batteryCss = useStyles();
 
   return (
     <Card className={css.card}>
