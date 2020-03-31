@@ -20,3 +20,10 @@ export function formatTime(
 ): string {
   return format(date instanceof Date ? date : parseISO(date), dateFormat);
 }
+
+export function formatMonth(
+  date: Date | string,
+  dateFormat: string = 'yyyy MMMM'
+): string {
+  return format(date instanceof Date ? date : parseISO(date), dateFormat);
+}
