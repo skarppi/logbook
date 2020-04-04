@@ -47,6 +47,20 @@ interface IQueryResponse {
   };
 }
 
+export interface IMonthTotals {
+  month: string;
+  flights: number;
+  totalTime: number;
+  days: IDayTotals[]
+}
+
+export interface IDayTotals {
+  day: string;
+  planes: string,
+  flights: number;
+  totalTime: number;
+}
+
 const groupFlightsPerMonthAndDay = (queryResponse: IQueryResponse) => {
   const flightsByDays = queryResponse?.flightsByDays.nodes || [];
 
@@ -63,24 +77,26 @@ const groupFlightsPerMonthAndDay = (queryResponse: IQueryResponse) => {
   }, {} as Record<string, Record<string, ITotalRows[]>>);
 };
 
-const calculateTotalsPerDay = ([day, flights]: [string, ITotalRows[]]): [string, ITotalRows] => {
-  const totals: ITotalRows = {
-    date: parseISO(day),
-    planeId: flights.map(flight => flight.planeId).join(', '),
+const calculateTotalsPerDay = ([day, flights]: [string, ITotalRows[]]): IDayTotals => {
+  return {
+    day,
+    planes: flights.map(flight => flight.planeId).join(', '),
     flights: flights.reduce((sum, flight) => sum + flight.flights, 0),
     totalTime: flights.reduce((sum, flight) => sum + flight.totalTime, 0),
-  };
-  return [day, totals];
+  }
 };
 
-const calculateTotalsPerMonthAndDay = (flightsPerMonthAndDay: Record<string, Record<string, ITotalRows[]>>) => {
-  return Object.entries(flightsPerMonthAndDay).reduce((acc, monthEntry) => {
-    const [month, flightsPerDay] = monthEntry;
-
+const calculateTotalsPerMonthAndDay = (flightsPerMonthAndDay: Record<string, Record<string, ITotalRows[]>>): IMonthTotals[] => {
+  return Object.entries(flightsPerMonthAndDay).map(([month, flightsPerDay]) => {
     const totalsPerDay = Object.entries(flightsPerDay).map(calculateTotalsPerDay);
-    acc[month] = Object.fromEntries(totalsPerDay);
-    return acc;
-  }, {} as Record<string, Record<string, ITotalRows>>);
+
+    return {
+      month,
+      flights: totalsPerDay.reduce((sum, row) => sum + row.flights, 0),
+      totalTime: totalsPerDay.reduce((sum, row) => sum + row.totalTime, 0),
+      days: totalsPerDay
+    };
+  });
 };
 
 export const FlightDays = () => {
@@ -91,25 +107,25 @@ export const FlightDays = () => {
 
   const [read] = useQuery<IQueryResponse>({ query: Query, variables: { orderBy } });
 
-  const flightPerMonths = groupFlightsPerMonthAndDay(read.data);
-  const totalsPerMonth = calculateTotalsPerMonthAndDay(flightPerMonths);
+  const groupedFlights = groupFlightsPerMonthAndDay(read.data);
+  const totalsPerMonthDays = calculateTotalsPerMonthAndDay(groupedFlights);
 
-  const flightDayRows = (flightDay: string, totals: ITotalRows, flights: ITotalRows[]) => {
-    const isCurrent = date === flightDay;
+  const flightDayRows = (totals: IDayTotals) => {
+    const isCurrent = date === totals.day;
 
-    return <React.Fragment key={flightDay + '-day'}>
+    return <React.Fragment key={totals.day + '-day'}>
       <TableRow selected={isCurrent} hover={true}>
         <TableCell>
           {(isCurrent && <NavLink to={'/flights'}>
             <OpenedIcon />
-            {flightDay}
-          </NavLink>) || <NavLink to={`/flights/${flightDay}`}>
+            {totals.day}
+          </NavLink>) || <NavLink to={`/flights/${totals.day}`}>
               <ClosedIcon />
-              {flightDay}
+              {totals.day}
             </NavLink>}
         </TableCell>
         <TableCell>{totals.flights}</TableCell>
-        <TableCell>{totals.planeId}</TableCell>
+        <TableCell>{totals.planes}</TableCell>
         <TableCell>{formatDuration(totals.totalTime)}</TableCell>
       </TableRow>
       {isCurrent && (
@@ -122,21 +138,41 @@ export const FlightDays = () => {
     </React.Fragment>;
   };
 
-  const rows = Object.entries(flightPerMonths).map(([month, flightsPerDay]) => {
-    const totalsPerDay = totalsPerMonth[month];
-    const dayRows = Object.entries(flightsPerDay).map(([day, flights]) => flightDayRows(day, totalsPerDay[day], flights));
+  const getSorting = () => {
+    const UP = orderBy.endsWith('_ASC') ? -1 : 1;
+    const DOWN = orderBy.endsWith('_DESC') ? -1 : 1;
 
-    return <React.Fragment key={month + '-month'}>
+    if (orderBy.startsWith('FLIGHTS_')) {
+      return (a: IMonthTotals, b: IMonthTotals) => a.flights > b.flights ? DOWN : UP;
+    } else if (orderBy.startsWith('TOTAL_TIME_')) {
+      return (a: IMonthTotals, b: IMonthTotals) => a.totalTime > b.totalTime ? DOWN : UP;
+    } else {
+      return () => null;
+    }
+  }
+
+  const rows = totalsPerMonthDays.sort(getSorting()).map(monthTotals => {
+    const dayRows = monthTotals.days.map(flightDayRows);
+
+    return <React.Fragment key={monthTotals.month + '-month'}>
       <TableRow>
         <TableCell style={{ fontWeight: 'bold', height: 50 }}>
-          {month}
+          {monthTotals.month}
         </TableCell>
-        <TableCell style={{ fontWeight: 'bold' }} colSpan={2}>{Object.values(totalsPerDay).reduce((sum, row) => sum + row.flights, 0)}</TableCell>
-        <TableCell style={{ fontWeight: 'bold' }}>{formatDuration(Object.values(totalsPerDay).reduce((sum, row) => sum + row.totalTime, 0))}</TableCell>
+        <TableCell style={{ fontWeight: 'bold' }} colSpan={2}>{monthTotals.flights}</TableCell>
+        <TableCell style={{ fontWeight: 'bold' }}>{formatDuration(monthTotals.totalTime)}</TableCell>
       </TableRow>
       {dayRows}
     </React.Fragment >;
   });
+
+  const sortLabel = (col: string, title: string) =>
+    <TableSortLabel
+      active={orderBy.startsWith(col)}
+      direction={orderBy === `${col}_ASC` ? 'asc' : 'desc'}
+      onClick={() => setOrderBy(orderBy === `${col}_DESC` ? `${col}_ASC` : `${col}_DESC`)}>
+      {title}
+    </TableSortLabel>;
 
   return (
     <>
@@ -147,31 +183,10 @@ export const FlightDays = () => {
             <Table>
               <TableHead>
                 <TableRow>
-                  <TableCell>
-                    <TableSortLabel
-                      active={orderBy.startsWith('DATE')}
-                      direction={orderBy === 'DATE_ASC' ? 'desc' : 'asc'}
-                      onClick={() => setOrderBy(orderBy === 'DATE_DESC' ? 'DATE_ASC' : 'DATE_DESC')}>
-                      Date
-                    </TableSortLabel>
-                  </TableCell>
-                  <TableCell>
-                    <TableSortLabel
-                      active={orderBy.startsWith('FLIGHTS')}
-                      direction={orderBy === 'FLIGHTS_DESC' ? 'desc' : 'asc'}
-                      onClick={() => setOrderBy(orderBy === 'FLIGHTS_DESC' ? 'FLIGHTS_ASC' : 'FLIGHTS_DESC')}>
-                      Flights
-                    </TableSortLabel>
-                  </TableCell>
+                  <TableCell>{sortLabel('DATE', 'Date')}</TableCell>
+                  <TableCell>{sortLabel('FLIGHTS', 'Flights')}</TableCell>
                   <TableCell>Plane</TableCell>
-                  <TableCell>
-                    <TableSortLabel
-                      active={orderBy.startsWith('TOTAL_TIME')}
-                      direction={orderBy === 'TOTAL_TIME_DESC' ? 'desc' : 'asc'}
-                      onClick={() => setOrderBy(orderBy === 'TOTAL_TIME_DESC' ? 'TOTAL_TIME_ASC' : 'TOTAL_TIME_DESC')}>
-                      Flight Time
-                    </TableSortLabel>
-                  </TableCell>
+                  <TableCell>{sortLabel('TOTAL_TIME', 'Flight Time')}</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>{rows}</TableBody>
