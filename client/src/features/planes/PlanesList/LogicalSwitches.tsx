@@ -265,7 +265,7 @@ export const LogicalSwitches = () => {
         <Card>
           <CardHeader title='Logical Switches' />
           <CardContent>
-            <Table padding='none'>
+            <Table>
               <TableHead>
                 <TableRow>
                   <TableCell>ID</TableCell>

@@ -19,7 +19,6 @@ import { useParams } from 'react-router-dom';
 import gql from 'graphql-tag';
 import { useQuery, useMutation } from 'urql';
 
-const planeCss = require('./Locations.css');
 const css = require('../../../common/Form.css');
 
 import ClosedIcon from '@material-ui/icons/KeyboardArrowRight';
@@ -143,7 +142,7 @@ export const LocationsList = () => {
           />
           <CardContent>
             <LocationMap locations={locations}></LocationMap>
-            <Table padding='none'>
+            <Table>
               <TableHead>
                 <TableRow>
                   <TableCell>Name</TableCell>

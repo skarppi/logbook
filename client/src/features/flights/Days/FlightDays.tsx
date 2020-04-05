@@ -128,13 +128,7 @@ export const FlightDays = () => {
         <TableCell>{totals.planes}</TableCell>
         <TableCell>{formatDuration(totals.totalTime)}</TableCell>
       </TableRow>
-      {isCurrent && (
-        <TableRow className={css.opened}>
-          <TableCell colSpan={4}>
-            <Flights />
-          </TableCell>
-        </TableRow>
-      )}
+      {isCurrent && (<Flights />)}
     </React.Fragment>;
   };
 

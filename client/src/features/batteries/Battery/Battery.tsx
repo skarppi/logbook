@@ -300,9 +300,6 @@ export const BatteryDetails = ({ id }) => {
           />
         </div>
 
-      </CardContent>
-
-      <CardContent hidden={battery.name === ''}>
         <Table padding='none'>
           <TableBody>
             <TableRow>
@@ -351,7 +348,7 @@ export const BatteryDetails = ({ id }) => {
 
         <ExpansionPanel
           key={battery.id}
-          defaultExpanded={true}
+          defaultExpanded={false}
         >
           <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
             Show Entries

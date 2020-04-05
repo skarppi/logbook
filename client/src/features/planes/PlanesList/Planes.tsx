@@ -164,7 +164,7 @@ export const PlanesList = ({ match: { params } }) => {
             }
           />
           <CardContent>
-            <Table padding='none'>
+            <Table>
               <TableHead>
                 <TableRow>
                   <TableCell>ID</TableCell>
