@@ -9,7 +9,7 @@ import { FlightDetails } from '../Flight/Flight';
 
 import ClosedIcon from '@material-ui/icons/ArrowRight';
 import OpenedIcon from '@material-ui/icons/ArrowDropDown';
-import { Loading } from '../../loading/Loading';
+import { LoadingTable } from '../../loading/Loading';
 import gql from 'graphql-tag';
 import { Flight } from '../../../../../shared/flights/types';
 import { useQuery } from 'urql';
@@ -99,11 +99,9 @@ export const Flights = () => {
   });
 
   return (
-    <div className={css.loadingParent}>
-      <Table padding='none'>
-        <TableBody>{rows}</TableBody>
-      </Table>
-      <Loading spinning={read.fetching} error={read.error} overlay={true} />
-    </div>
+    <>
+      <LoadingTable spinning={read.fetching} error={read.error} colSpan={4} />
+      {rows}
+    </>
   );
 };

@@ -25,7 +25,7 @@ const css = require('../../../common/Form.css');
 import ClosedIcon from '@material-ui/icons/KeyboardArrowRight';
 import OpenedIcon from '@material-ui/icons/KeyboardArrowDown';
 import NewLocationIcon from '@material-ui/icons/Add';
-import { Loading } from '../../loading/Loading';
+import { LoadingTable } from '../../loading/Loading';
 import { Location } from '../../../../../shared/locations/types';
 import { LocationMap } from './LocationMap';
 import { Flight } from '../../../../../shared/flights/types';
@@ -141,7 +141,7 @@ export const LocationsList = () => {
               </Tooltip>
             }
           />
-          <CardContent className={css.loadingParent}>
+          <CardContent>
             <LocationMap locations={locations}></LocationMap>
             <Table padding='none'>
               <TableHead>
@@ -154,14 +154,11 @@ export const LocationsList = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
+                <LoadingTable spinning={res.fetching} error={res.error} colSpan={5} />
                 {id === NEWID && details(null)}
                 {rows}
               </TableBody>
             </Table>
-            <Loading
-              spinning={res.fetching}
-              error={res.error}
-              overlay={true} />
           </CardContent>
         </Card>
       </Grid>

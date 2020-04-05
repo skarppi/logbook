@@ -11,6 +11,7 @@ import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 
 import { PlanesContext } from './Planes';
+import { LoadingIcon } from '../../loading/Loading';
 
 import * as React from 'react';
 
@@ -250,8 +251,6 @@ export const LogicalSwitches = () => {
 
   const switches = [...logicalSwitches, ...(editing && !logicalSwitches.find(ls => ls.id === editing.id) ? [editing] : [])];
 
-  console.log(switches);
-
   const rows = switches.map(ls => {
     if (editing && editing.id === ls.id) {
       return editRow();
@@ -265,7 +264,7 @@ export const LogicalSwitches = () => {
       <Grid item xs={12} className={layout.grid}>
         <Card>
           <CardHeader title='Logical Switches' />
-          <CardContent className={layout.loadingParent}>
+          <CardContent>
             <Table padding='none'>
               <TableHead>
                 <TableRow>
@@ -293,6 +292,9 @@ export const LogicalSwitches = () => {
                       <NewSwitchIcon />
                     </IconButton>
                   </Tooltip>
+                    <LoadingIcon
+                      spinning={create.fetching || update.fetching}
+                      error={create.error || update.error} />
                   </TableCell>
                 </TableRow>
               </TableHead>

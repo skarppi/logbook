@@ -27,7 +27,7 @@ const css = require('../../../common/Form.css');
 import DeleteIcon from '@material-ui/icons/Delete';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
-import { Loading } from '../../loading/Loading';
+import { LoadingIcon } from '../../loading/Loading';
 import { formatDate } from '../../../utils/date';
 import { formatDuration } from '../../../../../shared/utils/date';
 import Table from '@material-ui/core/Table';
@@ -219,10 +219,9 @@ export const BatteryDetails = ({ id }) => {
         }
         action={
           <>
-            <Loading
+            <LoadingIcon
               spinning={read.fetching || update.fetching || create.fetching || del.fetching}
               error={read.error || update.error || create.error || del.error}
-              overlay={false}
             />
 
             {battery.id &&

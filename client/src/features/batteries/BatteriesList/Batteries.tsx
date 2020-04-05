@@ -14,7 +14,7 @@ import * as React from 'react';
 import { NavLink, Link } from 'react-router-dom';
 import { formatDate, formatDateTime } from '../../../utils/date';
 import { Battery } from '../../../../../shared/batteries/types';
-import { Loading } from '../../loading/Loading';
+import { LoadingIcon, LoadingTable } from '../../loading/Loading';
 import { BatteryDetails } from '../Battery/Battery';
 
 import ClosedIcon from '@material-ui/icons/KeyboardArrowRight';
@@ -135,6 +135,7 @@ export const BatteriesList = ({ match: { params } }) => {
         >
           <FullChargeIcon />
         </IconButton>
+        <LoadingIcon spinning={charged.fetching} error={charged.error} />
       </>
     );
   }
@@ -191,8 +192,8 @@ export const BatteriesList = ({ match: { params } }) => {
               </Tooltip>
             }
           />
-          <CardContent className={css.loadingParent}>
-            <Table padding='none'>
+          <CardContent>
+            <Table>
               <TableHead>
                 <TableRow>
                   <TableCell>ID</TableCell>
@@ -203,14 +204,11 @@ export const BatteriesList = ({ match: { params } }) => {
                 </TableRow>
               </TableHead>
               <TableBody>
+                <LoadingTable spinning={res.fetching} error={res.error} colSpan={5} />
                 {params.id === NEWID && details(-1)}
                 {rows}
               </TableBody>
             </Table>
-            <Loading
-              spinning={res.fetching || charged.fetching}
-              error={res.error || charged.error}
-              overlay={true} />
           </CardContent>
         </Card>
       </Grid>

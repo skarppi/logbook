@@ -20,7 +20,7 @@ import { useQuery, useMutation } from 'urql';
 const locationCss = require('./Location.css');
 const css = require('../../../common/Form.css');
 import DeleteIcon from '@material-ui/icons/Delete';
-import { Loading } from '../../loading/Loading';
+import { LoadingIcon } from '../../loading/Loading';
 import { formatDate } from '../../../utils/date';
 import { formatDuration } from '../../../../../shared/utils/date';
 import Table from '@material-ui/core/Table';
@@ -135,10 +135,9 @@ export const LocationDetails = ({ data }) => {
         }
         action={
           <>
-            <Loading
+            <LoadingIcon
               spinning={update.fetching || create.fetching || del.fetching}
               error={update.error || create.error || del.error}
-              overlay={false}
             />
 
             {location.id &&

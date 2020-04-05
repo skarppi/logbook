@@ -14,7 +14,7 @@ import * as React from 'react';
 import { NavLink, Link } from 'react-router-dom';
 import { formatDuration } from '../../../../../shared/utils/date';
 import { Plane, LogicalSwitch } from '../../../../../shared/planes/types';
-import { Loading } from '../../loading/Loading';
+import { LoadingTable } from '../../loading/Loading';
 import { PlaneDetails } from '../Plane/Plane';
 import { LogicalSwitches } from './LogicalSwitches';
 
@@ -163,7 +163,7 @@ export const PlanesList = ({ match: { params } }) => {
               </Tooltip>
             }
           />
-          <CardContent className={layout.loadingParent}>
+          <CardContent>
             <Table padding='none'>
               <TableHead>
                 <TableRow>
@@ -175,14 +175,11 @@ export const PlanesList = ({ match: { params } }) => {
                 </TableRow>
               </TableHead>
               <TableBody>
+                <LoadingTable spinning={res.fetching} error={res.error} colSpan={5} />
                 {params.id === NEWID && details('')}
                 {rows}
               </TableBody>
             </Table>
-            <Loading
-              spinning={res.fetching}
-              error={res.error}
-              overlay={true} />
           </CardContent>
         </Card>
       </Grid>

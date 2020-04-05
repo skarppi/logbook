@@ -16,7 +16,7 @@ import { Flights } from '../Flights/Flights';
 
 import ClosedIcon from '@material-ui/icons/ChevronRight';
 import OpenedIcon from '@material-ui/icons/ExpandMore';
-import { Loading } from '../../loading/Loading';
+import { LoadingTable } from '../../loading/Loading';
 import { useQuery } from 'urql';
 import { ITotalRows } from '../../dashboard/Home/GraphOverTime';
 import gql from 'graphql-tag';
@@ -179,7 +179,7 @@ export const FlightDays = () => {
       <Grid item xs={12} className={layout.grid}>
         <Card>
           <CardHeader title='Flights List' />
-          <CardContent className={layout.loadingParent}>
+          <CardContent>
             <Table>
               <TableHead>
                 <TableRow>
@@ -189,9 +189,11 @@ export const FlightDays = () => {
                   <TableCell>{sortLabel('TOTAL_TIME', 'Flight Time')}</TableCell>
                 </TableRow>
               </TableHead>
-              <TableBody>{rows}</TableBody>
+              <TableBody>
+                <LoadingTable spinning={read.fetching} error={read.error} colSpan={4} />
+                {rows}
+              </TableBody>
             </Table>
-            <Loading spinning={read.fetching} error={read.error} overlay={true} />
           </CardContent>
         </Card>
       </Grid>

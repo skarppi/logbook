@@ -25,7 +25,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import HamburgerIcon from '@material-ui/icons/MoreVert';
 
-import { Loading } from '../../loading/Loading';
+import { LoadingIcon } from '../../loading/Loading';
 import { useQuery, useMutation } from 'urql';
 import gql from 'graphql-tag';
 import { Battery } from '../../../../../shared/batteries/types';
@@ -201,10 +201,9 @@ export const FlightDetails = ({ entry }) => {
         title={`Flight: ${flight.id}`}
         action={
           <>
-            <Loading
+            <LoadingIcon
               spinning={read.fetching || update.fetching || del.fetching}
               error={read.error || update.error || del.error}
-              overlay={false}
             />
 
             <IconButton

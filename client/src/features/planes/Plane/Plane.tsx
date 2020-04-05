@@ -18,7 +18,7 @@ const planeCss = require('./Plane.css');
 const css = require('../../../common/Form.css');
 
 import DeleteIcon from '@material-ui/icons/Delete';
-import { Loading } from '../../loading/Loading';
+import { LoadingIcon } from '../../loading/Loading';
 import Divider from '@material-ui/core/Divider';
 import { PlaneType } from '../../../../../shared/planes';
 import { Battery } from '../../../../../shared/batteries/types';
@@ -215,10 +215,9 @@ export const PlaneDetails = ({ id }) => {
         }
         action={
           <>
-            <Loading
+            <LoadingIcon
               spinning={read.fetching || update.fetching || create.fetching || del.fetching}
               error={read.error || update.error || create.error || del.error}
-              overlay={false}
             />
 
             {plane.id &&

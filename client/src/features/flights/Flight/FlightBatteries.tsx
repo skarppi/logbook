@@ -8,7 +8,7 @@ import { BatteryState } from '../../../../../shared/batteries';
 import { Battery } from '../../../../../shared/batteries/types';
 import gql from 'graphql-tag';
 import { useMutation } from 'urql';
-import { Loading } from '../../loading/Loading';
+import { LoadingIcon } from '../../loading/Loading';
 const css = require('../../../common/Form.css');
 
 interface IBatteryProps {
@@ -83,10 +83,9 @@ export const FlightBatteries = ({ flight, batteries, refreshFlight }: IBatteryPr
         Add battery
         <AddIcon />
       </Button>
-      <Loading
+      <LoadingIcon
         spinning={create.fetching}
         error={create.error}
-        overlay={false}
       />
     </FormControl>;
 
