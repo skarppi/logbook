@@ -28,8 +28,6 @@ import { BatteryState } from '../../../../../shared/batteries';
 import gql from 'graphql-tag';
 import { useQuery, useMutation } from 'urql';
 
-const css = require('./Batteries.css');
-
 const Query = gql`
   query {
     batteries(orderBy: NAME_ASC) {
@@ -140,13 +138,12 @@ export const BatteriesList = ({ match: { params } }) => {
     );
   }
 
-  function details(id: number) {
-    return (<TableRow className={css.opened}>
+  const details = (id: number) =>
+    <TableRow>
       <TableCell colSpan={5}>
         <BatteryDetails id={id} />
       </TableCell>
-    </TableRow>);
-  }
+    </TableRow>;
 
   const [res] = useQuery<IQueryResponse>({ query: Query });
 
@@ -180,7 +177,7 @@ export const BatteriesList = ({ match: { params } }) => {
 
   return (
     <>
-      <Grid item xs={12} className={css.grid}>
+      <Grid item xs={12}>
         <Card>
           <CardHeader
             title='Batteries'

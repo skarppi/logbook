@@ -7,6 +7,8 @@ import TableRow from '@material-ui/core/TableRow';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableBody from '@material-ui/core/TableBody';
+import TextField from '@material-ui/core/TextField';
+import InputAdornment from '@material-ui/core/InputAdornment';
 import * as React from 'react';
 import { NavLink } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
@@ -16,17 +18,14 @@ import { Flights } from '../Flights/Flights';
 
 import ClosedIcon from '@material-ui/icons/ChevronRight';
 import OpenedIcon from '@material-ui/icons/ExpandMore';
+import SearchIcon from '@material-ui/icons/Search';
 import { LoadingTable } from '../../loading/Loading';
 import { useQuery } from 'urql';
 import { ITotalRows } from '../../dashboard/Home/GraphOverTime';
 import gql from 'graphql-tag';
 import { formatDate, formatMonth } from '../../../utils/date';
 import TableSortLabel from '@material-ui/core/TableSortLabel';
-import { Flight } from '../../../../../shared/flights/types';
-import { parseISO } from 'date-fns';
-
-const layout = require('../../../common/Layout.css');
-const css = require('./FlightDays.css');
+import makeStyles from '@material-ui/styles/makeStyles';
 
 const Query = gql`
   query($orderBy:[FlightsByDaysOrderBy!]) {
@@ -99,6 +98,12 @@ const calculateTotalsPerMonthAndDay = (flightsPerMonthAndDay: Record<string, Rec
   });
 };
 
+const useStyles = makeStyles({
+  action: {
+    marginRight: 0
+  }
+});
+
 export const FlightDays = () => {
 
   const { date } = useParams();
@@ -168,11 +173,31 @@ export const FlightDays = () => {
       {title}
     </TableSortLabel>;
 
+  const css = useStyles();
+
   return (
     <>
-      <Grid item xs={12} className={layout.grid}>
+      <Grid item xs={12}>
         <Card>
-          <CardHeader title='Flights List' />
+          <CardHeader
+            title='Flights List'
+            style={{ marginRight: 0 }}
+            classes={{ action: css.action }}
+            action={
+              <TextField
+                id='search'
+                placeholder='Search'
+                type='search'
+                margin='normal'
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position='start'>
+                      <SearchIcon />
+                    </InputAdornment>
+                  ),
+                }}
+              />
+            } />
           <CardContent>
             <Table>
               <TableHead>
