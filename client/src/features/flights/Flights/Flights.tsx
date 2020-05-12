@@ -91,7 +91,9 @@ export const Flights = () => {
       {isCurrent && (
         <TableRow className={css.opened}>
           <TableCell colSpan={5}>
-            <FlightDetails entry={flight} />
+            <FlightDetails entry={flight}
+              nextFlightLink={flights[index - 1] && `${path}/${flights[index - 1].id}`}
+              previousFlightLink={flights[index + 1] && `${path}/${flights[index + 1].id}`} />
           </TableCell>
         </TableRow>
       )}

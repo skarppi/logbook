@@ -22,7 +22,8 @@ const flightCss = require('./Flight.css');
 import { differenceInHours } from 'date-fns';
 
 import DeleteIcon from '@material-ui/icons/Delete';
-import RefreshIcon from '@material-ui/icons/Refresh';
+import NavigateBeforeIcon from '@material-ui/icons/ExpandMore';
+import NavigateNextIcon from '@material-ui/icons/ExpandLess';
 import HamburgerIcon from '@material-ui/icons/MoreVert';
 
 import { LoadingIcon } from '../../loading/Loading';
@@ -121,7 +122,7 @@ interface IQueryResponse {
   };
 }
 
-export const FlightDetails = ({ entry }) => {
+export const FlightDetails = ({ entry, nextFlightLink, previousFlightLink }) => {
 
   const history = useHistory();
 
@@ -139,8 +140,7 @@ export const FlightDetails = ({ entry }) => {
   const [flight, setFlight] = React.useState<Flight>(entry);
   React.useEffect(() => {
     if (read.data) {
-      const flight = read.data.flight;
-      setFlight(flight);
+      setFlight(read.data.flight);
 
       if (flight.segments && flight.segments[0]) {
         const row = flight.segments[0].rows[0];
@@ -187,6 +187,10 @@ export const FlightDetails = ({ entry }) => {
     });
   };
 
+  const goNextFlight = _ => history.push(nextFlightLink);
+
+  const goPreviousFlight = _ => history.push(previousFlightLink);
+
   function handleClick(event) {
     setAnchorEl(event.currentTarget);
   }
@@ -205,6 +209,19 @@ export const FlightDetails = ({ entry }) => {
               spinning={read.fetching || update.fetching || del.fetching}
               error={read.error || update.error || del.error}
             />
+
+            <IconButton
+              onClick={goNextFlight}
+              disabled={!nextFlightLink}>
+              <NavigateNextIcon />
+            </IconButton>
+
+            <IconButton
+              onClick={goPreviousFlight}
+              disabled={!previousFlightLink}>
+              <NavigateBeforeIcon />
+            </IconButton>
+
 
             <IconButton
               aria-label='More'
