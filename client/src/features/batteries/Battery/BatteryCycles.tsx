@@ -17,7 +17,7 @@ import EditIcon from '@material-ui/icons/Edit';
 import SaveIcon from '@material-ui/icons/Save';
 import DeleteIcon from '@material-ui/icons/Delete';
 
-import { formatDate } from '../../../utils/date';
+import { formatDate, formatDateTimeLocal } from '../../../utils/date';
 import { formatDuration } from '../../../../../shared/utils/date';
 import Table from '@material-ui/core/Table';
 import TableCell from '@material-ui/core/TableCell';
@@ -75,6 +75,12 @@ export const BatteryCycles = ({ battery, cycles }: IBatteryCycleProps) => {
   const changeNumber = ({ target: { name, value } }) =>
     setEditing({ ...editing, [name]: value.length > 0 ? Number(value) : null });
 
+  const changeDateTimeLocal = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
+    setEditing({ ...editing, [name]: new Date(`${value}:00`) });
+  };
+
+
   useHotkeys('esc', () => setEditing(null));
 
   // update to server
@@ -107,6 +113,17 @@ export const BatteryCycles = ({ battery, cycles }: IBatteryCycleProps) => {
       }}
     /> : (value && `${value}${unit}` || '');
 
+  const renderDate = (current: boolean, name: string, value: string) =>
+    current ? <TextField
+      id={name}
+      name={name}
+      type='datetime-local'
+      value={formatDateTimeLocal(editing[name])}
+      onChange={changeDateTimeLocal}
+      className={css.textField}
+      margin='normal'
+    /> : formatDate(value);
+
   const renderButtons = (current: boolean, cycle: BatteryCycle) =>
     current ?
       <>
@@ -130,7 +147,7 @@ export const BatteryCycles = ({ battery, cycles }: IBatteryCycleProps) => {
   const rows = cycles.map(cycle => {
     const current = editing && editing.id === cycle.id;
     return <TableRow key={cycle.id}>
-      <TableCell padding='none'>{formatDate(cycle.date)}</TableCell>
+      <TableCell padding='none'>{renderDate(current, 'date', cycle.date)}</TableCell>
       <TableCell>{cycle.flight && renderFlight(cycle.flight)}</TableCell>
       <TableCell padding='none'>{renderNumber(current, 'discharged', cycle.discharged, 'mAh', 'Used')}</TableCell>
       <TableCell>{renderNumber(current, 'voltage', cycle.voltage, 'V', 'Resting')}</TableCell>

@@ -24,6 +24,8 @@ const camelizeColumns = data => {
 
 const pgp: IMain = pgPromise(pgOptions);
 
-console.log(`postgres://${DB_HOST}:5432/logbook`);
+const url = `postgres://${DB_HOST}:5432/logbook`;
 
-export const db: IDatabase<any> = pgp(`postgres://${DB_HOST}:5432/logbook`);
+console.log(url);
+
+export const db: IDatabase<any> = pgp(url);
