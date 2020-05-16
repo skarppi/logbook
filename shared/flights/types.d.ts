@@ -19,6 +19,7 @@ export interface Flight {
   notes?: FlightNotes;
   locationId?: number,
   location?: Location,
+  favorite?: number,
   batteryCycles?: {
     nodes: BatteryCycle[]
   }

@@ -35,6 +35,7 @@ const Query = gql`
         planeId
         flights
         totalTime
+        favorites
       }
     }
   }
@@ -50,6 +51,7 @@ export interface IMonthTotals {
   month: string;
   flights: number;
   totalTime: number;
+  favorites: number;
   days: IDayTotals[]
 }
 
@@ -58,6 +60,7 @@ export interface IDayTotals {
   planes: string,
   flights: number;
   totalTime: number;
+  favorites: number;
 }
 
 const groupFlightsPerMonthAndDay = (queryResponse: IQueryResponse) => {
@@ -82,6 +85,7 @@ const calculateTotalsPerDay = ([day, flights]: [string, ITotalRows[]]): IDayTota
     planes: flights.map(flight => flight.planeId).join(', '),
     flights: flights.reduce((sum, flight) => sum + flight.flights, 0),
     totalTime: flights.reduce((sum, flight) => sum + flight.totalTime, 0),
+    favorites: flights.reduce((sum, flight) => sum + flight.favorites, 0),
   }
 };
 
@@ -93,6 +97,7 @@ const calculateTotalsPerMonthAndDay = (flightsPerMonthAndDay: Record<string, Rec
       month,
       flights: totalsPerDay.reduce((sum, row) => sum + row.flights, 0),
       totalTime: totalsPerDay.reduce((sum, row) => sum + row.totalTime, 0),
+      favorites: totalsPerDay.reduce((sum, row) => sum + row.favorites, 0),
       days: totalsPerDay
     };
   });
@@ -130,6 +135,7 @@ export const FlightDays = () => {
             </NavLink>}
         </TableCell>
         <TableCell>{totals.flights}</TableCell>
+        <TableCell>{totals.favorites > 0 ? totals.favorites : ''}</TableCell>
         <TableCell>{totals.planes}</TableCell>
         <TableCell>{formatDuration(totals.totalTime)}</TableCell>
       </TableRow>
@@ -158,7 +164,7 @@ export const FlightDays = () => {
         <TableCell style={{ fontWeight: 'bold', height: 50 }}>
           {monthTotals.month}
         </TableCell>
-        <TableCell style={{ fontWeight: 'bold' }} colSpan={2}>{monthTotals.flights}</TableCell>
+        <TableCell style={{ fontWeight: 'bold' }} colSpan={3}>{monthTotals.flights}</TableCell>
         <TableCell style={{ fontWeight: 'bold' }}>{formatDuration(monthTotals.totalTime)}</TableCell>
       </TableRow>
       {dayRows}
@@ -203,13 +209,14 @@ export const FlightDays = () => {
               <TableHead>
                 <TableRow>
                   <TableCell>{sortLabel('DATE', 'Date')}</TableCell>
-                  <TableCell>{sortLabel('FLIGHTS', 'Flights')}</TableCell>
+                  <TableCell style={{ maxWidth: '1em' }}>{sortLabel('FLIGHTS', 'Flights')}</TableCell>
+                  <TableCell style={{ maxWidth: '1em' }}>Favorite</TableCell>
                   <TableCell>Plane</TableCell>
-                  <TableCell>{sortLabel('TOTAL_TIME', 'Flight Time')}</TableCell>
+                  <TableCell style={{ maxWidth: '2em' }}>{sortLabel('TOTAL_TIME', 'Flight Time')}</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                <LoadingTable spinning={read.fetching} error={read.error} colSpan={4} />
+                <LoadingTable spinning={read.fetching} error={read.error} colSpan={5} />
                 {rows}
               </TableBody>
             </Table>

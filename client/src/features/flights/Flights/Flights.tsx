@@ -1,4 +1,3 @@
-import Table from '@material-ui/core/Table';
 import TableRow from '@material-ui/core/TableRow';
 import TableCell from '@material-ui/core/TableCell';
 import TableBody from '@material-ui/core/TableBody';
@@ -9,6 +8,8 @@ import { FlightDetails } from '../Flight/Flight';
 
 import ClosedIcon from '@material-ui/icons/ArrowRight';
 import OpenedIcon from '@material-ui/icons/ArrowDropDown';
+import FavoriteIcon from '@material-ui/icons/FavoriteBorder';
+
 import { LoadingTable } from '../../loading/Loading';
 import gql from 'graphql-tag';
 import { Flight } from '../../../../../shared/flights/types';
@@ -37,6 +38,7 @@ const Query = gql`
           id
           name
         }
+        favorite
         batteryCycles {
           nodes {
             batteryName
@@ -82,7 +84,12 @@ export const Flights = () => {
               `(${flight.location.name})`}
           </NavLink>
         </TableCell>
-        <TableCell>{flight.session}</TableCell>
+        <TableCell>
+          {flight.session}
+        </TableCell>
+        <TableCell>
+          {(flight.favorite === 1) && <FavoriteIcon />}
+        </TableCell>
         <TableCell>
           {flight.planeId} {batteries && `(${batteries})`}
         </TableCell>
@@ -90,7 +97,7 @@ export const Flights = () => {
       </TableRow>
       {isCurrent && (
         <TableRow className={css.opened}>
-          <TableCell colSpan={5}>
+          <TableCell colSpan={5} style={{ padding: 0 }}>
             <FlightDetails entry={flight}
               nextFlightLink={flights[index - 1] && `${path}/${flights[index - 1].id}`}
               previousFlightLink={flights[index + 1] && `${path}/${flights[index + 1].id}`} />

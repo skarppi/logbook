@@ -82,6 +82,7 @@ CREATE TABLE Flights (
   duration INTEGER NOT NULL,
   armed_time INTEGER NOT NULL,
   flight_time INTEGER NOT NULL,
+  favorite INTEGER,
   notes JSONB,
   segments JSONB NOT NULL
 );
@@ -135,7 +136,8 @@ CREATE VIEW FLIGHTS_BY_DAY as
 SELECT to_char(start_date, 'YYYY-MM-DD') as date,
           plane_id,
           cast(sum(flight_time) as integer) as total_time, 
-          cast(count(*) as integer) as flights 
+          cast(sum(favorite) as integer) as favorites,
+          cast(count(*) as integer) as flights
       FROM flights 
       GROUP BY 1,2 
       ORDER BY date;
@@ -145,7 +147,8 @@ CREATE VIEW FLIGHTS_BY_MONTH as
 SELECT to_char(start_date, 'YYYY-MM-01') as date,
           plane_id,
           cast(sum(flight_time) as integer) as total_time, 
-          cast(count(*) as integer) as flights 
+          cast(sum(favorite) as integer) as favorites,
+          cast(count(*) as integer) as flights
       FROM flights 
       GROUP BY 1,2 
       ORDER BY date;
@@ -155,7 +158,8 @@ CREATE VIEW FLIGHTS_BY_YEAR as
 SELECT to_char(start_date, 'YYYY-01-01') as date,
           plane_id,
           cast(sum(flight_time) as integer) as total_time, 
-          cast(count(*) as integer) as flights 
+          cast(sum(favorite) as integer) as favorites,
+          cast(count(*) as integer) as flights
       FROM flights 
       GROUP BY 1,2 
       ORDER BY date;

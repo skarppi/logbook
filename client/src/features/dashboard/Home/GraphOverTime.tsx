@@ -153,6 +153,7 @@ export interface ITotalRows {
   planeId: string;
   flights: number;
   totalTime: number;
+  favorites: number;
 }
 
 interface IProps {

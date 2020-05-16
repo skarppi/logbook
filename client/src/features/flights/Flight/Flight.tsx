@@ -25,6 +25,8 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import NavigateBeforeIcon from '@material-ui/icons/ExpandMore';
 import NavigateNextIcon from '@material-ui/icons/ExpandLess';
 import HamburgerIcon from '@material-ui/icons/MoreVert';
+import FavoriteIcon from '@material-ui/icons/Favorite';
+import UnFavoriteIcon from '@material-ui/icons/FavoriteBorder';
 
 import { LoadingIcon } from '../../loading/Loading';
 import { useQuery, useMutation } from 'urql';
@@ -56,6 +58,7 @@ const Query = gql`
         latitude
         longitude
       }
+      favorite
       segments
       batteryCycles {
         nodes {
@@ -154,9 +157,13 @@ export const FlightDetails = ({ entry, nextFlightLink, previousFlightLink }) => 
     }
   }, [read.data]);
 
-
-
   const flightDate = formatDate(flight.startDate);
+
+  const changeFavorite = () =>
+    updateFlight({
+      id: flight.id,
+      patch: { favorite: flight.favorite ? 0 : 1 }
+    });
 
   const changeNotes = ({ target: { name, value } }) =>
     setFlight({
@@ -199,6 +206,7 @@ export const FlightDetails = ({ entry, nextFlightLink, previousFlightLink }) => 
     setAnchorEl(null);
   }
 
+
   return (
     <Card className={css.card}>
       <CardHeader
@@ -209,6 +217,12 @@ export const FlightDetails = ({ entry, nextFlightLink, previousFlightLink }) => 
               spinning={read.fetching || update.fetching || del.fetching}
               error={read.error || update.error || del.error}
             />
+
+            {<IconButton
+              onClick={changeFavorite}>
+              {flight.favorite ? <FavoriteIcon /> : <UnFavoriteIcon />}
+            </IconButton>
+            }
 
             <IconButton
               onClick={goNextFlight}
@@ -221,7 +235,6 @@ export const FlightDetails = ({ entry, nextFlightLink, previousFlightLink }) => 
               disabled={!previousFlightLink}>
               <NavigateBeforeIcon />
             </IconButton>
-
 
             <IconButton
               aria-label='More'
