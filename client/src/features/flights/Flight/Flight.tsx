@@ -27,6 +27,7 @@ import NavigateNextIcon from '@material-ui/icons/ExpandLess';
 import HamburgerIcon from '@material-ui/icons/MoreVert';
 import FavoriteIcon from '@material-ui/icons/Favorite';
 import UnFavoriteIcon from '@material-ui/icons/FavoriteBorder';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 import { LoadingIcon } from '../../loading/Loading';
 import { useQuery, useMutation } from 'urql';
@@ -40,6 +41,9 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import { FlightTimezone } from './FlightTimezone';
 import { FlightTrack } from './FlightTrack';
+import ExpansionPanel from '@material-ui/core/ExpansionPanel';
+import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
+import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 
 const Query = gql`
   query($id:String!) {
@@ -321,9 +325,14 @@ export const FlightDetails = ({ entry, nextFlightLink, previousFlightLink }) => 
           <FlightGraph segments={flight.segments || []} plane={flight.plane}></FlightGraph>
         </div>
 
-        <div className={flightCss.track}>
-          <FlightTrack flight={flight}></FlightTrack>
-        </div>
+        <ExpansionPanel defaultExpanded={false}>
+          <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+            Show Map
+          </ExpansionPanelSummary>
+          <ExpansionPanelDetails>
+            <FlightTrack flight={flight}></FlightTrack>
+          </ExpansionPanelDetails>
+        </ExpansionPanel>
 
         <Videos
           date={flight.startDate}

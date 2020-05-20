@@ -120,7 +120,9 @@ export const FlightDays = () => {
   const groupedFlights = groupFlightsPerMonthAndDay(read.data);
   const totalsPerMonthDays = calculateTotalsPerMonthAndDay(groupedFlights);
 
-  const flightDayRows = (totals: IDayTotals) => {
+  const css = useStyles();
+
+  const dayRows = (totals: IDayTotals) => {
     const isCurrent = date === totals.day;
 
     return <React.Fragment key={totals.day + '-day'}>
@@ -156,9 +158,7 @@ export const FlightDays = () => {
     }
   }
 
-  const rows = totalsPerMonthDays.sort(getSorting()).map(monthTotals => {
-    const dayRows = monthTotals.days.map(flightDayRows);
-
+  const monthRows = totalsPerMonthDays.sort(getSorting()).map(monthTotals => {
     return <React.Fragment key={monthTotals.month + '-month'}>
       <TableRow>
         <TableCell style={{ fontWeight: 'bold', height: 50 }}>
@@ -167,7 +167,7 @@ export const FlightDays = () => {
         <TableCell style={{ fontWeight: 'bold' }} colSpan={3}>{monthTotals.flights}</TableCell>
         <TableCell style={{ fontWeight: 'bold' }}>{formatDuration(monthTotals.totalTime)}</TableCell>
       </TableRow>
-      {dayRows}
+      {monthTotals.days.map(dayRows)}
     </React.Fragment >;
   });
 
@@ -179,15 +179,12 @@ export const FlightDays = () => {
       {title}
     </TableSortLabel>;
 
-  const css = useStyles();
-
   return (
     <>
       <Grid item xs={12}>
         <Card>
           <CardHeader
             title='Flights List'
-            style={{ marginRight: 0 }}
             classes={{ action: css.action }}
             action={
               <TextField
@@ -211,13 +208,13 @@ export const FlightDays = () => {
                   <TableCell>{sortLabel('DATE', 'Date')}</TableCell>
                   <TableCell style={{ maxWidth: '1em' }}>{sortLabel('FLIGHTS', 'Flights')}</TableCell>
                   <TableCell style={{ maxWidth: '1em' }}>Favorite</TableCell>
-                  <TableCell>Plane</TableCell>
+                  <TableCell style={{ maxWidth: '2em' }}>Plane</TableCell>
                   <TableCell style={{ maxWidth: '2em' }}>{sortLabel('TOTAL_TIME', 'Flight Time')}</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 <LoadingTable spinning={read.fetching} error={read.error} colSpan={5} />
-                {rows}
+                {monthRows}
               </TableBody>
             </Table>
           </CardContent>

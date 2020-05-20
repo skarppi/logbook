@@ -16,8 +16,7 @@ import { Flight } from '../../../../../shared/flights/types';
 import { useQuery } from 'urql';
 import { addDays } from 'date-fns';
 import { formatTime, formatDate } from '../../../utils/date';
-
-const css = require('./Flights.css');
+import { makeStyles } from '@material-ui/core/styles';
 
 const Query = gql`
   query($from:Datetime!,$to:Datetime!) {
@@ -51,8 +50,15 @@ const Query = gql`
 interface IQueryResponse {
   flights: {
     nodes: Flight[];
-  }
+  };
 }
+
+const useStyles = makeStyles(theme => ({
+  openedCell: {
+    padding: 0,
+    backgroundColor: '#fafafa'
+  }
+}));
 
 export const Flights = () => {
 
@@ -66,6 +72,8 @@ export const Flights = () => {
   const path = `/flights/${date}`;
 
   const flights = read.data && read.data.flights.nodes || [];
+
+  const css = useStyles();
 
   const rows = flights.map((flight, index) => {
     const isCurrent = id === flight.id;
@@ -96,8 +104,8 @@ export const Flights = () => {
         <TableCell>{formatDuration(flight.flightTime)}</TableCell>
       </TableRow>
       {isCurrent && (
-        <TableRow className={css.opened}>
-          <TableCell colSpan={5} style={{ padding: 0 }}>
+        <TableRow>
+          <TableCell colSpan={5} className={css.openedCell}>
             <FlightDetails entry={flight}
               nextFlightLink={flights[index - 1] && `${path}/${flights[index - 1].id}`}
               previousFlightLink={flights[index + 1] && `${path}/${flights[index + 1].id}`} />
