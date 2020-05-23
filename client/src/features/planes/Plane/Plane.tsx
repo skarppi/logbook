@@ -109,7 +109,7 @@ const mergePlaneTelemetries = (plane: Plane) => {
   const flight = flights.nodes && flights.nodes[0];
   if (flight != null) {
     const items = flight.segments[0].rows[0];
-    plane.telemetries = Object.keys(items).map(id => {
+    planeWithoutFlights.telemetries = Object.keys(items).map(id => {
       if (plane.telemetries) {
         // preserve old values
         const oldTelemetry = plane.telemetries.find(telemetry => telemetry.id === id);

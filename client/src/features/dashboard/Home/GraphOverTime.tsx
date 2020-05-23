@@ -41,7 +41,7 @@ const chartOptions = (max: number, unit: DashboardUnit) => {
   return {
     offset: true,
     tooltips: {
-      mode: 'index',
+      mode: 'point',
       intersect: false,
       callbacks: {
         label: function (tooltipItem, data) {
