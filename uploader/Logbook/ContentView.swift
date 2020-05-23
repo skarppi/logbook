@@ -31,7 +31,7 @@ struct ContentView: View {
     @State var documentPickerViewModel = DocumentPickerViewModel()
     
     @State var locationId: Int?
-    
+        
     var body: some View {
         VStack {
             VStack(alignment: .leading, spacing: 1.0) {
@@ -97,15 +97,19 @@ struct ContentView: View {
     func log(_ row: String) {
         output += "\(row)\n"
     }
-    
-    func refresh() {
-        files = []
-        
+
+    func log(_ row: String, _ date: Date) {
         let dateFormatter = DateFormatter()
         dateFormatter.timeZone = TimeZone.current
         dateFormatter.dateStyle = DateFormatter.Style.long
         dateFormatter.timeStyle = DateFormatter.Style.medium
 
+        log("\(row) \(dateFormatter.string(from: date))")
+    }
+    
+    func refresh() {
+        files = []
+        
         if let smbPath = userSettings.getSmbPath() {
             log("Connecting to \(smbPath)")
             if samba.connect(hostname: smbPath) {
@@ -126,7 +130,7 @@ struct ContentView: View {
             let lastSync: Date = res.date ?? Date(timeIntervalSince1970: 0)
 
             if let date = res.date {
-                self.log("Last flight \(dateFormatter.string(from: date))")
+                self.log("Last flight", lastSync)
             } else {
                 self.log("No previous flights")
             }
@@ -177,15 +181,16 @@ struct ContentView: View {
                     return
                 }
                 files.forEach { url in
-                    let keys = Set([URLResourceKey.fileSizeKey])
+                    let keys: [URLResourceKey] = [.fileSizeKey, .contentModificationDateKey]
                     guard let resourceValues = try? url.resourceValues(forKeys: Set(keys)),
-                        let size = resourceValues.fileSize
+                        let size = resourceValues.fileSize,
+                        let date = resourceValues.contentModificationDate
                         else {
                             print("No properties for file \(url.path)")
                             return
                     }
                     
-                    self.log(url.lastPathComponent + " [\(size/1000)kb]")
+                    self.log(url.lastPathComponent + " [\(size/1000)kb]", date)
                 }
                 self.files = files
             }.catch { error in

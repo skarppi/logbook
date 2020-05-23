@@ -74,9 +74,9 @@ class LogbookService {
                     }
                 }
                 
+                // remove milliseconds and round up so that we don't end up reuploading the last flight
                 let withoutMilliseconds = lastFlight.replacingOccurrences(of: "\\.\\d+", with: "", options: .regularExpression)
-            
-                let date = self.dateFormatter.date(from: withoutMilliseconds)
+                let date = self.dateFormatter.date(from: withoutMilliseconds)?.addingTimeInterval(TimeInterval(1))
                 
                 return LogbookResult(date, location)
             } else if let error = res?["errors"].arrayValue.first?["message"].string {
