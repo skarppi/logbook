@@ -10,10 +10,22 @@ import SwiftUI
 import MobileCoreServices
 import PromiseKit
 import SMBClient
+import CoreLocation
+
+class Locations: ObservableObject {
+    var list: [LogbookLocation] = [] {
+        willSet {
+          id = UUID()
+        }
+    }
+
+    @Published var selected: Int?
+    @Published var id: UUID = UUID()
+}
 
 struct ContentView: View {
     @EnvironmentObject var userSettings: UserSettings
-    
+        
     private var samba = SambaClient()
     
     private var logbook = LogbookService()
@@ -24,14 +36,14 @@ struct ContentView: View {
     
     @State var files: [URL] = []
     
+    @ObservedObject var locations = Locations()
+    
     @State var lastSync: Date?
     
     @State var output = ""
 
     @State var documentPickerViewModel = DocumentPickerViewModel()
-    
-    @State var locationId: Int?
-        
+            
     var body: some View {
         VStack {
             VStack(alignment: .leading, spacing: 1.0) {
@@ -65,6 +77,22 @@ struct ContentView: View {
                     .textFieldStyle(RoundedBorderTextFieldStyle())
             }
 
+            Picker(selection: $locations.selected, label: Text("Location")) {
+                Text("---").tag(nil as Int?)
+                ForEach(locations.list) { loc in
+                    Text(loc.toString()).tag(loc.id as Int?)
+                }
+            }.id(locations.id)
+            
+            Button(action: refresh) {
+                Text("Refresh")
+                    .padding()
+            }
+            Button(action:sync) {
+                Text("Sync")
+                    .padding()
+            }.disabled(files.isEmpty)
+        
             ScrollView() {
                 HStack {
                     Text(output)
@@ -75,23 +103,13 @@ struct ContentView: View {
                     Spacer()
                 }
             }
-            Button(action: refresh) {
-                Text("Refresh")
-                    .padding()
-            }
-            Button(action:sync) {
-                Text("Sync")
-                    .padding()
-            }.disabled(files.isEmpty)
         }
         .padding()
         .background(
             Color(.systemBackground).edgesIgnoringSafeArea(.all)
         ).onAppear(perform: {
-            self.location.requestLocation(fulfill: { (coord) in
-                self.log("Got location \(coord.latitude), \(coord.longitude)")
-            }, reject: self.log)
-            })
+            self.location.requestLocation(fulfill: self.acquiredLocation, reject: self.log)
+        })
     }
     
     func log(_ row: String) {
@@ -105,6 +123,29 @@ struct ContentView: View {
         dateFormatter.timeStyle = DateFormatter.Style.medium
 
         log("\(row) \(dateFormatter.string(from: date))")
+    }
+    
+    func acquiredLocation(coord: CLLocationCoordinate2D) {
+        log("Got location \(coord.latitude), \(coord.longitude)")
+        
+        logbook.fetchLocations(logbookApi: userSettings.targetURL, location: coord).done { locations in
+            self.locations.list = locations
+            
+            if let loc = locations.first {
+                self.log("Closest location is \(loc.name) at \(loc.distance)km")
+                self.locations.selected = loc.id
+            } else {
+                self.log("Location not available")
+                self.locations.selected = nil
+            }
+            
+        }.catch { error in
+            self.log(error.localizedDescription)
+        }.finally {
+            if let lastSync = self.lastSync {
+                self.fetchNewFiles(after: lastSync)
+            }
+        }
     }
     
     func refresh() {
@@ -126,25 +167,14 @@ struct ContentView: View {
             documentPickerViewModel.isPresented = true
         }
 
-        logbook.fetchLatestFlight(logbookApi: userSettings.targetURL, location: location.latest).done { res in
-            let lastSync: Date = res.date ?? Date(timeIntervalSince1970: 0)
-
-            if let date = res.date {
-                self.log("Last flight", lastSync)
+        logbook.fetchLatestFlight(logbookApi: userSettings.targetURL).done { date in
+            if let date = date {
+                self.log("Last flight", date)
             } else {
                 self.log("No previous flights")
             }
 
-            self.lastSync = lastSync
-            
-            if let loc = res.closestLocation {
-                self.log("Closest location is \(loc.name) at \(loc.distance)km")
-                self.locationId = loc.id
-            } else {
-                self.log("Location not available")
-                self.locationId = nil
-            }
-            
+            self.lastSync = date ?? Date(timeIntervalSince1970: 0)
         }.catch { error in
             self.log(error.localizedDescription)
         }.finally {
@@ -211,14 +241,14 @@ struct ContentView: View {
     private func download(file: SMBFile) -> Promise<URL> {
         newFile(file: file.name, size: file.fileSize)
         
-        return self.samba.download(file: file, progress: { (bytes) in
+        return samba.download(file: file, progress: { (bytes) in
             self.fileProgress(file: file.name, current: bytes)
         })
     }
     
     func sync() {
         log("Uploading flights...")
-        logbook.upload(logbookApi: userSettings.targetURL, files: self.files, locationId: self.locationId).done { flights in
+        logbook.upload(logbookApi: userSettings.targetURL, files: files, locationId: locations.selected).done { flights in
             self.log(flights.joined(separator: "\n"))
             self.log("DONE")
         }.catch { err in

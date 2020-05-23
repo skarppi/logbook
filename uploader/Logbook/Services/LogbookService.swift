@@ -12,9 +12,17 @@ import PMKFoundation
 import SwiftyJSON
 import CoreLocation
 
-typealias LogbookResult = (date: Date?, closestLocation: LogbookLocation?)
+typealias LogbookResult = (date: Date?, locations: [LogbookLocation])
 
-typealias LogbookLocation = (id: Int, name: String, distance: Float)
+struct LogbookLocation: Identifiable {
+    var id: Int
+    var name: String
+    var distance: Float = 0
+    
+    func toString() -> String {
+        return "\(name) at \(distance)km"
+    }
+}
 
 class LogbookService {
     
@@ -29,16 +37,34 @@ class LogbookService {
     }
 
     
-    func fetchLatestFlight(logbookApi: String, location: CLLocationCoordinate2D?) -> Promise<LogbookResult> {
-        let url = apiUrl(logbookApi: logbookApi) + "graphql"
-        
+    func fetchLatestFlight(logbookApi: String) -> Promise<Date?> {
         let query = """
-            query($lat:Float, $lon:Float) {
+            query {
                 flights(first:1, orderBy:START_DATE_DESC) {
                     nodes {
                         endDate
                     }
                 }
+            }
+"""
+        
+        return fetch(logbookApi: logbookApi, query: query, vars: [:]).map { res -> Date? in
+            if let data:JSON = res?["data"],
+                let lastFlight = data["flights"]["nodes"].array?.first?["endDate"].string{
+                
+                // remove milliseconds and round up so that we don't end up reuploading the last flight
+                let withoutMilliseconds = lastFlight.replacingOccurrences(of: "\\.\\d+", with: "", options: .regularExpression)
+                return self.dateFormatter.date(from: withoutMilliseconds)?.addingTimeInterval(TimeInterval(1))
+            } else if let error = res?["errors"].arrayValue.first?["message"].string {
+                throw LogbookError(text: error)
+            }
+            return nil
+        }
+    }
+    
+    func fetchLocations(logbookApi: String, location: CLLocationCoordinate2D) -> Promise<[LogbookLocation]> {
+        let query = """
+            query($lat:Float, $lon:Float) {
                 locationsByCoordinate(lat: $lat, lon: $lon) {
                   nodes {
                     id
@@ -49,46 +75,41 @@ class LogbookService {
             }
 """
         
-        let body = """
-        {
-            "query": "\(query.replacingOccurrences(of: "\n", with: " "))",
-            "variables": {
-                "lat": \(location?.latitude != nil ? String(location!.latitude) : "null"),
-                "lon": \(location?.longitude != nil ? String(location!.longitude) : "null")
-            }
-        }
-"""
-        
-        return fetch(url: url, body: body).map { res -> LogbookResult in
-            if let data:JSON = res?["data"],
-                let lastFlight = data["flights"]["nodes"].array?.first?["endDate"].string,
-                let locations = res?["data"]["locationsByCoordinate"]["nodes"].array {
-                
-                let location: LogbookLocation? = locations.first.flatMap { (elem) in
+        return fetch(logbookApi: logbookApi, query: query, vars: ["lat": String(location.latitude), "lon": String(location.longitude) ]).map { res -> [LogbookLocation] in
+            if let locations = res?["data"]["locationsByCoordinate"]["nodes"].array {
+                return locations.compactMap { (elem) in
                     if let id = elem["id"].int,
                         let name = elem["name"].string,
                         let distance = elem["distance"].float {
-                        return LogbookLocation(id, name, round(distance/100) / 10)
+                        return LogbookLocation(id: id, name: name, distance: round(distance/100) / 10)
                     } else {
                         return nil
                     }
                 }
-                
-                // remove milliseconds and round up so that we don't end up reuploading the last flight
-                let withoutMilliseconds = lastFlight.replacingOccurrences(of: "\\.\\d+", with: "", options: .regularExpression)
-                let date = self.dateFormatter.date(from: withoutMilliseconds)?.addingTimeInterval(TimeInterval(1))
-                
-                return LogbookResult(date, location)
             } else if let error = res?["errors"].arrayValue.first?["message"].string {
                 throw LogbookError(text: error)
             }
-            return LogbookResult(nil, nil)
+            return []
         }
     }
     
-    private func fetch(url: String, body: String) -> Promise<JSON?> {
+    private func fetch(logbookApi: String, query: String, vars: [String: String]) -> Promise<JSON?> {
+        let varStr: [String] = vars.map { (key: String, value: String) -> String in
+            "\"\(key)\": \(value)"
+        }
+        
+        let body = """
+        {
+            "query": "\(query.replacingOccurrences(of: "\n", with: " "))",
+            "variables": {
+                \(varStr.joined(separator: ","))
+            }
+        }
+        """
+        
+        let url = URL(string: apiUrl(logbookApi: logbookApi) + "graphql")!
         print("Fetching data from \(url)")
-        let url = URL(string: url)!
+
         var rq = URLRequest(url: url)
         rq.httpMethod = "POST"
         rq.httpBody = body.data(using: String.Encoding.utf8)
