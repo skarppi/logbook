@@ -15,8 +15,8 @@ export class FlightImpl implements Flight {
   public duration: number;
   public armedTime: number;
   public flightTime: number;
-  public notes: FlightNotes;
-  public stats: FlightStats;
+  public notes: FlightNotes = {};
+  public stats: FlightStats = {};
   public locationId?: number;
   public segments: Segment[];
 
