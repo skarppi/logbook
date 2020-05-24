@@ -44,7 +44,7 @@ function storeFlight(flight: Flight): Promise<Flight> {
   return FlightRepository.find(flight.id).then(existing => {
     if (existing) {
       flight.notes = existing.notes;
-      flight.location = existing.location;
+      flight.locationId = existing.locationId;
     }
     return FlightRepository.save(flight).catch(err => {
       console.log("Save failed", err, err.stack);

@@ -38,6 +38,7 @@ const Query = gql`
           name
         }
         favorite
+        stats
         batteryCycles {
           nodes {
             batteryName
@@ -59,6 +60,22 @@ const useStyles = makeStyles(theme => ({
     backgroundColor: '#fafafa'
   }
 }));
+
+const renderStats = (flight: Flight) => {
+  const stats = flight.stats;
+
+  if (stats) {
+    if (stats.launchHeight !== stats.maxHeight) {
+      return `${stats?.launchHeight} -> ${stats.maxHeight}m`;
+    } else if (stats.maxHeight) {
+      return `${stats?.maxHeight}m`;
+    } else if (stats.launchHeight) {
+      return `${stats?.launchHeight}m`;
+    }
+  } else {
+    return flight.session;
+  }
+}
 
 export const Flights = () => {
 
@@ -93,7 +110,7 @@ export const Flights = () => {
           </NavLink>
         </TableCell>
         <TableCell>
-          {flight.session}
+          {renderStats(flight)}
         </TableCell>
         <TableCell>
           {(flight.favorite === 1) && <FavoriteIcon />}

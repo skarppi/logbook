@@ -68,6 +68,7 @@ export default class FlightParser {
     const query = `query {
       plane(id: "${this.planeName}") {
         id
+        type
         telemetries
         batterySlots
         logicalSwitchByModeArmed {

@@ -12,8 +12,8 @@ export default class FlightRepository {
     console.log(flight);
     return db
       .one(
-        'INSERT INTO flights (id, plane_id, session, start_date, end_date,  duration, armed_time, flight_time, notes, location_id, segments) ' +
-        'VALUES (${id}, ${planeId}, ${session}, ${startDate}, ${endDate}, ${duration}, ${armedTime}, ${flightTime}, ${notes:json}, ${locationId}, ${segments:json}) ' +
+        'INSERT INTO flights (id, plane_id, session, start_date, end_date,  duration, armed_time, flight_time, notes, stats, location_id, segments) ' +
+        'VALUES (${id}, ${planeId}, ${session}, ${startDate}, ${endDate}, ${duration}, ${armedTime}, ${flightTime}, ${notes:json}, ${stats:json}, ${locationId}, ${segments:json}) ' +
         'ON CONFLICT (id) DO UPDATE SET ' +
         ' plane_id = ${planeId},' +
         ' session = ${session},' +
@@ -23,6 +23,7 @@ export default class FlightRepository {
         ' armed_time = ${armedTime},' +
         ' flight_time = ${flightTime},' +
         ' notes = ${notes:json},' +
+        ' stats = ${stats:json},' +
         ' location_id = ${locationId},' +
         ' segments = ${segments:json} ' +
         'RETURNING *',

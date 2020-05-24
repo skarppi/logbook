@@ -12,6 +12,7 @@ import { FlightDate } from './FlightDate';
 import { FlightDuration } from './FlightDuration';
 import { FlightBatteries } from './FlightBatteries';
 import { FlightLocation } from './FlightLocation';
+import { FlightStats } from './FlightStats';
 
 import { Videos } from '../Videos/Videos';
 import { FlightGraph } from './FlightGraph';
@@ -56,6 +57,7 @@ const Query = gql`
       armedTime
       flightTime
       notes
+      stats
       location {
         id
         name
@@ -298,6 +300,10 @@ export const FlightDetails = ({ entry, nextFlightLink, previousFlightLink }) => 
           />
         </div>
 
+        <div className={css.container}>
+          <FlightStats flight={flight} />
+        </div>
+
         <Divider variant='middle' />
 
         <FlightBatteries
@@ -322,7 +328,7 @@ export const FlightDetails = ({ entry, nextFlightLink, previousFlightLink }) => 
         </div>
 
         <div className={flightCss.graph}>
-          <FlightGraph segments={flight.segments || []} plane={flight.plane}></FlightGraph>
+          <FlightGraph flight={flight}></FlightGraph>
         </div>
 
         <ExpansionPanel defaultExpanded={false}>

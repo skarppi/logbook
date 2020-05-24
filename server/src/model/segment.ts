@@ -27,11 +27,11 @@ export default class SegmentImpl implements Segment {
     segment duration ${formatDuration(this.duration)}`;
   }
 
-  private get first(): SegmentItemImpl {
+  public get first(): SegmentItemImpl {
     return this.rows[0];
   }
 
-  private get last(): SegmentItemImpl {
+  public get last(): SegmentItemImpl {
     return this.rows[this.rows.length - 1];
   }
 }

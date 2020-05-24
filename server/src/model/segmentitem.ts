@@ -19,4 +19,8 @@ export default class SegmentItemImpl implements SegmentItem {
     const tz = `GMT${plusMinus}${hoursWithLeadingZero}00`;
     return new Date(`${this.Date} ${this.Time} ${tz}`);
   }
+
+  get alt(): number {
+    return this['Alt(m)'];
+  }
 }

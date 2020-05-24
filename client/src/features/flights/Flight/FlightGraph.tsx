@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import { defaults, Bar } from 'react-chartjs-2';
 import * as Color from 'color';
-import { Segment, SegmentItem } from '../../../../../shared/flights/types';
+import { Segment, SegmentItem, Flight } from '../../../../../shared/flights/types';
 import { Plane, Telemetry } from '../../../../../shared/planes/types';
 import { SegmentType } from '../../../../../shared/flights';
 import { chartColors } from '../../../utils/charts';
@@ -21,8 +21,7 @@ export interface ITotalRows {
 }
 
 interface IProps {
-  segments: Segment[];
-  plane: Plane;
+  flight: Flight;
 }
 
 const chartOptions = (plane: Plane) => {
@@ -150,9 +149,11 @@ const axisMappings = {
 
 // const enabledTelemetries = ['Thr', 'Fuel(mAh)', 'Alt(m)']
 
-export const FlightGraph = ({ segments, plane }: IProps) => {
+export const FlightGraph = ({ flight }: IProps) => {
 
-  const telemetries: Telemetry[] = plane && plane.telemetries || [];
+  const segments = flight.segments || [];
+
+  const telemetries: Telemetry[] = flight.plane && flight.plane.telemetries || [];
 
   const defaultTelemetries = telemetries
     .filter(telemetry => telemetry.default)
@@ -186,13 +187,21 @@ export const FlightGraph = ({ segments, plane }: IProps) => {
   const datasets = fields.map((field, index) => {
     const colorIndex = index % chartColors.length;
     const hidden = defaultTelemetries.indexOf(field) === -1;
+
+    const calibrateAltitude = field.indexOf('(m)') !== -1;
+
     return {
       label: field,
       type: 'line',
       fill: false,
       hidden,
       yAxisID: axisMappings[field] || 'default',
-      data: items.map(i => i[field]),
+      data: items.map(i => {
+        if (calibrateAltitude && flight.stats?.zeroHeight > 0) {
+          return Math.round((i[field] - flight.stats.zeroHeight) * 10) / 10;
+        }
+        return i[field];
+      }),
       pointRadius: 0,
       borderColor: chartColors[colorIndex][0],
       backgroundColor: chartColors[colorIndex][1],
@@ -205,7 +214,7 @@ export const FlightGraph = ({ segments, plane }: IProps) => {
     datasets: [flightTimeSet, ...datasets]
   };
 
-  const options = chartOptions(plane);
+  const options = chartOptions(flight.plane);
 
   return <Bar data={graph} options={options} />;
 };

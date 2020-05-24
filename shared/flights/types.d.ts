@@ -17,6 +17,7 @@ export interface Flight {
   batteries?: BatteryCycle[];
   batteryNames?: string;
   notes?: FlightNotes;
+  stats?: FlightStats;
   locationId?: number,
   location?: Location,
   favorite?: number,
@@ -27,8 +28,13 @@ export interface Flight {
 
 export interface FlightNotes {
   osd?: string;
-  location?: string;
   journal?: string;
+}
+
+export interface FlightStats {
+  zeroHeight?: number;
+  launchHeight?: number;
+  maxHeight?: number;
 }
 
 export interface FlightDay {
