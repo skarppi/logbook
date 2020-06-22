@@ -66,7 +66,7 @@ export class FlightImpl implements Flight {
           return { current, slopes };
         } else {
           // new peak found
-          return { current: { minHeigh: height, maxHeight: height, direction: -1 }, slopes: [...slopes, current] };
+          return { current: { minHeight: height, maxHeight: height, direction: -1 }, slopes: [...slopes, current] };
         }
       } else if (current.direction < 0) {
         // goind down
@@ -75,17 +75,16 @@ export class FlightImpl implements Flight {
           return { current, slopes };
         } else {
           // new minimum found
-          return { current: { minHeigh: height, maxHeight: height, direction: 1 }, slopes: [...slopes, current] };
+          return { current: { minHeight: height, maxHeight: height, direction: 1 }, slopes: [...slopes, current] };
         }
       } else {
         // direction still unknown
         if (height > zeroHeight) {
           current.direction = 1;
-          current.maxHeight = height;
         } else if (height < zeroHeight) {
           current.direction = -1;
-          current.minHeight = height;
         }
+        current.minHeight = current.maxHeight = height;
         return { current, slopes };
       }
 
