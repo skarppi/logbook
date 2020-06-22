@@ -65,16 +65,16 @@ const renderStats = (flight: Flight) => {
   const stats = flight.stats;
 
   if (stats) {
-    if (stats.launchHeight !== stats.maxHeight) {
-      return `${stats?.launchHeight} -> ${stats.maxHeight}m`;
+    console.log(flight.session);
+    if (stats.launchHeight && stats.launchHeight !== stats.maxHeight) {
+      return `${flight.session}: ${stats?.launchHeight} -> ${stats.maxHeight}m`;
     } else if (stats.maxHeight) {
-      return `${stats?.maxHeight}m`;
+      return `${flight.session}: ${stats?.maxHeight}m`;
     } else if (stats.launchHeight) {
-      return `${stats?.launchHeight}m`;
+      return `${flight.session}: ${stats?.launchHeight}m`;
     }
-  } else {
-    return flight.session;
   }
+  return flight.session;
 }
 
 export const Flights = () => {

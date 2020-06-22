@@ -25,17 +25,19 @@ export const FlightStats = ({ flight }: IFlightStatsProps) => {
         name='zeroHeight'
         margin='normal'
       />
-      <TextField
-        InputProps={{
-          readOnly: true
-        }}
-        id='launchHeight'
-        label='Launch height'
-        className={css.textField}
-        value={flight.stats.launchHeight}
-        name='launchHeight'
-        margin='normal'
-      />
+      {flight.stats.launchHeight > 0 &&
+        (<TextField
+          InputProps={{
+            readOnly: true
+          }}
+          id='launchHeight'
+          label='Launch height'
+          className={css.textField}
+          value={flight.stats.launchHeight}
+          name='launchHeight'
+          margin='normal'
+        />)
+      }
       <TextField
         InputProps={{
           readOnly: true

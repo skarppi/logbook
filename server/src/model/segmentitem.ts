@@ -21,6 +21,10 @@ export default class SegmentItemImpl implements SegmentItem {
   }
 
   get alt(): number {
+    if (this['GAlt(m)']) {
+      return this['GAlt(m)'];
+    }
+
     return this['Alt(m)'];
   }
 }

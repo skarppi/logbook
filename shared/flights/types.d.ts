@@ -35,6 +35,13 @@ export interface FlightStats {
   zeroHeight?: number;
   launchHeight?: number;
   maxHeight?: number;
+  slopes?: FlightSlope[];
+}
+
+export interface FlightSlope {
+  minHeight?: number;
+  maxHeight?: number;
+  direction?: number; // positive up, negative down
 }
 
 export interface FlightDay {

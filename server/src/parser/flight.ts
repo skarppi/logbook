@@ -1,5 +1,5 @@
 import Segment from '../model/segment';
-import { Flight, FlightNotes, FlightStats } from '../../../shared/flights/types';
+import { Flight, FlightNotes, FlightStats, FlightSlope } from '../../../shared/flights/types';
 import { SegmentType } from '../../../shared/flights';
 import { Plane } from '../../../shared/planes/types';
 import { differenceInSeconds } from 'date-fns';
@@ -48,12 +48,52 @@ export class FlightImpl implements Flight {
       .filter(segment => segment.type === SegmentType.flying)
       .reduce((sum, segment) => sum + segment.duration, 0);
 
-    if (PlaneType.glider === plane.type) {
-      this.stats = this.gliderStats();
-    }
+    this.stats = this.generateStats();
   }
 
-  private gliderStats = () => {
+  private findSlopes = (segment: Segment, zeroHeight: number): FlightSlope[] => {
+    if (segment.type !== SegmentType.flying) {
+      return [];
+    }
+
+    const items = segment.rows.reduce(({ slopes, current }, item) => {
+      const height = Math.round((item.alt - zeroHeight) * 10) / 10;
+
+      if (current.direction > 0) {
+        // going up
+        if (height >= current.maxHeight) {
+          current.maxHeight = height;
+          return { current, slopes };
+        } else {
+          // new peak found
+          return { current: { minHeigh: height, maxHeight: height, direction: -1 }, slopes: [...slopes, current] };
+        }
+      } else if (current.direction < 0) {
+        // goind down
+        if (height <= current.minHeight) {
+          current.minHeight = height;
+          return { current, slopes };
+        } else {
+          // new minimum found
+          return { current: { minHeigh: height, maxHeight: height, direction: 1 }, slopes: [...slopes, current] };
+        }
+      } else {
+        // direction still unknown
+        if (height > zeroHeight) {
+          current.direction = 1;
+          current.maxHeight = height;
+        } else if (height < zeroHeight) {
+          current.direction = -1;
+          current.minHeight = height;
+        }
+        return { current, slopes };
+      }
+
+    }, { current: { minHeight: zeroHeight, maxHeight: zeroHeight, direction: 0 } as FlightSlope, slopes: [] as FlightSlope[] });
+    return items.slopes;
+  }
+
+  private generateStats = () => {
     const launchSegment = this.segments
       .findIndex(segment => segment.type === SegmentType.flying);
 
@@ -65,19 +105,19 @@ export class FlightImpl implements Flight {
       ? this.segments[launchSegment - 1].last.alt
       : 0;
 
-    return this.segments[launchSegment].rows.reduce((stats, item) => {
-      const height = Math.round((item.alt - stats.zeroHeight) * 10) / 10;
 
-      if (!stats.maxHeight || height > stats.maxHeight) {
-        stats.maxHeight = height;
-      }
+    const slopes = this.segments.slice(launchSegment).reduce((result, current) => {
+      return [...result, ...this.findSlopes(current, zeroHeight)];
+    }, [] as FlightSlope[]);
 
-      if (!stats.launchHeight && height < stats.maxHeight) {
-        // found the launch altitude
-        stats.launchHeight = stats.maxHeight;
-      }
+    console.log(slopes);
 
-      return { ...stats, };
-    }, { zeroHeight } as FlightStats);
+    const launchHeight = this.plane.type === PlaneType.glider ? slopes[1].maxHeight : null;
+
+    const maxHeight = slopes.reduce((current, item) => {
+      return item.maxHeight > current ? item.maxHeight : current;
+    }, zeroHeight);
+
+    return { zeroHeight, launchHeight, maxHeight, slopes };
   }
 }

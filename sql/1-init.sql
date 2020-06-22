@@ -84,6 +84,7 @@ CREATE TABLE Flights (
   flight_time INTEGER NOT NULL,
   favorite INTEGER,
   notes JSONB,
+  stats JSONB,
   segments JSONB NOT NULL
 );
 
