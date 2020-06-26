@@ -163,7 +163,8 @@ const FlightBatteryComponent = ({ plane, flightCycle, battery }: IFlightBatteryP
         <TextField
           id='discharged'
           label='Used'
-          className={`${css.textField} ${css.narrow}`}
+          className={`${css.textField}`}
+          style={{ width: 100 }}
           value={cycle.discharged || ''}
           name='discharged'
           type='number'
@@ -178,7 +179,8 @@ const FlightBatteryComponent = ({ plane, flightCycle, battery }: IFlightBatteryP
         <TextField
           id='resting'
           label='Resting'
-          className={`${css.textField} ${css.narrow}`}
+          className={`${css.textField}`}
+          style={{ width: 90 }}
           value={cycle.voltage || ''}
           name='voltage'
           type='number'
