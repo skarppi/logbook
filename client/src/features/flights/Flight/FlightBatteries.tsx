@@ -49,7 +49,7 @@ export const FlightBatteries = ({ flight, batteries, refreshFlight }: IBatteryPr
 
     const usedBatteries = cycles.map(c => c.batteryName);
 
-    const voltage = lastTelemetry?.['VFAS(V)']
+    const voltage = lastTelemetry?.['VFAS(V)'] || lastTelemetry?.['RxBt(V)'];
     const useCellVoltage = plane.batterySlots > 1 && voltage > 4.5
 
     const cycle = {
@@ -60,7 +60,7 @@ export const FlightBatteries = ({ flight, batteries, refreshFlight }: IBatteryPr
       flightId: flight.id,
       state: BatteryState.discharged,
       voltage: useCellVoltage ? voltage / plane.batterySlots : voltage,
-      discharged: lastTelemetry && Number(lastTelemetry['Fuel(mAh)']),
+      discharged: lastTelemetry && (Number(lastTelemetry['Fuel(mAh)'] || lastTelemetry['Capa(mAh)'])),
     };
 
     createCycle({ cycle }).then(refreshFlight);
