@@ -14,17 +14,18 @@ export const FlightStats = ({ flight }: IFlightStatsProps) => {
 
   return (
     <div className={css.subContainer}>
-      <TextField
-        InputProps={{
-          readOnly: true
-        }}
-        id='zeroHeight'
-        label='Zero height'
-        className={css.textField}
-        value={flight.stats.zeroHeight}
-        name='zeroHeight'
-        margin='normal'
-      />
+      {flight.stats.zeroHeight > 0 &&
+        <TextField
+          InputProps={{
+            readOnly: true
+          }}
+          id='zeroHeight'
+          label='Zero height'
+          className={css.textField}
+          value={flight.stats.zeroHeight}
+          name='zeroHeight'
+          margin='normal'
+        />}
       {flight.stats.launchHeight > 0 &&
         (<TextField
           InputProps={{
@@ -38,17 +39,18 @@ export const FlightStats = ({ flight }: IFlightStatsProps) => {
           margin='normal'
         />)
       }
-      <TextField
-        InputProps={{
-          readOnly: true
-        }}
-        id='maxHeight'
-        label='Maximum height'
-        className={css.textField}
-        value={flight.stats.maxHeight}
-        name='maxHeight'
-        margin='normal'
-      />
+      {flight.stats.maxHeight > 0 &&
+        <TextField
+          InputProps={{
+            readOnly: true
+          }}
+          id='maxHeight'
+          label='Maximum height'
+          className={css.textField}
+          value={flight.stats.maxHeight}
+          name='maxHeight'
+          margin='normal'
+        />}
 
     </div>
   );

@@ -145,9 +145,7 @@ const axisMappings = {
   'AccY(g)': 'binary',
   'AccZ(g)': 'binary',
   'Hdg(@)': 'stick'
-}
-
-// const enabledTelemetries = ['Thr', 'Fuel(mAh)', 'Alt(m)']
+};
 
 export const FlightGraph = ({ flight }: IProps) => {
 

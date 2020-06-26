@@ -102,7 +102,7 @@ export class FlightImpl implements Flight {
 
     const zeroHeight = (launchSegment > 0)
       ? this.segments[launchSegment - 1].last.alt
-      : 0;
+      : null;
 
 
     const slopes = this.segments.slice(launchSegment).reduce((result, current) => {
