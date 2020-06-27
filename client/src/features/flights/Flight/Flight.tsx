@@ -93,7 +93,9 @@ const Query = gql`
     }
     batteries(orderBy:NAME_ASC) {
       nodes {
+        id
         name
+        cells
       }
     }
   }`;
