@@ -107,25 +107,27 @@ const FlightBatteryComponent = ({ plane, flightCycle, battery }: IFlightBatteryP
   const renderResistance = (index: number) => {
 
     return (
-      <TextField
-        key={`resistance-${index}`}
-        label={`Cell ${index + 1}`}
-        placeholder={`Cell ${index + 1}`}
-        className={`${css.textField} ${css.tiny}`}
-        value={
-          (cycle.resistance?.length >= index &&
-            cycle.resistance[index]) ||
-          ''
-        }
-        name={'resistance'}
-        type='number'
-        onChange={e => changeCycleResistance(index, e.target.value)}
-        onBlur={storeBattery}
-        margin='normal'
-        InputProps={{
-          endAdornment: <InputAdornment position='end'>Ω</InputAdornment>
-        }}
-      />
+      <div className={css.subContainer}>
+        <TextField
+          key={`resistance-${index}`}
+          label={`Cell ${index + 1}`}
+          placeholder={`Cell ${index + 1}`}
+          style={{ width: 75 }}
+          inputProps={{ maxLength: 4 }}
+          value={
+            (cycle.resistance?.length >= index &&
+              cycle.resistance[index]) ||
+            ''
+          }
+          name={'resistance'}
+          onChange={e => changeCycleResistance(index, e.target.value)}
+          onBlur={storeBattery}
+          margin='normal'
+          InputProps={{
+            endAdornment: <InputAdornment position='end'>Ω</InputAdornment>
+          }}
+        />
+      </div>
     );
   }
 
@@ -139,110 +141,111 @@ const FlightBatteryComponent = ({ plane, flightCycle, battery }: IFlightBatteryP
     <ExpansionPanel
       key={cycle.id}
       expanded={cycle.state === BatteryState.charged}
-      className={css.container}
     >
-      <ExpansionPanelSummary classes={{ root: css.zero }}>
-        <FormControl className={css.formControl} margin='normal'>
-          <InputLabel htmlFor='select-multiple-checkbox' shrink>
-            Battery
+      <ExpansionPanelSummary>
+        <div className={css.container}>
+
+          <div className={css.subContainer}>
+            <FormControl className={css.formControl} margin='normal'>
+              <InputLabel htmlFor='select-multiple-checkbox' shrink>
+                Battery
             </InputLabel>
-          <Select
-            value={cycle.batteryName || ''}
-            name='batteryName'
-            onChange={changeCycle}
-            onBlur={storeBattery}
-            input={<Input id='select-multiple-checkbox' />}
-          >
-            {plane.planeBatteries.nodes.map(name => (
-              <MenuItem key={name.batteryName} value={name.batteryName}>
-                {name.batteryName}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-        <TextField
-          id='discharged'
-          label='Used'
-          className={`${css.textField}`}
-          style={{ width: 100 }}
-          value={cycle.discharged || ''}
-          name='discharged'
-          type='number'
-          onChange={changeNumber}
-          onBlur={storeBattery}
-          InputLabelProps={{ shrink: true }}
-          InputProps={{
-            endAdornment: <InputAdornment position='end'>mAh</InputAdornment>
-          }}
-          margin='normal'
-        />
-        <TextField
-          id='resting'
-          label='Resting'
-          className={`${css.textField}`}
-          style={{ width: 90 }}
-          value={cycle.voltage || ''}
-          name='voltage'
-          type='number'
-          onChange={changeNumber}
-          onBlur={storeBattery}
-          InputLabelProps={{ shrink: true }}
-          InputProps={{
-            endAdornment: <InputAdornment position='end'>V</InputAdornment>
-          }}
-          margin='normal'
-        />
+              <Select
+                value={cycle.batteryName || ''}
+                name='batteryName'
+                onChange={changeCycle}
+                onBlur={storeBattery}
+                input={<Input id='select-multiple-checkbox' />}
+              >
+                {plane.planeBatteries.nodes.map(name => (
+                  <MenuItem key={name.batteryName} value={name.batteryName}>
+                    {name.batteryName}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </div>
+          <div className={css.subContainer}>
+            <TextField
+              id='discharged'
+              label='Used'
+              style={{ width: 80 }}
+              value={cycle.discharged || ''}
+              name='discharged'
+              onChange={changeNumber}
+              onBlur={storeBattery}
+              InputLabelProps={{ shrink: true }}
+              InputProps={{
+                endAdornment: <InputAdornment position='end'>mAh</InputAdornment>
+              }}
+              margin='normal'
+            />
+            <TextField
+              id='resting'
+              label='Resting'
+              style={{ width: 75 }}
+              value={cycle.voltage || ''}
+              name='voltage'
+              onChange={changeNumber}
+              onBlur={storeBattery}
+              InputLabelProps={{ shrink: true }}
+              InputProps={{
+                endAdornment: <InputAdornment position='end'>V</InputAdornment>
+              }}
+              margin='normal'
+            />
+          </div>
 
-        <IconButton
-          onClick={_ => storeBatteryState(BatteryState.discharged)}
-          color={
-            cycle.state === BatteryState.discharged
-              ? 'primary'
-              : 'default'
-          }
-        >
-          <EmptyChargeIcon />
-        </IconButton>
-
-        <IconButton
-          onClick={_ => storeBatteryState(BatteryState.storage)}
-          color={
-            cycle.state === BatteryState.storage
-              ? 'primary'
-              : 'default'
-          }
-        >
-          <StorageChargeIcon />
-        </IconButton>
-        <IconButton
-          onClick={_ => storeBatteryState(BatteryState.charged)}
-          color={
-            cycle.state === BatteryState.charged
-              ? 'primary'
-              : 'default'
-          }
-        >
-          <FullChargeIcon />
-        </IconButton>
-
-        <IconButton onClick={removeBattery} className={css.last}>
-          <ClearIcon />
-        </IconButton>
-        <LoadingIcon
-          spinning={update.fetching || del.fetching}
-          error={update.error || del.error}
-        />
+          <div className={css.subContainer}>
+            <IconButton
+              onClick={_ => storeBatteryState(BatteryState.discharged)}
+              color={
+                cycle.state === BatteryState.discharged
+                  ? 'primary'
+                  : 'default'
+              }
+            >
+              <EmptyChargeIcon />
+            </IconButton>
+            <IconButton
+              onClick={_ => storeBatteryState(BatteryState.storage)}
+              color={
+                cycle.state === BatteryState.storage
+                  ? 'primary'
+                  : 'default'
+              }
+            >
+              <StorageChargeIcon />
+            </IconButton>
+            <IconButton
+              onClick={_ => storeBatteryState(BatteryState.charged)}
+              color={
+                cycle.state === BatteryState.charged
+                  ? 'primary'
+                  : 'default'
+              }
+            >
+              <FullChargeIcon />
+            </IconButton>
+            <IconButton onClick={removeBattery} className={css.last}>
+              <ClearIcon />
+            </IconButton>
+            <LoadingIcon
+              spinning={update.fetching || del.fetching}
+              error={update.error || del.error}
+            />
+          </div>
+        </div>
       </ExpansionPanelSummary>
 
-      <ExpansionPanelDetails>
+      <ExpansionPanelDetails className={css.container}>
         <TextField
           id='charged'
           label='Charged'
           placeholder='Charged'
-          className={`${css.textField} ${css.narrow}`}
+          style={{ width: 90 }}
           value={cycle.charged || ''}
           name={'charged'}
-          type='number'
           onChange={changeNumber}
           onBlur={storeBattery}
           margin='normal'
@@ -252,6 +255,7 @@ const FlightBatteryComponent = ({ plane, flightCycle, battery }: IFlightBatteryP
         />
 
         {resistances}
+
       </ExpansionPanelDetails>
     </ExpansionPanel>
   );

@@ -27,6 +27,7 @@ const theme = createMuiTheme({
     MuiCardHeader: { root: mobilePadding },
     MuiCardContent: { root: mobilePadding },
     MuiExpansionPanelSummary: { root: mobilePadding },
+    MuiExpansionPanelDetails: { root: mobilePadding },
     MuiTableCell: {
       root: {
         // less empty space when on mobile
@@ -40,6 +41,12 @@ const theme = createMuiTheme({
           textDecoration: 'none',
           color: 'inherit'
         }
+      }
+    },
+    MuiTextField: {
+      root: {
+        marginLeft: '0px',
+        marginRight: '10px',
       }
     }
   }

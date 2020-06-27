@@ -283,19 +283,6 @@ export const FlightDetails = ({ entry, nextFlightLink, previousFlightLink }) => 
         </div>
 
         <div className={css.container}>
-          <TextField
-            id='osd'
-            label='OSD'
-            placeholder='OSD'
-            multiline
-            className={css.textField}
-            value={(flight.notes?.osd) || ''}
-            name='osd'
-            onChange={changeNotes}
-            onBlur={saveNotes}
-            margin='normal'
-          />
-
           <FlightLocation
             flight={flight}
             save={updateFlight}
