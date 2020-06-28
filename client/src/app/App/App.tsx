@@ -43,7 +43,7 @@ const theme = createMuiTheme({
         }
       }
     },
-    MuiTextField: {
+    MuiFormControl: {
       root: {
         marginLeft: '0px',
         marginRight: '10px',

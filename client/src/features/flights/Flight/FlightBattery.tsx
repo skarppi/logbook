@@ -12,7 +12,6 @@ import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import { Plane } from '../../../../../shared/planes/types';
 import { Battery, BatteryCycle } from '../../../../../shared/batteries/types';
-const css = require('../../../common/Form.css');
 
 import FullChargeIcon from '@material-ui/icons/BatteryChargingFull';
 import StorageChargeIcon from '@material-ui/icons/BatteryCharging50';
@@ -22,6 +21,8 @@ import { BatteryState } from '../../../../../shared/batteries';
 import gql from 'graphql-tag';
 import { useMutation } from 'urql';
 import { LoadingIcon } from '../../loading/Loading';
+import { Box } from '@material-ui/core';
+import makeStyles from '@material-ui/core/styles/makeStyles';
 
 interface IFlightBatteryProps {
   plane: Plane;
@@ -56,6 +57,21 @@ const Delete = gql`
     }
   }`;
 
+const useStyles = makeStyles(theme => ({
+  root: {
+    margin: '0!important',
+    padding: '12px 0'
+  },
+  content: {
+    margin: '0!important'
+  },
+  details: {
+    paddingTop: '0',
+    paddingBottom: '0',
+  }
+}
+));
+
 
 const FlightBatteryComponent = ({ plane, flightCycle, battery }: IFlightBatteryProps) => {
 
@@ -68,6 +84,8 @@ const FlightBatteryComponent = ({ plane, flightCycle, battery }: IFlightBatteryP
   if (!plane || !battery) {
     return <></>;
   }
+
+  const css = useStyles();
 
   // modify local state
   const changeNumber = ({ target: { name, value } }) =>
@@ -107,27 +125,25 @@ const FlightBatteryComponent = ({ plane, flightCycle, battery }: IFlightBatteryP
   const renderResistance = (index: number) => {
 
     return (
-      <div className={css.subContainer}>
-        <TextField
-          key={`resistance-${index}`}
-          label={`Cell ${index + 1}`}
-          placeholder={`Cell ${index + 1}`}
-          style={{ width: 75 }}
-          inputProps={{ maxLength: 4 }}
-          value={
-            (cycle.resistance?.length >= index &&
-              cycle.resistance[index]) ||
-            ''
-          }
-          name={'resistance'}
-          onChange={e => changeCycleResistance(index, e.target.value)}
-          onBlur={storeBattery}
-          margin='normal'
-          InputProps={{
-            endAdornment: <InputAdornment position='end'>Ω</InputAdornment>
-          }}
-        />
-      </div>
+      <TextField
+        key={`resistance-${index}`}
+        label={`Cell ${index + 1}`}
+        placeholder={`Cell ${index + 1}`}
+        style={{ width: 75 }}
+        inputProps={{ maxLength: 4 }}
+        value={
+          (cycle.resistance?.length >= index &&
+            cycle.resistance[index]) ||
+          ''
+        }
+        name={'resistance'}
+        onChange={e => changeCycleResistance(index, e.target.value)}
+        onBlur={storeBattery}
+        margin='normal'
+        InputProps={{
+          endAdornment: <InputAdornment position='end'>Ω</InputAdornment>
+        }}
+      />
     );
   }
 
@@ -137,16 +153,18 @@ const FlightBatteryComponent = ({ plane, flightCycle, battery }: IFlightBatteryP
       return renderResistance(index);
     });
 
+  // className={css.formControl}
+
   return (
     <ExpansionPanel
       key={cycle.id}
       expanded={cycle.state === BatteryState.charged}
+      classes={{ root: css.root }}
     >
-      <ExpansionPanelSummary>
-        <div className={css.container}>
-
-          <div className={css.subContainer}>
-            <FormControl className={css.formControl} margin='normal'>
+      <ExpansionPanelSummary classes={{ content: css.content }}>
+        <Box display='flex' flexWrap='wrap'>
+          <Box>
+            <FormControl margin='normal'>
               <InputLabel htmlFor='select-multiple-checkbox' shrink>
                 Battery
             </InputLabel>
@@ -164,8 +182,8 @@ const FlightBatteryComponent = ({ plane, flightCycle, battery }: IFlightBatteryP
                 ))}
               </Select>
             </FormControl>
-          </div>
-          <div className={css.subContainer}>
+          </Box>
+          <Box>
             <TextField
               id='discharged'
               label='Used'
@@ -194,9 +212,9 @@ const FlightBatteryComponent = ({ plane, flightCycle, battery }: IFlightBatteryP
               }}
               margin='normal'
             />
-          </div>
+          </Box>
 
-          <div className={css.subContainer}>
+          <Box alignSelf='center'>
             <IconButton
               onClick={_ => storeBatteryState(BatteryState.discharged)}
               color={
@@ -227,18 +245,18 @@ const FlightBatteryComponent = ({ plane, flightCycle, battery }: IFlightBatteryP
             >
               <FullChargeIcon />
             </IconButton>
-            <IconButton onClick={removeBattery} className={css.last}>
+            <IconButton onClick={removeBattery}>
               <ClearIcon />
             </IconButton>
             <LoadingIcon
               spinning={update.fetching || del.fetching}
               error={update.error || del.error}
             />
-          </div>
-        </div>
-      </ExpansionPanelSummary>
+          </Box>
+        </Box >
+      </ExpansionPanelSummary >
 
-      <ExpansionPanelDetails className={css.container}>
+      <ExpansionPanelDetails classes={{ root: css.details }}>
         <TextField
           id='charged'
           label='Charged'
@@ -254,7 +272,9 @@ const FlightBatteryComponent = ({ plane, flightCycle, battery }: IFlightBatteryP
           }}
         />
 
-        {resistances}
+        <Box>
+          {resistances}
+        </Box>
 
       </ExpansionPanelDetails>
     </ExpansionPanel>
