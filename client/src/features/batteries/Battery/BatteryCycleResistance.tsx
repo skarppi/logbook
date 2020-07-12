@@ -49,6 +49,10 @@ export const BatteryCycleResistance = ({ editing, cells, cycle, setCycle }: IRes
         InputProps={{
           endAdornment: <InputAdornment position='end'>Ω</InputAdornment>
         }}
+        inputProps={{
+          step: 0.1,
+          min: '0'
+        }}
       />
     );
   }
