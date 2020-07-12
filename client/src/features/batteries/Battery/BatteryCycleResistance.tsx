@@ -45,7 +45,7 @@ export const BatteryCycleResistance = ({ editing, cells, cycle, setCycle }: IRes
         name={'resistance'}
         onChange={e => changeCycleResistance(index, e.target.value)}
         style={{ width: 75 }}
-        inputProps={{ maxLength: 4 }}
+        type='number'
         InputProps={{
           endAdornment: <InputAdornment position='end'>Ω</InputAdornment>
         }}

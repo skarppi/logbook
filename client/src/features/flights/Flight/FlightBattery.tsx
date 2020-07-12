@@ -89,7 +89,7 @@ const FlightBatteryComponent = ({ plane, flightCycle, battery }: IFlightBatteryP
 
   // modify local state
   const changeNumber = ({ target: { name, value } }) =>
-    setCycle({ ...cycle, [name]: Number(value) });
+    setCycle({ ...cycle, [name]: (value.length > 0 ? value : null) });
 
   const changeCycle = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const { name, value } = event.target;
@@ -190,6 +190,7 @@ const FlightBatteryComponent = ({ plane, flightCycle, battery }: IFlightBatteryP
               style={{ width: 80 }}
               value={cycle.discharged || ''}
               name='discharged'
+              type='number'
               onChange={changeNumber}
               onBlur={storeBattery}
               InputLabelProps={{ shrink: true }}
@@ -204,12 +205,14 @@ const FlightBatteryComponent = ({ plane, flightCycle, battery }: IFlightBatteryP
               style={{ width: 75 }}
               value={cycle.voltage || ''}
               name='voltage'
+              type='number'
               onChange={changeNumber}
               onBlur={storeBattery}
               InputLabelProps={{ shrink: true }}
               InputProps={{
                 endAdornment: <InputAdornment position='end'>V</InputAdornment>
               }}
+              inputProps={{ step: 0.01 }}
               margin='normal'
             />
           </Box>

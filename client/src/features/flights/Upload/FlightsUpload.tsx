@@ -282,8 +282,8 @@ export const FlightsUpload = ({ match: { params: { id } } }) => {
                 <TableRow>
                   <TableCell>Id</TableCell>
                   <TableCell>Battery</TableCell>
-                  <TableCell>Volts</TableCell>
-                  <TableCell>Discharged</TableCell>
+                  <TableCell>Used</TableCell>
+                  <TableCell>Resting</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>{batteryCycles}</TableBody>

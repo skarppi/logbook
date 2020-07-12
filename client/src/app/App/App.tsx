@@ -48,6 +48,14 @@ const theme = createMuiTheme({
         marginLeft: '0px',
         marginRight: '10px',
       }
+    },
+    MuiInputBase: {
+      input: {
+        '&::-webkit-outer-spin-button, &::-webkit-inner-spin-button': {
+          '-webkit-appearance': 'none',
+          'margin': 0
+        }
+      }
     }
   }
 });
