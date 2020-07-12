@@ -264,7 +264,7 @@ export const BatteryDetails = ({ id }) => {
               {cellCounts.map(count => (
                 <MenuItem key={count} value={count}>
                   {count}s
-                  </MenuItem>
+                </MenuItem>
               ))}
             </Select>
           </FormControl>
@@ -354,7 +354,7 @@ export const BatteryDetails = ({ id }) => {
             Show Entries
           </ExpansionPanelSummary>
           <ExpansionPanelDetails>
-            <BatteryCycles battery={battery} cycles={cycles} />
+            <BatteryCycles cells={battery.cells} cycles={cycles} />
           </ExpansionPanelDetails>
         </ExpansionPanel>
       </CardContent>

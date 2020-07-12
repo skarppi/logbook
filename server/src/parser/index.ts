@@ -1,12 +1,12 @@
 import csv from './csv';
 import FlightRepository from '../model/flight';
+import BatteryCycleRepository from '../model/batterycycle';
 import * as config from '../config';
 import SegmentItemImpl from '../model/segmentitem';
 import FlightParser from './flightparser';
 import { Flight } from '../../../shared/flights/types';
 
 export interface IParserOptions {
-  splitFlightsAfterSeconds: number;
   timezoneOffset: number;
   locationId: number;
 }
@@ -47,11 +47,13 @@ function storeFlight(flight: Flight): Promise<Flight> {
       flight.locationId = existing.locationId;
       flight.session = existing.session;
     }
-    return FlightRepository.save(flight).catch(err => {
-      console.log('Save failed', err, err.stack);
-      throw new Error(
-        `Flight ${flight.id} starting ${flight.startDate} failed ${err}`
-      );
-    });
+    return FlightRepository.save(flight)
+      .then(BatteryCycleRepository.attachUsedBattery)
+      .catch(err => {
+        console.log('Save failed', err, err.stack);
+        throw new Error(
+          `Flight ${flight.id} starting ${flight.startDate} failed ${err}`
+        );
+      });
   });
 }

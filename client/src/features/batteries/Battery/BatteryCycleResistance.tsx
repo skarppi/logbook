@@ -7,20 +7,20 @@ const css = require('../../../common/Form.css');
 
 interface IResistanceProps {
   editing: boolean;
-  battery: Battery;
+  cells: number;
   cycle: BatteryCycle;
   setCycle: React.Dispatch<React.SetStateAction<BatteryCycle>>;
 }
 
-export const BatteryCycleResistance = ({ editing, battery, cycle, setCycle }: IResistanceProps) => {
+export const BatteryCycleResistance = ({ editing, cells, cycle, setCycle }: IResistanceProps) => {
   const changeCycleResistance = (index, value) => {
 
     const resistances =
       (cycle.resistance && [...cycle.resistance]) ||
-      Array(battery.cells).fill('');
+      Array(cells).fill('');
 
-    if (resistances.length < battery.cells) {
-      resistances.push(Array(battery.cells - resistances.length).fill(''));
+    if (resistances.length < cells) {
+      resistances.push(Array(cells - resistances.length).fill(''));
     }
 
     resistances.splice(index, 1, value);
@@ -54,7 +54,7 @@ export const BatteryCycleResistance = ({ editing, battery, cycle, setCycle }: IR
   }
 
   if (editing) {
-    return <>{Array(battery.cells)
+    return <>{Array(cells)
       .fill('')
       .map((_, index) => {
         return renderResistance(index);
@@ -62,7 +62,7 @@ export const BatteryCycleResistance = ({ editing, battery, cycle, setCycle }: IR
     </>;
   } else {
     const sum = cycle.resistance?.reduce((prev, current) => prev + Number(current), 0);
-    if (battery?.cells === 1) {
+    if (cells === 1) {
       return <>{cycle.resistance?.join(' ')}</>;
     } else if (sum > 0) {
       return <>Average: {Math.round(sum / cycle.resistance.length)} Cells: {cycle.resistance?.join(' ')}</>;

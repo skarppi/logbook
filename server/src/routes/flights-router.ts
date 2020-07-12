@@ -21,7 +21,6 @@ export function flightsRouter() {
             []
           ),
           {
-            splitFlightsAfterSeconds: Number.MAX_VALUE,
             timezoneOffset,
             locationId
           }
@@ -51,11 +50,10 @@ export function flightsRouter() {
 
   router.post('', upload.array('flight'), (req: any, res, next) => {
 
-    const splitFlightsAfterSeconds = req.headers.split_flights_after_seconds || 30;
     const timezoneOffset = req.headers.timezone_offset || 0;
     const locationId = req.headers.location_id;
 
-    Promise.all(req.files.map(file => parseFile(file.originalname, { splitFlightsAfterSeconds, timezoneOffset, locationId })))
+    Promise.all(req.files.map(file => parseFile(file.originalname, { timezoneOffset, locationId })))
       .then(flights => {
         const flatten = []
           .concat(...flights)

@@ -9,6 +9,7 @@ import { Battery } from '../../../../../shared/batteries/types';
 import gql from 'graphql-tag';
 import { useMutation } from 'urql';
 import { LoadingIcon } from '../../loading/Loading';
+import { CreateBatteryCycle } from '../../batteries/Battery/BatteryCycleRow';
 const css = require('../../../common/Form.css');
 
 interface IBatteryProps {
@@ -17,30 +18,13 @@ interface IBatteryProps {
   refreshFlight: () => void;
 }
 
-const Create = gql`
-  mutation($cycle:BatteryCycleInput!) {
-    createBatteryCycle(input: {batteryCycle: $cycle}) {
-      batteryCycle {
-        id
-        date
-        batteryName
-        flightId
-        state
-        voltage
-        discharged
-        charged
-      }
-    }
-  }`;
-
-
 export const FlightBatteries = ({ flight, batteries, refreshFlight }: IBatteryProps) => {
 
   const plane = flight.plane;
 
   const cycles = flight.batteryCycles?.nodes || [];
 
-  const [create, createCycle] = useMutation(Create);
+  const [create, createCycle] = useMutation(CreateBatteryCycle);
 
   const addBattery = () => {
 
@@ -50,7 +34,7 @@ export const FlightBatteries = ({ flight, batteries, refreshFlight }: IBatteryPr
     const usedBatteries = cycles.map(c => c.batteryName);
 
     const voltage = lastTelemetry?.['VFAS(V)'] || lastTelemetry?.['RxBt(V)'];
-    const useCellVoltage = plane.batterySlots > 1 && voltage > 4.5
+    const useCellVoltage = plane.batterySlots > 1 && voltage > 4.5;
 
     const cycle = {
       date: flight.startDate,
@@ -73,7 +57,7 @@ export const FlightBatteries = ({ flight, batteries, refreshFlight }: IBatteryPr
         plane={plane}
         flightCycle={cycle}
         battery={batteries.find(b => b.name === cycle.batteryName)}
-      />)
+      />);
   }
   );
 
@@ -98,4 +82,4 @@ export const FlightBatteries = ({ flight, batteries, refreshFlight }: IBatteryPr
       {showControls && batteryControl}
     </>
   );
-}
+};

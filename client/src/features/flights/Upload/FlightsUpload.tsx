@@ -19,15 +19,21 @@ import { FlightTimezone } from '../Flight/FlightTimezone';
 import { formatDuration } from '../../../../../shared/utils/date';
 import { Location } from '../../../../../shared/locations/types';
 
+import NewUsedBatteryIcon from '@material-ui/icons/Add';
 import ClosedIcon from '@material-ui/icons/ArrowRight';
 import OpenedIcon from '@material-ui/icons/ArrowDropDown';
 import { useState } from 'react';
-import { useQuery } from 'urql';
+import { useQuery, useMutation } from 'urql';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
-import { formatDateTime } from '../../../utils/date';
+import { formatDateTime, formatDate, formatDateTimeLocal } from '../../../utils/date';
 import gql from 'graphql-tag';
 import Input from '@material-ui/core/Input';
+import { BatteryCycle, Battery } from '../../../../../shared/batteries/types';
+import Tooltip from '@material-ui/core/Tooltip';
+import IconButton from '@material-ui/core/IconButton';
+import { BatteryCycleRow } from '../../batteries/Battery/BatteryCycleRow';
+import { BatteryState } from '../../../../../shared/batteries';
 
 const css = require('./FlightsUpload.css');
 
@@ -44,9 +50,40 @@ const Query = gql`
     }
   }`;
 
+const QueryUsedBatteries = gql`
+  query {
+    batteries {
+      nodes {
+        name
+      }
+    },
+    batteryCycles(orderBy: ID_ASC, filter: {flightId: {isNull: true}, state: {equalTo: DISCHARGED}}) {
+      nodes {
+        id
+        date
+        batteryName
+        flightId
+        state
+        voltage
+        discharged
+        charged
+      }
+    }
+  }`;
+
+
 interface IQueryResponse {
   locationsByCoordinate: {
     nodes: Location[]
+  };
+}
+
+interface IBatteryCycleQueryResponse {
+  batteries: {
+    nodes: Battery[]
+  },
+  batteryCycles: {
+    nodes: BatteryCycle[]
   };
 }
 
@@ -60,7 +97,15 @@ export const FlightsUpload = ({ match: { params: { id } } }) => {
   const [loaded, setLoaded] = useState(0);
   const [error, setError] = useState<string>(undefined);
 
-  const [splitSeconds, setSplitSeconds] = React.useState(30);
+  const [usedBatteriesResponse] = useQuery<IBatteryCycleQueryResponse>({ query: QueryUsedBatteries });
+  const usedBatteries = usedBatteriesResponse.data?.batteryCycles?.nodes ?? [];
+  const [usedBattery, setUsedBattery] = React.useState<BatteryCycle>(null);
+
+  React.useEffect(() => {
+    setUsedBattery(null);
+  }, [usedBatteries]);
+
+
   const [timezoneOffset, setTimezoneOffset] = React.useState(-new Date().getTimezoneOffset() / 60);
   const [locationId, setLocationId] = React.useState(-1);
 
@@ -114,6 +159,18 @@ export const FlightsUpload = ({ match: { params: { id } } }) => {
 
   const path = `/upload/`;
 
+  const addUsedBattery = () => {
+    setUsedBattery({
+      date: formatDateTimeLocal(new Date()),
+      state: BatteryState.discharged,
+      batteryName: usedBatteriesResponse.data?.batteries?.nodes[0].name ?? ''
+    });
+  };
+
+  const batteryCycles = [...usedBatteries, ...(usedBattery ? [usedBattery] : [])].map(cycle => {
+    return <BatteryCycleRow key={`cycle-${cycle.id}`} cells={0} cycle={cycle} batteries={usedBatteriesResponse.data?.batteries?.nodes || []} />;
+  });
+
   const rows = flights.map((flight, index) => {
     const current = id === flight.id;
 
@@ -152,7 +209,7 @@ export const FlightsUpload = ({ match: { params: { id } } }) => {
     const data = new FormData();
     files.forEach(file => data.append('flight', file, file.name));
 
-    uploadFlightsAPI(data, splitSeconds, timezoneOffset, locationId, (progressEvent: any) => {
+    uploadFlightsAPI(data, timezoneOffset, locationId, (progressEvent: any) => {
       setLoaded((progressEvent.loaded / progressEvent.total) * 100);
     }).then(res => {
       setFlights(res.data.map(f => {
@@ -181,16 +238,6 @@ export const FlightsUpload = ({ match: { params: { id } } }) => {
         <Card>
           <CardHeader title='Upload New Flights' />
           <CardContent>
-            <span>Split flights after a gap of </span>
-            <Select value={splitSeconds} onChange={({ target: { value } }) => {
-              setSplitSeconds(Number(value));
-            }}>
-              <MenuItem value={5}>5 seconds</MenuItem>
-              <MenuItem value={15}>15 seconds</MenuItem>
-              <MenuItem value={30}>30 seconds</MenuItem>
-              <MenuItem value={60}>1 minute</MenuItem>
-            </Select>
-            <br />
             <span>Timezone offset </span>
             <FlightTimezone offset={timezoneOffset} onChange={setTimezoneOffset} />
 
@@ -217,6 +264,34 @@ export const FlightsUpload = ({ match: { params: { id } } }) => {
           </CardContent>
         </Card>
       </Grid>
+      <Grid item xs={12}>
+        <Card>
+          <CardHeader
+            title='Used Batteries'
+            action={
+              <Tooltip title='Add new used battery'>
+                <IconButton onClick={addUsedBattery}>
+                  <NewUsedBatteryIcon />
+                </IconButton>
+              </Tooltip>
+            }
+          />
+          <CardContent>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Id</TableCell>
+                  <TableCell>Battery</TableCell>
+                  <TableCell>Volts</TableCell>
+                  <TableCell>Discharged</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>{batteryCycles}</TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+      </Grid>
+
       <Grid item xs={12}>
         <Card>
           <CardHeader title='Uploaded Flights' />

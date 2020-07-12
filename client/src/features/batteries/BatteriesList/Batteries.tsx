@@ -27,6 +27,7 @@ import { BatteryState } from '../../../../../shared/batteries';
 
 import gql from 'graphql-tag';
 import { useQuery, useMutation } from 'urql';
+import { CreateBatteryCycle } from '../Battery/BatteryCycleRow';
 
 const Query = gql`
   query {
@@ -55,25 +56,9 @@ interface IQueryResponse {
   };
 }
 
-const Charge = gql`
-  mutation ($batteryCycle: BatteryCycleInput!) {
-    createBatteryCycle(input: {batteryCycle: $batteryCycle}) {
-      batteryCycle {
-        id
-      }
-    }
-  }`;
-
-
-interface IRouteParams {
-  id: number;
-}
-
 const NEWID = 'add';
 
 export const BatteriesList = ({ match: { params } }) => {
-
-  // const { params }: { params: IRouteParams } = match;
 
   function lastState({ nodes }) {
     const [cycle] = nodes;
@@ -106,14 +91,14 @@ export const BatteriesList = ({ match: { params } }) => {
     );
   }
 
-  const [charged, chargeBattery] = useMutation(Charge);
+  const [charged, chargeBattery] = useMutation(CreateBatteryCycle);
 
   function batteryOps(battery) {
     return (
       <>
         <IconButton
           onClick={_ => chargeBattery({
-            batteryCycle: {
+            cycle: {
               date: new Date(),
               batteryName: battery.name,
               state: BatteryState.storage,
@@ -124,7 +109,7 @@ export const BatteriesList = ({ match: { params } }) => {
         </IconButton>
         <IconButton
           onClick={_ => chargeBattery({
-            batteryCycle: {
+            cycle: {
               date: new Date(),
               batteryName: battery.name,
               state: BatteryState.charged,

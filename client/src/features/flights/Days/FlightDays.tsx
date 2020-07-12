@@ -126,7 +126,7 @@ export const FlightDays = () => {
     const isCurrent = date === totals.day;
 
     return <React.Fragment key={totals.day + '-day'}>
-      <TableRow selected={isCurrent} hover={true}>
+      <TableRow selected={isCurrent} hover={true} id={totals.day}>
         <TableCell>
           {(isCurrent && <NavLink to={'/flights'}>
             <OpenedIcon />
