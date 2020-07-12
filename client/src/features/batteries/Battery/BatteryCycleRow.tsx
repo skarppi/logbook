@@ -97,7 +97,7 @@ export const BatteryCycleRow = ({ cells, cycle, batteries }: IBatteryCycleProps)
   };
 
   const changeNumber = ({ target: { name, value } }) =>
-    setEditing({ ...editing, [name]: (value.length > 0 ? value : null) });
+    setEditing({ ...editing, [name]: (value.length > 0 ? Number(value) : null) });
 
   const changeDateTimeLocal = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
@@ -138,7 +138,10 @@ export const BatteryCycleRow = ({ cells, cycle, batteries }: IBatteryCycleProps)
       InputProps={{
         endAdornment: <InputAdornment position='end'>{unit}</InputAdornment>
       }}
-      inputProps={{ step: (unit === 'V' ? 0.01 : 1) }}
+      inputProps={{
+        step: (unit === 'V' ? 0.01 : 1),
+        min: '0'
+      }}
     /> : (value && `${value}${unit}` || '');
 
   const renderDate = (name: string, value: string) =>
