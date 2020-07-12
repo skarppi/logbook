@@ -26,6 +26,7 @@ import InputLabel from '@material-ui/core/InputLabel';
 import Select from '@material-ui/core/Select';
 import Input from '@material-ui/core/Input';
 import MenuItem from '@material-ui/core/MenuItem';
+import { LoadingIcon } from '../../loading/Loading';
 
 export const CreateBatteryCycle = gql`
   mutation ($cycle: BatteryCycleInput!) {
@@ -81,9 +82,9 @@ interface IBatteryCycleProps {
 export const BatteryCycleRow = ({ cells, cycle, batteries }: IBatteryCycleProps) => {
 
   // graphql CRUD operations
-  const [create, createCycle] = useMutation(CreateBatteryCycle);
-  const [update, updateCycle] = useMutation(Update);
-  const [del, deleteCycle] = useMutation(Delete);
+  const [creating, createCycle] = useMutation(CreateBatteryCycle);
+  const [updating, updateCycle] = useMutation(Update);
+  const [deleting, deleteCycle] = useMutation(Delete);
 
   // local state
   const [editing, setEditing] = React.useState<BatteryCycle>(!cycle.id ? cycle : null);
@@ -110,9 +111,9 @@ export const BatteryCycleRow = ({ cells, cycle, batteries }: IBatteryCycleProps)
   const save = () => {
     const { ['__typename']: _, flight, ...cycle } = editing;
     if (editing.id) {
-      updateCycle({ id: editing.id, cycle }).then(() => setEditing(null));
+      updateCycle({ id: editing.id, cycle }).then((res) => !res.error && setEditing(null));
     } else {
-      createCycle({ cycle }).then(() => setEditing(null));
+      createCycle({ cycle }).then((res) => !res.error && setEditing(null));
     }
   };
 
@@ -183,6 +184,9 @@ export const BatteryCycleRow = ({ cells, cycle, batteries }: IBatteryCycleProps)
     <TableCell padding='none'>
       {isEditing ?
         <>
+          <LoadingIcon
+            spinning={updating.fetching || deleting.fetching}
+            error={updating.error || deleting.error} />
           <Tooltip title='Save entry'>
             <IconButton onClick={save}>
               <SaveIcon />

@@ -118,7 +118,6 @@ export const BatteriesList = ({ match: { params } }) => {
         >
           <FullChargeIcon />
         </IconButton>
-        <LoadingIcon spinning={charged.fetching} error={charged.error} />
       </>
     );
   }
@@ -182,7 +181,10 @@ export const BatteriesList = ({ match: { params } }) => {
                   <TableCell>Type</TableCell>
                   <TableCell>Current status</TableCell>
                   <TableCell>Last used</TableCell>
-                  <TableCell>Actions</TableCell>
+                  <TableCell>
+                    Actions
+                    <LoadingIcon spinning={charged.fetching} error={charged.error} />
+                  </TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
