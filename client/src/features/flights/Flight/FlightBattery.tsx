@@ -151,7 +151,7 @@ const FlightBatteryComponent = ({ plane, flightCycle, battery }: IFlightBatteryP
     );
   }
 
-  const resistances = Array(battery.cells)
+  const resistances = Array(cycle.state === BatteryState.charged ? battery.cells : 0)
     .fill('')
     .map((_, index) => {
       return renderResistance(index);
@@ -162,7 +162,7 @@ const FlightBatteryComponent = ({ plane, flightCycle, battery }: IFlightBatteryP
   return (
     <ExpansionPanel
       key={cycle.id}
-      expanded={cycle.state === BatteryState.charged}
+      expanded={cycle.state !== BatteryState.discharged}
       classes={{ root: css.root }}
     >
       <ExpansionPanelSummary classes={{ content: css.content }}>
