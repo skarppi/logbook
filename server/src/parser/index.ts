@@ -20,10 +20,10 @@ export function parseFile(filename: string, options: IParserOptions): Promise<Fl
 
 export function parseData(id: string, items: object[], options: IParserOptions): Promise<Flight[]> {
   const parser = new FlightParser(id, options);
-  return parser.fetchPlane().then(() =>
-    Promise.all(
-      getFlights(parser, items).map(storeFlight)
-    ));
+  return parser.fetchPlane().then(() => {
+    const flights = getFlights(parser, items);
+    return storeFlights(flights);
+  });
 }
 
 function getFlights(parser: FlightParser, items: object[]): Flight[] {
@@ -38,6 +38,13 @@ function getFlights(parser: FlightParser, items: object[]): Flight[] {
     return state;
   }, parser);
   return parsed.getFlights();
+}
+
+function storeFlights(flights: Flight[]): Promise<Flight[]> {
+  return flights.reduce(
+    (p, flight) => p.then(results => storeFlight(flight).then(result => results.concat([result]))),
+    Promise.resolve([] as Flight[])
+  );
 }
 
 function storeFlight(flight: Flight): Promise<Flight> {
