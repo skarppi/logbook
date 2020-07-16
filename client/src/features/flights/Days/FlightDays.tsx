@@ -115,7 +115,11 @@ export const FlightDays = () => {
 
   const [orderBy, setOrderBy] = React.useState('DATE_DESC');
 
-  const [read] = useQuery<IQueryResponse>({ query: Query, variables: { orderBy } });
+  const [read, reload] = useQuery<IQueryResponse>({
+    query: Query,
+    variables: { orderBy },
+    requestPolicy: 'cache-and-network'
+  });
 
   const groupedFlights = groupFlightsPerMonthAndDay(read.data);
   const totalsPerMonthDays = calculateTotalsPerMonthAndDay(groupedFlights);
