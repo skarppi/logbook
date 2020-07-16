@@ -27,7 +27,7 @@ import { BatteryState } from '../../../../../shared/batteries';
 
 import gql from 'graphql-tag';
 import { useQuery, useMutation } from 'urql';
-import { CreateBatteryCycle } from '../Battery/BatteryCycleRow';
+import { CREATE_BATTERY_CYCLE } from '../Battery/BatteryCycle';
 
 const Query = gql`
   query {
@@ -91,7 +91,7 @@ export const BatteriesList = ({ match: { params } }) => {
     );
   }
 
-  const [charged, chargeBattery] = useMutation(CreateBatteryCycle);
+  const [charged, chargeBattery] = useMutation(CREATE_BATTERY_CYCLE);
 
   function batteryOps(battery) {
     return (

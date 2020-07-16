@@ -8,8 +8,6 @@ import { Battery, BatteryCycle } from '../../../../../shared/batteries/types';
 import { BatteryCycleResistance } from './BatteryCycleResistance';
 
 import { NavLink } from 'react-router-dom';
-
-import gql from 'graphql-tag';
 import { useMutation } from 'urql';
 
 import EditIcon from '@material-ui/icons/Edit';
@@ -27,40 +25,7 @@ import Select from '@material-ui/core/Select';
 import Input from '@material-ui/core/Input';
 import MenuItem from '@material-ui/core/MenuItem';
 import { LoadingIcon } from '../../loading/Loading';
-
-export const CreateBatteryCycle = gql`
-  mutation ($cycle: BatteryCycleInput!) {
-    createBatteryCycle(input: {batteryCycle: $cycle}) {
-      batteryCycle {
-        id
-        date
-        batteryName
-        flightId
-        state
-        voltage
-        discharged
-        charged
-      }
-    }
-  }`;
-
-const Update = gql`
-mutation($id:Int!, $cycle:BatteryCyclePatch!) {
-  updateBatteryCycle(input: {id: $id, patch: $cycle}) {
-    batteryCycle {
-      id
-    }
-  }
-}`;
-
-const Delete = gql`
-mutation($id:Int!) {
-  deleteBatteryCycle(input: {id: $id}) {
-    batteryCycle {
-      id
-    }
-  }
-}`;
+import { CREATE_BATTERY_CYCLE, UPDATE_BATTERY_CYCLE, DELETE_BATTERY_CYCLE } from './BatteryCycle';
 
 interface IQueryResponse {
   batteryCycle: BatteryCycle;
@@ -82,9 +47,9 @@ interface IBatteryCycleProps {
 export const BatteryCycleRow = ({ cells, cycle, batteries }: IBatteryCycleProps) => {
 
   // graphql CRUD operations
-  const [creating, createCycle] = useMutation(CreateBatteryCycle);
-  const [updating, updateCycle] = useMutation(Update);
-  const [deleting, deleteCycle] = useMutation(Delete);
+  const [creating, createCycle] = useMutation(CREATE_BATTERY_CYCLE);
+  const [updating, updateCycle] = useMutation(UPDATE_BATTERY_CYCLE);
+  const [deleting, deleteCycle] = useMutation(DELETE_BATTERY_CYCLE);
 
   // local state
   const [editing, setEditing] = React.useState<BatteryCycle>(!cycle.id ? cycle : null);

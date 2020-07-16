@@ -9,7 +9,7 @@ import { Battery } from '../../../../../shared/batteries/types';
 import gql from 'graphql-tag';
 import { useMutation } from 'urql';
 import { LoadingIcon } from '../../loading/Loading';
-import { CreateBatteryCycle } from '../../batteries/Battery/BatteryCycleRow';
+import { CREATE_BATTERY_CYCLE } from '../../batteries/Battery/BatteryCycle';
 const css = require('../../../common/Form.css');
 
 interface IBatteryProps {
@@ -24,7 +24,7 @@ export const FlightBatteries = ({ flight, batteries, refreshFlight }: IBatteryPr
 
   const cycles = flight.batteryCycles?.nodes || [];
 
-  const [create, createCycle] = useMutation(CreateBatteryCycle);
+  const [create, createCycle] = useMutation(CREATE_BATTERY_CYCLE);
 
   const addBattery = () => {
 
