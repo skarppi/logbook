@@ -1,8 +1,17 @@
 import { Router } from 'express';
 import { CSV_FOLDER } from '../config';
 import * as multer from 'multer';
-import { parseFile, parseData } from '../parser';
+import { parseFile, parseData, IParserOptions } from '../parser';
 import FlightRepository from '../model/flight';
+import { Flight } from '../../../shared/flights/types';
+
+function parseFiles(filenames: string[], options: IParserOptions): Promise<Flight[]> {
+  return filenames.reduce(
+    (p, filename) => p.then(results =>
+      parseFile(filename, options).then(result => results.concat(...result))),
+    Promise.resolve([] as Flight[])
+  );
+}
 
 export function flightsRouter() {
   const router = Router();
@@ -53,13 +62,8 @@ export function flightsRouter() {
     const timezoneOffset = req.headers.timezone_offset || 0;
     const locationId = req.headers.location_id;
 
-    Promise.all(req.files.map(file => parseFile(file.originalname, { timezoneOffset, locationId })))
-      .then(flights => {
-        const flatten = []
-          .concat(...flights)
-          .sort((a, b) => (a.startDate > b.startDate ? -1 : 1));
-        res.json(flatten);
-      })
+    parseFiles(req.files.map(file => file.originalname), { timezoneOffset, locationId })
+      .then(flights => res.json(flights.reverse()))
       .catch(next);
   });
 
