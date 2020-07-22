@@ -64,7 +64,10 @@ export const FlightLocation = ({ flight, save }: IFlightLocationProps) => {
   };
 
   const renderExistingLocations = () => {
-    const locations = query.data?.locations?.nodes || [];
+    const locations = query.data?.locations?.nodes;
+    if (!locations) {
+      return <></>;
+    }
 
     return (
       <FormControl className={css.formControl} margin='normal'>
