@@ -22,7 +22,7 @@ import { Location } from '../../../../../shared/locations/types';
 import NewUsedBatteryIcon from '@material-ui/icons/Add';
 import ClosedIcon from '@material-ui/icons/ArrowRight';
 import OpenedIcon from '@material-ui/icons/ArrowDropDown';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useQuery, useMutation } from 'urql';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -99,7 +99,13 @@ export const FlightsUpload = ({ match: { params: { id } } }) => {
   const [loaded, setLoaded] = useState(0);
   const [error, setError] = useState<string>(undefined);
 
-  const [usedBatteriesResponse] = useQuery<IBatteryCycleQueryResponse>({ query: QueryUsedBatteries });
+  const context = useMemo(() => ({ additionalTypenames: ['BatteryCycle'] }), []);
+
+  const [usedBatteriesResponse] = useQuery<IBatteryCycleQueryResponse>({
+    query: QueryUsedBatteries,
+    requestPolicy: 'cache-and-network',
+    context
+  });
   const usedBatteries = usedBatteriesResponse.data?.batteryCycles?.nodes ?? [];
   const allBatteries = usedBatteriesResponse.data?.batteries?.nodes || [];
 
@@ -171,7 +177,11 @@ export const FlightsUpload = ({ match: { params: { id } } }) => {
   };
 
   const batteryCycles = [...usedBatteries, ...(usedBattery ? [usedBattery] : [])].map(cycle => {
-    return <BatteryCycleRow key={`cycle-${cycle.id}`} cells={0} cycle={cycle} batteries={allBatteries} />;
+    return <BatteryCycleRow
+      key={`cycle-${cycle.id}`}
+      cells={0} cycle={cycle}
+      batteries={allBatteries}
+      removeEntry={() => setUsedBattery(null)} />;
   });
 
   const rows = flights.map((flight, index) => {

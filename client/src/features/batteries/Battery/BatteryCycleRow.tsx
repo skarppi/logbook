@@ -27,24 +27,20 @@ import MenuItem from '@material-ui/core/MenuItem';
 import { LoadingIcon } from '../../loading/Loading';
 import { CREATE_BATTERY_CYCLE, UPDATE_BATTERY_CYCLE, DELETE_BATTERY_CYCLE } from './BatteryCycle';
 
-interface IQueryResponse {
-  batteryCycle: BatteryCycle;
-}
-
 const SWITCHES = [
   'DISCHARGED',
   'CHARGED',
   'STORAGE'
 ];
 
-
 interface IBatteryCycleProps {
   cells: number;
   cycle: BatteryCycle;
   batteries?: Battery[];
+  removeEntry?: () => void;
 }
 
-export const BatteryCycleRow = ({ cells, cycle, batteries }: IBatteryCycleProps) => {
+export const BatteryCycleRow = ({ cells, cycle, batteries, removeEntry }: IBatteryCycleProps) => {
 
   // graphql CRUD operations
   const [creating, createCycle] = useMutation(CREATE_BATTERY_CYCLE);
@@ -83,7 +79,12 @@ export const BatteryCycleRow = ({ cells, cycle, batteries }: IBatteryCycleProps)
   };
 
   const remove = () => {
-    deleteCycle({ id: editing.id }).then(() => setEditing(null));
+    if (editing.id) {
+      deleteCycle({ id: editing.id }).then(() => setEditing(null));
+    } else {
+      // not yet saved
+      removeEntry();
+    }
   };
 
   const renderFlight = (flight: Flight) =>
