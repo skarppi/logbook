@@ -28,6 +28,7 @@ import { BatteryState } from '../../../../../shared/batteries';
 import gql from 'graphql-tag';
 import { useQuery, useMutation } from 'urql';
 import { CREATE_BATTERY_CYCLE } from '../Battery/BatteryCycle';
+import { LinkProps } from '@material-ui/core/Link';
 
 const Query = gql`
   query {
@@ -157,7 +158,7 @@ export const BatteriesList = ({ match: { params } }) => {
     </React.Fragment>;
   });
 
-  const AddLink = props => <Link to={`/batteries/${NEWID}`} {...props} />;
+  const AddLink = React.forwardRef<HTMLAnchorElement, Partial<LinkProps>>((props, ref) => <Link to={`/batteries/${NEWID}`} {...props} ref={ref} />);
 
   return (
     <>

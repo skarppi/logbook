@@ -28,6 +28,7 @@ import { LoadingTable } from '../../loading/Loading';
 import { Location } from '../../../../../shared/locations/types';
 import { LocationMap } from './LocationMap';
 import { Flight } from '../../../../../shared/flights/types';
+import { LinkProps } from '@material-ui/core/Link';
 
 const Query = gql`
   query {
@@ -124,7 +125,7 @@ export const LocationsList = () => {
     </React.Fragment>;
   });
 
-  const AddLink = props => <Link to={`/locations/${NEWID}`} {...props} />;
+  const AddLink = React.forwardRef<HTMLAnchorElement, Partial<LinkProps>>((props, ref) => <Link to={`/locations/${NEWID}`} {...props} ref={ref} />);
 
   return (
     <>
