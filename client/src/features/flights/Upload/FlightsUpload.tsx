@@ -64,7 +64,9 @@ const QueryUsedBatteries = gql`
         batteryName
         flightId
         state
-        voltage
+        restingVoltage
+        startVoltage
+        endVoltage
         discharged
         charged
       }
@@ -99,15 +101,16 @@ export const FlightsUpload = ({ match: { params: { id } } }) => {
 
   const [usedBatteriesResponse] = useQuery<IBatteryCycleQueryResponse>({ query: QueryUsedBatteries });
   const usedBatteries = usedBatteriesResponse.data?.batteryCycles?.nodes ?? [];
-  const [usedBattery, setUsedBattery] = React.useState<BatteryCycle>(null);
+  const allBatteries = usedBatteriesResponse.data?.batteries?.nodes || [];
 
+  const [usedBattery, setUsedBattery] = React.useState<BatteryCycle>(null);
   React.useEffect(() => {
     setUsedBattery(null);
   }, [usedBatteries]);
 
 
   const [timezoneOffset, setTimezoneOffset] = React.useState(-new Date().getTimezoneOffset() / 60);
-  const [locationId, setLocationId] = React.useState(-1);
+  const [locationId, setLocationId] = React.useState(null);
 
   const [currentLocation, setCurrentLocation] = useState({ lat: null, lon: null });
 
@@ -163,12 +166,12 @@ export const FlightsUpload = ({ match: { params: { id } } }) => {
     setUsedBattery({
       date: formatDateTimeLocal(new Date()),
       state: BatteryState.discharged,
-      batteryName: usedBatteriesResponse.data?.batteries?.nodes[0].name ?? ''
+      batteryName: allBatteries?.[0].name ?? ''
     });
   };
 
   const batteryCycles = [...usedBatteries, ...(usedBattery ? [usedBattery] : [])].map(cycle => {
-    return <BatteryCycleRow key={`cycle-${cycle.id}`} cells={0} cycle={cycle} batteries={usedBatteriesResponse.data?.batteries?.nodes || []} />;
+    return <BatteryCycleRow key={`cycle-${cycle.id}`} cells={0} cycle={cycle} batteries={allBatteries} />;
   });
 
   const rows = flights.map((flight, index) => {
@@ -244,7 +247,7 @@ export const FlightsUpload = ({ match: { params: { id } } }) => {
             <br />
             <span>Location </span>
             <Select
-              value={locationId || 0}
+              value={locationId || ''}
               name='location'
               onChange={({ target: { name, value } }) => setLocationId(Number(value))}
               input={<Input id='select-multiple-checkbox' />}

@@ -143,7 +143,7 @@ export const BatteryCycleRow = ({ cells, cycle, batteries }: IBatteryCycleProps)
     <TableCell padding='none'>{renderDate('date', cycle.date)}</TableCell>
     <TableCell>{cycle.flight && renderFlight(cycle.flight) || batteries && selectBattery()}</TableCell>
     <TableCell padding='none'>{renderNumber('discharged', cycle.discharged, 'mAh', 'Used')}</TableCell>
-    <TableCell>{renderNumber('voltage', cycle.voltage, 'V', 'Resting')}</TableCell>
+    <TableCell>{renderNumber('restingVoltage', cycle.restingVoltage, 'V', 'Resting')}</TableCell>
     <TableCell padding='none'>{cycle.state}</TableCell>
     <TableCell>{renderNumber('charged', cycle.charged, 'mAh', 'Charged')}</TableCell>
     <TableCell padding='none'>

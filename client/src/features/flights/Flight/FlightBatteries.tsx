@@ -4,9 +4,8 @@ import FormControl from '@material-ui/core/FormControl';
 import { Flight } from '../../../../../shared/flights/types';
 import { FlightBattery } from './FlightBattery';
 import AddIcon from '@material-ui/icons/Add';
-import { BatteryState } from '../../../../../shared/batteries';
+import { cycleFromFlight } from '../../../../../shared/batteries';
 import { Battery } from '../../../../../shared/batteries/types';
-import gql from 'graphql-tag';
 import { useMutation } from 'urql';
 import { LoadingIcon } from '../../loading/Loading';
 import { CREATE_BATTERY_CYCLE } from '../../batteries/Battery/BatteryCycle';
@@ -27,38 +26,25 @@ export const FlightBatteries = ({ flight, batteries, refreshFlight }: IBatteryPr
   const [create, createCycle] = useMutation(CREATE_BATTERY_CYCLE);
 
   const addBattery = () => {
-
-    const lastSegment = flight.segments.slice(-1)[0];
-    const lastTelemetry = lastSegment.rows.slice(-1)[0];
-
     const usedBatteries = cycles.map(c => c.batteryName);
 
-    const voltage = lastTelemetry?.['VFAS(V)'] || lastTelemetry?.['RxBt(V)'];
-    const useCellVoltage = plane.batterySlots > 1 && voltage > 4.5;
+    const nextBatteryName = plane.planeBatteries.nodes.find(
+      name => usedBatteries.indexOf(name.batteryName) === -1
+    )?.batteryName;
 
-    const cycle = {
-      date: flight.startDate,
-      batteryName: plane.planeBatteries.nodes.find(
-        name => usedBatteries.indexOf(name.batteryName) === -1
-      ).batteryName,
-      flightId: flight.id,
-      state: BatteryState.discharged,
-      voltage: useCellVoltage ? voltage / plane.batterySlots : voltage,
-      discharged: lastTelemetry && (Number(lastTelemetry['Fuel(mAh)'] || lastTelemetry['Capa(mAh)'])),
-    };
+    const battery = batteries.find(b => b.name === nextBatteryName);
 
+    const cycle = cycleFromFlight(flight, battery?.name);
     createCycle({ cycle }).then(refreshFlight);
   };
 
-  const rows = cycles.map(cycle => {
-    return cycle.id && (
-      <FlightBattery
-        key={cycle.id}
-        plane={plane}
-        flightCycle={cycle}
-        battery={batteries.find(b => b.name === cycle.batteryName)}
-      />);
-  }
+  const rows = cycles.map(cycle => cycle.id && (
+    <FlightBattery
+      key={cycle.id}
+      plane={plane}
+      flightCycle={cycle}
+      battery={batteries.find(b => b.name === cycle.batteryName)}
+    />)
   );
 
   const batteryControl =

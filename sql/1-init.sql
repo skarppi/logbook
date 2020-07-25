@@ -106,7 +106,6 @@ CREATE TABLE Battery_Cycles (
   discharged INTEGER,
   charged INTEGER,
   resistance JSONB,
-  UNIQUE (date, battery_name),
   UNIQUE (battery_name, flight_id)
 );
 

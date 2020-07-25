@@ -41,7 +41,9 @@ const Update = gql`
         batteryName
         flightId
         state
-        voltage
+        restingVoltage
+        startVoltage
+        endVoltage
         discharged
         charged
       }
@@ -73,17 +75,17 @@ const useStyles = makeStyles(theme => ({
 ));
 
 
-const FlightBatteryComponent = ({ plane, flightCycle, battery }: IFlightBatteryProps) => {
+export const FlightBattery = ({ plane, flightCycle, battery }: IFlightBatteryProps) => {
+
+  if (!plane || !battery) {
+    return <></>;
+  }
 
   const [update, updateCycle] = useMutation(Update);
   const [del, deleteCycle] = useMutation(Delete);
 
   const [cycle, setCycle] = React.useState<BatteryCycle>(flightCycle);
   React.useEffect(() => setCycle(flightCycle), [flightCycle]);
-
-  if (!plane || !battery) {
-    return <></>;
-  }
 
   const css = useStyles();
 
@@ -149,7 +151,7 @@ const FlightBatteryComponent = ({ plane, flightCycle, battery }: IFlightBatteryP
         }}
       />
     );
-  }
+  };
 
   const resistances = Array(cycle.state === BatteryState.charged ? battery.cells : 0)
     .fill('')
@@ -157,7 +159,25 @@ const FlightBatteryComponent = ({ plane, flightCycle, battery }: IFlightBatteryP
       return renderResistance(index);
     });
 
-  // className={css.formControl}
+  const textFieldVolts = (name: string, label: string, value?: number) => {
+    const perCell = battery.cells > 1 ? ` ${Math.round(value / battery.cells * 100) / 100}v` : '';
+    return <TextField
+      id={name}
+      label={label + perCell}
+      style={{ width: 75 }}
+      value={value || ''}
+      name={name}
+      type='number'
+      onChange={changeNumber}
+      onBlur={storeBattery}
+      InputLabelProps={{ shrink: true }}
+      InputProps={{
+        endAdornment: <InputAdornment position='end'>V</InputAdornment>
+      }}
+      inputProps={{ step: 0.01 }}
+      margin='normal'
+    />;
+  }
 
   return (
     <ExpansionPanel
@@ -203,22 +223,9 @@ const FlightBatteryComponent = ({ plane, flightCycle, battery }: IFlightBatteryP
               }}
               margin='normal'
             />
-            <TextField
-              id='resting'
-              label='Resting'
-              style={{ width: 75 }}
-              value={cycle.voltage || ''}
-              name='voltage'
-              type='number'
-              onChange={changeNumber}
-              onBlur={storeBattery}
-              InputLabelProps={{ shrink: true }}
-              InputProps={{
-                endAdornment: <InputAdornment position='end'>V</InputAdornment>
-              }}
-              inputProps={{ step: 0.01 }}
-              margin='normal'
-            />
+            {textFieldVolts('startVoltage', 'From', cycle.startVoltage)}
+            {textFieldVolts('endVoltage', 'To', cycle.endVoltage)}
+            {textFieldVolts('restingVoltage', 'Rest', cycle.restingVoltage)}
           </Box>
 
           <Box alignSelf='center'>
@@ -287,6 +294,4 @@ const FlightBatteryComponent = ({ plane, flightCycle, battery }: IFlightBatteryP
       </ExpansionPanelDetails>
     </ExpansionPanel>
   );
-}
-
-export const FlightBattery = FlightBatteryComponent;
+};

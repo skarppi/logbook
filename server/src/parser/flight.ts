@@ -4,6 +4,8 @@ import { SegmentType } from '../../../shared/flights';
 import { Plane } from '../../../shared/planes/types';
 import { differenceInSeconds } from 'date-fns';
 import { PlaneType } from '../../../shared/planes';
+import { cycleFromFlight } from '../../../shared/batteries';
+import { BatteryCycle } from '../../../shared/batteries/types';
 
 export class FlightImpl implements Flight {
   public id: string;
@@ -19,6 +21,7 @@ export class FlightImpl implements Flight {
   public stats: FlightStats = {};
   public locationId?: number;
   public segments: Segment[];
+  public batteries: BatteryCycle[];
 
   constructor(name: string, plane: Plane, session: number, segments: Segment[], locationId?: number) {
 
@@ -49,6 +52,8 @@ export class FlightImpl implements Flight {
       .reduce((sum, segment) => sum + segment.duration, 0);
 
     this.stats = this.generateStats();
+
+    this.batteries = [cycleFromFlight(this, null)];
   }
 
   private findSlopes = (segment: Segment, zeroHeight: number): FlightSlope[] => {

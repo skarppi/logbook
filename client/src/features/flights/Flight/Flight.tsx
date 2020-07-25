@@ -73,7 +73,9 @@ const Query = gql`
           batteryName
           flightId
           state
-          voltage
+          restingVoltage
+          startVoltage
+          endVoltage
           discharged
           charged
           resistance

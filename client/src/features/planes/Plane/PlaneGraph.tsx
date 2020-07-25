@@ -106,8 +106,6 @@ export const PlaneGraph = ({ cycles }: IProps) => {
     datasets
   };
 
-  console.log(graph);
-
   const options = chartOptions();
 
   return <Bar data={graph} options={options} />;

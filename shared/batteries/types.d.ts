@@ -20,7 +20,9 @@ export interface BatteryCycle {
   batteryName: string;
   state: BatteryState;
   flightId?: string;
-  voltage?: number;
+  restingVoltage?: number;
+  startVoltage?: number;
+  endVoltage?: number;
   discharged?: number;
   charged?: number;
   resistance?: [number];

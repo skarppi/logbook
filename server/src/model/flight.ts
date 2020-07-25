@@ -28,7 +28,11 @@ export default class FlightRepository {
         ' segments = ${segments:json} ' +
         'RETURNING *',
         flight
-      );
+      ).then(saved => {
+        saved.batteries = flight.batteries;
+        return saved;
+      });
+
   }
 
   public toString(flight: Flight) {

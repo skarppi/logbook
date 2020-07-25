@@ -9,7 +9,9 @@ export const CREATE_BATTERY_CYCLE = gql`
         batteryName
         flightId
         state
-        voltage
+        restingVoltage
+        startVoltage
+        endVoltage
         discharged
         charged
       }

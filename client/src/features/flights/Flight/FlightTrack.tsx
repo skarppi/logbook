@@ -14,8 +14,6 @@ interface IFlightLocationProps {
 
 export const FlightTrack = ({ flight }: IFlightLocationProps) => {
 
-  console.log(flight.location)
-
   if (!flight.location?.latitude) {
     return <></>;
   }

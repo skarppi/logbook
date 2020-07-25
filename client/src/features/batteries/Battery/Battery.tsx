@@ -54,7 +54,9 @@ const Query = gql`
           id
           date
           state
-          voltage
+          restingVoltage
+          startVoltage
+          endVoltage
           discharged
           charged
           resistance
@@ -193,7 +195,7 @@ export const BatteryDetails = ({ id }) => {
 
   const cycles = battery.batteryCycles && battery.batteryCycles.nodes || [];
 
-  const voltages = cycles.filter(c => c.voltage);
+  const voltages = cycles.filter(c => c.restingVoltage);
 
   const batteryCss = useStyles();
 
@@ -335,7 +337,7 @@ export const BatteryDetails = ({ id }) => {
                 </TableCell>
               <TableCell>
                 {
-                  voltages.length > 0 ? Math.round(voltages.reduce((sum, c) => sum + Number(c.voltage), 0) / voltages.length * 100) / 100 : '-'
+                  voltages.length > 0 ? Math.round(voltages.reduce((sum, c) => sum + Number(c.restingVoltage), 0) / voltages.length * 100) / 100 : '-'
                 }
               </TableCell>
             </TableRow>
