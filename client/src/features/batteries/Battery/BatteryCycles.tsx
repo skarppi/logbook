@@ -17,7 +17,7 @@ interface IBatteryCycleProps {
 export const BatteryCycles = ({ cells, cycles }: IBatteryCycleProps) => {
 
   const rows = cycles.map(cycle => {
-    return <BatteryCycleRow cells={cells} cycle={cycle} />;
+    return <BatteryCycleRow key={cycle.id} cells={cells} cycle={cycle} />;
   });
 
   return <Table padding='default'>

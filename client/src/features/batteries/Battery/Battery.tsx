@@ -257,7 +257,7 @@ export const BatteryDetails = ({ id }) => {
           <FormControl className={css.formControl} margin='normal'>
             <InputLabel htmlFor='select-multiple-checkbox'>Cells</InputLabel>
             <Select
-              value={battery.cells}
+              value={battery.cells || ''}
               name={'cells'}
               onChange={changeBattery}
               onBlur={save}

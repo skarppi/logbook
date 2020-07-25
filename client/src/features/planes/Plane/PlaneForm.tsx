@@ -10,6 +10,7 @@ import { PlaneType } from '../../../../../shared/planes';
 import { Battery } from '../../../../../shared/batteries/types';
 import { useContext } from 'react';
 import { PlanesContext } from '../PlanesList/Planes';
+import Box from '@material-ui/core/Box';
 
 const planeCss = require('./Plane.css');
 const css = require('../../../common/Form.css');
@@ -21,7 +22,7 @@ interface IProps {
   save: (event) => void;
 }
 
-function RenderLogicalSwitch({ mode, label, plane, changePlane, save, extra = <></> }) {
+function RenderLogicalSwitch({ mode, label, plane, changePlane, save }) {
   const { logicalSwitches } = useContext(PlanesContext);
 
   return <FormControl className={css.formControl} margin='normal'>
@@ -39,9 +40,6 @@ function RenderLogicalSwitch({ mode, label, plane, changePlane, save, extra = <>
         </MenuItem>
       ))}
     </Select>
-    {
-      extra
-    }
   </FormControl>;
 }
 
@@ -211,22 +209,26 @@ export const PlaneForm = ({ plane, allBatteries, setPlane, save }: IProps) => {
 
       <RenderLogicalSwitch mode='modeStopped' label='Pause flying' plane={plane} changePlane={changePlane} save={save} />
 
-      <RenderLogicalSwitch
-        mode='modeRestart'
-        label='Restart flight'
-        plane={plane}
-        changePlane={changePlane}
-        save={save}
-        extra={<Select
-          value={plane.modeStoppedStartsNewFlight}
-          name={'modeStoppedStartsNewFlight'}
-          onChange={changeBoolean}
-          onBlur={save}
-          input={<Input id='stops-checkbox' />}
-        >
-          <MenuItem value={'true'}>Also when stopped</MenuItem>
-          <MenuItem value={'false'}>-</MenuItem>
-        </Select>} />
+      <Box display='flex' flexDirection='column'>
+        <RenderLogicalSwitch
+          mode='modeRestart'
+          label='Restart flight'
+          plane={plane}
+          changePlane={changePlane}
+          save={save} />
+        <FormControl className={css.formControl} margin='normal' style={{ marginTop: 0 }}>
+          <Select
+            value={plane.modeStoppedStartsNewFlight}
+            name={'modeStoppedStartsNewFlight'}
+            onChange={changeBoolean}
+            onBlur={save}
+            input={<Input id='stops-checkbox' />}
+          >
+            <MenuItem value={'true'}>Also when stopped</MenuItem>
+            <MenuItem value={'false'}>-</MenuItem>
+          </Select>
+        </FormControl>
+      </Box>
     </div>
   </>;
 };
