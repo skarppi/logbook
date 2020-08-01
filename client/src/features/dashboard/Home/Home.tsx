@@ -101,6 +101,7 @@ export const Dashboard = () => {
   const since = startDateFrom(unit, size).toISOString();
   const [res] = useQuery<IQueryResponse>({
     query: Query(unit, size),
+    requestPolicy: 'cache-and-network',
     variables: {
       since
     }
