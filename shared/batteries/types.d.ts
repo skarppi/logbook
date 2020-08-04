@@ -5,13 +5,15 @@ export interface Battery {
   id?: number;
   name: string;
   purchaseDate: Date;
+  retirementDate?: Date;
   type: string;
   cells: number;
   capacity: number;
   lastCycle?: BatteryCycle;
   batteryCycles?: {
     nodes: BatteryCycle[]
-  }
+  },
+  notes?: string;
 }
 
 export interface BatteryCycle {

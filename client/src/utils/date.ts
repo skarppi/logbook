@@ -4,6 +4,9 @@ export function formatDate(
   dateOrStr: Date | string,
   dateFormat: string = 'yyyy-MM-dd'
 ): string {
+  if (!dateOrStr) {
+    return;
+  }
   const date = dateOrStr instanceof Date ? dateOrStr : parseISO(dateOrStr);
   return format(date, dateFormat);
 }

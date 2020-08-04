@@ -39,6 +39,7 @@ const Query = gql`
         type
         cells
         capacity
+        retirementDate
         batteryCycles(first:1, orderBy: DATE_DESC) {
           nodes {
             id
@@ -61,8 +62,12 @@ const NEWID = 'add';
 
 export const BatteriesList = ({ match: { params } }) => {
 
-  function lastState({ nodes }) {
-    const [cycle] = nodes;
+  function lastState(battery: Battery) {
+    if (battery.retirementDate) {
+      return 'RETIRED';
+    }
+
+    const cycle = battery.batteryCycles?.nodes?.[0];
     if (!cycle) {
       return;
     }
@@ -150,7 +155,7 @@ export const BatteriesList = ({ match: { params } }) => {
         <TableCell>
           {battery.type} {battery.cells}s {battery.capacity}mAh
           </TableCell>
-        <TableCell>{lastState(battery.batteryCycles)}</TableCell>
+        <TableCell>{lastState(battery)}</TableCell>
         <TableCell>{lastUsed(battery.batteryCycles)}</TableCell>
         <TableCell>{batteryOps(battery)}</TableCell>
       </TableRow>

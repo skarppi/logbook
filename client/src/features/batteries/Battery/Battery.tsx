@@ -23,7 +23,6 @@ import { useHistory } from 'react-router-dom';
 import gql from 'graphql-tag';
 import { useQuery, useMutation } from 'urql';
 
-const css = require('../../../common/Form.css');
 import DeleteIcon from '@material-ui/icons/Delete';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
@@ -36,6 +35,7 @@ import TableBody from '@material-ui/core/TableBody';
 import TableRow from '@material-ui/core/TableRow';
 import { BatteryState } from '../../../../../shared/batteries';
 import makeStyles from '@material-ui/styles/makeStyles';
+import Box from '@material-ui/core/Box';
 
 const batteryTypes = ['LiPo', 'LiHV'];
 const cellCounts = [1, 2, 3, 4, 5, 6];
@@ -46,9 +46,11 @@ const Query = gql`
       id
       name
       purchaseDate
+      retirementDate
       type
       cells
       capacity
+      notes
       batteryCycles(orderBy: DATE_DESC) {
         nodes {
           id
@@ -83,9 +85,11 @@ const Create = gql`
         id
         name
         purchaseDate
+        retirementDate
         type
         cells
         capacity
+        notes
       }
     }
   }`;
@@ -97,9 +101,11 @@ const Update = gql`
         id
         name
         purchaseDate
+        retirementDate
         type
         cells
         capacity
+        notes
       }
     }
   }`;
@@ -122,13 +128,6 @@ const NEW_BATTERY: Battery = {
   cells: 0,
   capacity: 0
 };
-
-const useStyles = makeStyles({
-  graph: {
-    height: '400px',
-    position: 'relative'
-  }
-});
 
 export const BatteryDetails = ({ id }) => {
 
@@ -197,10 +196,11 @@ export const BatteryDetails = ({ id }) => {
 
   const voltages = cycles.filter(c => c.restingVoltage);
 
-  const batteryCss = useStyles();
+  const totalFlights = cycles.filter(c => c.flight).length;
+  const totalFlightTime = cycles.reduce((sum, c) => sum + (c.flight ? c.flight.flightTime : 0), 0);
 
   return (
-    <Card className={css.card}>
+    <Card>
       <CardHeader
         title={
           <>
@@ -210,7 +210,6 @@ export const BatteryDetails = ({ id }) => {
               error={id === NEW_BATTERY.id && battery.name.length === 0}
               id='name'
               placeholder='Name'
-              className={css.textField}
               value={battery.name}
               name='name'
               onChange={changeBattery}
@@ -236,8 +235,62 @@ export const BatteryDetails = ({ id }) => {
         }
       />
       <CardContent hidden={battery.name === ''}>
-        <div className={css.container}>
-          <FormControl className={css.formControl} margin='normal'>
+        <Table>
+          <TableBody>
+            <TableRow>
+              <TableCell>
+                Flights
+                </TableCell>
+              <TableCell>
+                {totalFlights}
+              </TableCell>
+            </TableRow>
+
+            <TableRow>
+              <TableCell>
+                Flight Time
+                </TableCell>
+              <TableCell>
+                {formatDuration(totalFlightTime)}
+              </TableCell>
+            </TableRow>
+
+            <TableRow>
+              <TableCell>
+                Average Flight Time
+                </TableCell>
+              <TableCell>
+                {
+                  totalFlights > 0 ? formatDuration(totalFlightTime / totalFlights) : '-'
+                }
+              </TableCell>
+            </TableRow>
+
+            <TableRow>
+              <TableCell>
+                Charge cycles
+                </TableCell>
+              <TableCell>
+                {cycles.filter(c => c.flight || c.state === BatteryState.storage).length}
+              </TableCell>
+            </TableRow>
+
+            <TableRow>
+              <TableCell>
+                Average Resting Voltage
+                </TableCell>
+              <TableCell>
+                {
+                  voltages.length > 0 ? Math.round(voltages.reduce((sum, c) => sum + Number(c.restingVoltage), 0) / voltages.length * 100) / 100 : '-'
+                }
+              </TableCell>
+            </TableRow>
+          </TableBody>
+        </Table>
+
+        <Box display='flex' flexWrap='wrap'>
+
+          <FormControl margin='normal'>
             <InputLabel htmlFor='select-multiple-checkbox'>Type</InputLabel>
             <Select
               value={battery.type}
@@ -254,7 +307,7 @@ export const BatteryDetails = ({ id }) => {
             </Select>
           </FormControl>
 
-          <FormControl className={css.formControl} margin='normal'>
+          <FormControl margin='normal'>
             <InputLabel htmlFor='select-multiple-checkbox'>Cells</InputLabel>
             <Select
               value={battery.cells || ''}
@@ -273,10 +326,10 @@ export const BatteryDetails = ({ id }) => {
 
           <TextField
             type='number'
+            style={{ width: 100 }}
             id='capacity'
             label='Capacity'
             placeholder='Capacity'
-            className={css.textField}
             value={battery.capacity}
             name='capacity'
             onChange={changeNumber}
@@ -286,6 +339,10 @@ export const BatteryDetails = ({ id }) => {
               endAdornment: (
                 <InputAdornment position='end'>mAh</InputAdornment>
               )
+            }}
+            inputProps={{
+              step: 50,
+              min: '0'
             }}
           />
 
@@ -297,56 +354,41 @@ export const BatteryDetails = ({ id }) => {
             value={formatDate(battery.purchaseDate)}
             onChange={changeDate}
             onBlur={save}
-            className={css.textField}
             margin='normal'
           />
-        </div>
 
-        <Table padding='none'>
-          <TableBody>
-            <TableRow>
-              <TableCell>
-                Flights
-                </TableCell>
-              <TableCell>
-                {cycles.filter(c => c.flight).length}
-              </TableCell>
-            </TableRow>
+          <TextField
+            id='retirementDate'
+            name='retirementDate'
+            type='date'
+            label='Retirement Date'
+            value={formatDate(battery.retirementDate) || ''}
+            onChange={changeDate}
+            onBlur={save}
+            margin='normal'
+            InputLabelProps={{
+              shrink: true,
+            }}
+          />
+        </Box>
 
-            <TableRow>
-              <TableCell>
-                Flight Time
-                </TableCell>
-              <TableCell>
-                {formatDuration(cycles.reduce((sum, c) => sum + (c.flight ? c.flight.flightTime : 0), 0))}
-              </TableCell>
-            </TableRow>
+        <Box>
+          <TextField
+            id='notes'
+            label='Notes'
+            placeholder='Notes'
+            multiline
+            value={battery.notes || ''}
+            name='notes'
+            onChange={changeBattery}
+            onBlur={save}
+            margin='normal'
+          />
+        </Box>
 
-            <TableRow>
-              <TableCell>
-                Charge cycles
-                </TableCell>
-              <TableCell>
-                {cycles.filter(c => c.state === BatteryState.charged).length}
-              </TableCell>
-            </TableRow>
-
-            <TableRow>
-              <TableCell>
-                Average voltage
-                </TableCell>
-              <TableCell>
-                {
-                  voltages.length > 0 ? Math.round(voltages.reduce((sum, c) => sum + Number(c.restingVoltage), 0) / voltages.length * 100) / 100 : '-'
-                }
-              </TableCell>
-            </TableRow>
-          </TableBody>
-        </Table>
-
-        <div className={batteryCss.graph}>
+        <Box height='400px'>
           <BatteryGraph cycles={cycles}></BatteryGraph>
-        </div>
+        </Box>
 
         <ExpansionPanel
           key={battery.id}
