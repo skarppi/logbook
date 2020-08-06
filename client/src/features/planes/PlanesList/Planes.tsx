@@ -10,6 +10,8 @@ import TableBody from '@material-ui/core/TableBody';
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 
+import { useParams } from 'react-router-dom';
+
 import * as React from 'react';
 import { NavLink, Link } from 'react-router-dom';
 import { formatDuration } from '../../../../../shared/utils/date';
@@ -28,6 +30,7 @@ import { useQuery, useMutation } from 'urql';
 import { Flight } from '../../../../../shared/flights/types';
 import { formatDateTime, formatDate } from '../../../utils/date';
 import { LinkProps } from '@material-ui/core/Link';
+import { useScroll } from '../../../common/useScroll';
 
 const layout = require('../../../common/Layout.css');
 
@@ -92,12 +95,16 @@ interface IPlanesContext {
 
 export const PlanesContext = React.createContext<IPlanesContext>({ planes: [], logicalSwitches: [] });
 
-export const PlanesList = ({ match: { params } }) => {
+export const PlanesList = () => {
+
+  const { id } = useParams();
 
   const [res] = useQuery<IQueryResponse>({ query: Query });
 
   const planes = res.data && res.data.planes ? res.data.planes.nodes : [];
   const logicalSwitches = res.data && res.data.logicalSwitches ? res.data.logicalSwitches.nodes : [];
+
+  const scrollRef = useScroll([id, res.fetching]);
 
   function lastFlown({ nodes }) {
     const [flight] = nodes;
@@ -116,7 +123,7 @@ export const PlanesList = ({ match: { params } }) => {
   }
 
   function details(id: string, index: number) {
-    return (<TableRow className={layout.opened}>
+    return (<TableRow ref={scrollRef} className={layout.opened}>
       <TableCell colSpan={5}>
         <PlaneDetails id={id}
           nextLink={planes[index - 1] && `/planes/${planes[index - 1].id}`}
@@ -127,7 +134,7 @@ export const PlanesList = ({ match: { params } }) => {
   }
 
   const rows = planes.map((plane, index) => {
-    const current = params.id === plane.id;
+    const current = id === plane.id;
     return <React.Fragment key={plane.id}>
       <TableRow>
         <TableCell>
@@ -146,7 +153,7 @@ export const PlanesList = ({ match: { params } }) => {
         <TableCell>{plane.totalByPlane && formatDuration(plane.totalByPlane.totalTime)}</TableCell>
         <TableCell>{lastFlown(plane.flights)}</TableCell>
       </TableRow>
-      {params.id === plane.id && details(plane.id, index)}
+      {id === plane.id && details(plane.id, index)}
     </React.Fragment>;
   });
 
@@ -179,7 +186,7 @@ export const PlanesList = ({ match: { params } }) => {
               </TableHead>
               <TableBody>
                 <LoadingTable spinning={res.fetching} error={res.error} colSpan={5} />
-                {params.id === NEWID && details('', Number.MIN_SAFE_INTEGER)}
+                {id === NEWID && details('', Number.MIN_SAFE_INTEGER)}
                 {rows}
               </TableBody>
             </Table>

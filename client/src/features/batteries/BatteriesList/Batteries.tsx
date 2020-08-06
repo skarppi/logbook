@@ -24,6 +24,7 @@ import NewBatteryIcon from '@material-ui/icons/Add';
 import FullChargeIcon from '@material-ui/icons/BatteryChargingFull';
 import StorageChargeIcon from '@material-ui/icons/BatteryCharging50';
 import { BatteryState } from '../../../../../shared/batteries';
+import { useScroll } from '../../../common/useScroll';
 
 import gql from 'graphql-tag';
 import { useQuery, useMutation } from 'urql';
@@ -132,8 +133,10 @@ export const BatteriesList = ({ match: { params } }) => {
 
   const batteries = res.data && res.data.batteries ? res.data.batteries.nodes : [];
 
+  const scrollRef = useScroll([params.id, res.fetching]);
+
   const details = (id: number, index: number) =>
-    <TableRow>
+    <TableRow ref={scrollRef}>
       <TableCell colSpan={5}>
         <BatteryDetails
           id={id}

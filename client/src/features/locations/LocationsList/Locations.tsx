@@ -29,6 +29,7 @@ import { Location } from '../../../../../shared/locations/types';
 import { LocationMap } from './LocationMap';
 import { Flight } from '../../../../../shared/flights/types';
 import { LinkProps } from '@material-ui/core/Link';
+import { useScroll } from '../../../common/useScroll';
 
 const Query = gql`
   query {
@@ -86,8 +87,10 @@ export const LocationsList = () => {
 
   const locations = res.data?.locations?.nodes ?? [];
 
+  const scrollRef = useScroll([id, res.fetching]);
+
   function details(location: Location, index: number) {
-    return (<TableRow className={css.opened}>
+    return (<TableRow ref={scrollRef} className={css.opened}>
       <TableCell colSpan={5}>
         <LocationDetails
           data={location}
@@ -97,7 +100,6 @@ export const LocationsList = () => {
       </TableCell>
     </TableRow>);
   }
-
 
   const rows = locations.map((location, index) => {
     const current = id === String(location.id);

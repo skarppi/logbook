@@ -26,6 +26,7 @@ import gql from 'graphql-tag';
 import { formatDate, formatMonth } from '../../../utils/date';
 import TableSortLabel from '@material-ui/core/TableSortLabel';
 import makeStyles from '@material-ui/styles/makeStyles';
+import { useScroll } from '../../../common/useScroll';
 
 const Query = gql`
   query($orderBy:[FlightsByDaysOrderBy!]) {
@@ -126,11 +127,12 @@ export const FlightDays = () => {
 
   const css = useStyles();
 
+  const scrollRef = useScroll([date, read.fetching]);
   const dayRows = (totals: IDayTotals) => {
     const isCurrent = date === totals.day;
 
     return <React.Fragment key={totals.day + '-day'}>
-      <TableRow selected={isCurrent} hover={true} id={totals.day}>
+      <TableRow ref={isCurrent ? scrollRef : null} selected={isCurrent} hover={true} id={totals.day}>
         <TableCell>
           {(isCurrent && <NavLink to={'/flights'}>
             <OpenedIcon />

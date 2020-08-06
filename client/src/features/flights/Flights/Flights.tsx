@@ -17,6 +17,7 @@ import { useQuery } from 'urql';
 import { addDays } from 'date-fns';
 import { formatTime, formatDate } from '../../../utils/date';
 import { makeStyles } from '@material-ui/core/styles';
+import { useScroll } from '../../../common/useScroll';
 
 const Query = gql`
   query($from:Datetime!,$to:Datetime!) {
@@ -91,6 +92,8 @@ export const Flights = () => {
 
   const css = useStyles();
 
+  const scrollRef = useScroll([id, read.fetching]);
+
   const rows = flights.map((flight, index) => {
     const isCurrent = id === flight.id;
 
@@ -120,7 +123,7 @@ export const Flights = () => {
         <TableCell>{formatDuration(flight.flightTime)}</TableCell>
       </TableRow>
       {isCurrent && (
-        <TableRow>
+        <TableRow ref={scrollRef}>
           <TableCell colSpan={5} className={css.openedCell}>
             <FlightDetails entry={flight}
               nextLink={flights[index - 1] && `${path}/${flights[index - 1].id}`}
