@@ -5,8 +5,7 @@ import IconButton from '@material-ui/core/IconButton';
 import TextField from '@material-ui/core/TextField';
 import Tooltip from '@material-ui/core/Tooltip';
 import * as React from 'react';
-import { Plane, LogicalSwitch, Telemetry } from '../../../../../shared/planes/types';
-import { LogicalFunction } from '../../../../../shared/planes/index';
+import { Plane } from '../../../../../shared/planes/types';
 import { PlaneGraph } from './PlaneGraph';
 
 import { useHistory } from 'react-router-dom';
@@ -23,8 +22,6 @@ import Divider from '@material-ui/core/Divider';
 import { PlaneType } from '../../../../../shared/planes';
 import { Battery } from '../../../../../shared/batteries/types';
 import { PlaneForm } from './PlaneForm';
-import { useContext } from 'react';
-import { PlanesContext } from '../PlanesList/Planes';
 import { NavigatePreviousNext } from '../../../common/NavigatePreviousNext';
 
 const Query = gql`

@@ -18,8 +18,6 @@ import { Videos } from '../Videos/Videos';
 import { FlightGraph } from './FlightGraph';
 
 const css = require('../../../common/Form.css');
-const flightCss = require('./Flight.css');
-
 import { differenceInHours } from 'date-fns';
 
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -44,6 +42,7 @@ import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import { NavigatePreviousNext } from '../../../common/NavigatePreviousNext';
+import Box from '@material-ui/core/Box';
 
 const Query = gql`
   query($id:String!) {
@@ -302,9 +301,9 @@ export const FlightDetails = ({ entry, nextLink, previousLink }) => {
           />
         </div>
 
-        <div className={flightCss.graph}>
+        <Box height='500px' width='92vw' maxWidth='1200px'>
           <FlightGraph flight={flight}></FlightGraph>
-        </div>
+        </Box>
 
         <ExpansionPanel defaultExpanded={false}>
           <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>

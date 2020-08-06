@@ -388,7 +388,7 @@ export const BatteryDetails = ({ id, nextLink, previousLink }) => {
           />
         </Box>
 
-        <Box height='400px'>
+        <Box height='400px' width='92vw' maxWidth='1200px'>
           <BatteryGraph cycles={cycles}></BatteryGraph>
         </Box>
 
