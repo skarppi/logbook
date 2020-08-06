@@ -200,7 +200,7 @@ export const BatteryDetails = ({ id, nextLink, previousLink }) => {
   const totalFlightTime = cycles.reduce((sum, c) => sum + (c.flight ? c.flight.flightTime : 0), 0);
 
   return (
-    <Card>
+    <Card style={{ padding: '10px' }}>
       <CardHeader
         title={
           <>

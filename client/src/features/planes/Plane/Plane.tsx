@@ -190,7 +190,7 @@ export const PlaneDetails = ({ id, nextLink, previousLink }) => {
   };
 
   return (
-    <Card className={css.card}>
+    <Card style={{ padding: '10px' }}>
       <CardHeader
         title={
           <>

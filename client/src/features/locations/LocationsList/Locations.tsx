@@ -17,7 +17,7 @@ import { LocationDetails } from '../Location/Location';
 import { useParams } from 'react-router-dom';
 
 import gql from 'graphql-tag';
-import { useQuery, useMutation } from 'urql';
+import { useQuery } from 'urql';
 
 const css = require('../../../common/Form.css');
 

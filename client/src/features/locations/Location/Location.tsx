@@ -4,31 +4,18 @@ import CardHeader from '@material-ui/core/CardHeader';
 import IconButton from '@material-ui/core/IconButton';
 import TextField from '@material-ui/core/TextField';
 import Tooltip from '@material-ui/core/Tooltip';
-import FormControl from '@material-ui/core/FormControl';
-import InputLabel from '@material-ui/core/InputLabel';
-import Select from '@material-ui/core/Select';
-import Input from '@material-ui/core/Input';
-import MenuItem from '@material-ui/core/MenuItem';
-import InputAdornment from '@material-ui/core/InputAdornment';
 import * as React from 'react';
 
 import { useHistory } from 'react-router-dom';
 
 import gql from 'graphql-tag';
-import { useQuery, useMutation } from 'urql';
+import { useMutation } from 'urql';
 
-const locationCss = require('./Location.css');
-const css = require('../../../common/Form.css');
 import DeleteIcon from '@material-ui/icons/Delete';
 import { LoadingIcon } from '../../loading/Loading';
-import { formatDate } from '../../../utils/date';
-import { formatDuration } from '../../../../../shared/utils/date';
-import Table from '@material-ui/core/Table';
-import TableCell from '@material-ui/core/TableCell';
-import TableBody from '@material-ui/core/TableBody';
-import TableRow from '@material-ui/core/TableRow';
 import { Location } from '../../../../../shared/locations/types';
 import { NavigatePreviousNext } from '../../../common/NavigatePreviousNext';
+import Box from '@material-ui/core/Box';
 
 interface IQueryResponse {
   location: Location;
@@ -115,7 +102,7 @@ export const LocationDetails = ({ data, nextLink, previousLink }) => {
   };
 
   return (
-    <Card className={css.card}>
+    <Card style={{ padding: '10px' }}>
       <CardHeader
         title={
           <>
@@ -125,7 +112,6 @@ export const LocationDetails = ({ data, nextLink, previousLink }) => {
               error={location.id === NEW_LOCATION.id && location.name.length === 0}
               id='name'
               placeholder='Name'
-              className={css.textField}
               value={location.name}
               name='name'
               onChange={changelocation}
@@ -153,19 +139,19 @@ export const LocationDetails = ({ data, nextLink, previousLink }) => {
         }
       />
       <CardContent hidden={location.name === ''}>
-        <div className={css.container}>
+        <Box display='flex' flexWrap='wrap'>
 
           <TextField
             type='number'
             id='latitude'
             label='Latitude'
             placeholder='Latitude'
-            className={css.textField}
             value={location.latitude || ''}
             name='latitude'
             onChange={changeNumber}
             onBlur={save}
             margin='normal'
+            style={{ flexGrow: 1 }}
           />
 
           <TextField
@@ -173,15 +159,15 @@ export const LocationDetails = ({ data, nextLink, previousLink }) => {
             id='longitude'
             label='Longitude'
             placeholder='Longitude'
-            className={css.textField}
             value={location.longitude || ''}
             name='longitude'
             onChange={changeNumber}
             onBlur={save}
             margin='normal'
+            style={{ flexGrow: 1 }}
           />
 
-        </div>
+        </Box>
 
       </CardContent>
     </Card>

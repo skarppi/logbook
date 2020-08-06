@@ -11,7 +11,6 @@ import { useState } from 'react';
 import { useQuery } from 'urql';
 import { useStateAndListenChanges } from '../../../utils/hooks';
 import gql from 'graphql-tag';
-const css = require('../../../common/Form.css');
 
 interface IFlightLocationProps {
   flight: Flight;
@@ -70,7 +69,7 @@ export const FlightLocation = ({ flight, save }: IFlightLocationProps) => {
     }
 
     return (
-      <FormControl className={css.formControl} margin='normal'>
+      <FormControl margin='normal' fullWidth={true}>
         <InputLabel htmlFor='select-multiple-checkbox' shrink>
           Location
         </InputLabel>
@@ -103,12 +102,12 @@ export const FlightLocation = ({ flight, save }: IFlightLocationProps) => {
         id='location'
         label='Location'
         placeholder='Location'
-        className={css.textField}
         value={locations.find(l => l.id === locationId)?.name || ''}
         name='location'
         onChange={changeFlightLocation}
         onBlur={storeFlightLocation}
         margin='normal'
+        fullWidth={true}
         inputRef={(input => input?.focus())}
       />
     );

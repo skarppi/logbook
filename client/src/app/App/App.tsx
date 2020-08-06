@@ -16,18 +16,24 @@ import createBreakpoints from '@material-ui/core/styles/createBreakpoints';
 
 const breakpoints = createBreakpoints({});
 
-const mobilePadding = {
+const mobilePaddingNone = {
   [breakpoints.down('xs')]: {
     padding: 0
+  }
+};
+
+const mobilePaddingReduced = {
+  [breakpoints.down('xs')]: {
+    padding: 10
   }
 }
 
 const theme = createMuiTheme({
   overrides: {
-    MuiCardHeader: { root: mobilePadding },
-    MuiCardContent: { root: mobilePadding },
-    MuiExpansionPanelSummary: { root: mobilePadding },
-    MuiExpansionPanelDetails: { root: mobilePadding },
+    MuiCardHeader: { root: mobilePaddingNone },
+    MuiCardContent: { root: mobilePaddingNone },
+    MuiExpansionPanelSummary: { root: mobilePaddingReduced },
+    MuiExpansionPanelDetails: { root: mobilePaddingReduced },
     MuiTableCell: {
       root: {
         // less empty space when on mobile

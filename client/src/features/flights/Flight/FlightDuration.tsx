@@ -5,7 +5,7 @@ import {
   parseDurationIntoSeconds
 } from '../../../../../shared/utils/date';
 import { Flight } from '../../../../../shared/flights/types';
-const css = require('../../../common/Form.css');
+import Box from '@material-ui/core/Box';
 
 interface IFlightDurationProps {
   flight: Flight;
@@ -45,18 +45,18 @@ export const FlightDuration = ({ flight, save }: IFlightDurationProps) => {
   };
 
   return (
-    <div className={css.subContainer}>
+    <Box display='flex' flexGrow='1'>
       <TextField
         required
         error={parseDurationIntoSeconds(armedTime) === null}
         id='armedTime'
         label='Armed time'
-        className={css.textField}
         value={armedTime}
         name='armedTime'
         onChange={changeArmedTime}
         onBlur={store}
         margin='normal'
+        fullWidth={true}
       />
 
       <TextField
@@ -64,13 +64,13 @@ export const FlightDuration = ({ flight, save }: IFlightDurationProps) => {
         error={parseDurationIntoSeconds(flightTime) === null}
         id='flightTime'
         label='Flight time'
-        className={css.textField}
         value={flightTime}
         name='flightTime'
         onChange={changeFlightTime}
         onBlur={store}
         margin='normal'
+        fullWidth={true}
       />
-    </div>
+    </Box>
   );
 }

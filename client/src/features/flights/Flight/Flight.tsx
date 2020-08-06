@@ -17,7 +17,6 @@ import { FlightStats } from './FlightStats';
 import { Videos } from '../Videos/Videos';
 import { FlightGraph } from './FlightGraph';
 
-const css = require('../../../common/Form.css');
 import { differenceInHours } from 'date-fns';
 
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -211,7 +210,7 @@ export const FlightDetails = ({ entry, nextLink, previousLink }) => {
   }
 
   return (
-    <Card className={css.card}>
+    <Card style={{ padding: '10px' }}>
       <CardHeader
         title={`Flight: ${flight.id}`}
         action={
@@ -262,21 +261,16 @@ export const FlightDetails = ({ entry, nextLink, previousLink }) => {
         }
       />
       <CardContent>
-        <div className={css.container}>
+        <Box display='flex' flexWrap='wrap' justifyContent='stretch'>
           <FlightDate flight={flight} />
           <FlightDuration flight={flight} save={updateFlight} />
-        </div>
+        </Box>
 
-        <div className={css.container}>
-          <FlightLocation
-            flight={flight}
-            save={updateFlight}
-          />
-        </div>
+        <FlightLocation
+          flight={flight}
+          save={updateFlight} />
 
-        <div className={css.container}>
-          <FlightStats flight={flight} />
-        </div>
+        <FlightStats flight={flight} />
 
         <Divider variant='middle' />
 
@@ -286,20 +280,18 @@ export const FlightDetails = ({ entry, nextLink, previousLink }) => {
           refreshFlight={() => refreshFlight({ requestPolicy: 'network-only' })}
         />
 
-        <div className={css.container}>
-          <TextField
-            id='jornal'
-            label='Journal'
-            placeholder='Journal'
-            multiline
-            className={`${css.textField} ${css.wide}`}
-            value={(flight.notes?.journal) || ''}
-            name='journal'
-            onChange={changeNotes}
-            onBlur={saveNotes}
-            margin='normal'
-          />
-        </div>
+        <TextField
+          id='jornal'
+          label='Journal'
+          placeholder='Journal'
+          multiline
+          value={(flight.notes?.journal) || ''}
+          name='journal'
+          onChange={changeNotes}
+          onBlur={saveNotes}
+          margin='normal'
+          fullWidth={true}
+        />
 
         <Box height='500px' width='92vw' maxWidth='1200px'>
           <FlightGraph flight={flight}></FlightGraph>

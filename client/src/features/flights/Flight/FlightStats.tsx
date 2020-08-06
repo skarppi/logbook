@@ -25,6 +25,7 @@ export const FlightStats = ({ flight }: IFlightStatsProps) => {
           value={flight.stats.zeroHeight}
           name='zeroHeight'
           margin='normal'
+          fullWidth={true}
         />}
       {flight.stats.launchHeight > 0 &&
         (<TextField
@@ -37,6 +38,7 @@ export const FlightStats = ({ flight }: IFlightStatsProps) => {
           value={flight.stats.launchHeight}
           name='launchHeight'
           margin='normal'
+          fullWidth={true}
         />)
       }
       {flight.stats.maxHeight > 0 &&
@@ -50,6 +52,7 @@ export const FlightStats = ({ flight }: IFlightStatsProps) => {
           value={flight.stats.maxHeight}
           name='maxHeight'
           margin='normal'
+          fullWidth={true}
         />}
 
     </div>
