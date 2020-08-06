@@ -28,9 +28,6 @@ import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import { LogicalFunction } from '../../../../../shared/planes';
 
-const layout = require('../../../common/Layout.css');
-const css = require('../../../common/Form.css');
-
 const NEWID = 'add';
 
 const Create = gql`
@@ -105,7 +102,6 @@ export const LogicalSwitches = () => {
         <TableCell>
           <TextField
             placeholder='id'
-            className={css.textField}
             value={editing.id || ''}
             name='id'
             onChange={changeSwitch}
@@ -145,7 +141,6 @@ export const LogicalSwitches = () => {
         <TableCell>
           <TextField
             placeholder='v2'
-            className={css.textField}
             value={editing.v2 || ''}
             name='v2'
             onChange={changeSwitch}
@@ -175,7 +170,6 @@ export const LogicalSwitches = () => {
         <TableCell>
           <TextField
             placeholder='duration'
-            className={css.textField}
             value={editing.duration || ''}
             name='duration'
             onChange={changeSwitch}
@@ -184,7 +178,6 @@ export const LogicalSwitches = () => {
         <TableCell>
           <TextField
             placeholder='delay'
-            className={css.textField}
             value={editing.delay || ''}
             name='delay'
             onChange={changeSwitch}
@@ -194,7 +187,6 @@ export const LogicalSwitches = () => {
         <TableCell>
           <TextField
             placeholder='description'
-            className={css.textField}
             value={editing.description || ''}
             name='description'
             onChange={changeSwitch}
@@ -261,7 +253,7 @@ export const LogicalSwitches = () => {
 
   return (
     <>
-      <Grid item xs={12} className={layout.grid}>
+      <Grid item xs={12}>
         <Card>
           <CardHeader title='Logical Switches' />
           <CardContent>

@@ -12,9 +12,6 @@ import { useContext } from 'react';
 import { PlanesContext } from '../PlanesList/Planes';
 import Box from '@material-ui/core/Box';
 
-const planeCss = require('./Plane.css');
-const css = require('../../../common/Form.css');
-
 interface IProps {
   plane: Plane;
   allBatteries: Battery[];
@@ -25,7 +22,7 @@ interface IProps {
 function RenderLogicalSwitch({ mode, label, plane, changePlane, save }) {
   const { logicalSwitches } = useContext(PlanesContext);
 
-  return <FormControl className={css.formControl} margin='normal'>
+  return <Box flex='1'><FormControl margin='normal' fullWidth={true}>
     <InputLabel htmlFor={mode}>{label}</InputLabel>
     <Select
       value={plane[mode] || ''}
@@ -40,7 +37,7 @@ function RenderLogicalSwitch({ mode, label, plane, changePlane, save }) {
         </MenuItem>
       ))}
     </Select>
-  </FormControl>;
+  </FormControl></Box>;
 }
 
 export const PlaneForm = ({ plane, allBatteries, setPlane, save }: IProps) => {
@@ -88,8 +85,8 @@ export const PlaneForm = ({ plane, allBatteries, setPlane, save }: IProps) => {
   const hiddenTelemetries = telemetries.filter(telemetry => telemetry.ignore).map(telemetry => telemetry.id);
 
   return <>
-    <div className={css.container}>
-      <FormControl className={css.formControl} margin='normal'>
+    <Box display='flex'>
+      <FormControl margin='normal' style={{ width: 150 }}>
         <InputLabel htmlFor='select-type-checkbox'>Type</InputLabel>
         <Select
           value={plane.type}
@@ -106,7 +103,7 @@ export const PlaneForm = ({ plane, allBatteries, setPlane, save }: IProps) => {
         </Select>
       </FormControl>
 
-      <FormControl className={css.formControl} margin='normal'>
+      <FormControl margin='normal' style={{ width: 100 }}>
         <InputLabel htmlFor='select-slots-checkbox'>Battery Slots</InputLabel>
         <Select
           value={plane.batterySlots}
@@ -121,7 +118,7 @@ export const PlaneForm = ({ plane, allBatteries, setPlane, save }: IProps) => {
         </Select>
       </FormControl>
 
-      <FormControl className={css.formControl} margin='normal'>
+      <FormControl margin='normal' fullWidth={true}>
         <InputLabel htmlFor='select-batteries-chip'>Available Batteries</InputLabel>
         <Select
           multiple
@@ -131,11 +128,11 @@ export const PlaneForm = ({ plane, allBatteries, setPlane, save }: IProps) => {
           onBlur={save}
           input={<Input id='select-batteries-chip' />}
           renderValue={selected => (
-            <div className={planeCss.chips}>
+            <Box display='flex' flexWrap='wrap'>
               {(selected as string[]).map(battery => (
-                <Chip key={battery} label={battery} className={planeCss.chip} />
+                <Chip key={battery} label={battery} />
               ))}
-            </div>
+            </Box>
           )}
         >
           {allBatteries.map(battery => (
@@ -145,10 +142,10 @@ export const PlaneForm = ({ plane, allBatteries, setPlane, save }: IProps) => {
           ))}
         </Select>
       </FormControl>
-    </div>
+    </Box>
 
-    <div className={css.container}>
-      <FormControl className={css.formControl} margin='normal'>
+    <Box display='flex' justifyContent='stretch'>
+      <FormControl margin='normal' fullWidth={true}>
         <InputLabel htmlFor='select-default-telemetries-chip'>Default telemetries</InputLabel>
         <Select
           multiple
@@ -158,11 +155,11 @@ export const PlaneForm = ({ plane, allBatteries, setPlane, save }: IProps) => {
           onBlur={save}
           input={<Input id='select-default-telemetries-chip' />}
           renderValue={selected => (
-            <div className={planeCss.chips}>
+            <Box display='flex' flexWrap='wrap'>
               {(selected as string[]).map(id => (
-                <Chip key={id} label={id} className={planeCss.chip} />
+                <Chip key={id} label={id} />
               ))}
-            </div>
+            </Box>
           )}
         >
           {telemetries
@@ -175,7 +172,7 @@ export const PlaneForm = ({ plane, allBatteries, setPlane, save }: IProps) => {
         </Select>
       </FormControl>
 
-      <FormControl className={css.formControl} margin='normal'>
+      <FormControl margin='normal' fullWidth={true}>
         <InputLabel htmlFor='select-hidden-telemetries-chip'>Hidden telemetries</InputLabel>
         <Select
           multiple
@@ -185,11 +182,11 @@ export const PlaneForm = ({ plane, allBatteries, setPlane, save }: IProps) => {
           onBlur={save}
           input={<Input id='select-hidden-telemetries-chip' />}
           renderValue={selected => (
-            <div className={planeCss.chips}>
+            <Box display='flex' flexWrap='wrap'>
               {(selected as string[]).map(id => (
-                <Chip key={id} label={id} className={planeCss.chip} />
+                <Chip key={id} label={id} />
               ))}
-            </div>
+            </Box>
           )}
         >
           {telemetries.map(telemetry => (
@@ -200,9 +197,9 @@ export const PlaneForm = ({ plane, allBatteries, setPlane, save }: IProps) => {
         </Select>
       </FormControl>
 
-    </div>
+    </Box>
 
-    <div className={css.container}>
+    <Box display='flex' flexWrap='wrap'>
       <RenderLogicalSwitch mode='modeArmed' label='Arm switch' plane={plane} changePlane={changePlane} save={save} />
 
       <RenderLogicalSwitch mode='modeFlying' label='Start flying' plane={plane} changePlane={changePlane} save={save} />
@@ -216,7 +213,7 @@ export const PlaneForm = ({ plane, allBatteries, setPlane, save }: IProps) => {
           plane={plane}
           changePlane={changePlane}
           save={save} />
-        <FormControl className={css.formControl} margin='normal' style={{ marginTop: 0 }}>
+        <FormControl margin='normal' style={{ marginTop: 0 }}>
           <Select
             value={plane.modeStoppedStartsNewFlight}
             name={'modeStoppedStartsNewFlight'}
@@ -229,7 +226,7 @@ export const PlaneForm = ({ plane, allBatteries, setPlane, save }: IProps) => {
           </Select>
         </FormControl>
       </Box>
-    </div>
+    </Box>
   </>;
 };
 

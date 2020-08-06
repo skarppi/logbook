@@ -290,7 +290,7 @@ export const BatteryDetails = ({ id, nextLink, previousLink }) => {
           </TableBody>
         </Table>
 
-        <Box display='flex' flexWrap='wrap'>
+        <Box display='flex' flexWrap='wrap' justifyContent='stretch'>
 
           <FormControl margin='normal'>
             <InputLabel htmlFor='select-multiple-checkbox'>Type</InputLabel>
@@ -374,19 +374,18 @@ export const BatteryDetails = ({ id, nextLink, previousLink }) => {
           />
         </Box>
 
-        <Box>
-          <TextField
-            id='notes'
-            label='Notes'
-            placeholder='Notes'
-            multiline
-            value={battery.notes || ''}
-            name='notes'
-            onChange={changeBattery}
-            onBlur={save}
-            margin='normal'
-          />
-        </Box>
+        <TextField
+          id='notes'
+          label='Notes'
+          placeholder='Notes'
+          multiline
+          value={battery.notes || ''}
+          name='notes'
+          onChange={changeBattery}
+          onBlur={save}
+          margin='normal'
+          fullWidth={true}
+        />
 
         <Box height='400px' width='92vw' maxWidth='1200px'>
           <BatteryGraph cycles={cycles}></BatteryGraph>

@@ -4,7 +4,6 @@ import { formatDuration } from '../../../../../shared/utils/date';
 import { Flight } from '../../../../../shared/flights/types';
 import { formatDate, formatTime } from '../../../utils/date';
 import Box from '@material-ui/core/Box';
-const css = require('../../../common/Form.css');
 
 interface IFlightDateProps {
   flight: Flight;
@@ -60,7 +59,6 @@ export function FlightDate({ flight }: IFlightDateProps) {
           }}
           id='duration'
           label='Duration'
-          className={`${css.textField} ${css.narrow}`}
           value={formatDuration(flight.duration)}
           margin='normal'
         />

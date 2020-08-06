@@ -13,9 +13,6 @@ import { useHistory } from 'react-router-dom';
 import gql from 'graphql-tag';
 import { useQuery, useMutation } from 'urql';
 
-const planeCss = require('./Plane.css');
-const css = require('../../../common/Form.css');
-
 import DeleteIcon from '@material-ui/icons/Delete';
 import { LoadingIcon } from '../../loading/Loading';
 import Divider from '@material-ui/core/Divider';
@@ -23,6 +20,7 @@ import { PlaneType } from '../../../../../shared/planes';
 import { Battery } from '../../../../../shared/batteries/types';
 import { PlaneForm } from './PlaneForm';
 import { NavigatePreviousNext } from '../../../common/NavigatePreviousNext';
+import Box from '@material-ui/core/Box';
 
 const Query = gql`
   query($id:String!) {
@@ -200,7 +198,6 @@ export const PlaneDetails = ({ id, nextLink, previousLink }) => {
               error={id === NEW_PLANE.id && plane.id.length === 0}
               id='id'
               placeholder='Id'
-              className={css.textField}
               value={plane.id}
               name='id'
               onChange={changePlane}
@@ -232,9 +229,9 @@ export const PlaneDetails = ({ id, nextLink, previousLink }) => {
 
         <Divider variant='middle' />
 
-        <div className={planeCss.graph}>
+        <Box height='500px' width='92vw' maxWidth='1200px'>
           <PlaneGraph cycles={[]}></PlaneGraph>
-        </div>
+        </Box>
       </CardContent>
     </Card>
   );

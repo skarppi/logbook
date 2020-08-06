@@ -9,7 +9,6 @@ import { Battery } from '../../../../../shared/batteries/types';
 import { useMutation } from 'urql';
 import { LoadingIcon } from '../../loading/Loading';
 import { CREATE_BATTERY_CYCLE } from '../../batteries/Battery/BatteryCycle';
-const css = require('../../../common/Form.css');
 
 interface IBatteryProps {
   flight: Flight;
@@ -48,7 +47,7 @@ export const FlightBatteries = ({ flight, batteries, refreshFlight }: IBatteryPr
   );
 
   const batteryControl =
-    <FormControl className={css.formControl} margin='normal'>
+    <FormControl margin='normal'>
       <Button onClick={addBattery}>
         Add battery
         <AddIcon />

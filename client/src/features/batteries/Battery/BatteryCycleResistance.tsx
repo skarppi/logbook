@@ -3,8 +3,6 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import * as React from 'react';
 import { Battery, BatteryCycle } from '../../../../../shared/batteries/types';
 
-const css = require('../../../common/Form.css');
-
 interface IResistanceProps {
   editing: boolean;
   cells: number;
@@ -40,7 +38,6 @@ export const BatteryCycleResistance = ({ editing, cells, cycle, setCycle }: IRes
         key={`resistance-${index}`}
         label={`Cell ${index + 1}`}
         placeholder={`Cell ${index + 1}`}
-        className={`${css.textField} ${css.micro}`}
         value={value || ''}
         name={'resistance'}
         onChange={e => changeCycleResistance(index, e.target.value)}

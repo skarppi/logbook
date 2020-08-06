@@ -1,7 +1,7 @@
 import * as React from 'react';
 import TextField from '@material-ui/core/TextField';
 import { Flight } from '../../../../../shared/flights/types';
-const css = require('../../../common/Form.css');
+import Box from '@material-ui/core/Box';
 
 interface IFlightStatsProps {
   flight: Flight;
@@ -13,7 +13,7 @@ export const FlightStats = ({ flight }: IFlightStatsProps) => {
   }
 
   return (
-    <div className={css.subContainer}>
+    <Box display='flex'>
       {flight.stats.zeroHeight > 0 &&
         <TextField
           InputProps={{
@@ -21,7 +21,6 @@ export const FlightStats = ({ flight }: IFlightStatsProps) => {
           }}
           id='zeroHeight'
           label='Zero height'
-          className={css.textField}
           value={flight.stats.zeroHeight}
           name='zeroHeight'
           margin='normal'
@@ -34,7 +33,6 @@ export const FlightStats = ({ flight }: IFlightStatsProps) => {
           }}
           id='launchHeight'
           label='Launch height'
-          className={css.textField}
           value={flight.stats.launchHeight}
           name='launchHeight'
           margin='normal'
@@ -48,13 +46,12 @@ export const FlightStats = ({ flight }: IFlightStatsProps) => {
           }}
           id='maxHeight'
           label='Maximum height'
-          className={css.textField}
           value={flight.stats.maxHeight}
           name='maxHeight'
           margin='normal'
           fullWidth={true}
         />}
 
-    </div>
+    </Box>
   );
 }

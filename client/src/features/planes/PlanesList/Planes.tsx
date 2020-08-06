@@ -32,8 +32,6 @@ import { formatDateTime, formatDate } from '../../../utils/date';
 import { LinkProps } from '@material-ui/core/Link';
 import { useScroll } from '../../../common/useScroll';
 
-const layout = require('../../../common/Layout.css');
-
 const Query = gql`
   query {
     planes(orderBy: ID_ASC) {
@@ -123,7 +121,7 @@ export const PlanesList = () => {
   }
 
   function details(id: string, index: number) {
-    return (<TableRow ref={scrollRef} className={layout.opened}>
+    return (<TableRow ref={scrollRef}>
       <TableCell colSpan={5}>
         <PlaneDetails id={id}
           nextLink={planes[index - 1] && `/planes/${planes[index - 1].id}`}
@@ -161,7 +159,7 @@ export const PlanesList = () => {
 
   return (
     <PlanesContext.Provider value={{ planes, logicalSwitches }} >
-      <Grid item xs={12} className={layout.grid}>
+      <Grid item xs={12}>
         <Card>
           <CardHeader
             title='Planes'

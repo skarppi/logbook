@@ -2,7 +2,6 @@ import * as React from 'react';
 import { Battery, BatteryCycle } from '../../../../../shared/batteries/types';
 import { BatteryCycleRow } from './BatteryCycleRow';
 
-const css = require('../../../common/Form.css');
 import Table from '@material-ui/core/Table';
 import TableCell from '@material-ui/core/TableCell';
 import TableBody from '@material-ui/core/TableBody';

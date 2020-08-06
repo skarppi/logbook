@@ -19,8 +19,6 @@ import { useParams } from 'react-router-dom';
 import gql from 'graphql-tag';
 import { useQuery } from 'urql';
 
-const css = require('../../../common/Form.css');
-
 import ClosedIcon from '@material-ui/icons/KeyboardArrowRight';
 import OpenedIcon from '@material-ui/icons/KeyboardArrowDown';
 import NewLocationIcon from '@material-ui/icons/Add';
@@ -90,7 +88,7 @@ export const LocationsList = () => {
   const scrollRef = useScroll([id, res.fetching]);
 
   function details(location: Location, index: number) {
-    return (<TableRow ref={scrollRef} className={css.opened}>
+    return (<TableRow ref={scrollRef}>
       <TableCell colSpan={5}>
         <LocationDetails
           data={location}
@@ -135,7 +133,7 @@ export const LocationsList = () => {
 
   return (
     <>
-      <Grid item xs={12} className={css.grid}>
+      <Grid item xs={12}>
         <Card>
           <CardHeader
             title='Locations'
