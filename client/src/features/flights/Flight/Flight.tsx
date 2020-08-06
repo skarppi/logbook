@@ -23,8 +23,6 @@ const flightCss = require('./Flight.css');
 import { differenceInHours } from 'date-fns';
 
 import DeleteIcon from '@material-ui/icons/Delete';
-import NavigateBeforeIcon from '@material-ui/icons/ExpandMore';
-import NavigateNextIcon from '@material-ui/icons/ExpandLess';
 import HamburgerIcon from '@material-ui/icons/MoreVert';
 import FavoriteIcon from '@material-ui/icons/Favorite';
 import UnFavoriteIcon from '@material-ui/icons/FavoriteBorder';
@@ -45,6 +43,7 @@ import { FlightTrack } from './FlightTrack';
 import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
+import { NavigatePreviousNext } from '../../../common/NavigatePreviousNext';
 
 const Query = gql`
   query($id:String!) {
@@ -135,7 +134,7 @@ interface IQueryResponse {
   };
 }
 
-export const FlightDetails = ({ entry, nextFlightLink, previousFlightLink }) => {
+export const FlightDetails = ({ entry, nextLink, previousLink }) => {
 
   const history = useHistory();
 
@@ -204,10 +203,6 @@ export const FlightDetails = ({ entry, nextFlightLink, previousFlightLink }) => 
     });
   };
 
-  const goNextFlight = _ => history.push(nextFlightLink);
-
-  const goPreviousFlight = _ => history.push(previousFlightLink);
-
   function handleClick(event) {
     setAnchorEl(event.currentTarget);
   }
@@ -215,7 +210,6 @@ export const FlightDetails = ({ entry, nextFlightLink, previousFlightLink }) => 
   function handleClose() {
     setAnchorEl(null);
   }
-
 
   return (
     <Card className={css.card}>
@@ -234,17 +228,7 @@ export const FlightDetails = ({ entry, nextFlightLink, previousFlightLink }) => 
             </IconButton>
             }
 
-            <IconButton
-              onClick={goNextFlight}
-              disabled={!nextFlightLink}>
-              <NavigateNextIcon />
-            </IconButton>
-
-            <IconButton
-              onClick={goPreviousFlight}
-              disabled={!previousFlightLink}>
-              <NavigateBeforeIcon />
-            </IconButton>
+            <NavigatePreviousNext nextLink={nextLink} previousLink={previousLink} />
 
             <IconButton
               aria-label='More'

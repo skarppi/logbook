@@ -25,6 +25,7 @@ import { Battery } from '../../../../../shared/batteries/types';
 import { PlaneForm } from './PlaneForm';
 import { useContext } from 'react';
 import { PlanesContext } from '../PlanesList/Planes';
+import { NavigatePreviousNext } from '../../../common/NavigatePreviousNext';
 
 const Query = gql`
   query($id:String!) {
@@ -127,11 +128,9 @@ const mergePlaneTelemetries = (plane: Plane) => {
   return planeWithoutFlights;
 };
 
-export const PlaneDetails = ({ id }) => {
+export const PlaneDetails = ({ id, nextLink, previousLink }) => {
 
   const history = useHistory();
-
-  const { logicalSwitches } = useContext(PlanesContext);
 
   const NEW_PLANE: Plane = {
     id: '',
@@ -219,6 +218,8 @@ export const PlaneDetails = ({ id }) => {
               spinning={read.fetching || update.fetching || create.fetching || del.fetching}
               error={read.error || update.error || create.error || del.error}
             />
+
+            <NavigatePreviousNext nextLink={nextLink} previousLink={previousLink} />
 
             {plane.id &&
               <Tooltip title='Delete plane'>

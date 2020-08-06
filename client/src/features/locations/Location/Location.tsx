@@ -28,6 +28,7 @@ import TableCell from '@material-ui/core/TableCell';
 import TableBody from '@material-ui/core/TableBody';
 import TableRow from '@material-ui/core/TableRow';
 import { Location } from '../../../../../shared/locations/types';
+import { NavigatePreviousNext } from '../../../common/NavigatePreviousNext';
 
 interface IQueryResponse {
   location: Location;
@@ -73,7 +74,7 @@ const NEW_LOCATION: Location = {
   longitude: 0
 };
 
-export const LocationDetails = ({ data }) => {
+export const LocationDetails = ({ data, nextLink, previousLink }) => {
 
   const history = useHistory();
 
@@ -139,6 +140,8 @@ export const LocationDetails = ({ data }) => {
               spinning={update.fetching || create.fetching || del.fetching}
               error={update.error || create.error || del.error}
             />
+
+            <NavigatePreviousNext nextLink={nextLink} previousLink={previousLink} />
 
             {location.id &&
               <Tooltip title='Delete location'>

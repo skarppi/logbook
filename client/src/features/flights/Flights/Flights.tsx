@@ -123,8 +123,8 @@ export const Flights = () => {
         <TableRow>
           <TableCell colSpan={5} className={css.openedCell}>
             <FlightDetails entry={flight}
-              nextFlightLink={flights[index - 1] && `${path}/${flights[index - 1].id}`}
-              previousFlightLink={flights[index + 1] && `${path}/${flights[index + 1].id}`} />
+              nextLink={flights[index - 1] && `${path}/${flights[index - 1].id}`}
+              previousLink={flights[index + 1] && `${path}/${flights[index + 1].id}`} />
           </TableCell>
         </TableRow>
       )}

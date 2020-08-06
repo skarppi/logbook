@@ -82,20 +82,24 @@ export const LocationsList = () => {
     );
   }
 
-
-  function details(location: Location) {
-    return (<TableRow className={css.opened}>
-      <TableCell colSpan={5}>
-        <LocationDetails data={location} />
-      </TableCell>
-    </TableRow>);
-  }
-
   const [res] = useQuery<IQueryResponse>({ query: Query });
 
   const locations = res.data?.locations?.nodes ?? [];
 
-  const rows = locations.map(location => {
+  function details(location: Location, index: number) {
+    return (<TableRow className={css.opened}>
+      <TableCell colSpan={5}>
+        <LocationDetails
+          data={location}
+          nextLink={locations[index - 1] && `/locations/${locations[index - 1].id}`}
+          previousLink={locations[index + 1] && `/locations/${locations[index + 1].id}`}
+        />
+      </TableCell>
+    </TableRow>);
+  }
+
+
+  const rows = locations.map((location, index) => {
     const current = id === String(location.id);
     return <React.Fragment key={String(location.id)}>
       <TableRow>
@@ -121,7 +125,7 @@ export const LocationsList = () => {
           {location.longitude}
         </TableCell>
       </TableRow>
-      {current && details(location)}
+      {current && details(location, index)}
     </React.Fragment>;
   });
 
@@ -155,7 +159,7 @@ export const LocationsList = () => {
               </TableHead>
               <TableBody>
                 <LoadingTable spinning={res.fetching} error={res.error} colSpan={5} />
-                {id === NEWID && details(null)}
+                {id === NEWID && details(null, Number.MIN_SAFE_INTEGER)}
                 {rows}
               </TableBody>
             </Table>

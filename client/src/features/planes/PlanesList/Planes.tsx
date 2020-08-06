@@ -115,15 +115,18 @@ export const PlanesList = ({ match: { params } }) => {
     );
   }
 
-  function details(id: string) {
+  function details(id: string, index: number) {
     return (<TableRow className={layout.opened}>
       <TableCell colSpan={5}>
-        <PlaneDetails id={id} />
+        <PlaneDetails id={id}
+          nextLink={planes[index - 1] && `/planes/${planes[index - 1].id}`}
+          previousLink={planes[index + 1] && `/planes/${planes[index + 1].id}`}
+        />
       </TableCell>
     </TableRow>);
   }
 
-  const rows = planes.map(plane => {
+  const rows = planes.map((plane, index) => {
     const current = params.id === plane.id;
     return <React.Fragment key={plane.id}>
       <TableRow>
@@ -143,7 +146,7 @@ export const PlanesList = ({ match: { params } }) => {
         <TableCell>{plane.totalByPlane && formatDuration(plane.totalByPlane.totalTime)}</TableCell>
         <TableCell>{lastFlown(plane.flights)}</TableCell>
       </TableRow>
-      {params.id === plane.id && details(plane.id)}
+      {params.id === plane.id && details(plane.id, index)}
     </React.Fragment>;
   });
 
@@ -176,7 +179,7 @@ export const PlanesList = ({ match: { params } }) => {
               </TableHead>
               <TableBody>
                 <LoadingTable spinning={res.fetching} error={res.error} colSpan={5} />
-                {params.id === NEWID && details('')}
+                {params.id === NEWID && details('', Number.MIN_SAFE_INTEGER)}
                 {rows}
               </TableBody>
             </Table>

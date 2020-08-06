@@ -128,18 +128,22 @@ export const BatteriesList = ({ match: { params } }) => {
     );
   }
 
-  const details = (id: number) =>
-    <TableRow>
-      <TableCell colSpan={5}>
-        <BatteryDetails id={id} />
-      </TableCell>
-    </TableRow>;
-
   const [res] = useQuery<IQueryResponse>({ query: Query });
 
   const batteries = res.data && res.data.batteries ? res.data.batteries.nodes : [];
 
-  const rows = batteries.map(battery => {
+  const details = (id: number, index: number) =>
+    <TableRow>
+      <TableCell colSpan={5}>
+        <BatteryDetails
+          id={id}
+          nextLink={batteries[index - 1] && `/batteries/${batteries[index - 1].id}`}
+          previousLink={batteries[index + 1] && `/batteries/${batteries[index + 1].id}`}
+        />
+      </TableCell>
+    </TableRow>;
+
+  const rows = batteries.map((battery, index) => {
     const current = params.id === String(battery.id);
     return <React.Fragment key={String(battery.id)}>
       <TableRow>
@@ -159,7 +163,7 @@ export const BatteriesList = ({ match: { params } }) => {
         <TableCell>{lastUsed(battery.batteryCycles)}</TableCell>
         <TableCell>{batteryOps(battery)}</TableCell>
       </TableRow>
-      {params.id === String(battery.id) && details(battery.id)}
+      {params.id === String(battery.id) && details(battery.id, index)}
     </React.Fragment>;
   });
 
@@ -195,7 +199,7 @@ export const BatteriesList = ({ match: { params } }) => {
               </TableHead>
               <TableBody>
                 <LoadingTable spinning={res.fetching} error={res.error} colSpan={5} />
-                {params.id === NEWID && details(-1)}
+                {params.id === NEWID && details(-1, Number.MIN_SAFE_INTEGER)}
                 {rows}
               </TableBody>
             </Table>

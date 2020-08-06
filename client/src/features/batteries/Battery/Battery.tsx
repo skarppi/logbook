@@ -34,7 +34,7 @@ import TableCell from '@material-ui/core/TableCell';
 import TableBody from '@material-ui/core/TableBody';
 import TableRow from '@material-ui/core/TableRow';
 import { BatteryState } from '../../../../../shared/batteries';
-import makeStyles from '@material-ui/styles/makeStyles';
+import { NavigatePreviousNext } from '../../../common/NavigatePreviousNext';
 import Box from '@material-ui/core/Box';
 
 const batteryTypes = ['LiPo', 'LiHV'];
@@ -129,7 +129,7 @@ const NEW_BATTERY: Battery = {
   capacity: 0
 };
 
-export const BatteryDetails = ({ id }) => {
+export const BatteryDetails = ({ id, nextLink, previousLink }) => {
 
   const history = useHistory();
 
@@ -224,6 +224,8 @@ export const BatteryDetails = ({ id }) => {
               spinning={read.fetching || update.fetching || create.fetching || del.fetching}
               error={read.error || update.error || create.error || del.error}
             />
+
+            <NavigatePreviousNext nextLink={nextLink} previousLink={previousLink} />
 
             {battery.id &&
               <Tooltip title='Delete battery'>

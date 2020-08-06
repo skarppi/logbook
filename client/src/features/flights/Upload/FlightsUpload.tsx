@@ -192,8 +192,8 @@ export const FlightsUpload = ({ match: { params: { id } } }) => {
         <TableCell colSpan={5}>
           <FlightDetails
             entry={flight}
-            nextFlightLink={flights[index - 1] && `${path}${flights[index - 1].id}`}
-            previousFlightLink={flights[index + 1] && `${path}${flights[index + 1].id}`} />
+            nextLink={flights[index - 1] && `${path}${flights[index - 1].id}`}
+            previousLink={flights[index + 1] && `${path}${flights[index + 1].id}`} />
         </TableCell>
       </TableRow>
     );
