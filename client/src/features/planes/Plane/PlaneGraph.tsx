@@ -1,7 +1,6 @@
 import * as React from 'react';
 
 import { defaults, Bar } from 'react-chartjs-2';
-import * as Color from 'color';
 import { chartColors } from '../../../utils/charts';
 import { BatteryCycle } from '../../../../../shared/batteries/types';
 import { formatDuration } from '../../../../../shared/utils/date';
@@ -88,16 +87,16 @@ export const PlaneGraph = ({ cycles }: IProps) => {
       type: 'bar',
       yAxisID: 'time',
       data: flights.map(c => c.flight.flightTime),
-      borderColor: chartColors[0][0],
-      backgroundColor: chartColors[0][1],
+      borderColor: chartColors(0, 1),
+      backgroundColor: chartColors(0, 0.5),
     },
     {
       label: 'Armed time',
       type: 'bar',
       yAxisID: 'time',
       data: flights.map(c => c.flight.armedTime - c.flight.flightTime),
-      borderColor: chartColors[1][0],
-      backgroundColor: chartColors[1][1],
+      borderColor: chartColors(1, 1),
+      backgroundColor: chartColors(0, 0.5),
     }
   ]
 

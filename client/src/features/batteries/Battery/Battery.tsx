@@ -186,12 +186,6 @@ export const BatteryDetails = ({ id, nextLink, previousLink }) => {
     });
   };
 
-  // private onTop = React.createRef<HTMLSpanElement>();
-
-  // componentDidMount() {
-  //   this.onTop.current.scrollIntoView();
-  // }
-
   const cycles = battery.batteryCycles && battery.batteryCycles.nodes || [];
 
   const voltages = cycles.filter(c => c.restingVoltage);
@@ -204,7 +198,7 @@ export const BatteryDetails = ({ id, nextLink, previousLink }) => {
       <CardHeader
         title={
           <>
-            <span ref={this.onTop}>Battery: </span>
+            <span>Battery: </span>
             <TextField
               required
               error={id === NEW_BATTERY.id && battery.name.length === 0}

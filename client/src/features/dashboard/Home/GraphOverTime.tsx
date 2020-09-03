@@ -28,8 +28,8 @@ function colorize(datasets: Dataset[]) {
   return datasets.map((dataset, index) => {
     const colorIndex = Math.floor(index / 2);
 
-    dataset['borderColor'] = chartColors[colorIndex][0];
-    dataset['backgroundColor'] = chartColors[colorIndex][1];
+    dataset['borderColor'] = chartColors(colorIndex, 1);
+    dataset['backgroundColor'] = chartColors(colorIndex, 0.5);
     dataset['borderWidth'] = 1;
 
     return dataset;

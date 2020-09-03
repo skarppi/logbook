@@ -192,7 +192,7 @@ export const PlaneDetails = ({ id, nextLink, previousLink }) => {
       <CardHeader
         title={
           <>
-            <span ref={this.onTop}>Plane: </span>
+            <span>Plane: </span>
             <TextField
               required
               error={id === NEW_PLANE.id && plane.id.length === 0}

@@ -106,7 +106,7 @@ export const LocationDetails = ({ data, nextLink, previousLink }) => {
       <CardHeader
         title={
           <>
-            <span ref={this.onTop}>Location name: </span>
+            <span>Location name: </span>
             <TextField
               required
               error={location.id === NEW_LOCATION.id && location.name.length === 0}

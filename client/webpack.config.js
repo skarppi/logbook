@@ -89,9 +89,9 @@ module.exports = {
             loader: "css-loader",
             options: {
               modules: true,
-              camelCase: true,
+              // camelCase: true,
               sourceMap: !config.IS_PRODUCTION,
-              minimize: config.IS_PRODUCTION
+              // minimize: config.IS_PRODUCTION
             }
           }
         ]

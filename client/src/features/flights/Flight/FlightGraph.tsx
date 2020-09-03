@@ -1,8 +1,7 @@
 import * as React from 'react';
 
 import { defaults, Bar } from 'react-chartjs-2';
-import * as Color from 'color';
-import { Segment, SegmentItem, Flight } from '../../../../../shared/flights/types';
+import { SegmentItem, Flight } from '../../../../../shared/flights/types';
 import { Plane, Telemetry } from '../../../../../shared/planes/types';
 import { SegmentType } from '../../../../../shared/flights';
 import { chartColors } from '../../../utils/charts';
@@ -177,13 +176,12 @@ export const FlightGraph = ({ flight }: IProps) => {
       const current = segments.find(seg => new Date(seg.startDate) <= now && new Date(seg.endDate) >= now);
       return current && segmentTypeToYAxis[current.type] || segmentTypeToYAxis[SegmentType.stopped];
     }),
-    backgroundColor: Color('#81c784').alpha(0.1).rgbString(),
+    backgroundColor: 'rgba(129,199,132,0.1)',
     borderWidth: 0,
     pointStyle: 'dash'
   };
 
   const datasets = fields.map((field, index) => {
-    const colorIndex = index % chartColors.length;
     const hidden = defaultTelemetries.indexOf(field) === -1;
 
     const calibrateAltitude = field.indexOf('(m)') !== -1;
@@ -201,8 +199,8 @@ export const FlightGraph = ({ flight }: IProps) => {
         return i[field];
       }),
       pointRadius: 0,
-      borderColor: chartColors[colorIndex][0],
-      backgroundColor: chartColors[colorIndex][1],
+      borderColor: chartColors(index, 1),
+      backgroundColor: chartColors(index, 0.5),
       borderWidth: 1,
     };
   });

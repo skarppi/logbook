@@ -10,7 +10,8 @@
       "dom",
       "esnext.asynciterable"
     ],
-    "jsx": "react"
+    "jsx": "react",
+    "esModuleInterop": true
   },
   "files": [
     "./client.tsx"

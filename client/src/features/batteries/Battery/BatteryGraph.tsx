@@ -79,8 +79,8 @@ export const BatteryGraph = ({ cycles }: IProps) => {
       type: 'bar',
       yAxisID: 'time',
       data: flights.map(c => c.flight.flightTime),
-      borderColor: chartColors[0][0],
-      backgroundColor: chartColors[0][1],
+      borderColor: chartColors(0, 1),
+      backgroundColor: chartColors(0, 0.5),
       barThickness: 6,
       maxBarThickness: 8
     },
@@ -89,8 +89,8 @@ export const BatteryGraph = ({ cycles }: IProps) => {
       type: 'bar',
       yAxisID: 'time',
       data: flights.map(c => c.flight.armedTime - c.flight.flightTime),
-      borderColor: chartColors[1][0],
-      backgroundColor: chartColors[1][1],
+      borderColor: chartColors(1, 1),
+      backgroundColor: chartColors(1, 0.5),
       barThickness: 6,
       maxBarThickness: 8
     }
