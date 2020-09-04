@@ -13,6 +13,9 @@ import Container from '@material-ui/core/Container';
 import ThemeProvider from '@material-ui/styles/ThemeProvider';
 import { createMuiTheme } from '@material-ui/core/styles';
 import createBreakpoints from '@material-ui/core/styles/createBreakpoints';
+import { Toolbar, makeStyles, AppBar, Box, IconButton, Typography, Button } from '@material-ui/core';
+import MenuIcon from "@material-ui/icons/Menu";
+
 
 const breakpoints = createBreakpoints({});
 
@@ -66,11 +69,16 @@ const theme = createMuiTheme({
   }
 });
 
-export const App = () => (
-  <BrowserRouter basename={process.env.PUBLIC_PATH}>
+const useStyles = makeStyles(theme => ({
+  offset: theme.mixins.toolbar,
+}))
+
+export const App = () => {
+  const classes = useStyles();
+  return <BrowserRouter basename={process.env.PUBLIC_PATH}>
     <ThemeProvider theme={theme}>
+      <Header />
       <Container disableGutters={true}>
-        <Header />
         <Switch>
           <Route exact path='/' component={Dashboard} />
           <Route path='/flights/:date?/:id?' component={FlightDays} />
@@ -82,4 +90,4 @@ export const App = () => (
       </Container>
     </ThemeProvider>
   </BrowserRouter >
-);
+};
