@@ -23,10 +23,10 @@ import NewUsedBatteryIcon from '@material-ui/icons/Add';
 import ClosedIcon from '@material-ui/icons/ArrowRight';
 import OpenedIcon from '@material-ui/icons/ArrowDropDown';
 import { useState, useMemo } from 'react';
-import { useQuery, useMutation } from 'urql';
+import { useQuery } from 'urql';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
-import { formatDateTime, formatDate, formatDateTimeLocal } from '../../../utils/date';
+import { formatDateTime, formatDateTimeLocal } from '../../../utils/date';
 import gql from 'graphql-tag';
 import Input from '@material-ui/core/Input';
 import { BatteryCycle, Battery } from '../../../../../shared/batteries/types';
@@ -192,8 +192,9 @@ export const FlightsUpload = ({ match: { params: { id } } }) => {
         <TableCell colSpan={5}>
           <FlightDetails
             entry={flight}
-            nextLink={flights[index - 1] && `${path}${flights[index - 1].id}`}
-            previousLink={flights[index + 1] && `${path}${flights[index + 1].id}`} />
+            path={path}
+            nextLink={flights?.[index - 1]}
+            previousLink={flights?.[index + 1]} />
         </TableCell>
       </TableRow>
     );

@@ -99,8 +99,7 @@ export const BatteriesList = ({ match: { params } }) => {
 
     return (
       <NavLink
-        to={`/flights/${formatDate(cycle.date)}/${
-          cycle.flightId
+        to={`/flights/${formatDate(cycle.date)}/${cycle.flightId
           }`}
       >
         {timestamp}
@@ -152,11 +151,11 @@ export const BatteriesList = ({ match: { params } }) => {
       <TableCell colSpan={5}>
         <BatteryDetails
           id={id}
-          nextLink={batteries[index - 1] && `/batteries/${batteries[index - 1].id}`}
-          previousLink={batteries[index + 1] && `/batteries/${batteries[index + 1].id}`}
+          nextLink={batteries?.[index - 1]}
+          previousLink={batteries?.[index + 1]}
         />
       </TableCell>
-    </TableRow>;
+    </TableRow >;
 
   const rows = batteries.map((battery, index) => {
     const isCurrent = params.id === String(battery.id);

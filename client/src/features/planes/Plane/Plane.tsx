@@ -1,9 +1,4 @@
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import CardHeader from '@material-ui/core/CardHeader';
-import IconButton from '@material-ui/core/IconButton';
 import TextField from '@material-ui/core/TextField';
-import Tooltip from '@material-ui/core/Tooltip';
 import * as React from 'react';
 import { Plane } from '../../../../../shared/planes/types';
 import { PlaneGraph } from './PlaneGraph';
@@ -13,14 +8,12 @@ import { useHistory } from 'react-router-dom';
 import gql from 'graphql-tag';
 import { useQuery, useMutation } from 'urql';
 
-import DeleteIcon from '@material-ui/icons/Delete';
-import { LoadingIcon } from '../../loading/Loading';
 import Divider from '@material-ui/core/Divider';
 import { PlaneType } from '../../../../../shared/planes';
 import { Battery } from '../../../../../shared/batteries/types';
 import { PlaneForm } from './PlaneForm';
-import { NavigatePreviousNext } from '../../../common/NavigatePreviousNext';
 import Box from '@material-ui/core/Box';
+import { DetailsTemplate } from '../../../common/DetailsTemplate';
 
 const Query = gql`
   query($id:String!) {
@@ -187,44 +180,32 @@ export const PlaneDetails = ({ id, nextLink, previousLink }) => {
     });
   };
 
-  return (
-    <Card style={{ padding: '10px' }}>
-      <CardHeader
-        title={
-          <>
-            <span>Plane: </span>
-            <TextField
-              required
-              error={id === NEW_PLANE.id && plane.id.length === 0}
-              id='id'
-              placeholder='Id'
-              value={plane.id}
-              name='id'
-              onChange={changePlane}
-              onBlur={({ target: { value } }) => value.length > 0 && save()}
-              margin='none'
-            />
-          </>
-        }
-        action={
-          <>
-            <LoadingIcon
-              spinning={read.fetching || update.fetching || create.fetching || del.fetching}
-              error={read.error || update.error || create.error || del.error}
-            />
-
-            <NavigatePreviousNext nextLink={nextLink} previousLink={previousLink} />
-
-            {plane.id &&
-              <Tooltip title='Delete plane'>
-                <IconButton onClick={executeDelete}>
-                  <DeleteIcon />
-                </IconButton>
-              </Tooltip>}
-          </>
-        }
-      />
-      <CardContent hidden={plane.id === ''}>
+  return <DetailsTemplate
+    type='plane'
+    path='/planes'
+    title={
+      <>
+        <span>Plane: </span>
+        <TextField
+          required
+          error={id === NEW_PLANE.id && plane.id.length === 0}
+          id='id'
+          placeholder='Id'
+          value={plane.id}
+          name='id'
+          onChange={changePlane}
+          onBlur={({ target: { value } }) => value.length > 0 && save()}
+          margin='none'
+        />
+      </>
+    }
+    previousLink={previousLink}
+    nextLink={nextLink}
+    queries={[read, update, create, del]}
+    deleteAction={plane.id !== NEW_PLANE.id && executeDelete}
+    hidden={plane.id === ''}
+    content={
+      <>
         <PlaneForm plane={plane} allBatteries={read.data && read.data.batteries.nodes || []} setPlane={setPlane} save={save} />
 
         <Divider variant='middle' />
@@ -232,7 +213,7 @@ export const PlaneDetails = ({ id, nextLink, previousLink }) => {
         <Box height='500px' width='92vw' maxWidth='1200px'>
           <PlaneGraph cycles={[]}></PlaneGraph>
         </Box>
-      </CardContent>
-    </Card>
-  );
+      </>
+    }
+  />
 };

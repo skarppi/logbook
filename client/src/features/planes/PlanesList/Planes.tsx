@@ -26,7 +26,7 @@ import OpenedIcon from '@material-ui/icons/KeyboardArrowDown';
 import NewPlaneIcon from '@material-ui/icons/Add';
 
 import gql from 'graphql-tag';
-import { useQuery, useMutation } from 'urql';
+import { useQuery } from 'urql';
 import { Flight } from '../../../../../shared/flights/types';
 import { formatDateTime, formatDate } from '../../../utils/date';
 import { LinkProps } from '@material-ui/core/Link';
@@ -124,8 +124,8 @@ export const PlanesList = () => {
     return (<TableRow ref={scrollRef}>
       <TableCell colSpan={5}>
         <PlaneDetails id={id}
-          nextLink={planes[index - 1] && `/planes/${planes[index - 1].id}`}
-          previousLink={planes[index + 1] && `/planes/${planes[index + 1].id}`}
+          nextLink={planes?.[index - 1]}
+          previousLink={planes?.[index + 1]}
         />
       </TableCell>
     </TableRow>);

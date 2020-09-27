@@ -1,6 +1,3 @@
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import CardHeader from '@material-ui/core/CardHeader';
 import IconButton from '@material-ui/core/IconButton';
 import TextField from '@material-ui/core/TextField';
 import Divider from '@material-ui/core/Divider';
@@ -40,8 +37,8 @@ import { FlightTrack } from './FlightTrack';
 import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
-import { NavigatePreviousNext } from '../../../common/NavigatePreviousNext';
 import Box from '@material-ui/core/Box';
+import { DetailsTemplate } from '../../../common/DetailsTemplate';
 
 const Query = gql`
   query($id:String!) {
@@ -132,7 +129,7 @@ interface IQueryResponse {
   };
 }
 
-export const FlightDetails = ({ entry, nextLink, previousLink }) => {
+export const FlightDetails = ({ entry, path, nextLink, previousLink }) => {
 
   const history = useHistory();
 
@@ -209,58 +206,55 @@ export const FlightDetails = ({ entry, nextLink, previousLink }) => {
     setAnchorEl(null);
   }
 
-  return (
-    <Card style={{ boxShadow: 'none' }}>
-      <CardHeader
-        title={`Flight: ${flight.id}`}
-        action={
-          <>
-            <LoadingIcon
-              spinning={read.fetching || update.fetching || del.fetching}
-              error={read.error || update.error || del.error}
-            />
+  return <DetailsTemplate
+    type='flight'
+    path={path}
+    title={`Flight: ${flight.id}`}
+    previousLink={previousLink}
+    nextLink={nextLink}
+    queries={[read, update, del]}
+    deleteAction={deleteFlight}
+    action={
+      <IconButton
+        onClick={changeFavorite}>
+        {flight.favorite ? <FavoriteIcon /> : <UnFavoriteIcon />}
+      </IconButton>
+    }
+    menu={
+      <>
+        <IconButton
+          aria-label='More'
+          aria-controls='hamburger'
+          aria-haspopup='true'
+          onClick={handleClick}
+        >
+          <HamburgerIcon />
+        </IconButton>
+        <Menu
+          id='hamburger'
+          anchorEl={anchorEl}
+          keepMounted
+          open={Boolean(anchorEl)}
+          onClose={handleClose}
+        >
 
-            {<IconButton
-              onClick={changeFavorite}>
-              {flight.favorite ? <FavoriteIcon /> : <UnFavoriteIcon />}
-            </IconButton>
-            }
+          <MenuItem key='Reset'>
+            <FlightTimezone offset={timezoneOffset} onChange={setTimezoneOffset} />
+            <ListItemText primary='Change timezone' onClick={executeReset} />
+          </MenuItem>
 
-            <NavigatePreviousNext nextLink={nextLink} previousLink={previousLink} />
-
-            <IconButton
-              aria-label='More'
-              aria-controls='hamburger'
-              aria-haspopup='true'
-              onClick={handleClick}
-            >
-              <HamburgerIcon />
-            </IconButton>
-            <Menu
-              id='hamburger'
-              anchorEl={anchorEl}
-              keepMounted
-              open={Boolean(anchorEl)}
-              onClose={handleClose}
-            >
-
-              <MenuItem key='Reset'>
-                <FlightTimezone offset={timezoneOffset} onChange={setTimezoneOffset} />
-                <ListItemText primary='Change timezone' onClick={executeReset} />
-              </MenuItem>
-
-
-              <MenuItem key='Delete' onClick={executeDelete}>
-                <ListItemIcon>
-                  <DeleteIcon />
-                </ListItemIcon>
-                <ListItemText primary='Delete Flight' />
-              </MenuItem>
-            </Menu>
-          </>
-        }
-      />
-      <CardContent>
+          <MenuItem key='Delete' onClick={executeDelete}>
+            <ListItemIcon>
+              <DeleteIcon />
+            </ListItemIcon>
+            <ListItemText primary='Delete Flight' />
+          </MenuItem>
+        </Menu>
+      </>
+    }
+    hidden={false}
+    content={
+      <>
         <Box display='flex' flexWrap='wrap' justifyContent='stretch'>
           <FlightDate flight={flight} />
           <FlightDuration flight={flight} save={updateFlight} />
@@ -311,7 +305,7 @@ export const FlightDetails = ({ entry, nextLink, previousLink }) => {
           plane={flight.planeId}
           session={flight.session}
         />
-      </CardContent>
-    </Card>
-  );
+      </>
+    }
+  />
 };

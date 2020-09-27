@@ -92,8 +92,8 @@ export const LocationsList = () => {
       <TableCell colSpan={5}>
         <LocationDetails
           data={location}
-          nextLink={locations[index - 1] && `/locations/${locations[index - 1].id}`}
-          previousLink={locations[index + 1] && `/locations/${locations[index + 1].id}`}
+          nextLink={locations?.[index - 1]}
+          previousLink={locations?.[index + 1]}
         />
       </TableCell>
     </TableRow>);

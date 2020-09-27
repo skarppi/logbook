@@ -1,9 +1,4 @@
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import CardHeader from '@material-ui/core/CardHeader';
-import IconButton from '@material-ui/core/IconButton';
 import TextField from '@material-ui/core/TextField';
-import Tooltip from '@material-ui/core/Tooltip';
 import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
 import Select from '@material-ui/core/Select';
@@ -17,16 +12,15 @@ import * as React from 'react';
 import { Battery } from '../../../../../shared/batteries/types';
 import { BatteryGraph } from './BatteryGraph';
 import { BatteryCycles } from './BatteryCycles';
+import { DetailsTemplate } from '../../../common/DetailsTemplate';
 
 import { useHistory } from 'react-router-dom';
 
 import gql from 'graphql-tag';
 import { useQuery, useMutation } from 'urql';
 
-import DeleteIcon from '@material-ui/icons/Delete';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
-import { LoadingIcon } from '../../loading/Loading';
 import { formatDate } from '../../../utils/date';
 import { formatDuration } from '../../../../../shared/utils/date';
 import Table from '@material-ui/core/Table';
@@ -34,7 +28,6 @@ import TableCell from '@material-ui/core/TableCell';
 import TableBody from '@material-ui/core/TableBody';
 import TableRow from '@material-ui/core/TableRow';
 import { BatteryState } from '../../../../../shared/batteries';
-import { NavigatePreviousNext } from '../../../common/NavigatePreviousNext';
 import Box from '@material-ui/core/Box';
 
 const batteryTypes = ['LiPo', 'LiHV'];
@@ -129,7 +122,7 @@ const NEW_BATTERY: Battery = {
   capacity: 0
 };
 
-export const BatteryDetails = ({ id, nextLink, previousLink }) => {
+export const BatteryDetails = ({ id, previousLink, nextLink }) => {
 
   const history = useHistory();
 
@@ -193,44 +186,32 @@ export const BatteryDetails = ({ id, nextLink, previousLink }) => {
   const totalFlights = cycles.filter(c => c.flight).length;
   const totalFlightTime = cycles.reduce((sum, c) => sum + (c.flight ? c.flight.flightTime : 0), 0);
 
-  return (
-    <Card style={{ boxShadow: 'none' }}>
-      <CardHeader
-        title={
-          <>
-            <span>Battery: </span>
-            <TextField
-              required
-              error={id === NEW_BATTERY.id && battery.name.length === 0}
-              id='name'
-              placeholder='Name'
-              value={battery.name}
-              name='name'
-              onChange={changeBattery}
-              onBlur={(event: React.FocusEvent<HTMLInputElement>) => event.target.value.length > 0 && save(event)}
-              margin='none'
-            />
-          </>
-        }
-        action={
-          <>
-            <LoadingIcon
-              spinning={read.fetching || update.fetching || create.fetching || del.fetching}
-              error={read.error || update.error || create.error || del.error}
-            />
-
-            <NavigatePreviousNext nextLink={nextLink} previousLink={previousLink} />
-
-            {battery.id &&
-              <Tooltip title='Delete battery'>
-                <IconButton onClick={executeDelete}>
-                  <DeleteIcon />
-                </IconButton>
-              </Tooltip>}
-          </>
-        }
-      />
-      <CardContent hidden={battery.name === ''}>
+  return <DetailsTemplate
+    type='battery'
+    path='/batteries'
+    title={
+      <>
+        <span>Battery: </span>
+        <TextField
+          required
+          error={id === NEW_BATTERY.id && battery.name.length === 0}
+          id='name'
+          placeholder='Name'
+          value={battery.name}
+          name='name'
+          onChange={changeBattery}
+          onBlur={(event: React.FocusEvent<HTMLInputElement>) => event.target.value.length > 0 && save(event)}
+          margin='none'
+        />
+      </>
+    }
+    previousLink={previousLink}
+    nextLink={nextLink}
+    queries={[read, update, create, del]}
+    deleteAction={battery.id !== NEW_BATTERY.id && executeDelete}
+    hidden={battery.name === ''}
+    content={
+      <>
         <Table>
           <TableBody>
             <TableRow>
@@ -396,7 +377,7 @@ export const BatteryDetails = ({ id, nextLink, previousLink }) => {
             <BatteryCycles cells={battery.cells} cycles={cycles} />
           </ExpansionPanelDetails>
         </ExpansionPanel>
-      </CardContent>
-    </Card>
-  );
+      </>
+    }
+  />
 };

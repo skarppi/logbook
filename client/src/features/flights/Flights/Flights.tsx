@@ -1,6 +1,5 @@
 import TableRow from '@material-ui/core/TableRow';
 import TableCell from '@material-ui/core/TableCell';
-import TableBody from '@material-ui/core/TableBody';
 import * as React from 'react';
 import { NavLink, useParams } from 'react-router-dom';
 import { formatDuration } from '../../../../../shared/utils/date';
@@ -135,8 +134,9 @@ export const Flights = () => {
         <TableRow ref={scrollRef}>
           <TableCell colSpan={5} className={css.openedCell}>
             <FlightDetails entry={flight}
-              nextLink={flights[index - 1] && `${path}/${flights[index - 1].id}`}
-              previousLink={flights[index + 1] && `${path}/${flights[index + 1].id}`} />
+              path={path}
+              nextLink={flights?.[index - 1]}
+              previousLink={flights?.[index + 1]} />
           </TableCell>
         </TableRow>
       )}

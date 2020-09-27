@@ -1,9 +1,4 @@
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import CardHeader from '@material-ui/core/CardHeader';
-import IconButton from '@material-ui/core/IconButton';
 import TextField from '@material-ui/core/TextField';
-import Tooltip from '@material-ui/core/Tooltip';
 import * as React from 'react';
 
 import { useHistory } from 'react-router-dom';
@@ -11,10 +6,8 @@ import { useHistory } from 'react-router-dom';
 import gql from 'graphql-tag';
 import { useMutation } from 'urql';
 
-import DeleteIcon from '@material-ui/icons/Delete';
-import { LoadingIcon } from '../../loading/Loading';
 import { Location } from '../../../../../shared/locations/types';
-import { NavigatePreviousNext } from '../../../common/NavigatePreviousNext';
+import { DetailsTemplate } from '../../../common/DetailsTemplate';
 import Box from '@material-ui/core/Box';
 
 interface IQueryResponse {
@@ -101,75 +94,59 @@ export const LocationDetails = ({ data, nextLink, previousLink }) => {
     });
   };
 
-  return (
-    <Card style={{ padding: '10px' }}>
-      <CardHeader
-        title={
-          <>
-            <span>Location name: </span>
-            <TextField
-              required
-              error={location.id === NEW_LOCATION.id && location.name.length === 0}
-              id='name'
-              placeholder='Name'
-              value={location.name}
-              name='name'
-              onChange={changelocation}
-              onBlur={({ target: { value } }) => value.length > 0 && save()}
-              margin='none'
-            />
-          </>
-        }
-        action={
-          <>
-            <LoadingIcon
-              spinning={update.fetching || create.fetching || del.fetching}
-              error={update.error || create.error || del.error}
-            />
+  return <DetailsTemplate
+    type='location'
+    path='/locations'
+    title={
+      <>
+        <span>Location: </span>
+        <TextField
+          required
+          error={location.id === NEW_LOCATION.id && location.name.length === 0}
+          id='name'
+          placeholder='Name'
+          value={location.name}
+          name='name'
+          onChange={changelocation}
+          onBlur={({ target: { value } }) => value.length > 0 && save()}
+          margin='none'
+        />
+      </>
+    }
+    previousLink={previousLink}
+    nextLink={nextLink}
+    queries={[update, create, del]}
+    deleteAction={location.id !== NEW_LOCATION.id && executeDelete}
+    hidden={location.name === ''}
+    content={
+      < Box display='flex' flexWrap='wrap' >
 
-            <NavigatePreviousNext nextLink={nextLink} previousLink={previousLink} />
+        <TextField
+          type='number'
+          id='latitude'
+          label='Latitude'
+          placeholder='Latitude'
+          value={location.latitude || ''}
+          name='latitude'
+          onChange={changeNumber}
+          onBlur={save}
+          margin='normal'
+          style={{ flexGrow: 1 }}
+        />
 
-            {location.id &&
-              <Tooltip title='Delete location'>
-                <IconButton onClick={executeDelete}>
-                  <DeleteIcon />
-                </IconButton>
-              </Tooltip>}
-          </>
-        }
-      />
-      <CardContent hidden={location.name === ''}>
-        <Box display='flex' flexWrap='wrap'>
-
-          <TextField
-            type='number'
-            id='latitude'
-            label='Latitude'
-            placeholder='Latitude'
-            value={location.latitude || ''}
-            name='latitude'
-            onChange={changeNumber}
-            onBlur={save}
-            margin='normal'
-            style={{ flexGrow: 1 }}
-          />
-
-          <TextField
-            type='number'
-            id='longitude'
-            label='Longitude'
-            placeholder='Longitude'
-            value={location.longitude || ''}
-            name='longitude'
-            onChange={changeNumber}
-            onBlur={save}
-            margin='normal'
-            style={{ flexGrow: 1 }}
-          />
-
-        </Box>
-
-      </CardContent>
-    </Card>
-  );
+        <TextField
+          type='number'
+          id='longitude'
+          label='Longitude'
+          placeholder='Longitude'
+          value={location.longitude || ''}
+          name='longitude'
+          onChange={changeNumber}
+          onBlur={save}
+          margin='normal'
+          style={{ flexGrow: 1 }}
+        />
+      </Box >
+    }
+  />
 };
