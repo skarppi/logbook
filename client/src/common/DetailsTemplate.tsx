@@ -25,10 +25,10 @@ interface IProps {
   queries: UseQueryState<any>[];
   error?: CombinedError;
   hidden: boolean;
-  content: React.ReactNode;
+  children: React.ReactElement | React.ReactElement[];
 }
 
-export const DetailsTemplate = ({ type, path, nextLink, previousLink, title, action, menu, queries, hidden, content, deleteAction }: IProps) => {
+export const DetailsTemplate = ({ type, path, nextLink, previousLink, title, action, menu, queries, hidden, children, deleteAction }: IProps) => {
 
   const history = useHistory();
 
@@ -62,7 +62,7 @@ export const DetailsTemplate = ({ type, path, nextLink, previousLink, title, act
         }
       />
       < CardContent hidden={hidden} >
-        {content}
+        {children}
       </CardContent >
     </Card >
   );

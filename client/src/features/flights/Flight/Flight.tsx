@@ -252,60 +252,56 @@ export const FlightDetails = ({ entry, path, nextLink, previousLink }) => {
         </Menu>
       </>
     }
-    hidden={false}
-    content={
-      <>
-        <Box display='flex' flexWrap='wrap' justifyContent='stretch'>
-          <FlightDate flight={flight} />
-          <FlightDuration flight={flight} save={updateFlight} />
-        </Box>
+    hidden={false}>
+    <Box display='flex' flexWrap='wrap' justifyContent='stretch'>
+      <FlightDate flight={flight} />
+      <FlightDuration flight={flight} save={updateFlight} />
+    </Box>
 
-        <FlightLocation
-          flight={flight}
-          save={updateFlight} />
+    <FlightLocation
+      flight={flight}
+      save={updateFlight} />
 
-        <FlightStats flight={flight} />
+    <FlightStats flight={flight} />
 
-        <Divider variant='middle' />
+    <Divider variant='middle' />
 
-        <FlightBatteries
-          flight={flight}
-          batteries={read.data?.batteries.nodes || []}
-          refreshFlight={() => refreshFlight({ requestPolicy: 'network-only' })}
-        />
+    <FlightBatteries
+      flight={flight}
+      batteries={read.data?.batteries.nodes || []}
+      refreshFlight={() => refreshFlight({ requestPolicy: 'network-only' })}
+    />
 
-        <TextField
-          id='jornal'
-          label='Journal'
-          placeholder='Journal'
-          multiline
-          value={(flight.notes?.journal) || ''}
-          name='journal'
-          onChange={changeNotes}
-          onBlur={saveNotes}
-          margin='normal'
-          fullWidth={true}
-        />
+    <TextField
+      id='jornal'
+      label='Journal'
+      placeholder='Journal'
+      multiline
+      value={(flight.notes?.journal) || ''}
+      name='journal'
+      onChange={changeNotes}
+      onBlur={saveNotes}
+      margin='normal'
+      fullWidth={true}
+    />
 
-        <Box height='500px' width='92vw' maxWidth='1200px'>
-          <FlightGraph flight={flight}></FlightGraph>
-        </Box>
+    <Box height='500px' width='92vw' maxWidth='1200px'>
+      <FlightGraph flight={flight}></FlightGraph>
+    </Box>
 
-        <ExpansionPanel defaultExpanded={false}>
-          <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-            Show Map
+    <ExpansionPanel defaultExpanded={false}>
+      <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+        Show Map
           </ExpansionPanelSummary>
-          <ExpansionPanelDetails>
-            <FlightTrack flight={flight}></FlightTrack>
-          </ExpansionPanelDetails>
-        </ExpansionPanel>
+      <ExpansionPanelDetails>
+        <FlightTrack flight={flight}></FlightTrack>
+      </ExpansionPanelDetails>
+    </ExpansionPanel>
 
-        <Videos
-          date={flight.startDate}
-          plane={flight.planeId}
-          session={flight.session}
-        />
-      </>
-    }
-  />
+    <Videos
+      date={flight.startDate}
+      plane={flight.planeId}
+      session={flight.session}
+    />
+  </DetailsTemplate>
 };

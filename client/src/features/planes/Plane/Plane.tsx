@@ -203,17 +203,13 @@ export const PlaneDetails = ({ id, nextLink, previousLink }) => {
     nextLink={nextLink}
     queries={[read, update, create, del]}
     deleteAction={plane.id !== NEW_PLANE.id && executeDelete}
-    hidden={plane.id === ''}
-    content={
-      <>
-        <PlaneForm plane={plane} allBatteries={read.data && read.data.batteries.nodes || []} setPlane={setPlane} save={save} />
+    hidden={plane.id === ''}>
+    <PlaneForm plane={plane} allBatteries={read.data && read.data.batteries.nodes || []} setPlane={setPlane} save={save} />
 
-        <Divider variant='middle' />
+    <Divider variant='middle' />
 
-        <Box height='500px' width='92vw' maxWidth='1200px'>
-          <PlaneGraph cycles={[]}></PlaneGraph>
-        </Box>
-      </>
-    }
-  />
+    <Box height='500px' width='92vw' maxWidth='1200px'>
+      <PlaneGraph cycles={[]}></PlaneGraph>
+    </Box>
+  </DetailsTemplate>
 };

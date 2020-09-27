@@ -1,14 +1,9 @@
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import CardHeader from '@material-ui/core/CardHeader';
-import Grid from '@material-ui/core/Grid';
 import Table from '@material-ui/core/Table';
 import TableRow from '@material-ui/core/TableRow';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableBody from '@material-ui/core/TableBody';
 import IconButton from '@material-ui/core/IconButton';
-import Tooltip from '@material-ui/core/Tooltip';
 
 import * as React from 'react';
 import { NavLink, Link } from 'react-router-dom';
@@ -20,7 +15,6 @@ import { BatteryDetails } from '../Battery/Battery';
 import ClosedIcon from '@material-ui/icons/KeyboardArrowRight';
 import OpenedIcon from '@material-ui/icons/KeyboardArrowDown';
 
-import NewBatteryIcon from '@material-ui/icons/Add';
 import FullChargeIcon from '@material-ui/icons/BatteryChargingFull';
 import StorageChargeIcon from '@material-ui/icons/BatteryCharging50';
 import { BatteryState } from '../../../../../shared/batteries';
@@ -29,8 +23,8 @@ import { useScroll } from '../../../common/useScroll';
 import gql from 'graphql-tag';
 import { useQuery, useMutation } from 'urql';
 import { CREATE_BATTERY_CYCLE } from '../Battery/BatteryCycle';
-import { LinkProps } from '@material-ui/core/Link';
 import { makeStyles } from '@material-ui/core/styles';
+import { ListTemplate } from '../../../common/ListTemplate';
 
 const Query = gql`
   query {
@@ -181,45 +175,28 @@ export const BatteriesList = ({ match: { params } }) => {
     </React.Fragment>;
   });
 
-  const AddLink = React.forwardRef<HTMLAnchorElement, Partial<LinkProps>>((props, ref) => <Link to={`/batteries/${NEWID}`} {...props} ref={ref} />);
-
-  return (
-    <>
-      <Grid item xs={12}>
-        <Card>
-          <CardHeader
-            title='Batteries'
-            action={
-              <Tooltip title='Add new battery'>
-                <IconButton component={AddLink}>
-                  <NewBatteryIcon />
-                </IconButton>
-              </Tooltip>
-            }
-          />
-          <CardContent>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>ID</TableCell>
-                  <TableCell>Type</TableCell>
-                  <TableCell>Current status</TableCell>
-                  <TableCell>Last used</TableCell>
-                  <TableCell>
-                    Actions
-                    <LoadingIcon spinning={charged.fetching} error={charged.error} />
-                  </TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                <LoadingTable spinning={res.fetching} error={res.error} colSpan={5} />
-                {params.id === NEWID && details(-1, Number.MIN_SAFE_INTEGER)}
-                {rows}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
-      </Grid>
-    </>
-  );
+  return <ListTemplate
+    type='battery'
+    path='/batteries'
+    title='Batteries'>
+    <Table>
+      <TableHead>
+        <TableRow>
+          <TableCell>ID</TableCell>
+          <TableCell>Type</TableCell>
+          <TableCell>Current status</TableCell>
+          <TableCell>Last used</TableCell>
+          <TableCell>
+            Actions
+            <LoadingIcon spinning={charged.fetching} error={charged.error} />
+          </TableCell>
+        </TableRow>
+      </TableHead>
+      <TableBody>
+        <LoadingTable spinning={res.fetching} error={res.error} colSpan={5} />
+        {params.id === NEWID && details(-1, Number.MIN_SAFE_INTEGER)}
+        {rows}
+      </TableBody>
+    </Table>
+  </ListTemplate>
 };

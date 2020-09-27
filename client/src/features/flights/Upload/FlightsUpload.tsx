@@ -1,7 +1,3 @@
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import CardHeader from '@material-ui/core/CardHeader';
-import Grid from '@material-ui/core/Grid';
 import Table from '@material-ui/core/Table';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
@@ -19,7 +15,6 @@ import { FlightTimezone } from '../Flight/FlightTimezone';
 import { formatDuration } from '../../../../../shared/utils/date';
 import { Location } from '../../../../../shared/locations/types';
 
-import NewUsedBatteryIcon from '@material-ui/icons/Add';
 import ClosedIcon from '@material-ui/icons/ArrowRight';
 import OpenedIcon from '@material-ui/icons/ArrowDropDown';
 import { useState, useMemo } from 'react';
@@ -30,10 +25,9 @@ import { formatDateTime, formatDateTimeLocal } from '../../../utils/date';
 import gql from 'graphql-tag';
 import Input from '@material-ui/core/Input';
 import { BatteryCycle, Battery } from '../../../../../shared/batteries/types';
-import Tooltip from '@material-ui/core/Tooltip';
-import IconButton from '@material-ui/core/IconButton';
 import { BatteryCycleRow } from '../../batteries/Battery/BatteryCycleRow';
 import { BatteryState } from '../../../../../shared/batteries';
+import { ListTemplate } from '../../../common/ListTemplate';
 
 const css = require('./FlightsUpload.css');
 
@@ -248,99 +242,76 @@ export const FlightsUpload = ({ match: { params: { id } } }) => {
 
   return (
     <>
-      <Grid item xs={12}>
-        <Card>
-          <CardHeader title='Upload New Flights' />
-          <CardContent>
-            <span>Timezone offset </span>
-            <FlightTimezone offset={timezoneOffset} onChange={setTimezoneOffset} />
+      <ListTemplate title='Upload New Flights'>
+        <span>Timezone offset </span>
+        <FlightTimezone offset={timezoneOffset} onChange={setTimezoneOffset} />
 
-            <br />
-            <span>Location </span>
-            <Select
-              value={locationId || ''}
-              name='location'
-              onChange={({ target: { name, value } }) => setLocationId(Number(value))}
-              input={<Input id='select-multiple-checkbox' />}
-            >
-              {locations.map(loc => (
-                <MenuItem key={loc.id} value={loc.id}>
-                  {loc.name} {printDistance(loc.distance)}
-                </MenuItem>
-              ))}
-            </Select>
+        <br />
+        <span>Location </span>
+        <Select
+          value={locationId || ''}
+          name='location'
+          onChange={({ target: { name, value } }) => setLocationId(Number(value))}
+          input={<Input id='select-multiple-checkbox' />}
+        >
+          {locations.map(loc => (
+            <MenuItem key={loc.id} value={loc.id}>
+              {loc.name} {printDistance(loc.distance)}
+            </MenuItem>
+          ))}
+        </Select>
 
-            <Dropzone onDrop={handleDrop}>
-              {({ getRootProps, getInputProps, isDragActive }) =>
-                dropRendered(getRootProps, getInputProps, isDragActive)
-              }
-            </Dropzone>
-          </CardContent>
-        </Card>
-      </Grid>
-      <Grid item xs={12}>
-        <Card>
-          <CardHeader
-            title='Used Batteries'
-            action={
-              <Tooltip title='Add new used battery'>
-                <IconButton onClick={addUsedBattery}>
-                  <NewUsedBatteryIcon />
-                </IconButton>
-              </Tooltip>
-            }
-          />
-          <CardContent>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Id</TableCell>
-                  <TableCell>Battery</TableCell>
-                  <TableCell>Used</TableCell>
-                  <TableCell>Resting</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>{batteryCycles}</TableBody>
-            </Table>
-          </CardContent>
-        </Card>
-      </Grid>
+        <Dropzone onDrop={handleDrop}>
+          {({ getRootProps, getInputProps, isDragActive }) =>
+            dropRendered(getRootProps, getInputProps, isDragActive)
+          }
+        </Dropzone>
+      </ListTemplate>
+      <ListTemplate title='Used Batteries' createNewAction={addUsedBattery}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>Id</TableCell>
+              <TableCell>Battery</TableCell>
+              <TableCell>Used</TableCell>
+              <TableCell>Resting</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>{batteryCycles}</TableBody>
+        </Table>
 
-      <Grid item xs={12}>
-        <Card>
-          <CardHeader title='Uploaded Flights' />
-          <CardContent>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Date</TableCell>
-                  <TableCell>#</TableCell>
-                  <TableCell>Plane</TableCell>
-                  <TableCell>Flight Time</TableCell>
-                  <TableCell>Status</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>{rows}</TableBody>
-              <TableFooter className={css.footer}>
-                <TableRow>
-                  <TableCell align='right'>Total</TableCell>
-                  <TableCell>{flights.length}</TableCell>
-                  <TableCell />
-                  <TableCell>
-                    {formatDuration(
-                      flights.reduce(
-                        (total, flight) => total + flight.flightTime,
-                        0
-                      )
-                    )}
-                  </TableCell>
-                  <TableCell />
-                </TableRow>
-              </TableFooter>
-            </Table>
-          </CardContent>
-        </Card>
-      </Grid>
+      </ListTemplate>
+
+      <ListTemplate title='Uploaded Flights'>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>Date</TableCell>
+              <TableCell>#</TableCell>
+              <TableCell>Plane</TableCell>
+              <TableCell>Flight Time</TableCell>
+              <TableCell>Status</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>{rows}</TableBody>
+          <TableFooter className={css.footer}>
+            <TableRow>
+              <TableCell align='right'>Total</TableCell>
+              <TableCell>{flights.length}</TableCell>
+              <TableCell />
+              <TableCell>
+                {formatDuration(
+                  flights.reduce(
+                    (total, flight) => total + flight.flightTime,
+                    0
+                  )
+                )}
+              </TableCell>
+              <TableCell />
+            </TableRow>
+          </TableFooter>
+        </Table>
+      </ListTemplate>
     </>
   );
 }

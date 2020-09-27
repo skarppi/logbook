@@ -1,4 +1,3 @@
-import Grid from '@material-ui/core/Grid';
 import * as React from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 // Pages
@@ -13,8 +12,7 @@ import Container from '@material-ui/core/Container';
 import ThemeProvider from '@material-ui/styles/ThemeProvider';
 import { createMuiTheme } from '@material-ui/core/styles';
 import createBreakpoints from '@material-ui/core/styles/createBreakpoints';
-import { Toolbar, makeStyles, AppBar, Box, IconButton, Typography, Button } from '@material-ui/core';
-import MenuIcon from "@material-ui/icons/Menu";
+import { makeStyles } from '@material-ui/core';
 
 
 const breakpoints = createBreakpoints({});

@@ -1,7 +1,3 @@
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import CardHeader from '@material-ui/core/CardHeader';
-import Grid from '@material-ui/core/Grid';
 import Table from '@material-ui/core/Table';
 import TableRow from '@material-ui/core/TableRow';
 import TableCell from '@material-ui/core/TableCell';
@@ -27,6 +23,7 @@ import { formatDate, formatMonth } from '../../../utils/date';
 import TableSortLabel from '@material-ui/core/TableSortLabel';
 import makeStyles from '@material-ui/styles/makeStyles';
 import { useScroll } from '../../../common/useScroll';
+import { ListTemplate } from '../../../common/ListTemplate';
 
 const Query = gql`
   query($orderBy:[FlightsByDaysOrderBy!]) {
@@ -105,9 +102,6 @@ const calculateTotalsPerMonthAndDay = (flightsPerMonthAndDay: Record<string, Rec
 };
 
 const useStyles = makeStyles({
-  action: {
-    marginRight: 0
-  },
   selectedRow: {
     '& > *': {
       borderBottom: 'unset',
@@ -190,47 +184,37 @@ export const FlightDays = () => {
       {title}
     </TableSortLabel>;
 
-  return (
-    <>
-      <Grid item xs={12}>
-        <Card>
-          <CardHeader
-            title='Flights List'
-            classes={{ action: css.action }}
-            action={
-              <TextField
-                id='search'
-                placeholder='Search'
-                type='search'
-                margin='normal'
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position='start'>
-                      <SearchIcon />
-                    </InputAdornment>
-                  ),
-                }}
-              />
-            } />
-          <CardContent>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>{sortLabel('DATE', 'Date')}</TableCell>
-                  <TableCell style={{ maxWidth: '1em' }}>{sortLabel('FLIGHTS', 'Flights')}</TableCell>
-                  <TableCell style={{ maxWidth: '1em' }}>Favorite</TableCell>
-                  <TableCell style={{ maxWidth: '2em' }}>Plane</TableCell>
-                  <TableCell style={{ maxWidth: '2em' }}>{sortLabel('TOTAL_TIME', 'Flight Time')}</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                <LoadingTable spinning={read.fetching} error={read.error} colSpan={5} />
-                {monthRows}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
-      </Grid>
-    </>
-  );
+  return <ListTemplate
+    title='Flights List'
+    search={
+      <TextField
+        id='search'
+        placeholder='Search'
+        type='search'
+        margin='normal'
+        InputProps={{
+          startAdornment: (
+            <InputAdornment position='start'>
+              <SearchIcon />
+            </InputAdornment>
+          ),
+        }}
+      />
+    }>
+    <Table>
+      <TableHead>
+        <TableRow>
+          <TableCell>{sortLabel('DATE', 'Date')}</TableCell>
+          <TableCell style={{ maxWidth: '1em' }}>{sortLabel('FLIGHTS', 'Flights')}</TableCell>
+          <TableCell style={{ maxWidth: '1em' }}>Favorite</TableCell>
+          <TableCell style={{ maxWidth: '2em' }}>Plane</TableCell>
+          <TableCell style={{ maxWidth: '2em' }}>{sortLabel('TOTAL_TIME', 'Flight Time')}</TableCell>
+        </TableRow>
+      </TableHead>
+      <TableBody>
+        <LoadingTable spinning={read.fetching} error={read.error} colSpan={5} />
+        {monthRows}
+      </TableBody>
+    </Table>
+  </ListTemplate>
 };

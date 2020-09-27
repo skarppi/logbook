@@ -31,6 +31,7 @@ import { Flight } from '../../../../../shared/flights/types';
 import { formatDateTime, formatDate } from '../../../utils/date';
 import { LinkProps } from '@material-ui/core/Link';
 import { useScroll } from '../../../common/useScroll';
+import { ListTemplate } from '../../../common/ListTemplate';
 
 const Query = gql`
   query {
@@ -155,45 +156,29 @@ export const PlanesList = () => {
     </React.Fragment>;
   });
 
-  const AddLink = React.forwardRef<HTMLAnchorElement, Partial<LinkProps>>((props, ref) => <Link to={`/planes/${NEWID}`} {...props} ref={ref} />);
-
-  return (
-    <PlanesContext.Provider value={{ planes, logicalSwitches }} >
-      <Grid item xs={12}>
-        <Card>
-          <CardHeader
-            title='Planes'
-            action={
-              <Tooltip title='Add new plane'>
-                <IconButton component={AddLink}>
-                  <NewPlaneIcon />
-                </IconButton>
-              </Tooltip>
-            }
-          />
-          <CardContent>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>ID</TableCell>
-                  <TableCell>Type</TableCell>
-                  <TableCell>Flights</TableCell>
-                  <TableCell>Total Time</TableCell>
-                  <TableCell>Last flight</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                <LoadingTable spinning={res.fetching} error={res.error} colSpan={5} />
-                {id === NEWID && details('', Number.MIN_SAFE_INTEGER)}
-                {rows}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
-      </Grid>
-
-      <LogicalSwitches />
-    </PlanesContext.Provider>
-  );
+  return <PlanesContext.Provider value={{ planes, logicalSwitches }}>
+    <ListTemplate
+      type='plane'
+      path='/planes'
+      title='Planes'>
+      <Table>
+        <TableHead>
+          <TableRow>
+            <TableCell>ID</TableCell>
+            <TableCell>Type</TableCell>
+            <TableCell>Flights</TableCell>
+            <TableCell>Total Time</TableCell>
+            <TableCell>Last flight</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          <LoadingTable spinning={res.fetching} error={res.error} colSpan={5} />
+          {id === NEWID && details('', Number.MIN_SAFE_INTEGER)}
+          {rows}
+        </TableBody>
+      </Table>
+    </ListTemplate>
+    <LogicalSwitches />
+  </PlanesContext.Provider>;
 };
 

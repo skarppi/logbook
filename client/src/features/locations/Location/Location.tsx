@@ -117,36 +117,33 @@ export const LocationDetails = ({ data, nextLink, previousLink }) => {
     nextLink={nextLink}
     queries={[update, create, del]}
     deleteAction={location.id !== NEW_LOCATION.id && executeDelete}
-    hidden={location.name === ''}
-    content={
-      < Box display='flex' flexWrap='wrap' >
+    hidden={location.name === ''}>
+    <Box display='flex' flexWrap='wrap' >
+      <TextField
+        type='number'
+        id='latitude'
+        label='Latitude'
+        placeholder='Latitude'
+        value={location.latitude || ''}
+        name='latitude'
+        onChange={changeNumber}
+        onBlur={save}
+        margin='normal'
+        style={{ flexGrow: 1 }}
+      />
 
-        <TextField
-          type='number'
-          id='latitude'
-          label='Latitude'
-          placeholder='Latitude'
-          value={location.latitude || ''}
-          name='latitude'
-          onChange={changeNumber}
-          onBlur={save}
-          margin='normal'
-          style={{ flexGrow: 1 }}
-        />
-
-        <TextField
-          type='number'
-          id='longitude'
-          label='Longitude'
-          placeholder='Longitude'
-          value={location.longitude || ''}
-          name='longitude'
-          onChange={changeNumber}
-          onBlur={save}
-          margin='normal'
-          style={{ flexGrow: 1 }}
-        />
-      </Box >
-    }
-  />
+      <TextField
+        type='number'
+        id='longitude'
+        label='Longitude'
+        placeholder='Longitude'
+        value={location.longitude || ''}
+        name='longitude'
+        onChange={changeNumber}
+        onBlur={save}
+        margin='normal'
+        style={{ flexGrow: 1 }}
+      />
+    </Box>
+  </DetailsTemplate>
 };

@@ -27,6 +27,7 @@ import TextField from '@material-ui/core/TextField';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import { LogicalFunction } from '../../../../../shared/planes';
+import { ListTemplate } from '../../../common/ListTemplate';
 
 const NEWID = 'add';
 
@@ -251,52 +252,43 @@ export const LogicalSwitches = () => {
     }
   });
 
-  return (
-    <>
-      <Grid item xs={12}>
-        <Card>
-          <CardHeader title='Logical Switches' />
-          <CardContent>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>ID</TableCell>
-                  <TableCell>Function</TableCell>
-                  <TableCell>V1</TableCell>
-                  <TableCell>V2</TableCell>
-                  <TableCell>And</TableCell>
-                  <TableCell>Duration</TableCell>
-                  <TableCell>Delay</TableCell>
-                  <TableCell>Description</TableCell>
-                  <TableCell><Tooltip title='Save changes'>
-                    <IconButton onClick={() => setEditing(
-                      {
-                        id: null,
-                        func: null,
-                        v1: null,
-                        v2: null,
-                        andSwitch: null,
-                        duration: null,
-                        delay: null,
-                        description: null
-                      }
-                    )}>
-                      <NewSwitchIcon />
-                    </IconButton>
-                  </Tooltip>
-                    <LoadingIcon
-                      spinning={create.fetching || update.fetching}
-                      error={create.error || update.error} />
-                  </TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {rows}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
-      </Grid>
-    </>
-  );
+  return <ListTemplate
+    type='logicalswitch'
+    createNewAction={() => setEditing(
+      {
+        id: null,
+        func: null,
+        v1: null,
+        v2: null,
+        andSwitch: null,
+        duration: null,
+        delay: null,
+        description: null
+      }
+    )}
+    title='Logical Switches'>
+    <Table>
+      <TableHead>
+        <TableRow>
+          <TableCell>ID</TableCell>
+          <TableCell>Function</TableCell>
+          <TableCell>V1</TableCell>
+          <TableCell>V2</TableCell>
+          <TableCell>And</TableCell>
+          <TableCell>Duration</TableCell>
+          <TableCell>Delay</TableCell>
+          <TableCell>Description</TableCell>
+          <TableCell>
+            <LoadingIcon
+              spinning={create.fetching || update.fetching}
+              error={create.error || update.error} />
+          </TableCell>
+        </TableRow>
+      </TableHead>
+      <TableBody>
+        {rows}
+      </TableBody>
+    </Table>
+
+  </ListTemplate >
 };

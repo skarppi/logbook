@@ -21,13 +21,13 @@ import { useQuery } from 'urql';
 
 import ClosedIcon from '@material-ui/icons/KeyboardArrowRight';
 import OpenedIcon from '@material-ui/icons/KeyboardArrowDown';
-import NewLocationIcon from '@material-ui/icons/Add';
-import { LoadingTable } from '../../loading/Loading';
+import { ListTemplate } from '../../../common/ListTemplate';
 import { Location } from '../../../../../shared/locations/types';
 import { LocationMap } from './LocationMap';
 import { Flight } from '../../../../../shared/flights/types';
 import { LinkProps } from '@material-ui/core/Link';
 import { useScroll } from '../../../common/useScroll';
+import { LoadingTable } from '../../loading/Loading';
 
 const Query = gql`
   query {
@@ -129,43 +129,26 @@ export const LocationsList = () => {
     </React.Fragment>;
   });
 
-  const AddLink = React.forwardRef<HTMLAnchorElement, Partial<LinkProps>>((props, ref) => <Link to={`/locations/${NEWID}`} {...props} ref={ref} />);
-
-  return (
-    <>
-      <Grid item xs={12}>
-        <Card>
-          <CardHeader
-            title='Locations'
-            action={
-              <Tooltip title='Add new location'>
-                <IconButton component={AddLink}>
-                  <NewLocationIcon />
-                </IconButton>
-              </Tooltip>
-            }
-          />
-          <CardContent>
-            <LocationMap locations={locations}></LocationMap>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Name</TableCell>
-                  <TableCell>Flights</TableCell>
-                  <TableCell>Last flight</TableCell>
-                  <TableCell>Latitude</TableCell>
-                  <TableCell>Longitide</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                <LoadingTable spinning={res.fetching} error={res.error} colSpan={5} />
-                {id === NEWID && details(null, Number.MIN_SAFE_INTEGER)}
-                {rows}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
-      </Grid>
-    </>
-  );
+  return <ListTemplate
+    type='location'
+    path='/locations'
+    title='Locations'>
+    <LocationMap locations={locations}></LocationMap>
+    <Table>
+      <TableHead>
+        <TableRow>
+          <TableCell>Name</TableCell>
+          <TableCell>Flights</TableCell>
+          <TableCell>Last flight</TableCell>
+          <TableCell>Latitude</TableCell>
+          <TableCell>Longitide</TableCell>
+        </TableRow>
+      </TableHead>
+      <TableBody>
+        <LoadingTable spinning={res.fetching} error={res.error} colSpan={5} />
+        {id === NEWID && details(null, Number.MIN_SAFE_INTEGER)}
+        {rows}
+      </TableBody>
+    </Table>
+  </ListTemplate>
 };
