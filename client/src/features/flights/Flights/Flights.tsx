@@ -18,6 +18,7 @@ import { addDays } from 'date-fns';
 import { formatTime, formatDate } from '../../../utils/date';
 import { makeStyles } from '@material-ui/core/styles';
 import { useScroll } from '../../../common/useScroll';
+import Typography from '@material-ui/core/Typography';
 
 const Query = gql`
   query($from:Datetime!,$to:Datetime!) {
@@ -57,10 +58,18 @@ interface IQueryResponse {
 
 const useStyles = makeStyles(theme => ({
   openedCell: {
-    padding: 0,
-    backgroundColor: '#fafafa'
+    padding: 0
+  },
+  root: {
+    '& > *': {
+      borderBottom: 'unset',
+    },
+  },
+  cardHeader: {
+    padding: theme.spacing(2)
   }
 }));
+
 
 const renderStats = (flight: Flight) => {
   const stats = flight.stats;
@@ -102,7 +111,7 @@ export const Flights = () => {
       .join(',');
 
     return <React.Fragment key={flight.id}>
-      <TableRow>
+      <TableRow selected={false} hover={true} className={isCurrent ? css.root : ''}>
         <TableCell>
           <NavLink to={isCurrent ? path : `${path}/${flight.id}`}>
             {(isCurrent && <OpenedIcon />) || <ClosedIcon />}
@@ -137,6 +146,10 @@ export const Flights = () => {
   return (
     <>
       <LoadingTable spinning={read.fetching} error={read.error} colSpan={4} />
+      <Typography variant='h5' component='div' className={css.cardHeader}>
+        Flights of the Day
+      </Typography>
+
       {rows}
     </>
   );

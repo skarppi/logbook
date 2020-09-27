@@ -30,6 +30,7 @@ import gql from 'graphql-tag';
 import { useQuery, useMutation } from 'urql';
 import { CREATE_BATTERY_CYCLE } from '../Battery/BatteryCycle';
 import { LinkProps } from '@material-ui/core/Link';
+import { makeStyles } from '@material-ui/core/styles';
 
 const Query = gql`
   query {
@@ -60,6 +61,15 @@ interface IQueryResponse {
 }
 
 const NEWID = 'add';
+
+const useStyles = makeStyles({
+  selectedRow: {
+    '& > *': {
+      borderBottom: 'unset',
+    },
+  },
+});
+
 
 export const BatteriesList = ({ match: { params } }) => {
 
@@ -135,6 +145,8 @@ export const BatteriesList = ({ match: { params } }) => {
 
   const scrollRef = useScroll([params.id, res.fetching]);
 
+  const css = useStyles();
+
   const details = (id: number, index: number) =>
     <TableRow ref={scrollRef}>
       <TableCell colSpan={5}>
@@ -147,11 +159,11 @@ export const BatteriesList = ({ match: { params } }) => {
     </TableRow>;
 
   const rows = batteries.map((battery, index) => {
-    const current = params.id === String(battery.id);
+    const isCurrent = params.id === String(battery.id);
     return <React.Fragment key={String(battery.id)}>
-      <TableRow>
+      <TableRow className={isCurrent ? css.selectedRow : ''}>
         <TableCell>
-          {(current && <NavLink to={'/batteries'}>
+          {(isCurrent && <NavLink to={'/batteries'}>
             <OpenedIcon />
             {battery.name}
           </NavLink>) || <NavLink to={`/batteries/${battery.id}`}>

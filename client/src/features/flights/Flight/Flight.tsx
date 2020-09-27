@@ -210,7 +210,7 @@ export const FlightDetails = ({ entry, nextLink, previousLink }) => {
   }
 
   return (
-    <Card style={{ padding: '10px' }}>
+    <Card style={{ boxShadow: 'none' }}>
       <CardHeader
         title={`Flight: ${flight.id}`}
         action={

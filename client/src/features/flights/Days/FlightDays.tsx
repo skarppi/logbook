@@ -107,7 +107,12 @@ const calculateTotalsPerMonthAndDay = (flightsPerMonthAndDay: Record<string, Rec
 const useStyles = makeStyles({
   action: {
     marginRight: 0
-  }
+  },
+  selectedRow: {
+    '& > *': {
+      borderBottom: 'unset',
+    },
+  },
 });
 
 export const FlightDays = () => {
@@ -132,7 +137,7 @@ export const FlightDays = () => {
     const isCurrent = date === totals.day;
 
     return <React.Fragment key={totals.day + '-day'}>
-      <TableRow ref={isCurrent ? scrollRef : null} selected={isCurrent} hover={true} id={totals.day}>
+      <TableRow ref={isCurrent ? scrollRef : null} selected={isCurrent} hover={true} id={totals.day} className={isCurrent ? css.selectedRow : ''}>
         <TableCell>
           {(isCurrent && <NavLink to={'/flights'}>
             <OpenedIcon />
