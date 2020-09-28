@@ -8,6 +8,7 @@
 
 import MobileCoreServices
 import PromiseKit
+import Foundation
 
 class SdCardService {
     

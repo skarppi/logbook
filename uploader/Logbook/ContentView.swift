@@ -1,5 +1,5 @@
 //
-//  SwiftUIView.swift
+//  ContentView.swift
 //  Logbook
 //
 //  Created by Juho Kolehmainen on 13.10.2019.
