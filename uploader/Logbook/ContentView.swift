@@ -51,8 +51,9 @@ struct ContentView: View {
                 HStack {
                     TextField("Source or smb://hostname", text: $userSettings.sourceFolder)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
-                        .textContentType(UITextContentType.URL)
-                        .autocapitalization(UITextAutocapitalizationType.none)
+                        .textContentType(.URL)
+                        .keyboardType(.URL)
+                        .autocapitalization(.none)
                     Button(action: { self.documentPickerViewModel.isPresented.toggle()
                     }) {
                         HStack {
@@ -75,6 +76,9 @@ struct ContentView: View {
                 Text("Logbook service URL")
                 TextField("https://hostname", text: $userSettings.targetURL)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .textContentType(.URL)
+                    .keyboardType(.URL)
+                    .autocapitalization(.none)
             }
 
             Picker(selection: $locations.selected, label: Text("Location")) {
