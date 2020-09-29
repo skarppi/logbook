@@ -10,6 +10,7 @@ export default class BatteryCycleRepository {
     return db
       .any(
         'UPDATE battery_cycles SET flight_id=${id},' +
+        'discharged=COALESCE(discharged, ${discharged}),' +
         'start_voltage=COALESCE(start_voltage, ${startVoltage}), ' +
         'end_voltage=COALESCE(end_voltage, ${endVoltage}) ' +
         'WHERE id = ' +
@@ -21,6 +22,7 @@ export default class BatteryCycleRepository {
         {
           id: flight.id,
           planeId: flight.planeId,
+          discharged: flight.batteries[0].discharged,
           startVoltage: flight.batteries[0].startVoltage,
           endVoltage: flight.batteries[0].endVoltage
         }

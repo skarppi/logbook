@@ -86,7 +86,7 @@ export const LocationDetails = ({ data, nextLink, previousLink }) => {
       updateLocation({ id: location.id, location: patch });
     }
   };
-  const executeDelete = _ => {
+  const executeDelete = () => {
     deleteLocation({ id: location.id }).then(res => {
       if (!res.error) {
         history.push('/locations');

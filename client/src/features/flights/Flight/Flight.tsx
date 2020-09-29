@@ -179,7 +179,7 @@ export const FlightDetails = ({ entry, path, nextLink, previousLink }) => {
     patch: { notes: flight.notes }
   });
 
-  const executeReset = _ => {
+  const executeReset = () => {
     setAnchorEl(null);
     putApi(`flights/${flightDate}/${flight.id}/reset`, null, {
       TIMEZONE_OFFSET: timezoneOffset
@@ -188,7 +188,7 @@ export const FlightDetails = ({ entry, path, nextLink, previousLink }) => {
     );
   };
 
-  const executeDelete = _ => {
+  const executeDelete = () => {
     setAnchorEl(null);
     deleteFlight({ id: flight.id }).then(res => {
       if (!res.error) {
@@ -212,7 +212,7 @@ export const FlightDetails = ({ entry, path, nextLink, previousLink }) => {
     previousLink={previousLink}
     nextLink={nextLink}
     queries={[read, update, del]}
-    deleteAction={deleteFlight}
+    deleteAction={executeDelete}
     action={
       <IconButton
         onClick={changeFavorite}>

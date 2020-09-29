@@ -172,7 +172,7 @@ export const PlaneDetails = ({ id, nextLink, previousLink }) => {
     }
   };
 
-  const executeDelete = _ => {
+  const executeDelete = () => {
     deletePlane({ id: plane.id }).then(res => {
       if (!res.error) {
         history.push('/planes');

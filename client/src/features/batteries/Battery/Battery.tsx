@@ -157,7 +157,7 @@ export const BatteryDetails = ({ id, previousLink, nextLink }) => {
   };
 
   // update to server
-  const save = (_) => {
+  const save = () => {
     if (battery.id === NEW_BATTERY.id) {
       delete battery.id;
       createBattery({ battery }).then(res => {
@@ -171,7 +171,7 @@ export const BatteryDetails = ({ id, previousLink, nextLink }) => {
       updateBattery({ id: battery.id, battery });
     }
   };
-  const executeDelete = _ => {
+  const executeDelete = () => {
     deleteBattery({ batteryId: battery.id }).then(res => {
       if (!res.error) {
         history.push('/batteries');
@@ -200,7 +200,7 @@ export const BatteryDetails = ({ id, previousLink, nextLink }) => {
           value={battery.name}
           name='name'
           onChange={changeBattery}
-          onBlur={(event: React.FocusEvent<HTMLInputElement>) => event.target.value.length > 0 && save(event)}
+          onBlur={(event: React.FocusEvent<HTMLInputElement>) => event.target.value.length > 0 && save()}
           margin='none'
         />
       </>
