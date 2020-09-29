@@ -109,12 +109,9 @@ export class FlightImpl implements Flight {
       ? this.segments[launchSegment - 1].last.alt
       : null;
 
-
     const slopes = this.segments.slice(launchSegment).reduce((result, current) => {
       return [...result, ...this.findSlopes(current, zeroHeight)];
     }, [] as FlightSlope[]);
-
-    console.log(slopes);
 
     const launchHeight = this.plane.type === PlaneType.glider ? slopes[1].maxHeight : null;
 

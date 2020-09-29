@@ -56,6 +56,7 @@ function storeFlight(flight: Flight): Promise<Flight> {
     }
     return FlightRepository.save(flight)
       .then(BatteryCycleRepository.attachUsedBattery)
+      .then(BatteryCycleRepository.fillMissingBatteryValues)
       .catch(err => {
         console.log('Save failed', err, err.stack);
         throw new Error(

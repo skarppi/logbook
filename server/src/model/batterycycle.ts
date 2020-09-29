@@ -31,4 +31,25 @@ export default class BatteryCycleRepository {
         return flight;
       });
   }
+
+  public static fillMissingBatteryValues(flight: Flight): Promise<Flight> {
+    console.log('fixing missing cycle', flight.batteries);
+    return db
+      .any(
+        'UPDATE battery_cycles SET ' +
+        'discharged=COALESCE(discharged, ${discharged}),' +
+        'start_voltage=COALESCE(start_voltage, ${startVoltage}), ' +
+        'end_voltage=COALESCE(end_voltage, ${endVoltage}) ' +
+        'WHERE flight_id=${id} AND (discharged is NULL OR start_voltage IS NULL or end_voltage IS NULL)',
+        {
+          id: flight.id,
+          discharged: flight.batteries[0].discharged,
+          startVoltage: flight.batteries[0].startVoltage,
+          endVoltage: flight.batteries[0].endVoltage
+        }
+      ).then(saved => {
+        console.log('fixed battery', saved);
+        return flight;
+      });
+  }
 }
