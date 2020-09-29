@@ -5,9 +5,9 @@ import Select from '@material-ui/core/Select';
 import Input from '@material-ui/core/Input';
 import MenuItem from '@material-ui/core/MenuItem';
 import InputAdornment from '@material-ui/core/InputAdornment';
-import ExpansionPanel from '@material-ui/core/ExpansionPanel';
-import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
-import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
+import Accordion from '@material-ui/core/Accordion';
+import AccordionSummary from '@material-ui/core/AccordionSummary';
+import AccordionDetails from '@material-ui/core/AccordionDetails';
 import * as React from 'react';
 import { Battery } from '../../../../../shared/batteries/types';
 import { BatteryGraph } from './BatteryGraph';
@@ -364,16 +364,16 @@ export const BatteryDetails = ({ id, previousLink, nextLink }) => {
       <BatteryGraph cycles={cycles}></BatteryGraph>
     </Box>
 
-    <ExpansionPanel
+    <Accordion
       key={battery.id}
       defaultExpanded={false}
     >
-      <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+      <AccordionSummary expandIcon={<ExpandMoreIcon />}>
         Show Entries
-          </ExpansionPanelSummary>
-      <ExpansionPanelDetails>
+          </AccordionSummary>
+      <AccordionDetails>
         <BatteryCycles cells={battery.cells} cycles={cycles} />
-      </ExpansionPanelDetails>
-    </ExpansionPanel>
+      </AccordionDetails>
+    </Accordion>
   </DetailsTemplate >
 };

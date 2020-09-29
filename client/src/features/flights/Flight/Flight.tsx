@@ -22,7 +22,6 @@ import FavoriteIcon from '@material-ui/icons/Favorite';
 import UnFavoriteIcon from '@material-ui/icons/FavoriteBorder';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
-import { LoadingIcon } from '../../loading/Loading';
 import { useQuery, useMutation } from 'urql';
 import gql from 'graphql-tag';
 import { Battery } from '../../../../../shared/batteries/types';
@@ -34,9 +33,9 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import { FlightTimezone } from './FlightTimezone';
 import { FlightTrack } from './FlightTrack';
-import ExpansionPanel from '@material-ui/core/ExpansionPanel';
-import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
-import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
+import Accordion from '@material-ui/core/Accordion';
+import AccordionSummary from '@material-ui/core/AccordionSummary';
+import AccordionDetails from '@material-ui/core/AccordionDetails';
 import Box from '@material-ui/core/Box';
 import { DetailsTemplate } from '../../../common/DetailsTemplate';
 
@@ -289,14 +288,14 @@ export const FlightDetails = ({ entry, path, nextLink, previousLink }) => {
       <FlightGraph flight={flight}></FlightGraph>
     </Box>
 
-    <ExpansionPanel defaultExpanded={false}>
-      <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+    <Accordion defaultExpanded={false}>
+      <AccordionSummary expandIcon={<ExpandMoreIcon />}>
         Show Map
-          </ExpansionPanelSummary>
-      <ExpansionPanelDetails>
+          </AccordionSummary>
+      <AccordionDetails>
         <FlightTrack flight={flight}></FlightTrack>
-      </ExpansionPanelDetails>
-    </ExpansionPanel>
+      </AccordionDetails>
+    </Accordion>
 
     <Videos
       date={flight.startDate}

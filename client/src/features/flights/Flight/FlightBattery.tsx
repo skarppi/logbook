@@ -7,9 +7,9 @@ import Input from '@material-ui/core/Input';
 import MenuItem from '@material-ui/core/MenuItem';
 import IconButton from '@material-ui/core/IconButton';
 import InputAdornment from '@material-ui/core/InputAdornment';
-import ExpansionPanel from '@material-ui/core/ExpansionPanel';
-import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
-import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
+import Accordion from '@material-ui/core/Accordion';
+import AccordionSummary from '@material-ui/core/AccordionSummary';
+import AccordionDetails from '@material-ui/core/AccordionDetails';
 import { Plane } from '../../../../../shared/planes/types';
 import { Battery, BatteryCycle } from '../../../../../shared/batteries/types';
 
@@ -180,12 +180,12 @@ export const FlightBattery = ({ plane, flightCycle, battery }: IFlightBatteryPro
   }
 
   return (
-    <ExpansionPanel
+    <Accordion
       key={cycle.id}
       expanded={cycle.state !== BatteryState.discharged}
       classes={{ root: css.root }}
     >
-      <ExpansionPanelSummary classes={{ content: css.content }}>
+      <AccordionSummary classes={{ content: css.content }}>
         <Box display='flex' flexWrap='wrap'>
           <Box>
             <FormControl margin='normal'>
@@ -268,9 +268,9 @@ export const FlightBattery = ({ plane, flightCycle, battery }: IFlightBatteryPro
             />
           </Box>
         </Box >
-      </ExpansionPanelSummary >
+      </AccordionSummary >
 
-      <ExpansionPanelDetails classes={{ root: css.details }}>
+      <AccordionDetails classes={{ root: css.details }}>
         <TextField
           id='charged'
           label='Charged'
@@ -291,7 +291,7 @@ export const FlightBattery = ({ plane, flightCycle, battery }: IFlightBatteryPro
           {resistances}
         </Box>
 
-      </ExpansionPanelDetails>
-    </ExpansionPanel>
+      </AccordionDetails>
+    </Accordion>
   );
 };

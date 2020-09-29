@@ -14,7 +14,7 @@ import gql from 'graphql-tag';
 import { Flight } from '../../../../../shared/flights/types';
 import { useQuery } from 'urql';
 import { addDays } from 'date-fns';
-import { formatTime, formatDate } from '../../../utils/date';
+import { formatTime, formatDate, formatDateTimeLong } from '../../../utils/date';
 import { makeStyles } from '@material-ui/core/styles';
 import { useScroll } from '../../../common/useScroll';
 import Typography from '@material-ui/core/Typography';
@@ -145,10 +145,14 @@ export const Flights = () => {
 
   return (
     <>
-      <LoadingTable spinning={read.fetching} error={read.error} colSpan={4} />
-      <Typography variant='h5' component='div' className={css.cardHeader}>
-        Flights of the Day
-      </Typography>
+      <LoadingTable spinning={read.fetching} error={read.error} colSpan={5} />
+      <TableRow>
+        <TableCell colSpan={5}>
+          <Typography variant='h5' component='div' className={css.cardHeader}>
+            Flights on {formatDateTimeLong(date)}
+          </Typography>
+        </TableCell>
+      </TableRow>
 
       {rows}
     </>

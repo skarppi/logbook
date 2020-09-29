@@ -33,8 +33,8 @@ const theme = createMuiTheme({
   overrides: {
     MuiCardHeader: { root: mobilePaddingNone },
     MuiCardContent: { root: mobilePaddingNone },
-    MuiExpansionPanelSummary: { root: mobilePaddingReduced },
-    MuiExpansionPanelDetails: { root: mobilePaddingReduced },
+    MuiAccordionSummary: { root: mobilePaddingReduced },
+    MuiAccordionDetails: { root: mobilePaddingReduced },
     MuiTableCell: {
       root: {
         // less empty space when on mobile

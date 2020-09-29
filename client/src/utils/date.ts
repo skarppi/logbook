@@ -11,6 +11,13 @@ export function formatDate(
   return format(date, dateFormat);
 }
 
+export function formatDateTimeLong(
+  date: Date | string,
+  dateFormat: string = 'EEEE dd MMMM'
+): string {
+  return formatDate(date, dateFormat);
+}
+
 export function formatDateTimeLocal(
   date: Date | string,
   dateFormat: string = 'yyyy-MM-dd\'T\'HH:mm'
