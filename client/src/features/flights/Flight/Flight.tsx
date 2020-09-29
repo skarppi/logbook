@@ -212,7 +212,6 @@ export const FlightDetails = ({ entry, path, nextLink, previousLink }) => {
     previousLink={previousLink}
     nextLink={nextLink}
     queries={[read, update, del]}
-    deleteAction={executeDelete}
     action={
       <IconButton
         onClick={changeFavorite}>

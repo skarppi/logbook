@@ -51,11 +51,13 @@ export const DetailsTemplate = ({ type, path, nextLink, previousLink, title, act
               nextLink={nextLink && `${path}/${nextLink.id}`}
               previousLink={previousLink && `${path}/${previousLink.id}`} />
 
-            <Tooltip title={`Delete ${type}`}>
-              <IconButton onClick={deleteAction}>
-                <DeleteIcon />
-              </IconButton>
-            </Tooltip >
+            { deleteAction &&
+              <Tooltip title={`Delete ${type}`}>
+                <IconButton onClick={deleteAction}>
+                  <DeleteIcon />
+                </IconButton>
+              </Tooltip >
+            }
 
             {menu}
           </>
