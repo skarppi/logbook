@@ -173,7 +173,7 @@ export const FlightDays = () => {
         <TableCell style={{ fontWeight: 'bold' }}>{formatDuration(monthTotals.totalTime)}</TableCell>
       </TableRow>
       {monthTotals.days.map(dayRows)}
-    </React.Fragment >;
+    </React.Fragment>;
   });
 
   const sortLabel = (col: string, title: string) =>

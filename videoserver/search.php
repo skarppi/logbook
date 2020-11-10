@@ -11,6 +11,9 @@ $directories = array(
 	'/volume1/video/YEAR/QUARTER/'
 );
 
+// Other allowed subfolders to navigate to
+$subdirectories = ['Footage'];
+
 $path = pathinfo("//{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}");
 
 $base_url = $path['dirname'] . "/dl.php?file=";
@@ -49,7 +52,21 @@ if (isset($_GET['date'])) {
 	http_response_code(400);
 }
 
-function list_dir($root_dir, $sub_dir = '', $depth=0, $filter=true) {
+function filter_dir($file) {
+	if (in_array($file, $subdirectories)) {
+		return true;
+	}
+	return match_keys($file, ['date' => '']);
+}
+
+function filter_file($file) {
+	if (match_keys($file, ['date' => '', 'plane' => '', 'session' => 'Session'])) {
+		return in_array(substr(strtolower($file), -3), ['mov', 'mp4']);	
+	}
+	return false;
+}
+
+function list_dir($root_dir, $sub_dir = '', $depth=0) {
 	$files = scandir($root_dir . $sub_dir);
 
 	if(!$files) {
@@ -66,25 +83,13 @@ function list_dir($root_dir, $sub_dir = '', $depth=0, $filter=true) {
 		}
 	});
 
-	if($filter && isset($_GET['date'])) {
-		$files = array_filter($files, by_date);
-	}
-
-	if($filter && isset($_GET['plane'])) {
-		$files = array_filter($files, by_plane);
-	}
-
-	if(isset($_GET['session'])) {
-		$files = array_filter($files, by_session);
-	}	
-
 	$files = array_map(function($file) use($root_dir, $sub_dir) {
 		global $base_url;
 
 		$path = $root_dir . $sub_dir . $file;
-		if(is_dir($path)) {
-			return list_dir($root_dir, $sub_dir . $file . '/', $depth+1, false);
-		} else if(is_file($path) && in_array(substr(strtolower($file), -3), ['mov', 'mp4'])) {
+		if(is_dir($path) && filter_dir($file)) {
+			return list_dir($root_dir, $sub_dir . $file . '/', $depth+1);
+		} else if(is_file($path) && filter_file($file)) {
 			return array($base_url . $path);
 		} else {
 			return array();
@@ -99,17 +104,23 @@ function list_dir($root_dir, $sub_dir = '', $depth=0, $filter=true) {
 	}
 }
 
-function by_plane($file) { 
-	return stripos($file, $_GET['plane']) !== false;
-}
+function match_keys($str, $keys) {
 
-function by_date($file) { 
-	return stripos($file, $_GET['date']) !== false;
-}
+	foreach($keys as $key => $prefix) {
+		if (isset($_GET[$key])) {
 
-function by_session($file) { 
-	return stripos($file, 'Session') === false || 
-		stripos($file, 'Session'.$_GET['session']) !== false;
+			if (strlen($prefix) > 0 && stripos($str, $prefix) === false) {
+				// not starting with required prefix
+				continue;
+			}
+
+			if (stripos($str, $prefix . $_GET[$key]) === false) {
+				return false;
+			}
+		}
+	}
+
+	return true;
 }
 
 ?>
