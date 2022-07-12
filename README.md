@@ -4,7 +4,7 @@ Logbook for radio controlled (RC) flights from OpenTX logs.
 
 ---
 
-Web application to keep track of your RC flights flown with transmitter running [OpenTX firmware](https://www.open-tx.org) such as Taranis X9D. Logbook entries are generated automatically from log files uploaded to the service and can be enriched with additional details manually such as batteries used or journal.
+Web application to keep track of your RC flights flown with transmitter running [OpenTX](https://www.open-tx.org) or [EdgeTX firmware](https://edgetx.org) such as Radiomaster TX16S. Logbook entries are generated automatically from log files uploaded to the service and can be enriched with additional details manually such as batteries used or journal.
 
 Current functionalities include
 
@@ -26,9 +26,9 @@ In your transmitter setup "SD Logs" Special Function to enable logging of teleme
 
 I use two-stage arming. Switch SA is a safety switch and also turns on the logging, then switch SB arms the quadcopter. Flight timer starts when the quad is armed and throttle is increased. A new flight is created when logging is turned off for more than 30 seconds and restarted again.
 
-After flying is done, connect your transmitter to a computer and drag&drop latest csv files from SD card LOGS directory to Upload-tab of the service. A separate uploader iOS app can be used to automatically upload new files using wireless card reader (Kingston MobileLite Wireless or similar). Check out code at ```uploader``` folder.
+After flying is done, sync new log files automatically using [uploader iOS app](https://github.com/skarppi/logbook/tree/master/uploader) or connect transmitter to computer and drag&drop latest csv files from SD card LOGS directory to Upload-tab of the service. 
 
-For more information read [Working with Log Files](http://open-txu.org/home/special-interests/telemetry/working-with-log-files/).
+For more information read [Working with Log Files](https://open-txu.org/home/special-interests/telemetry/working-with-log-files/).
 
 ### Quick Start
 
