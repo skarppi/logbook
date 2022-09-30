@@ -5,7 +5,7 @@ import { Location } from '../../../../../shared/locations/types';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { divIcon } from 'leaflet';
 
-import LocationIcon from '@material-ui/icons/LocationOn';
+import LocationIcon from '@mui/icons-material/LocationOn';
 
 interface IFlightLocationProps {
   locations: Location[];

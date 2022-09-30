@@ -1,12 +1,13 @@
 import * as React from 'react';
 
-import MenuItem from '@material-ui/core/MenuItem';
-import Grid from '@material-ui/core/Grid';
-import Card from '@material-ui/core/Card';
-import CardHeader from '@material-ui/core/CardHeader';
-import CardContent from '@material-ui/core/CardContent';
-import Select from '@material-ui/core/Select';
-import makeStyles from '@material-ui/styles/makeStyles';
+import { styled } from '@mui/material/styles';
+
+import MenuItem from '@mui/material/MenuItem';
+import Grid from '@mui/material/Grid';
+import Card from '@mui/material/Card';
+import CardHeader from '@mui/material/CardHeader';
+import CardContent from '@mui/material/CardContent';
+import Select from '@mui/material/Select';
 
 import { startOfYear, addYears, startOfMonth, addMonths, startOfDay, addDays } from 'date-fns';
 
@@ -15,6 +16,19 @@ import { DashboardUnit } from '../../../../../shared/dashboard';
 import { GraphOverTime, ITotalRows } from './GraphOverTime'
 import gql from 'graphql-tag';
 import { useQuery } from 'urql';
+
+const PREFIX = 'Dashboard';
+
+const classes = {
+  flights: `${PREFIX}-flights`
+};
+
+const StyledGrid  = styled(Grid )({
+  [`& .${classes.flights}`]: {
+    height: '60vh',
+    position: 'relative'
+  }
+});
 
 function defaultSize(unit: DashboardUnit) {
   if (unit === DashboardUnit.day) {
@@ -82,13 +96,6 @@ interface IQueryResponse {
 
 const EMPTY = { nodes: [] };
 
-const useStyles = makeStyles({
-  flights: {
-    height: '60vh',
-    position: 'relative'
-  }
-});
-
 export const Dashboard = () => {
 
   const [unit, setUnit] = React.useState(DashboardUnit.month);
@@ -115,7 +122,7 @@ export const Dashboard = () => {
 
   const flights = data[currentResource(unit)] || EMPTY;
 
-  const css = useStyles();
+
   return (
     <Grid item xs={12} >
       <Card>

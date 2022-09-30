@@ -1,17 +1,16 @@
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import CardHeader from '@material-ui/core/CardHeader';
-import IconButton from '@material-ui/core/IconButton';
-import Tooltip from '@material-ui/core/Tooltip';
-import * as React from 'react';
-import { useHistory } from 'react-router-dom';
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import CardHeader from "@mui/material/CardHeader";
+import IconButton from "@mui/material/IconButton";
+import Tooltip from "@mui/material/Tooltip";
+import * as React from "react";
 
-import { CombinedError, UseQueryState } from 'urql';
+import { CombinedError, UseQueryState } from "urql";
 
-import DeleteIcon from '@material-ui/icons/Delete';
+import DeleteIcon from "@mui/icons-material/Delete";
 
-import { LoadingIcon } from '../features/loading/Loading';
-import { NavigatePreviousNext } from './NavigatePreviousNext';
+import { LoadingIcon } from "../features/loading/Loading";
+import { NavigatePreviousNext } from "./NavigatePreviousNext";
 
 interface IProps {
   type: string;
@@ -28,44 +27,50 @@ interface IProps {
   children: React.ReactElement | React.ReactElement[];
 }
 
-export const DetailsTemplate = ({ type, path, nextLink, previousLink, title, action, menu, queries, hidden, children, deleteAction }: IProps) => {
-
-  const history = useHistory();
-
-  const plural = type.endsWith('y') ? `${type.slice(0, -1)}ies` : `${type}s`
-
+export const DetailsTemplate = ({
+  type,
+  path,
+  nextLink,
+  previousLink,
+  title,
+  action,
+  menu,
+  queries,
+  hidden,
+  children,
+  deleteAction,
+}: IProps) => {
   return (
-    <Card style={{ boxShadow: 'none' }}>
+    <Card style={{ boxShadow: "none" }}>
       <CardHeader
         title={title}
         action={
           <>
             <LoadingIcon
-              spinning={queries.find(q => q.fetching)?.fetching}
-              error={queries.find(q => q.error !== undefined)?.error}
+              spinning={queries.find((q) => q.fetching)?.fetching}
+              error={queries.find((q) => q.error !== undefined)?.error}
             />
 
             {action}
 
             <NavigatePreviousNext
               nextLink={nextLink && `${path}/${nextLink.id}`}
-              previousLink={previousLink && `${path}/${previousLink.id}`} />
+              previousLink={previousLink && `${path}/${previousLink.id}`}
+            />
 
-            { deleteAction &&
+            {deleteAction && (
               <Tooltip title={`Delete ${type}`}>
-                <IconButton onClick={deleteAction}>
+                <IconButton onClick={deleteAction} size="large">
                   <DeleteIcon />
                 </IconButton>
-              </Tooltip >
-            }
+              </Tooltip>
+            )}
 
             {menu}
           </>
         }
       />
-      < CardContent hidden={hidden} >
-        {children}
-      </CardContent >
-    </Card >
+      <CardContent hidden={hidden}>{children}</CardContent>
+    </Card>
   );
 };

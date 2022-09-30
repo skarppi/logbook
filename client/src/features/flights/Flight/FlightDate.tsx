@@ -1,9 +1,9 @@
 import * as React from 'react';
-import TextField from '@material-ui/core/TextField';
+import TextField from '@mui/material/TextField';
 import { formatDuration } from '../../../../../shared/utils/date';
 import { Flight } from '../../../../../shared/flights/types';
 import { formatDate, formatTime } from '../../../utils/date';
-import Box from '@material-ui/core/Box';
+import Box from '@mui/material/Box';
 
 interface IFlightDateProps {
   flight: Flight;

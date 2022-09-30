@@ -1,9 +1,9 @@
 import * as React from 'react';
-import Button from '@material-ui/core/Button';
-import FormControl from '@material-ui/core/FormControl';
+import Button from '@mui/material/Button';
+import FormControl from '@mui/material/FormControl';
 import { Flight } from '../../../../../shared/flights/types';
 import { FlightBattery } from './FlightBattery';
-import AddIcon from '@material-ui/icons/Add';
+import AddIcon from '@mui/icons-material/Add';
 import { cycleFromFlight } from '../../../../../shared/batteries';
 import { Battery } from '../../../../../shared/batteries/types';
 import { useMutation } from 'urql';

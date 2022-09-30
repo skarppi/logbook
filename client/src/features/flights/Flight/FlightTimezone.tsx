@@ -1,5 +1,5 @@
-import Select from '@material-ui/core/Select';
-import MenuItem from '@material-ui/core/MenuItem';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
 import React = require('react');
 
 export function FlightTimezone({ offset, onChange }: { offset: number, onChange: (offset: number) => void }) {

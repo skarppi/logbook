@@ -1,14 +1,14 @@
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import CardHeader from '@material-ui/core/CardHeader';
-import Grid from '@material-ui/core/Grid';
-import Table from '@material-ui/core/Table';
-import TableRow from '@material-ui/core/TableRow';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
-import TableBody from '@material-ui/core/TableBody';
-import IconButton from '@material-ui/core/IconButton';
-import Tooltip from '@material-ui/core/Tooltip';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import CardHeader from '@mui/material/CardHeader';
+import Grid from '@mui/material/Grid';
+import Table from '@mui/material/Table';
+import TableRow from '@mui/material/TableRow';
+import TableCell from '@mui/material/TableCell';
+import TableHead from '@mui/material/TableHead';
+import TableBody from '@mui/material/TableBody';
+import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
 
 import { useParams } from 'react-router-dom';
 
@@ -20,16 +20,16 @@ import { LoadingTable } from '../../loading/Loading';
 import { PlaneDetails } from '../Plane/Plane';
 import { LogicalSwitches } from './LogicalSwitches';
 
-import ClosedIcon from '@material-ui/icons/KeyboardArrowRight';
-import OpenedIcon from '@material-ui/icons/KeyboardArrowDown';
+import ClosedIcon from '@mui/icons-material/KeyboardArrowRight';
+import OpenedIcon from '@mui/icons-material/KeyboardArrowDown';
 
-import NewPlaneIcon from '@material-ui/icons/Add';
+import NewPlaneIcon from '@mui/icons-material/Add';
 
 import gql from 'graphql-tag';
 import { useQuery } from 'urql';
 import { Flight } from '../../../../../shared/flights/types';
 import { formatDateTime, formatDate } from '../../../utils/date';
-import { LinkProps } from '@material-ui/core/Link';
+import { LinkProps } from '@mui/material/Link';
 import { useScroll } from '../../../common/useScroll';
 import { ListTemplate } from '../../../common/ListTemplate';
 

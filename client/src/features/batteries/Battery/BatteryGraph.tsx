@@ -1,28 +1,28 @@
-import * as React from 'react';
+import * as React from "react";
 
-import { defaults, Bar } from 'react-chartjs-2';
-import { chartColors } from '../../../utils/charts';
-import { BatteryCycle } from '../../../../../shared/batteries/types';
-import { formatDuration } from '../../../../../shared/utils/date';
+import type { ChartData, ChartOptions } from "chart.js";
+import { Bar } from "react-chartjs-2";
+import { chartColors } from "../../../utils/charts";
+import { BatteryCycle } from "../../../../../shared/batteries/types";
+import { formatDuration } from "../../../../../shared/utils/date";
 
 interface IProps {
   cycles: BatteryCycle[];
 }
 
-const chartOptions = () => {
-
+const chartOptions = (): ChartOptions<"bar"> => {
   return {
     offset: true,
     tooltips: {
-      mode: 'index',
+      mode: "index",
       intersect: false,
       callbacks: {
-        label: (tooltipItem, data) => {
-          let label = data.datasets[tooltipItem.datasetIndex].label || '';
+        label: (tooltipItem: any, data: any) => {
+          let label = data.datasets[tooltipItem.datasetIndex].label || "";
 
           return `${label}: ${formatDuration(tooltipItem.yLabel)}`;
-        }
-      }
+        },
+      },
     },
     maintainAspectRatio: false,
     layout: {
@@ -30,75 +30,76 @@ const chartOptions = () => {
         left: 0,
         top: 50,
         bottom: 50,
-        right: 0
-      }
+        right: 0,
+      },
     },
     scales: {
       xAxes: [
         {
-          type: 'time',
+          type: "time",
           time: {
-            unit: 'day',
-            tooltipFormat: 'D MMMM YYYY',
+            unit: "day",
+            tooltipFormat: "D MMMM YYYY",
           },
           ticks: {
             autoSkip: true,
-            maxTicksLimit: 20
+            maxTicksLimit: 20,
           },
-          stacked: true
-        }
+          stacked: true,
+        },
       ],
       yAxes: [
         {
-          id: 'time',
+          id: "time",
           ticks: {
-            callback: value => formatDuration(value),
+            callback: (value: number) => formatDuration(value),
             stepSize: 60,
-            min: 0
+            min: 0,
           },
-          stacked: true
-        }
-      ]
-    }
+          stacked: true,
+        },
+      ],
+    },
   };
 };
 
 export const BatteryGraph = ({ cycles }: IProps) => {
-
-  const flights = cycles.filter(c => c.flight);
+  const flights = cycles.filter((c) => c.flight);
 
   if (flights.length === 0) {
     return <></>;
   }
 
-  const labels = flights.map(row => row.date.substring(0, 10));
+  const labels = flights.map((row) => row.date.substring(0, 10));
 
-  const datasets = [
+  const datasets: ChartDataset<"bar">[] = [
     {
-      label: 'Flight time',
-      type: 'bar',
-      yAxisID: 'time',
-      data: flights.map(c => c.flight.flightTime),
+      label: "Flight time",
+      type: "bar",
+      yAxisID: "time",
+      data: flights.map((c) => c.flight?.flightTime),
       borderColor: chartColors(0, 1),
       backgroundColor: chartColors(0, 0.5),
       barThickness: 6,
-      maxBarThickness: 8
+      maxBarThickness: 8,
     },
     {
-      label: 'Armed time',
-      type: 'bar',
-      yAxisID: 'time',
-      data: flights.map(c => c.flight.armedTime - c.flight.flightTime),
+      label: "Armed time",
+      type: "bar",
+      yAxisID: "time",
+      data: flights.map(
+        (c) => (c.flight?.armedTime ?? 0) - (c.flight?.flightTime ?? 0)
+      ),
       borderColor: chartColors(1, 1),
       backgroundColor: chartColors(1, 0.5),
       barThickness: 6,
-      maxBarThickness: 8
-    }
+      maxBarThickness: 8,
+    },
   ];
 
-  const graph = {
+  const graph: ChartData<"bar"> = {
     labels,
-    datasets
+    datasets,
   };
 
   const options = chartOptions();

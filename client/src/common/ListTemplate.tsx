@@ -1,71 +1,81 @@
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import CardHeader from '@material-ui/core/CardHeader';
-import Grid from '@material-ui/core/Grid';
-import IconButton from '@material-ui/core/IconButton';
-import makeStyles from '@material-ui/styles/makeStyles';
-import Tooltip from '@material-ui/core/Tooltip';
-import { LinkProps } from '@material-ui/core/Link';
-import * as React from 'react';
-import { Link } from 'react-router-dom';
-import { useHistory } from 'react-router-dom';
+import Card from "@mui/material/Card";
+import { styled } from "@mui/material/styles";
+import CardContent from "@mui/material/CardContent";
+import CardHeader from "@mui/material/CardHeader";
+import Grid from "@mui/material/Grid";
+import IconButton from "@mui/material/IconButton";
+import Tooltip from "@mui/material/Tooltip";
+import * as React from "react";
+import { Link, LinkProps } from "react-router-dom";
 
-import AddIcon from '@material-ui/icons/Add';
+import AddIcon from "@mui/icons-material/Add";
+
+const PREFIX = "ListTemplate";
+
+const classes = {
+  action: `${PREFIX}-action`,
+  selectedRow: `${PREFIX}-selectedRow`,
+};
+
+const StyledGrid = styled(Grid)({
+  [`& .${classes.action}`]: {
+    marginRight: 0,
+  },
+  [`& .${classes.selectedRow}`]: {
+    "& > *": {
+      borderBottom: "unset",
+    },
+  },
+});
 
 interface IProps {
   type?: string;
   title: string;
   path?: string;
-  createNewAction?: (_: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
+  createNewAction?: (
+    _: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => void;
   search?: React.ReactNode;
   children: React.ReactElement | React.ReactElement[];
 }
 
-const NEWID = 'add';
+const NEWID = "add";
 
-const useStyles = makeStyles({
-  action: {
-    marginRight: 0
-  },
-  selectedRow: {
-    '& > *': {
-      borderBottom: 'unset',
-    },
-  },
-});
-
-export const ListTemplate = ({ type, title, path, createNewAction, children }: IProps) => {
-
-  const history = useHistory();
-  const css = useStyles();
-
-  const AddLink =
-    React.forwardRef<HTMLAnchorElement, Partial<LinkProps>>((props, ref) =>
-      <Link to={`${path}/${NEWID}`} {...props} ref={ref} />)
+export const ListTemplate = ({
+  type,
+  title,
+  path,
+  createNewAction,
+  children,
+}: IProps) => {
+  const AddLink = React.forwardRef<any, Omit<LinkProps, "to">>((props, ref) => (
+    <Link ref={ref} to={`${path}/${NEWID}`} {...props} />
+  ));
 
   return (
     <Grid item xs={12}>
       <Card>
         <CardHeader
           title={title}
-          classes={{ action: css.action }}
+          classes={{ action: classes.action }}
           action={
-            (createNewAction || path) &&
-            <Tooltip title={`Add new ${type}`}>
-              {createNewAction ?
-                <IconButton onClick={createNewAction}>
-                  <AddIcon />
-                </IconButton> :
-                <IconButton component={AddLink}>
-                  <AddIcon />
-                </IconButton>}
-            </Tooltip>
+            (createNewAction || path) && (
+              <Tooltip title={`Add new ${type}`}>
+                {createNewAction ? (
+                  <IconButton onClick={createNewAction} size="large">
+                    <AddIcon />
+                  </IconButton>
+                ) : (
+                  <IconButton component={AddLink} size="large">
+                    <AddIcon />
+                  </IconButton>
+                )}
+              </Tooltip>
+            )
           }
         />
-        <CardContent>
-          {children}
-        </CardContent>
+        <CardContent>{children}</CardContent>
       </Card>
-    </Grid >
+    </Grid>
   );
 };

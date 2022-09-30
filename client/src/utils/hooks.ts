@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 
-export function useStateAndListenChanges(initialValue) {
+export function useStateAndListenChanges(initialValue: string | undefined) {
   const [value, setValue] = useState(initialValue);
 
   useEffect(() => setValue(initialValue), [initialValue]);

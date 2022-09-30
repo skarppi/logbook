@@ -1,14 +1,14 @@
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import CardHeader from '@material-ui/core/CardHeader';
-import Grid from '@material-ui/core/Grid';
-import Table from '@material-ui/core/Table';
-import TableRow from '@material-ui/core/TableRow';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
-import TableBody from '@material-ui/core/TableBody';
-import IconButton from '@material-ui/core/IconButton';
-import Tooltip from '@material-ui/core/Tooltip';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import CardHeader from '@mui/material/CardHeader';
+import Grid from '@mui/material/Grid';
+import Table from '@mui/material/Table';
+import TableRow from '@mui/material/TableRow';
+import TableCell from '@mui/material/TableCell';
+import TableHead from '@mui/material/TableHead';
+import TableBody from '@mui/material/TableBody';
+import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
 
 import { PlanesContext } from './Planes';
 import { LoadingIcon } from '../../loading/Loading';
@@ -20,12 +20,12 @@ import { LogicalSwitch } from '../../../../../shared/planes/types';
 import gql from 'graphql-tag';
 import { useMutation } from 'urql';
 
-import NewSwitchIcon from '@material-ui/icons/Add';
-import EditPlaneIcon from '@material-ui/icons/Edit';
-import SavePlaneIcon from '@material-ui/icons/Save';
-import TextField from '@material-ui/core/TextField';
-import Select from '@material-ui/core/Select';
-import MenuItem from '@material-ui/core/MenuItem';
+import NewSwitchIcon from '@mui/icons-material/Add';
+import EditPlaneIcon from '@mui/icons-material/Edit';
+import SavePlaneIcon from '@mui/icons-material/Save';
+import TextField from '@mui/material/TextField';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
 import { LogicalFunction } from '../../../../../shared/planes';
 import { ListTemplate } from '../../../common/ListTemplate';
 
@@ -98,148 +98,152 @@ export const LogicalSwitches = () => {
   };
 
   const editRow = () => {
-    return <React.Fragment key={editing.id} >
-      <TableRow>
-        <TableCell>
-          <TextField
-            placeholder='id'
-            value={editing.id || ''}
-            name='id'
-            onChange={changeSwitch}
-            inputProps={{ maxLength: 3 }}
-          />
-        </TableCell>
-        <TableCell>
-          <Select
-            displayEmpty
-            value={editing.func || ''}
-            name={'func'}
-            onChange={changeSwitch}
-          >
-            <MenuItem key={'---'} value={''}>---</MenuItem>
-            {Object.keys(LogicalFunction).map(name => (
-              <MenuItem key={name} value={LogicalFunction[name]}>
-                {LogicalFunction[name]}
-              </MenuItem>
-            ))}
-          </Select>
-        </TableCell>
-        <TableCell>
-          <Select
-            displayEmpty
-            value={editing.v1 || ''}
-            name={'v1'}
-            onChange={changeSwitch}
-          >
-            <MenuItem key={'---'} value={''}>---</MenuItem>
-            {SWITCHES.map(name => (
-              <MenuItem key={name} value={name}>
-                {name}
-              </MenuItem>
-            ))}
-          </Select>
-        </TableCell>
-        <TableCell>
-          <TextField
-            placeholder='v2'
-            value={editing.v2 || ''}
-            name='v2'
-            onChange={changeSwitch}
-          />
-        </TableCell>
-        <TableCell>
-          <Select
-            displayEmpty
-            value={editing.andSwitch || ''}
-            name={'andSwitch'}
-            onChange={changeSwitch}
-          >
-            <MenuItem key={'---'} value={null}>---</MenuItem>
-            {SWITCHES.map(name => ([
-              <MenuItem key={`${name}}u`} value={`${name}↑`}>
-                {name}↑
-              </MenuItem>,
-              <MenuItem key={`${name}m`} value={`${name}-`}>
-                {name}-
-              </MenuItem>,
-              <MenuItem key={`${name}d`} value={`${name}↓`}>
-                {name}↓
-              </MenuItem>
-            ]))}
-          </Select>
-        </TableCell>
-        <TableCell>
-          <TextField
-            placeholder='duration'
-            value={editing.duration || ''}
-            name='duration'
-            onChange={changeSwitch}
-          />
-        </TableCell>
-        <TableCell>
-          <TextField
-            placeholder='delay'
-            value={editing.delay || ''}
-            name='delay'
-            onChange={changeSwitch}
-            inputProps={{ maxLength: 4 }}
-          />
-        </TableCell>
-        <TableCell>
-          <TextField
-            placeholder='description'
-            value={editing.description || ''}
-            name='description'
-            onChange={changeSwitch}
-          />
-        </TableCell>
-        <TableCell>
-          <Tooltip title='Save changes'>
-            <IconButton onClick={save}>
-              <SavePlaneIcon />
-            </IconButton>
-          </Tooltip>
-        </TableCell>
-      </TableRow>
-    </React.Fragment >;
+    return (
+      <React.Fragment key={editing.id} >
+        <TableRow>
+          <TableCell>
+            <TextField
+              placeholder='id'
+              value={editing.id || ''}
+              name='id'
+              onChange={changeSwitch}
+              inputProps={{ maxLength: 3 }}
+            />
+          </TableCell>
+          <TableCell>
+            <Select
+              displayEmpty
+              value={editing.func || ''}
+              name={'func'}
+              onChange={changeSwitch}
+            >
+              <MenuItem key={'---'} value={''}>---</MenuItem>
+              {Object.keys(LogicalFunction).map(name => (
+                <MenuItem key={name} value={LogicalFunction[name]}>
+                  {LogicalFunction[name]}
+                </MenuItem>
+              ))}
+            </Select>
+          </TableCell>
+          <TableCell>
+            <Select
+              displayEmpty
+              value={editing.v1 || ''}
+              name={'v1'}
+              onChange={changeSwitch}
+            >
+              <MenuItem key={'---'} value={''}>---</MenuItem>
+              {SWITCHES.map(name => (
+                <MenuItem key={name} value={name}>
+                  {name}
+                </MenuItem>
+              ))}
+            </Select>
+          </TableCell>
+          <TableCell>
+            <TextField
+              placeholder='v2'
+              value={editing.v2 || ''}
+              name='v2'
+              onChange={changeSwitch}
+            />
+          </TableCell>
+          <TableCell>
+            <Select
+              displayEmpty
+              value={editing.andSwitch || ''}
+              name={'andSwitch'}
+              onChange={changeSwitch}
+            >
+              <MenuItem key={'---'} value={null}>---</MenuItem>
+              {SWITCHES.map(name => ([
+                <MenuItem key={`${name}}u`} value={`${name}↑`}>
+                  {name}↑
+                </MenuItem>,
+                <MenuItem key={`${name}m`} value={`${name}-`}>
+                  {name}-
+                </MenuItem>,
+                <MenuItem key={`${name}d`} value={`${name}↓`}>
+                  {name}↓
+                </MenuItem>
+              ]))}
+            </Select>
+          </TableCell>
+          <TableCell>
+            <TextField
+              placeholder='duration'
+              value={editing.duration || ''}
+              name='duration'
+              onChange={changeSwitch}
+            />
+          </TableCell>
+          <TableCell>
+            <TextField
+              placeholder='delay'
+              value={editing.delay || ''}
+              name='delay'
+              onChange={changeSwitch}
+              inputProps={{ maxLength: 4 }}
+            />
+          </TableCell>
+          <TableCell>
+            <TextField
+              placeholder='description'
+              value={editing.description || ''}
+              name='description'
+              onChange={changeSwitch}
+            />
+          </TableCell>
+          <TableCell>
+            <Tooltip title='Save changes'>
+              <IconButton onClick={save} size="large">
+                <SavePlaneIcon />
+              </IconButton>
+            </Tooltip>
+          </TableCell>
+        </TableRow>
+      </React.Fragment >
+    );
   };
 
   const viewRow = (ls: LogicalSwitch) => {
-    return <React.Fragment key={ls.id} >
-      <TableRow>
-        <TableCell>
-          {ls.id}
-        </TableCell>
-        <TableCell>
-          {ls.func}
-        </TableCell>
-        <TableCell>
-          {ls.v1 ? ls.v1 : '---'}
-        </TableCell>
-        <TableCell>
-          {ls.v2 ? ls.v2 : '---'}
-        </TableCell>
-        <TableCell>
-          {ls.andSwitch ? ls.andSwitch : '---'}
-        </TableCell>
-        <TableCell>
-          {ls.duration}
-        </TableCell>
-        <TableCell>
-          {ls.delay ? ls.delay : '---'}
-        </TableCell>
-        <TableCell>
-          {ls.description}
-        </TableCell>
-        <TableCell>
-          <Tooltip title='Edit plane'>
-            <IconButton onClick={() => setEditing(ls)}>
-              <EditPlaneIcon />
-            </IconButton>
-          </Tooltip>
-        </TableCell>
-      </TableRow>
-    </React.Fragment >;
+    return (
+      <React.Fragment key={ls.id} >
+        <TableRow>
+          <TableCell>
+            {ls.id}
+          </TableCell>
+          <TableCell>
+            {ls.func}
+          </TableCell>
+          <TableCell>
+            {ls.v1 ? ls.v1 : '---'}
+          </TableCell>
+          <TableCell>
+            {ls.v2 ? ls.v2 : '---'}
+          </TableCell>
+          <TableCell>
+            {ls.andSwitch ? ls.andSwitch : '---'}
+          </TableCell>
+          <TableCell>
+            {ls.duration}
+          </TableCell>
+          <TableCell>
+            {ls.delay ? ls.delay : '---'}
+          </TableCell>
+          <TableCell>
+            {ls.description}
+          </TableCell>
+          <TableCell>
+            <Tooltip title='Edit plane'>
+              <IconButton onClick={() => setEditing(ls)} size="large">
+                <EditPlaneIcon />
+              </IconButton>
+            </Tooltip>
+          </TableCell>
+        </TableRow>
+      </React.Fragment >
+    );
   };
 
   const switches = [...logicalSwitches, ...(editing && !logicalSwitches.find(ls => ls.id === editing.id) ? [editing] : [])];

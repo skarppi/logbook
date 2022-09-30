@@ -1,13 +1,14 @@
-import TableRow from '@material-ui/core/TableRow';
-import TableCell from '@material-ui/core/TableCell';
+import TableRow from '@mui/material/TableRow';
+import { styled } from '@mui/material/styles';
+import TableCell from '@mui/material/TableCell';
 import * as React from 'react';
 import { NavLink, useParams } from 'react-router-dom';
 import { formatDuration } from '../../../../../shared/utils/date';
 import { FlightDetails } from '../Flight/Flight';
 
-import ClosedIcon from '@material-ui/icons/ArrowRight';
-import OpenedIcon from '@material-ui/icons/ArrowDropDown';
-import FavoriteIcon from '@material-ui/icons/FavoriteBorder';
+import ClosedIcon from '@mui/icons-material/ArrowRight';
+import OpenedIcon from '@mui/icons-material/ArrowDropDown';
+import FavoriteIcon from '@mui/icons-material/FavoriteBorder';
 
 import { LoadingTable } from '../../loading/Loading';
 import gql from 'graphql-tag';
@@ -15,9 +16,37 @@ import { Flight } from '../../../../../shared/flights/types';
 import { useQuery } from 'urql';
 import { addDays } from 'date-fns';
 import { formatTime, formatDate, formatDateTimeLong } from '../../../utils/date';
-import { makeStyles } from '@material-ui/core/styles';
 import { useScroll } from '../../../common/useScroll';
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
+
+const PREFIX = 'Flights';
+
+const classes = {
+  openedCell: `${PREFIX}-openedCell`,
+  root: `${PREFIX}-root`,
+  cardHeader: `${PREFIX}-cardHeader`
+};
+
+// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
+const Root = styled('div')((
+  {
+    theme
+  }
+) => ({
+  [`& .${classes.openedCell}`]: {
+    padding: 0
+  },
+
+  [`& .${classes.root}`]: {
+    '& > *': {
+      borderBottom: 'unset',
+    },
+  },
+
+  [`& .${classes.cardHeader}`]: {
+    padding: theme.spacing(2)
+  }
+}));
 
 const Query = gql`
   query($from:Datetime!,$to:Datetime!) {
@@ -55,20 +84,6 @@ interface IQueryResponse {
   };
 }
 
-const useStyles = makeStyles(theme => ({
-  openedCell: {
-    padding: 0
-  },
-  root: {
-    '& > *': {
-      borderBottom: 'unset',
-    },
-  },
-  cardHeader: {
-    padding: theme.spacing(2)
-  }
-}));
-
 
 const renderStats = (flight: Flight) => {
   const stats = flight.stats;
@@ -98,7 +113,7 @@ export const Flights = () => {
 
   const flights = read.data && read.data.flights.nodes || [];
 
-  const css = useStyles();
+
 
   const scrollRef = useScroll([id, read.fetching]);
 
@@ -144,7 +159,7 @@ export const Flights = () => {
   });
 
   return (
-    <>
+    (<Root>
       <LoadingTable spinning={read.fetching} error={read.error} colSpan={5} />
       <TableRow>
         <TableCell colSpan={5}>
@@ -153,8 +168,7 @@ export const Flights = () => {
           </Typography>
         </TableCell>
       </TableRow>
-
       {rows}
-    </>
+    </Root>)
   );
 };

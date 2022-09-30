@@ -1,28 +1,55 @@
 import * as React from 'react';
-import TextField from '@material-ui/core/TextField';
-import FormControl from '@material-ui/core/FormControl';
-import InputLabel from '@material-ui/core/InputLabel';
-import Select from '@material-ui/core/Select';
-import Input from '@material-ui/core/Input';
-import MenuItem from '@material-ui/core/MenuItem';
-import IconButton from '@material-ui/core/IconButton';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import Accordion from '@material-ui/core/Accordion';
-import AccordionSummary from '@material-ui/core/AccordionSummary';
-import AccordionDetails from '@material-ui/core/AccordionDetails';
+import { styled } from '@mui/material/styles';
+import TextField from '@mui/material/TextField';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
+import Select from '@mui/material/Select';
+import Input from '@mui/material/Input';
+import MenuItem from '@mui/material/MenuItem';
+import IconButton from '@mui/material/IconButton';
+import InputAdornment from '@mui/material/InputAdornment';
+import Accordion from '@mui/material/Accordion';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
 import { Plane } from '../../../../../shared/planes/types';
 import { Battery, BatteryCycle } from '../../../../../shared/batteries/types';
 
-import FullChargeIcon from '@material-ui/icons/BatteryChargingFull';
-import StorageChargeIcon from '@material-ui/icons/BatteryCharging50';
-import EmptyChargeIcon from '@material-ui/icons/BatteryCharging20Rounded';
-import ClearIcon from '@material-ui/icons/Clear';
+import FullChargeIcon from '@mui/icons-material/BatteryChargingFull';
+import StorageChargeIcon from '@mui/icons-material/BatteryCharging50';
+import EmptyChargeIcon from '@mui/icons-material/BatteryCharging20Rounded';
+import ClearIcon from '@mui/icons-material/Clear';
 import { BatteryState } from '../../../../../shared/batteries';
 import gql from 'graphql-tag';
 import { useMutation } from 'urql';
 import { LoadingIcon } from '../../loading/Loading';
-import { Box } from '@material-ui/core';
-import makeStyles from '@material-ui/core/styles/makeStyles';
+import { Box } from '@mui/material';
+const PREFIX = 'FlightBattery';
+
+const classes = {
+  root: `${PREFIX}-root`,
+  content: `${PREFIX}-content`,
+  details: `${PREFIX}-details`
+};
+
+const StyledAccordion = styled(Accordion)((
+  {
+    theme
+  }
+) => ({
+  [`& .${classes.root}`]: {
+    margin: '0!important',
+    padding: '12px 0'
+  },
+
+  [`& .${classes.content}`]: {
+    margin: '0!important'
+  },
+
+  [`& .${classes.details}`]: {
+    paddingTop: '0',
+    paddingBottom: '0',
+  }
+}));
 
 interface IFlightBatteryProps {
   plane: Plane;
@@ -59,21 +86,6 @@ const Delete = gql`
     }
   }`;
 
-const useStyles = makeStyles(theme => ({
-  root: {
-    margin: '0!important',
-    padding: '12px 0'
-  },
-  content: {
-    margin: '0!important'
-  },
-  details: {
-    paddingTop: '0',
-    paddingBottom: '0',
-  }
-}
-));
-
 
 export const FlightBattery = ({ plane, flightCycle, battery }: IFlightBatteryProps) => {
 
@@ -87,7 +99,7 @@ export const FlightBattery = ({ plane, flightCycle, battery }: IFlightBatteryPro
   const [cycle, setCycle] = React.useState<BatteryCycle>(flightCycle);
   React.useEffect(() => setCycle(flightCycle), [flightCycle]);
 
-  const css = useStyles();
+
 
   // modify local state
   const changeNumber = ({ target: { name, value } }) =>
@@ -180,7 +192,7 @@ export const FlightBattery = ({ plane, flightCycle, battery }: IFlightBatteryPro
   }
 
   return (
-    <Accordion
+    <StyledAccordion
       key={cycle.id}
       expanded={cycle.state !== BatteryState.discharged}
       classes={{ root: css.root }}
@@ -236,7 +248,7 @@ export const FlightBattery = ({ plane, flightCycle, battery }: IFlightBatteryPro
                   ? 'primary'
                   : 'default'
               }
-            >
+              size="large">
               <EmptyChargeIcon />
             </IconButton>
             <IconButton
@@ -246,7 +258,7 @@ export const FlightBattery = ({ plane, flightCycle, battery }: IFlightBatteryPro
                   ? 'primary'
                   : 'default'
               }
-            >
+              size="large">
               <StorageChargeIcon />
             </IconButton>
             <IconButton
@@ -256,10 +268,10 @@ export const FlightBattery = ({ plane, flightCycle, battery }: IFlightBatteryPro
                   ? 'primary'
                   : 'default'
               }
-            >
+              size="large">
               <FullChargeIcon />
             </IconButton>
-            <IconButton onClick={removeBattery}>
+            <IconButton onClick={removeBattery} size="large">
               <ClearIcon />
             </IconButton>
             <LoadingIcon
@@ -292,6 +304,6 @@ export const FlightBattery = ({ plane, flightCycle, battery }: IFlightBatteryPro
         </Box>
 
       </AccordionDetails>
-    </Accordion>
+    </StyledAccordion>
   );
 };

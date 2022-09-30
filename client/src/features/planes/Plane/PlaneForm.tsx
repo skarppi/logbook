@@ -1,16 +1,16 @@
 import * as React from 'react';
-import FormControl from '@material-ui/core/FormControl';
-import InputLabel from '@material-ui/core/InputLabel';
-import Select from '@material-ui/core/Select';
-import Input from '@material-ui/core/Input';
-import MenuItem from '@material-ui/core/MenuItem';
-import Chip from '@material-ui/core/Chip';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
+import Select from '@mui/material/Select';
+import Input from '@mui/material/Input';
+import MenuItem from '@mui/material/MenuItem';
+import Chip from '@mui/material/Chip';
 import { Plane } from '../../../../../shared/planes/types';
 import { PlaneType } from '../../../../../shared/planes';
 import { Battery } from '../../../../../shared/batteries/types';
 import { useContext } from 'react';
 import { PlanesContext } from '../PlanesList/Planes';
-import Box from '@material-ui/core/Box';
+import Box from '@mui/material/Box';
 
 interface IProps {
   plane: Plane;

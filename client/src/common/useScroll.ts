@@ -1,16 +1,17 @@
-import { useRef, useEffect } from 'react';
-import { Theme } from '@material-ui/core';
-import { useTheme } from '@material-ui/styles';
+import { useRef, useEffect } from "react";
+import { Theme } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
 
-export function useScroll(deps) {
-  const theme = useTheme<Theme>()
+export function useScroll<T extends HTMLElement>(deps: any[]) {
+  const theme = useTheme<Theme>();
 
-  const ref = useRef(null);
+  const ref = useRef<T>(null);
   const executeScroll = () => {
-    const offsetTop = ref.current?.offsetTop
-      + (ref.current?.offsetParent as HTMLElement)?.offsetTop
-      - Number(theme.mixins.toolbar.minHeight ?? 0)
-      - 20;
+    const offsetTop =
+      (ref.current?.offsetTop ?? 0) +
+      (ref.current?.offsetParent as HTMLElement)?.offsetTop -
+      Number(theme.mixins.toolbar.minHeight ?? 0) -
+      20;
     if (offsetTop) {
       setTimeout(() => window.scrollTo(0, offsetTop), 0);
     }

@@ -1,24 +1,35 @@
-import * as React from 'react';
-import { useHistory } from 'react-router-dom';
-import NavigateBeforeIcon from '@material-ui/icons/ExpandMore';
-import NavigateNextIcon from '@material-ui/icons/ExpandLess';
-import { IconButton } from '@material-ui/core';
+import * as React from "react";
+import { useNavigate } from "react-router-dom";
+import NavigateBeforeIcon from "@mui/icons-material/ExpandMore";
+import NavigateNextIcon from "@mui/icons-material/ExpandLess";
+import { IconButton } from "@mui/material";
 
-export const NavigatePreviousNext = ({ nextLink, previousLink }) => {
+export const NavigatePreviousNext = ({
+  nextLink,
+  previousLink,
+}: {
+  nextLink?: string;
+  previousLink?: string;
+}) => {
+  const navigate = useNavigate();
 
-  const history = useHistory();
+  return (
+    <>
+      <IconButton
+        onClick={(_) => nextLink && navigate(nextLink)}
+        disabled={!nextLink}
+        size="large"
+      >
+        <NavigateNextIcon />
+      </IconButton>
 
-  return <>
-    <IconButton
-      onClick={_ => history.push(nextLink)}
-      disabled={!nextLink}>
-      <NavigateNextIcon />
-    </IconButton>
-
-    <IconButton
-      onClick={_ => history.push(previousLink)}
-      disabled={!previousLink}>
-      <NavigateBeforeIcon />
-    </IconButton>
-  </>;
+      <IconButton
+        onClick={(_) => previousLink && navigate(previousLink)}
+        disabled={!previousLink}
+        size="large"
+      >
+        <NavigateBeforeIcon />
+      </IconButton>
+    </>
+  );
 };

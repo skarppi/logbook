@@ -1,4 +1,4 @@
-import TextField from '@material-ui/core/TextField';
+import TextField from '@mui/material/TextField';
 import * as React from 'react';
 import { Plane } from '../../../../../shared/planes/types';
 import { PlaneGraph } from './PlaneGraph';
@@ -8,11 +8,11 @@ import { useHistory } from 'react-router-dom';
 import gql from 'graphql-tag';
 import { useQuery, useMutation } from 'urql';
 
-import Divider from '@material-ui/core/Divider';
+import Divider from '@mui/material/Divider';
 import { PlaneType } from '../../../../../shared/planes';
 import { Battery } from '../../../../../shared/batteries/types';
 import { PlaneForm } from './PlaneForm';
-import Box from '@material-ui/core/Box';
+import Box from '@mui/material/Box';
 import { DetailsTemplate } from '../../../common/DetailsTemplate';
 
 const Query = gql`
