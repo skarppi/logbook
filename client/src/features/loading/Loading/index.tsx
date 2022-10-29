@@ -6,6 +6,7 @@ import WarningIcon from "@mui/icons-material/Warning";
 import { CombinedError } from "urql";
 import TableRow from "@mui/material/TableRow";
 import TableCell from "@mui/material/TableCell";
+import React from "react";
 const css = require("./Loading.css");
 
 interface ILoadingProps {

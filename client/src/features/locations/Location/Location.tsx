@@ -61,7 +61,7 @@ export const LocationDetails = ({
   nextLink,
   previousLink,
 }: {
-  data: Location;
+  data?: Location;
   nextLink: { id?: number };
   previousLink: { id?: number };
 }) => {

@@ -12,35 +12,35 @@ export function formatDate(
 }
 
 export function formatDateTimeLong(
-  date: Date | string,
+  date?: Date | string,
   dateFormat: string = "EEEE dd MMMM"
 ): string {
   return formatDate(date, dateFormat);
 }
 
 export function formatDateTimeLocal(
-  date: Date | string,
+  date?: Date | string,
   dateFormat: string = "yyyy-MM-dd'T'HH:mm"
 ): string {
   return formatDate(date, dateFormat);
 }
 
 export function formatDateTime(
-  date: Date | string,
+  date?: Date | string,
   dateFormat: string = "yyyy-MM-dd HH:mm:ss"
 ): string {
   return formatDate(date, dateFormat);
 }
 
 export function formatTime(
-  date: Date | string,
+  date?: Date | string,
   dateFormat: string = "HH:mm:ss"
 ): string {
   return formatDate(date, dateFormat);
 }
 
 export function formatMonth(
-  date: Date | string,
+  date?: Date | string,
   dateFormat: string = "yyyy MMMM"
 ): string {
   return formatDate(date, dateFormat);

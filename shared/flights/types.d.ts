@@ -5,7 +5,7 @@ import { Location } from "../locations/types";
 
 export interface Flight {
   id: string;
-  planeId: string,
+  planeId: string;
   plane: Plane;
   session: number;
   startDate: Date;
@@ -18,12 +18,12 @@ export interface Flight {
   batteryNames?: string;
   notes?: FlightNotes;
   stats?: FlightStats;
-  locationId?: number,
-  location?: Location,
-  favorite?: number,
+  locationId?: number;
+  location?: Location;
+  favorite?: number;
   batteryCycles?: {
-    nodes: BatteryCycle[]
-  }
+    nodes: BatteryCycle[];
+  };
 }
 
 export interface FlightNotes {
@@ -62,7 +62,9 @@ export interface Segment {
 }
 
 export interface SegmentItem {
-  Date: string,
-  Thr: string,
-  Time: string, // "12:00:26.600"
+  Date: string;
+  Thr: string;
+  Time: string; // "12:00:26.600"
+  num(col: string): number;
+  str(col: string): string;
 }

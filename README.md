@@ -38,14 +38,14 @@ cd <MyProjectName>
 
 npm install
 
-createdb logbook
-
-sudo -u postgres psql
+psql
 create database logbook;
 create user logbook with password 'logbook';
 grant all privileges on database logbook to logbook;
 
-psql -d logbook -f init.sql
+psql -d logbook -f 1-init.sql
+psql -d logbook -f 2-locations.sql
+psql -d logbook -f 3-batteries.sql
 
 npm start
 ```

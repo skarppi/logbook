@@ -1,14 +1,14 @@
-import * as React from 'react';
-import Button from '@mui/material/Button';
-import FormControl from '@mui/material/FormControl';
-import { Flight } from '../../../../../shared/flights/types';
-import { FlightBattery } from './FlightBattery';
-import AddIcon from '@mui/icons-material/Add';
-import { cycleFromFlight } from '../../../../../shared/batteries';
-import { Battery } from '../../../../../shared/batteries/types';
-import { useMutation } from 'urql';
-import { LoadingIcon } from '../../loading/Loading';
-import { CREATE_BATTERY_CYCLE } from '../../batteries/Battery/BatteryCycle';
+import * as React from "react";
+import Button from "@mui/material/Button";
+import FormControl from "@mui/material/FormControl";
+import { Flight } from "../../../../../shared/flights/types";
+import { FlightBattery } from "./FlightBattery";
+import AddIcon from "@mui/icons-material/Add";
+import { cycleFromFlight } from "../../../../../shared/batteries";
+import { Battery } from "../../../../../shared/batteries/types";
+import { useMutation } from "urql";
+import { LoadingIcon } from "../../loading/Loading";
+import { CREATE_BATTERY_CYCLE } from "../../batteries/Battery/BatteryCycle";
 
 interface IBatteryProps {
   flight: Flight;
@@ -16,8 +16,11 @@ interface IBatteryProps {
   refreshFlight: () => void;
 }
 
-export const FlightBatteries = ({ flight, batteries, refreshFlight }: IBatteryProps) => {
-
+export const FlightBatteries = ({
+  flight,
+  batteries,
+  refreshFlight,
+}: IBatteryProps) => {
   const plane = flight.plane;
 
   const cycles = flight.batteryCycles?.nodes || [];
@@ -25,38 +28,39 @@ export const FlightBatteries = ({ flight, batteries, refreshFlight }: IBatteryPr
   const [create, createCycle] = useMutation(CREATE_BATTERY_CYCLE);
 
   const addBattery = () => {
-    const usedBatteries = cycles.map(c => c.batteryName);
+    const usedBatteries = cycles.map((c) => c.batteryName);
 
-    const nextBatteryName = plane.planeBatteries.nodes.find(
-      name => usedBatteries.indexOf(name.batteryName) === -1
+    const nextBatteryName = plane?.planeBatteries?.nodes.find(
+      (name) => usedBatteries.indexOf(name.batteryName) === -1
     )?.batteryName;
 
-    const battery = batteries.find(b => b.name === nextBatteryName);
+    const battery = batteries.find((b) => b.name === nextBatteryName);
 
     const cycle = cycleFromFlight(flight, battery?.name);
     createCycle({ cycle }).then(refreshFlight);
   };
 
-  const rows = cycles.map(cycle => cycle.id && (
-    <FlightBattery
-      key={cycle.id}
-      plane={plane}
-      flightCycle={cycle}
-      battery={batteries.find(b => b.name === cycle.batteryName)}
-    />)
+  const rows = cycles.map(
+    (cycle) =>
+      cycle.id && (
+        <FlightBattery
+          key={cycle.id}
+          plane={plane}
+          flightCycle={cycle}
+          battery={batteries.find((b) => b.name === cycle.batteryName)}
+        />
+      )
   );
 
-  const batteryControl =
-    <FormControl margin='normal'>
+  const batteryControl = (
+    <FormControl margin="normal">
       <Button onClick={addBattery}>
         Add battery
         <AddIcon />
       </Button>
-      <LoadingIcon
-        spinning={create.fetching}
-        error={create.error}
-      />
-    </FormControl>;
+      <LoadingIcon spinning={create.fetching} error={create.error} />
+    </FormControl>
+  );
 
   const batterySlots = plane?.batterySlots || 0;
   const showControls = rows.length < batterySlots;

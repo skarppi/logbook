@@ -130,13 +130,23 @@ interface IQueryResponse {
   };
 }
 
-export const FlightDetails = ({ entry, path, nextLink, previousLink }) => {
+export const FlightDetails = ({
+  entry,
+  path,
+  nextLink,
+  previousLink,
+}: {
+  entry: Flight;
+  path: string;
+  nextLink?: { id: string };
+  previousLink?: { id: string };
+}) => {
   const navigate = useNavigate();
 
   const [timezoneOffset, setTimezoneOffset] = React.useState(
     -new Date().getTimezoneOffset() / 60
   );
-  const [anchorEl, setAnchorEl] = React.useState(null);
+  const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement>();
 
   const [read, refreshFlight] = useQuery<IQueryResponse>({
     query: Query,
@@ -174,11 +184,13 @@ export const FlightDetails = ({ entry, path, nextLink, previousLink }) => {
       patch: { favorite: flight.favorite ? 0 : 1 },
     });
 
-  const changeNotes = ({ target: { name, value } }) =>
+  const changeNotes = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
     setFlight({
       ...flight,
       notes: { ...flight.notes, [name]: value },
     });
+  };
 
   const saveNotes = () =>
     updateFlight({
@@ -187,14 +199,14 @@ export const FlightDetails = ({ entry, path, nextLink, previousLink }) => {
     });
 
   const executeReset = () => {
-    setAnchorEl(null);
+    setAnchorEl(undefined);
     putApi(`flights/${flightDate}/${flight.id}/reset`, null, {
       TIMEZONE_OFFSET: timezoneOffset,
     }).then((res) => refreshFlight({ requestPolicy: "network-only" }));
   };
 
   const executeDelete = () => {
-    setAnchorEl(null);
+    setAnchorEl(undefined);
     deleteFlight({ id: flight.id }).then((res) => {
       if (!res.error) {
         navigate(`/flights/${flightDate}`);
@@ -202,12 +214,12 @@ export const FlightDetails = ({ entry, path, nextLink, previousLink }) => {
     });
   };
 
-  function handleClick(event) {
+  function handleClick(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
     setAnchorEl(event.currentTarget);
   }
 
   function handleClose() {
-    setAnchorEl(null);
+    setAnchorEl(undefined);
   }
 
   return (

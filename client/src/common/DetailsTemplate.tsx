@@ -15,8 +15,8 @@ import { NavigatePreviousNext } from "./NavigatePreviousNext";
 interface IProps {
   type: string;
   path: string;
-  previousLink?: { id?: number };
-  nextLink?: { id?: number };
+  previousLink?: { id?: string | number };
+  nextLink?: { id?: string | number };
   title?: React.ReactNode;
   deleteAction?: (_: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
   action?: React.ReactNode;

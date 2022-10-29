@@ -9,49 +9,48 @@ export interface IPlaneTotals {
 }
 
 export interface LogicalSwitch {
-  id: string,
-  nodeId?: string,
-  func: LogicalFunction,
-  v1: string,
-  v2?: string,
-  andSwitch?: string,
-  duration?: number,
-  delay?: number,
-  description?: string,
-  __typename?: string,
+  id: string;
+  nodeId?: string;
+  func: LogicalFunction;
+  v1: string;
+  v2?: string;
+  andSwitch?: string;
+  duration?: number;
+  delay?: number;
+  description?: string;
+  __typename?: string;
 }
 
 export interface Telemetry {
-  id: string,
-  default: boolean,
-  ignore: boolean,
+  id: string;
+  default: boolean;
+  ignore: boolean;
 }
 
 export interface Plane {
-  id: string,
-  nodeId?: string,
-  type: PlaneType,
+  id: string;
+  nodeId?: string;
+  type: PlaneType;
   batterySlots: number;
   planeBatteries?: {
     nodes: Array<{
-      batteryName: string
+      batteryName: string;
     }>;
-  }
+  };
   telemetries: Telemetry[];
   flightModes?: string[];
-  modeArmed: string,
-  logicalSwitchByModeArmed?: LogicalSwitch,
-  modeFlying: string,
-  logicalSwitchByModeFlying?: LogicalSwitch,
-  modeStopped: string,
-  logicalSwitchByModeStopped?: LogicalSwitch,
-  modeRestart: string,
-  logicalSwitchByModeRestart?: LogicalSwitch,
-  modeStoppedStartsNewFlight: boolean
-  totalByPlane?: IPlaneTotals,
+  modeArmed: string;
+  logicalSwitchByModeArmed?: LogicalSwitch;
+  modeFlying: string;
+  logicalSwitchByModeFlying?: LogicalSwitch;
+  modeStopped: string;
+  logicalSwitchByModeStopped?: LogicalSwitch;
+  modeRestart: string;
+  logicalSwitchByModeRestart?: LogicalSwitch;
+  modeStoppedStartsNewFlight: boolean;
+  totalByPlane?: IPlaneTotals;
   flights?: {
     nodes: Array<Flight>;
-  },
-  __typename?: string,
+  };
+  __typename?: string;
 }
-

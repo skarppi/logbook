@@ -135,8 +135,8 @@ export const BatteryDetails = ({
   nextLink,
 }: {
   id: number;
-  previousLink: { id?: number };
-  nextLink: { id?: number };
+  previousLink?: { id?: string | number };
+  nextLink?: { id?: string | number };
 }) => {
   const navigate = useNavigate();
 
@@ -222,9 +222,7 @@ export const BatteryDetails = ({
             value={battery.name}
             name="name"
             onChange={changeBattery}
-            onBlur={(event: React.FocusEvent<HTMLInputElement>) =>
-              event.target.value.length > 0 && save()
-            }
+            onBlur={({ target: { value } }) => value.length > 0 && save()}
             margin="none"
           />
         </>

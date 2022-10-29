@@ -75,9 +75,10 @@ export const BatteryCycleRow = ({
     });
   };
 
-  const changeDateTimeLocal = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const changeDateTimeLocal = ({
+    target: { name, value },
+  }: React.ChangeEvent<HTMLInputElement>) => {
     if (!editing) return;
-    const { name, value } = event.target;
     setEditing({ ...editing, [name]: new Date(`${value}:00`) });
   };
 

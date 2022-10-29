@@ -1,12 +1,20 @@
-import * as React from 'react';
+import * as React from "react";
 
-import { defaults, Bar } from 'react-chartjs-2';
-import { formatDuration } from '../../../../../shared/utils/date';
-import { Dataset } from '../../../../../shared/dashboard/types';
-import { DashboardUnit } from '../../../../../shared/dashboard';
-import { chartColors } from '../../../utils/charts';
+import { Bar } from "react-chartjs-2";
+import {
+  Chart as ChartJS,
+  ChartData,
+  ChartDataset,
+  ChartOptions,
+  Tooltip,
+} from "chart.js";
+import { formatDuration } from "../../../../../shared/utils/date";
+import { DashboardUnit } from "../../../../../shared/dashboard";
+import { chartColors } from "../../../utils/charts";
+import { _DeepPartialObject } from "chart.js/types/utils";
 
-defaults['global'].elements.line.fill = false;
+ChartJS.defaults.elements.line.fill = false;
+ChartJS.register(Tooltip);
 
 function yAxisStepSize(max: number) {
   if (max < 1440) {
@@ -24,65 +32,76 @@ function yAxisStepSize(max: number) {
 }
 
 // every plane contains two set of datasets, use same color for both
-function colorize(datasets: Dataset[]) {
+function colorize(datasets: ChartDataset<"bar">[]): ChartDataset<"bar">[] {
   return datasets.map((dataset, index) => {
     const colorIndex = Math.floor(index / 2);
 
-    dataset['borderColor'] = chartColors(colorIndex, 1);
-    dataset['backgroundColor'] = chartColors(colorIndex, 0.5);
-    dataset['borderWidth'] = 1;
+    dataset["borderColor"] = chartColors(colorIndex, 1);
+    dataset["backgroundColor"] = chartColors(colorIndex, 0.5);
+    dataset["borderWidth"] = 1;
 
     return dataset;
   });
 }
 
-const chartOptions = (max: number, unit: DashboardUnit) => {
-
+const chartOptions = (
+  max: number,
+  unit: DashboardUnit
+): _DeepPartialObject<ChartOptions<"bar">> => {
   return {
-    offset: true,
-    tooltips: {
-      mode: 'point',
-      intersect: false,
-      callbacks: {
-        label: function (tooltipItem, data) {
-          var label = data.datasets[tooltipItem.datasetIndex].label || '';
+    //offset: true,
+    plugins: {
+      tooltip: {
+        mode: "point",
+        intersect: false,
+        callbacks: {
+          label: function (context) {
+            const data = context.dataset;
 
-          if (label) {
-            label += ': ';
-          }
-          if (label.toLowerCase().indexOf('time') !== -1) {
-            label += formatDuration(tooltipItem.yLabel * 60);
-          } else {
-            label += tooltipItem.yLabel;
-          }
-          return label;
-        }
-      }
-    },
-    legend: {
-      labels: {
-        // show legend only once per plane
-        filter: item => item.datasetIndex % 2 === 0,
-        generateLabels: chart => {
-          // show only plane name
-          // const item = cloneDeep(item2);
-          if (chart.data) {
-            const originalDatasets = chart.data.datasets;
-            chart.data.datasets = chart.data.datasets.map(ds => {
-              const dataset = Object.assign({}, ds);
-              const trimPoint = dataset.label.indexOf(' ');
-              if (trimPoint > 0) {
-                dataset.label = dataset.label.substring(0, trimPoint);
-              }
-              return dataset;
-            });
+            var label = data.label || "";
 
-            const labels = defaults['global'].legend.labels.generateLabels(chart);
-            chart.data.datasets = originalDatasets;
-            return labels;
-          }
-        }
-      }
+            if (label) {
+              label += ": ";
+            }
+            if (label.toLowerCase().indexOf("time") !== -1) {
+              label += formatDuration(context.parsed.y * 60);
+            } else {
+              label += context.parsed.y;
+            }
+            return label;
+          },
+        },
+      },
+      legend: {
+        labels: {
+          // show legend only once per plane
+          filter: (item) => (item.datasetIndex ?? 0) % 2 === 0,
+          generateLabels: (chart) => {
+            // show only plane name
+            // const item = cloneDeep(item2);
+            if (chart.data) {
+              const originalDatasets = chart.data.datasets;
+              chart.data.datasets = chart.data.datasets.map((ds) => {
+                const dataset = Object.assign({}, ds);
+                const trimPoint = dataset.label?.indexOf(" ");
+                if (trimPoint && trimPoint > 0) {
+                  dataset.label = dataset.label?.substring(0, trimPoint);
+                }
+                return dataset;
+              });
+
+              const labels =
+                ChartJS.defaults.plugins.legend.labels.generateLabels(chart);
+              chart.data.datasets = originalDatasets;
+              return labels;
+            } else {
+              return ChartJS.defaults.plugins.legend.labels.generateLabels(
+                chart
+              );
+            }
+          },
+        },
+      },
     },
     responsive: true,
     maintainAspectRatio: false,
@@ -90,61 +109,56 @@ const chartOptions = (max: number, unit: DashboardUnit) => {
       padding: {
         left: 0,
         top: 50,
-        bottom: 0
-      }
+        bottom: 0,
+      },
     },
     scales: {
-      xAxes: [
-        {
-          type: 'time',
-          time: {
-            unit,
-            unitStepSize: 1,
-            round: unit,
-            tooltipFormat: 'D MMMM YYYY',
-            displayFormats: {}
-          },
-          ticks: {
-            source: 'labels',
-            autoSkip: true,
-            maxTicksLimit: 20
-          },
-          stacked: true,
-          scaleLabel: {
-            display: true,
-            labelString: 'Date'
-          },
-        }
-      ],
-      yAxes: [
-        {
-          id: 'time',
-          position: 'left',
-          scaleLabel: {
-            display: true,
-            labelString: 'Flight time'
-          },
-          ticks: {
-            callback: value => formatDuration(value * 60),
-            stepSize: yAxisStepSize(max),
-            min: 0
-          },
-          stacked: true
+      x: {
+        type: "time",
+        time: {
+          unit,
+          stepSize: 1,
+          round: unit,
+          tooltipFormat: "D MMMM YYYY",
+          displayFormats: {},
         },
-        {
-          id: 'count',
-          position: 'right',
-          scaleLabel: {
-            display: true,
-            labelString: 'Flights'
-          },
-          ticks: {
-            min: 0
-          },
-          stacked: true
-        }
-      ]
-    }
+        ticks: {
+          source: "labels",
+          autoSkip: true,
+          maxTicksLimit: 20,
+        },
+        stacked: true,
+        title: {
+          display: true,
+          text: "Date",
+        },
+      },
+      time: {
+        position: "left",
+        title: {
+          display: true,
+          text: "Flight time",
+        },
+        ticks: {
+          callback: (value) =>
+            formatDuration(
+              (typeof value === "string" ? parseInt(value) : value) * 60
+            ),
+          stepSize: yAxisStepSize(max),
+        },
+        min: 0,
+        stacked: true,
+      },
+      count: {
+        position: "right",
+        title: {
+          display: true,
+          text: "Flights",
+        },
+        min: 0,
+        stacked: true,
+      },
+    },
   };
 };
 
@@ -162,15 +176,14 @@ interface IProps {
 }
 
 export const GraphOverTime = ({ rows, unit }: IProps) => {
-
   const labels = rows.reduce((uniqueDates, row) => {
     if (uniqueDates.indexOf(row.date) === -1) {
       uniqueDates.push(row.date);
     }
     return uniqueDates;
-  }, []);
+  }, [] as Date[]);
 
-  const flightTimesPerGroup = labels.map(label =>
+  const flightTimesPerGroup = labels.map((label) =>
     rows.reduce((total, row) => {
       if (row.date === label) {
         total += row.totalTime;
@@ -184,42 +197,40 @@ export const GraphOverTime = ({ rows, unit }: IProps) => {
     values.push(row);
     groups[row.planeId] = values;
     return groups;
-  }, {});
+  }, {} as { [key: string]: ITotalRows[] });
 
-  const datasets = [];
+  const datasets: ChartDataset<"bar">[] = [];
 
-  Object.keys(planes).sort().forEach((plane, index) => {
-    const values = planes[plane];
+  Object.keys(planes)
+    .sort()
+    .forEach((plane, index) => {
+      const values = planes[plane];
 
-    datasets.push(
-      {
+      datasets.push({
         label: `${plane} FlightTime`,
-        type: 'bar',
-        yAxisID: 'time',
-        data: labels.map(label => {
-          const current = values.find(v => v.date === label);
+        type: "bar",
+        yAxisID: "time",
+        data: labels.map((label) => {
+          const current = values.find((v) => v.date === label);
           return current ? current.totalTime / 60 : 0;
-        })
-      }
-    );
-    datasets.push(
-      {
+        }),
+      });
+      datasets.push({
         label: `${plane} Flights`,
-        type: 'line',
-        yAxisID: 'count',
-        data: labels.map(label => {
-          const current = values.find(v => v.date === label);
+        type: "line" as any,
+        yAxisID: "count",
+        data: labels.map((label) => {
+          const current = values.find((v) => v.date === label);
           return current ? current.flights : 0;
-        })
-      }
-    );
-  });
+        }),
+      });
+    });
 
   const maxFlightTime = Math.max(...flightTimesPerGroup) / 60;
 
-  const graph = {
+  const graph: ChartData<"bar"> = {
     labels,
-    datasets: colorize(datasets)
+    datasets: colorize(datasets),
   };
 
   const options = chartOptions(maxFlightTime, unit);

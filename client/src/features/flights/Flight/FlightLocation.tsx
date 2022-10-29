@@ -15,7 +15,7 @@ import gql from "graphql-tag";
 
 interface IFlightLocationProps {
   flight: Flight;
-  save: (object: unknown) => {};
+  save: (object: any) => {};
 }
 
 const Query = gql`
@@ -46,11 +46,15 @@ export const FlightLocation = ({ flight, save }: IFlightLocationProps) => {
 
   const [createNew, setCreateNew] = useState(false);
 
-  const changeFlightLocation = ({ target: { value } }: SelectChangeEvent) => {
+  const changeFlightLocation = ({
+    target: { value },
+  }:
+    | SelectChangeEvent
+    | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     if (value === "new") {
       setCreateNew(true);
     } else {
-      setLocationId(value);
+      setLocationId(parseInt(value));
     }
   };
 
@@ -76,7 +80,7 @@ export const FlightLocation = ({ flight, save }: IFlightLocationProps) => {
           Location
         </InputLabel>
         <Select
-          value={locationId || 0}
+          value={locationId?.toString() || ""}
           name="location"
           onChange={changeFlightLocation}
           onBlur={storeFlightLocation}
