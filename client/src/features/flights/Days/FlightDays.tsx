@@ -9,7 +9,7 @@ import InputAdornment from "@mui/material/InputAdornment";
 import * as React from "react";
 import { NavLink } from "react-router-dom";
 import { useParams } from "react-router-dom";
-import { formatDuration } from "../../../../../shared/utils/date";
+import { formatDuration } from "../../../shared/utils/date";
 
 import { Flights } from "../Flights/Flights";
 

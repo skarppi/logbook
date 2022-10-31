@@ -1,6 +1,6 @@
 import TextField from "@mui/material/TextField";
 import * as React from "react";
-import { Plane } from "../../../../../shared/planes/types";
+import { Plane } from "../../../shared/planes/types";
 import { PlaneGraph } from "./PlaneGraph";
 
 import { useNavigate } from "react-router-dom";
@@ -9,8 +9,8 @@ import gql from "graphql-tag";
 import { useQuery, useMutation } from "urql";
 
 import Divider from "@mui/material/Divider";
-import { PlaneType } from "../../../../../shared/planes";
-import { Battery } from "../../../../../shared/batteries/types";
+import { PlaneType } from "../../../shared/planes";
+import { Battery } from "../../../shared/batteries/types";
 import { PlaneForm } from "./PlaneForm";
 import Box from "@mui/material/Box";
 import { DetailsTemplate } from "../../../common/DetailsTemplate";

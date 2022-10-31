@@ -1,7 +1,7 @@
 import TextField from "@mui/material/TextField";
 import InputAdornment from "@mui/material/InputAdornment";
 import * as React from "react";
-import { Battery, BatteryCycle } from "../../../../../shared/batteries/types";
+import { Battery, BatteryCycle } from "../../../shared/batteries/types";
 
 interface IResistanceProps {
   editing: boolean;

@@ -1,7 +1,7 @@
 import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
 
 import * as React from "react";
-import { Location } from "../../../../../shared/locations/types";
+import { Location } from "../../../shared/locations/types";
 import { renderToStaticMarkup } from "react-dom/server";
 import { divIcon, LatLngTuple } from "leaflet";
 

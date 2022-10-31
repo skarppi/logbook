@@ -1,11 +1,11 @@
 import * as React from "react";
 import Button from "@mui/material/Button";
 import FormControl from "@mui/material/FormControl";
-import { Flight } from "../../../../../shared/flights/types";
+import { Flight } from "../../../shared/flights/types";
 import { FlightBattery } from "./FlightBattery";
 import AddIcon from "@mui/icons-material/Add";
-import { cycleFromFlight } from "../../../../../shared/batteries";
-import { Battery } from "../../../../../shared/batteries/types";
+import { cycleFromFlight } from "../../../shared/batteries";
+import { Battery } from "../../../shared/batteries/types";
 import { useMutation } from "urql";
 import { LoadingIcon } from "../../loading/Loading";
 import { CREATE_BATTERY_CYCLE } from "../../batteries/Battery/BatteryCycle";
@@ -36,7 +36,7 @@ export const FlightBatteries = ({
 
     const battery = batteries.find((b) => b.name === nextBatteryName);
 
-    const cycle = cycleFromFlight(flight, battery?.name);
+    const cycle = cycleFromFlight(flight, battery?.name ?? "-");
     createCycle({ cycle }).then(refreshFlight);
   };
 

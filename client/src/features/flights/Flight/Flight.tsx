@@ -2,7 +2,7 @@ import IconButton from "@mui/material/IconButton";
 import TextField from "@mui/material/TextField";
 import Divider from "@mui/material/Divider";
 import * as React from "react";
-import { Flight } from "../../../../../shared/flights/types";
+import { Flight } from "../../../shared/flights/types";
 import { useNavigate } from "react-router-dom";
 
 import { FlightDate } from "./FlightDate";
@@ -24,7 +24,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 import { useQuery, useMutation } from "urql";
 import gql from "graphql-tag";
-import { Battery } from "../../../../../shared/batteries/types";
+import { Battery } from "../../../shared/batteries/types";
 import { formatDate } from "../../../utils/date";
 import { putApi } from "../../../utils/api-facade";
 import Menu from "@mui/material/Menu";

@@ -1,11 +1,16 @@
-import Segment from '../model/segment';
-import { Flight, FlightNotes, FlightStats, FlightSlope } from '../../../shared/flights/types';
-import { SegmentType } from '../../../shared/flights';
-import { Plane } from '../../../shared/planes/types';
-import { differenceInSeconds } from 'date-fns';
-import { PlaneType } from '../../../shared/planes';
-import { cycleFromFlight } from '../../../shared/batteries';
-import { BatteryCycle } from '../../../shared/batteries/types';
+import Segment from "../model/segment";
+import {
+  Flight,
+  FlightNotes,
+  FlightStats,
+  FlightSlope,
+} from "../../../client/src/shared/flights/types";
+import { SegmentType } from "../../../client/src/shared/flights";
+import { Plane } from "../../../client/src/shared/planes/types";
+import { differenceInSeconds } from "date-fns";
+import { PlaneType } from "../../../client/src/shared/planes";
+import { cycleFromFlight } from "../../../client/src/shared/batteries";
+import { BatteryCycle } from "../../../client/src/shared/batteries/types";
 
 export class FlightImpl implements Flight {
   public id: string;
@@ -23,9 +28,14 @@ export class FlightImpl implements Flight {
   public segments: Segment[];
   public batteries: BatteryCycle[];
 
-  constructor(name: string, plane: Plane, session: number, segments: Segment[], locationId?: number) {
-
-    if (!name.includes('Session')) {
+  constructor(
+    name: string,
+    plane: Plane,
+    session: number,
+    segments: Segment[],
+    locationId?: number
+  ) {
+    if (!name.includes("Session")) {
       this.id = `${name}-Session${session}`;
     } else {
       this.id = name;
@@ -44,11 +54,11 @@ export class FlightImpl implements Flight {
     }
 
     this.armedTime = this.segments
-      .filter(segment => segment.type !== SegmentType.stopped)
+      .filter((segment) => segment.type !== SegmentType.stopped)
       .reduce((sum, segment) => sum + segment.duration, 0);
 
     this.flightTime = this.segments
-      .filter(segment => segment.type === SegmentType.flying)
+      .filter((segment) => segment.type === SegmentType.flying)
       .reduce((sum, segment) => sum + segment.duration, 0);
 
     this.stats = this.generateStats();
@@ -56,69 +66,90 @@ export class FlightImpl implements Flight {
     this.batteries = [cycleFromFlight(this, null)];
   }
 
-  private findSlopes = (segment: Segment, zeroHeight: number): FlightSlope[] => {
+  private findSlopes = (
+    segment: Segment,
+    zeroHeight: number
+  ): FlightSlope[] => {
     if (segment.type !== SegmentType.flying) {
       return [];
     }
 
-    const items = segment.rows.reduce(({ slopes, current }, item) => {
-      const height = Math.round((item.alt - zeroHeight) * 10) / 10;
+    const items = segment.rows.reduce(
+      ({ slopes, current }, item) => {
+        const height = Math.round((item.alt - zeroHeight) * 10) / 10;
 
-      if (current.direction > 0) {
-        // going up
-        if (height >= current.maxHeight) {
-          current.maxHeight = height;
-          return { current, slopes };
+        if (current.direction > 0) {
+          // going up
+          if (height >= current.maxHeight) {
+            current.maxHeight = height;
+            return { current, slopes };
+          } else {
+            // new peak found
+            return {
+              current: { minHeight: height, maxHeight: height, direction: -1 },
+              slopes: [...slopes, current],
+            };
+          }
+        } else if (current.direction < 0) {
+          // goind down
+          if (height <= current.minHeight) {
+            current.minHeight = height;
+            return { current, slopes };
+          } else {
+            // new minimum found
+            return {
+              current: { minHeight: height, maxHeight: height, direction: 1 },
+              slopes: [...slopes, current],
+            };
+          }
         } else {
-          // new peak found
-          return { current: { minHeight: height, maxHeight: height, direction: -1 }, slopes: [...slopes, current] };
-        }
-      } else if (current.direction < 0) {
-        // goind down
-        if (height <= current.minHeight) {
-          current.minHeight = height;
+          // direction still unknown
+          if (height > zeroHeight) {
+            current.direction = 1;
+          } else if (height < zeroHeight) {
+            current.direction = -1;
+          }
+          current.minHeight = current.maxHeight = height;
           return { current, slopes };
-        } else {
-          // new minimum found
-          return { current: { minHeight: height, maxHeight: height, direction: 1 }, slopes: [...slopes, current] };
         }
-      } else {
-        // direction still unknown
-        if (height > zeroHeight) {
-          current.direction = 1;
-        } else if (height < zeroHeight) {
-          current.direction = -1;
-        }
-        current.minHeight = current.maxHeight = height;
-        return { current, slopes };
+      },
+      {
+        current: {
+          minHeight: zeroHeight,
+          maxHeight: zeroHeight,
+          direction: 0,
+        } as FlightSlope,
+        slopes: [] as FlightSlope[],
       }
-
-    }, { current: { minHeight: zeroHeight, maxHeight: zeroHeight, direction: 0 } as FlightSlope, slopes: [] as FlightSlope[] });
+    );
     return items.slopes;
-  }
+  };
 
   private generateStats = () => {
-    const launchSegment = this.segments
-      .findIndex(segment => segment.type === SegmentType.flying);
+    const launchSegment = this.segments.findIndex(
+      (segment) => segment.type === SegmentType.flying
+    );
 
     if (launchSegment < 0) {
       return null;
     }
 
-    const zeroHeight = (launchSegment > 0)
-      ? this.segments[launchSegment - 1].last.alt
-      : null;
+    const zeroHeight =
+      launchSegment > 0 ? this.segments[launchSegment - 1].last.alt : null;
 
-    const slopes = this.segments.slice(launchSegment).reduce((result, current) => {
-      return [...result, ...this.findSlopes(current, zeroHeight)];
-    }, [] as FlightSlope[]);
+    const slopes = this.segments
+      .slice(launchSegment)
+      .reduce((result, current) => {
+        return [...result, ...this.findSlopes(current, zeroHeight)];
+      }, [] as FlightSlope[]);
 
-    const launchHeight = this.plane.type === PlaneType.glider ? slopes[1].maxHeight : null;
+    const launchHeight =
+      this.plane.type === PlaneType.glider ? slopes[1].maxHeight : null;
 
     const maxHeight = slopes.reduce((current, item) => {
       return item.maxHeight > current ? item.maxHeight : current;
     }, zeroHeight);
 
     return { zeroHeight, launchHeight, maxHeight, slopes };
-  }
+  };
 }

@@ -1,7 +1,7 @@
-import Segment from '../model/segment';
-import SegmentItem from '../model/segmentitem';
-import { SegmentType } from '../../../shared/flights';
-import { differenceInSeconds } from 'date-fns';
+import Segment from "../model/segment";
+import SegmentItem from "../model/segmentitem";
+import { SegmentType } from "../../../client/src/shared/flights";
+import { differenceInSeconds } from "date-fns";
 
 export default class SegmentParser {
   public type?: SegmentType;
@@ -18,7 +18,7 @@ export default class SegmentParser {
   }
 
   public lastSecondsFromEnd(now: Date, seconds: number) {
-    const inTheRange = this.items.findIndex(item => {
+    const inTheRange = this.items.findIndex((item) => {
       return differenceInSeconds(now, item.timestamp) < seconds;
     });
     if (inTheRange >= 0) {
@@ -50,5 +50,4 @@ export default class SegmentParser {
     this.items = [];
     this.type = type;
   }
-
 }

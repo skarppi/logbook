@@ -16,9 +16,9 @@ import { useQuery } from "urql";
 import ClosedIcon from "@mui/icons-material/KeyboardArrowRight";
 import OpenedIcon from "@mui/icons-material/KeyboardArrowDown";
 import { ListTemplate } from "../../../common/ListTemplate";
-import { Location } from "../../../../../shared/locations/types";
+import { Location } from "../../../shared/locations/types";
 import { LocationMap } from "./LocationMap";
-import { Flight } from "../../../../../shared/flights/types";
+import { Flight } from "../../../shared/flights/types";
 import { useScroll } from "../../../common/useScroll";
 import { LoadingTable } from "../../loading/Loading";
 

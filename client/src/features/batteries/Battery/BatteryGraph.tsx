@@ -9,8 +9,8 @@ import type {
 } from "chart.js";
 import { Bar } from "react-chartjs-2";
 import { chartColors } from "../../../utils/charts";
-import { BatteryCycle } from "../../../../../shared/batteries/types";
-import { formatDuration } from "../../../../../shared/utils/date";
+import { BatteryCycle } from "../../../shared/batteries/types";
+import { formatDuration } from "../../../shared/utils/date";
 import { fi } from "date-fns/locale";
 import { _DeepPartialObject } from "chart.js/types/utils";
 

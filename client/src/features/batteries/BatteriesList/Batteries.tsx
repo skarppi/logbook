@@ -9,7 +9,7 @@ import IconButton from "@mui/material/IconButton";
 import * as React from "react";
 import { NavLink, useParams } from "react-router-dom";
 import { formatDate, formatDateTime } from "../../../utils/date";
-import { Battery, BatteryCycle } from "../../../../../shared/batteries/types";
+import { Battery, BatteryCycle } from "../../../shared/batteries/types";
 import { LoadingIcon, LoadingTable } from "../../loading/Loading";
 import { BatteryDetails } from "../Battery/Battery";
 
@@ -18,7 +18,7 @@ import OpenedIcon from "@mui/icons-material/KeyboardArrowDown";
 
 import FullChargeIcon from "@mui/icons-material/BatteryChargingFull";
 import StorageChargeIcon from "@mui/icons-material/BatteryCharging50";
-import { BatteryState } from "../../../../../shared/batteries";
+import { BatteryState } from "../../../shared/batteries";
 import { useScroll } from "../../../common/useScroll";
 
 import gql from "graphql-tag";

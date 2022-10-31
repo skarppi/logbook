@@ -4,7 +4,7 @@ import Tooltip from "@mui/material/Tooltip";
 import InputAdornment from "@mui/material/InputAdornment";
 import * as React from "react";
 import { useHotkeys } from "react-hotkeys-hook";
-import { Battery, BatteryCycle } from "../../../../../shared/batteries/types";
+import { Battery, BatteryCycle } from "../../../shared/batteries/types";
 import { BatteryCycleResistance } from "./BatteryCycleResistance";
 
 import { NavLink } from "react-router-dom";
@@ -15,10 +15,10 @@ import SaveIcon from "@mui/icons-material/Save";
 import DeleteIcon from "@mui/icons-material/Delete";
 
 import { formatDate, formatDateTimeLocal } from "../../../utils/date";
-import { formatDuration } from "../../../../../shared/utils/date";
+import { formatDuration } from "../../../shared/utils/date";
 import TableCell from "@mui/material/TableCell";
 import TableRow from "@mui/material/TableRow";
-import { Flight } from "../../../../../shared/flights/types";
+import { Flight } from "../../../shared/flights/types";
 import FormControl from "@mui/material/FormControl";
 import InputLabel from "@mui/material/InputLabel";
 import Select from "@mui/material/Select";

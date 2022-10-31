@@ -18,7 +18,7 @@ import {
   addDays,
 } from "date-fns";
 
-import { DashboardUnit } from "../../../../../shared/dashboard";
+import { DashboardUnit } from "../../../shared/dashboard";
 
 import { GraphOverTime, ITotalRows } from "./GraphOverTime";
 import gql from "graphql-tag";

@@ -1,4 +1,4 @@
-export function formatDuration(seconds: number): string {
+export const formatDuration = (seconds: number): string => {
   const days = Math.floor(seconds / (3600 * 24));
   const hours = Math.floor(seconds / 3600) - days * 24;
   const mins = Math.floor(seconds / 60) - hours * 60;
@@ -11,9 +11,9 @@ export function formatDuration(seconds: number): string {
   } else {
     return `${mins}m ${secs}s`.replace(" 0s", " ").replace("/0m /", "");
   }
-}
+};
 
-export function parseDurationIntoSeconds(str: string): number {
+export function parseDurationIntoSeconds(str: string): number | undefined {
   const res = str.match(
     /^((\d+)d){0,1}\s*((\d+)h){0,1}\s*((\d+)m){0,1}\s*((\d+)s){0,1}$/
   );
@@ -28,6 +28,6 @@ export function parseDurationIntoSeconds(str: string): number {
       (parseInt(secs) || 0)
     );
   } else {
-    return null;
+    return undefined;
   }
 }

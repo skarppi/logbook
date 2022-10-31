@@ -14,8 +14,8 @@ import { useParams } from "react-router-dom";
 
 import * as React from "react";
 import { NavLink, Link } from "react-router-dom";
-import { formatDuration } from "../../../../../shared/utils/date";
-import { Plane, LogicalSwitch } from "../../../../../shared/planes/types";
+import { formatDuration } from "../../../shared/utils/date";
+import { Plane, LogicalSwitch } from "../../../shared/planes/types";
 import { LoadingTable } from "../../loading/Loading";
 import { PlaneDetails } from "../Plane/Plane";
 import { LogicalSwitches } from "./LogicalSwitches";
@@ -27,7 +27,7 @@ import NewPlaneIcon from "@mui/icons-material/Add";
 
 import gql from "graphql-tag";
 import { useQuery } from "urql";
-import { Flight } from "../../../../../shared/flights/types";
+import { Flight } from "../../../shared/flights/types";
 import { formatDateTime, formatDate } from "../../../utils/date";
 import { LinkProps } from "@mui/material/Link";
 import { useScroll } from "../../../common/useScroll";

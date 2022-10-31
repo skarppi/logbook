@@ -1,4 +1,4 @@
-import { SegmentItem } from "../../../shared/flights/types";
+import { SegmentItem } from "../../../client/src/shared/flights/types";
 
 export default class SegmentItemImpl implements SegmentItem {
   public Date: string;

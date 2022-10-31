@@ -9,7 +9,7 @@ import Accordion from "@mui/material/Accordion";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import * as React from "react";
-import { Battery } from "../../../../../shared/batteries/types";
+import { Battery } from "../../../shared/batteries/types";
 import { BatteryGraph } from "./BatteryGraph";
 import { BatteryCycles } from "./BatteryCycles";
 import { DetailsTemplate } from "../../../common/DetailsTemplate";
@@ -22,12 +22,12 @@ import { useQuery, useMutation } from "urql";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 import { formatDate } from "../../../utils/date";
-import { formatDuration } from "../../../../../shared/utils/date";
+import { formatDuration } from "../../../shared/utils/date";
 import Table from "@mui/material/Table";
 import TableCell from "@mui/material/TableCell";
 import TableBody from "@mui/material/TableBody";
 import TableRow from "@mui/material/TableRow";
-import { BatteryState } from "../../../../../shared/batteries";
+import { BatteryState } from "../../../shared/batteries";
 import Box from "@mui/material/Box";
 import {
   SelectChangeEvent,

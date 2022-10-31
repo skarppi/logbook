@@ -11,14 +11,14 @@ import InputAdornment from "@mui/material/InputAdornment";
 import Accordion from "@mui/material/Accordion";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
-import { Plane } from "../../../../../shared/planes/types";
-import { Battery, BatteryCycle } from "../../../../../shared/batteries/types";
+import { Plane } from "../../../shared/planes/types";
+import { Battery, BatteryCycle } from "../../../shared/batteries/types";
 
 import FullChargeIcon from "@mui/icons-material/BatteryChargingFull";
 import StorageChargeIcon from "@mui/icons-material/BatteryCharging50";
 import EmptyChargeIcon from "@mui/icons-material/BatteryCharging20Rounded";
 import ClearIcon from "@mui/icons-material/Clear";
-import { BatteryState } from "../../../../../shared/batteries";
+import { BatteryState } from "../../../shared/batteries";
 import gql from "graphql-tag";
 import { useMutation } from "urql";
 import { LoadingIcon } from "../../loading/Loading";

@@ -6,7 +6,7 @@ import {
   Polyline,
 } from "react-leaflet";
 
-import { Flight } from "../../../../../shared/flights/types";
+import { Flight } from "../../../shared/flights/types";
 import { renderToStaticMarkup } from "react-dom/server";
 import { divIcon, LatLngExpression, LatLngTuple } from "leaflet";
 

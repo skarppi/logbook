@@ -11,11 +11,7 @@ import { LocationsList } from "../../features/locations/LocationsList/Locations"
 import { FlightsUpload } from "../../features/flights/Upload/FlightsUpload";
 import { Container } from "@mui/material";
 import { StyledEngineProvider } from "@mui/material/styles";
-import {
-  createMuiTheme,
-  adaptV4Theme,
-  ThemeProvider,
-} from "@mui/material/styles";
+import { createTheme, adaptV4Theme, ThemeProvider } from "@mui/material/styles";
 const PREFIX = "App";
 
 const classes = {
@@ -38,7 +34,7 @@ const StyledBrowserRouter = styled(BrowserRouter)(({ theme }) => ({
 //   },
 // };
 
-const theme = createMuiTheme(
+const theme = createTheme(
   adaptV4Theme({
     overrides: {
       // MuiCardHeader: { root: mobilePaddingNone },

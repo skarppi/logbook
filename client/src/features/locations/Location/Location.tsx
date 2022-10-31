@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import gql from "graphql-tag";
 import { useMutation } from "urql";
 
-import { Location } from "../../../../../shared/locations/types";
+import { Location } from "../../../shared/locations/types";
 import { DetailsTemplate } from "../../../common/DetailsTemplate";
 import Box from "@mui/material/Box";
 

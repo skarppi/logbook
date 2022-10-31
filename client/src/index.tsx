@@ -6,7 +6,7 @@ import { Provider, createClient } from "urql";
 import reportWebVitals from "./reportWebVitals";
 
 const client = createClient({
-  url: `${process.env.PUBLIC_PATH}/api/graphql`,
+  url: `/api/graphql`,
 });
 
 const root = ReactDOM.createRoot(

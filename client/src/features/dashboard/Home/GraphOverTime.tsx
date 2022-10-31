@@ -8,12 +8,12 @@ import {
   ChartOptions,
   Tooltip,
 } from "chart.js";
-import { formatDuration } from "../../../../../shared/utils/date";
-import { DashboardUnit } from "../../../../../shared/dashboard";
+import { formatDuration } from "../../../shared/utils/date";
+import { DashboardUnit } from "../../../shared/dashboard";
 import { chartColors } from "../../../utils/charts";
 import { _DeepPartialObject } from "chart.js/types/utils";
 
-ChartJS.defaults.elements.line.fill = false;
+//ChartJS.defaults.elements.line.fill = false;
 ChartJS.register(Tooltip);
 
 function yAxisStepSize(max: number) {

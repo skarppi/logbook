@@ -1,9 +1,9 @@
 import * as React from "react";
 
 import { Line } from "react-chartjs-2";
-import { SegmentItem, Flight } from "../../../../../shared/flights/types";
-import { Plane, Telemetry } from "../../../../../shared/planes/types";
-import { SegmentType } from "../../../../../shared/flights";
+import { SegmentItem, Flight } from "../../../shared/flights/types";
+import { Plane, Telemetry } from "../../../shared/planes/types";
+import { SegmentType } from "../../../shared/flights";
 import { chartColors } from "../../../utils/charts";
 import { _DeepPartialObject } from "chart.js/types/utils";
 import {

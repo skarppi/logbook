@@ -16,7 +16,7 @@ import { LoadingIcon } from "../../loading/Loading";
 import * as React from "react";
 
 import { useContext } from "react";
-import { LogicalSwitch } from "../../../../../shared/planes/types";
+import { LogicalSwitch } from "../../../shared/planes/types";
 import gql from "graphql-tag";
 import { useMutation } from "urql";
 
@@ -26,7 +26,7 @@ import SavePlaneIcon from "@mui/icons-material/Save";
 import TextField from "@mui/material/TextField";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
-import { LogicalFunction } from "../../../../../shared/planes";
+import { LogicalFunction } from "../../../shared/planes";
 import { ListTemplate } from "../../../common/ListTemplate";
 
 const NEWID = "add";

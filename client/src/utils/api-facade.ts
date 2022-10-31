@@ -1,5 +1,5 @@
 import axios, { AxiosResponse } from "axios";
-import { Flight } from "../../../shared/flights/types";
+import { Flight } from "../shared/flights/types";
 
 const apiPath = `${process.env.PUBLIC_PATH}/api`;
 

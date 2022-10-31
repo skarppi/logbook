@@ -3,7 +3,7 @@ import { styled } from "@mui/material/styles";
 import TableCell from "@mui/material/TableCell";
 import * as React from "react";
 import { NavLink, useParams } from "react-router-dom";
-import { formatDuration } from "../../../../../shared/utils/date";
+import { formatDuration } from "../../../shared/utils/date";
 import { FlightDetails } from "../Flight/Flight";
 
 import ClosedIcon from "@mui/icons-material/ArrowRight";
@@ -12,7 +12,7 @@ import FavoriteIcon from "@mui/icons-material/FavoriteBorder";
 
 import { LoadingTable } from "../../loading/Loading";
 import gql from "graphql-tag";
-import { Flight } from "../../../../../shared/flights/types";
+import { Flight } from "../../../shared/flights/types";
 import { useQuery } from "urql";
 import { addDays } from "date-fns";
 import {

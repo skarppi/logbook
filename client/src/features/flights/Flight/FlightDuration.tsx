@@ -3,8 +3,8 @@ import TextField from "@mui/material/TextField";
 import {
   formatDuration,
   parseDurationIntoSeconds,
-} from "../../../../../shared/utils/date";
-import { Flight } from "../../../../../shared/flights/types";
+} from "../../../shared/utils/date";
+import { Flight } from "../../../shared/flights/types";
 import Box from "@mui/material/Box";
 
 interface IFlightDurationProps {

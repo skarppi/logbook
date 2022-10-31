@@ -8,12 +8,12 @@ import * as React from "react";
 import classNames from "classnames";
 import Dropzone, { DropzoneState } from "react-dropzone";
 import { NavLink, useParams } from "react-router-dom";
-import { Flight } from "../../../../../shared/flights/types";
+import { Flight } from "../../../shared/flights/types";
 import { uploadFlightsAPI } from "../../../utils/api-facade";
 import { FlightDetails } from "../Flight/Flight";
 import { FlightTimezone } from "../Flight/FlightTimezone";
-import { formatDuration } from "../../../../../shared/utils/date";
-import { Location } from "../../../../../shared/locations/types";
+import { formatDuration } from "../../../shared/utils/date";
+import { Location } from "../../../shared/locations/types";
 
 import ClosedIcon from "@mui/icons-material/ArrowRight";
 import OpenedIcon from "@mui/icons-material/ArrowDropDown";
@@ -24,9 +24,9 @@ import MenuItem from "@mui/material/MenuItem";
 import { formatDateTime, formatDateTimeLocal } from "../../../utils/date";
 import gql from "graphql-tag";
 import Input from "@mui/material/Input";
-import { BatteryCycle, Battery } from "../../../../../shared/batteries/types";
+import { BatteryCycle, Battery } from "../../../shared/batteries/types";
 import { BatteryCycleRow } from "../../batteries/Battery/BatteryCycleRow";
-import { BatteryState } from "../../../../../shared/batteries";
+import { BatteryState } from "../../../shared/batteries";
 import { ListTemplate } from "../../../common/ListTemplate";
 import axios from "axios";
 
