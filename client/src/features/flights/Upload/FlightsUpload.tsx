@@ -30,7 +30,7 @@ import { BatteryState } from "../../../shared/batteries";
 import { ListTemplate } from "../../../common/ListTemplate";
 import axios from "axios";
 
-const css = require("./FlightsUpload.css");
+import "./FlightsUpload.css";
 
 const Query = gql`
   query ($lat: Float, $lon: Float) {

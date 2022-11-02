@@ -14,7 +14,7 @@ const app = express();
 
 app.use(bodyParser.json());
 
-const publicPath = config.PUBLIC_PATH;
+const publicPath = config.BASE_URL;
 
 app.use(`${publicPath}/api/flights`, flightsRouter());
 app.use(`${publicPath}/api/videos`, videosRouter());
@@ -41,6 +41,6 @@ app.use(function (err, req, res, next) {
 
 app.listen(config.SERVER_PORT, () => {
   console.log(
-    `App listening on port=${config.SERVER_PORT}, path=${config.PUBLIC_PATH} at ${config.PUBLIC_URL}!`
+    `App listening on port=${config.SERVER_PORT}, path=${config.BASE_URL} at ${config.PUBLIC_URL}!`
   );
 });

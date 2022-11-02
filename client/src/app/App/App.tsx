@@ -1,4 +1,3 @@
-import * as React from "react";
 import { styled } from "@mui/material/styles";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 // Pages
@@ -14,13 +13,13 @@ import { StyledEngineProvider } from "@mui/material/styles";
 import { createTheme, adaptV4Theme, ThemeProvider } from "@mui/material/styles";
 const PREFIX = "App";
 
-const classes = {
-  offset: `${PREFIX}-offset`,
-};
+// const classes = {
+//   offset: `${PREFIX}-offset`,
+// };
 
-const StyledBrowserRouter = styled(BrowserRouter)(({ theme }) => ({
-  [`& .${classes.offset}`]: theme.mixins.toolbar,
-}));
+// const StyledBrowserRouter = styled(BrowserRouter)(({ theme }) => ({
+//   [`& .${classes.offset}`]: theme.mixins.toolbar,
+// }));
 
 // const mobilePaddingNone = {
 //   [breakpoints.down("xs")]: {
@@ -76,22 +75,27 @@ const theme = createTheme(
 
 export const App = () => {
   return (
-    <StyledBrowserRouter basename={process.env.PUBLIC_PATH}>
+    <BrowserRouter basename={import.meta.env.BASE_URL}>
       <StyledEngineProvider injectFirst>
         <ThemeProvider theme={theme}>
           <Header />
           <Container disableGutters={true}>
             <Routes>
               <Route path="/" element={<Dashboard />} />
-              <Route path="/flights/:date?/:id?" element={<FlightDays />} />
-              <Route path="/planes/:id?" element={<PlanesList />} />
-              <Route path="/batteries/:id?" element={<BatteriesList />} />
-              <Route path="/locations/:id?" element={<LocationsList />} />
-              <Route path="/upload/:id?" element={<FlightsUpload />} />
+              <Route path="/flights" element={<FlightDays />} />
+              <Route path="/flights/:date" element={<FlightDays />} />
+              <Route path="/flights/:date/:id" element={<FlightDays />} />
+              <Route path="/planes" element={<PlanesList />} />
+              <Route path="/planes/:id" element={<PlanesList />} />
+              <Route path="/batteries" element={<BatteriesList />} />
+              <Route path="/batteries/:id" element={<BatteriesList />} />
+              <Route path="/locations" element={<LocationsList />} />
+              <Route path="/locations/:id" element={<LocationsList />} />
+              <Route path="/upload/:id" element={<FlightsUpload />} />
             </Routes>
           </Container>
         </ThemeProvider>
       </StyledEngineProvider>
-    </StyledBrowserRouter>
+    </BrowserRouter>
   );
 };

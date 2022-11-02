@@ -4,7 +4,7 @@ if (!PUBLIC_URL.startsWith('http')) {
 }
 
 let url = require('url').parse(PUBLIC_URL);
-const PUBLIC_PATH = url.path === '/' ? '' : url.path;
+const BASE_URL = url.path === '/' ? '' : url.path;
 const PUBLIC_HOST = url.host;
 const PUBLIC_HOSTNAME = url.hostname;
 
@@ -18,5 +18,5 @@ module.exports = {
   PUBLIC_URL,
   PUBLIC_HOST,
   PUBLIC_HOSTNAME,
-  PUBLIC_PATH
+  BASE_URL
 };
