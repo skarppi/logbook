@@ -2,19 +2,34 @@ import * as React from "react";
 
 import { Bar } from "react-chartjs-2";
 import {
+  BarElement,
   Chart as ChartJS,
   ChartData,
   ChartDataset,
   ChartOptions,
+  Legend,
+  LinearScale,
+  LineElement,
+  PointElement,
+  TimeScale,
   Tooltip,
 } from "chart.js";
 import { formatDuration } from "../../../shared/utils/date";
 import { DashboardUnit } from "../../../shared/dashboard";
 import { chartColors } from "../../../utils/charts";
 import { _DeepPartialObject } from "chart.js/types/utils";
+import "chartjs-adapter-date-fns";
 
 //ChartJS.defaults.elements.line.fill = false;
-ChartJS.register(Tooltip);
+ChartJS.register(
+  Tooltip,
+  Legend,
+  LinearScale,
+  BarElement,
+  LineElement,
+  PointElement,
+  TimeScale
+);
 
 function yAxisStepSize(max: number) {
   if (max < 1440) {

@@ -47,13 +47,6 @@ const Root = styled("div")(({ theme }) => ({
   },
 }));
 
-const link = (url: string) =>
-  //<Link to={url} />
-  React.forwardRef<HTMLAnchorElement, Partial<LinkProps>>((props, ref) => (
-    <Link to={url} ref={ref} />
-    //);
-  ));
-
 const ToolBarButton = ({
   url,
   text,
@@ -66,7 +59,8 @@ const ToolBarButton = ({
   return (
     <Button
       color="inherit"
-      component={link(url)}
+      component={Link}
+      to={url}
       classes={{ root: classes.button }}
     >
       {icon}
