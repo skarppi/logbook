@@ -18,7 +18,7 @@ interface IFlightLocationProps {
 }
 
 export const FlightTrack = ({ flight }: IFlightLocationProps) => {
-  if (!flight.location?.latitude) {
+  if (!flight.location?.latitude || !flight.location?.longitude) {
     return <></>;
   }
 
@@ -27,27 +27,28 @@ export const FlightTrack = ({ flight }: IFlightLocationProps) => {
     html: iconMarkup,
   });
 
-  const track = flight.segments.flatMap((segment) =>
-    segment.rows.map((row) => {
-      const [lat, lon] = row.str("GPS")?.split(" ");
+  const track = flight.segments
+    .flatMap((segment) =>
+      segment.rows.map((row) => !!row?.["GPS"] && row["GPS"].split(" "))
+    )
+    .filter((point) => !!point);
 
-      return [parseFloat(lat), parseFloat(lon)] as LatLngTuple;
-    })
-  );
-
-  const location =
-    flight.location &&
-    ([flight.location.latitude, flight.location.longitude] as LatLngExpression);
+  const location = [
+    flight.location.latitude,
+    flight.location.longitude,
+  ] as LatLngTuple;
 
   return (
     <MapContainer center={location} zoom={14}>
       <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
-      <Marker key={"location"} icon={customMarkerIcon} position={location}>
-        <Popup>
-          <span>{flight.location.name}</span>
-        </Popup>
-      </Marker>
+      {location && (
+        <Marker key={"location"} icon={customMarkerIcon} position={location}>
+          <Popup>
+            <span>{flight.location.name}</span>
+          </Popup>
+        </Marker>
+      )}
 
       <Polyline positions={track}></Polyline>
     </MapContainer>

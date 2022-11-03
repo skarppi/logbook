@@ -132,59 +132,6 @@ const chartOptions = (
   };
 };
 
-const chartOptions2 = (
-  max: number
-): _DeepPartialObject<ChartOptions<"line">> => {
-  return {
-    responsive: true,
-    maintainAspectRatio: false,
-    layout: {
-      padding: {
-        left: 0,
-        top: 50,
-        bottom: 0,
-      },
-    },
-    scales: {
-      x: {
-        type: "time",
-        time: {
-          tooltipFormat: "D MMMM YYYY",
-          displayFormats: {},
-        },
-        ticks: {
-          source: "labels",
-          autoSkip: true,
-          maxTicksLimit: 20,
-        },
-        stacked: true,
-        title: {
-          display: true,
-          text: "Date",
-        },
-      },
-      time: {
-        position: "left",
-        title: {
-          display: true,
-          text: "Flight time",
-        },
-        min: 0,
-        stacked: true,
-      },
-      count: {
-        position: "right",
-        title: {
-          display: true,
-          text: "Flights",
-        },
-        min: 0,
-        stacked: true,
-      },
-    },
-  };
-};
-
 // const alwaysIgnoreTelemetries = ['Date', 'Time', 'LSW'];
 
 const axisMappings: Record<string, string> = {
@@ -268,10 +215,11 @@ export const FlightGraph = ({ flight }: IProps) => {
       yAxisID: axisMappings[field] || "default",
       data: items.map((i) => {
         const zeroHeight = flight.stats?.zeroHeight ?? 0;
+        const value = Number(i[field]);
         if (calibrateAltitude && zeroHeight > 0) {
-          return Math.round((i.num(field) - zeroHeight) * 10) / 10;
+          return Math.round((value - zeroHeight) * 10) / 10;
         }
-        return i.num(field);
+        return value;
       }),
       pointRadius: 0,
       borderColor: chartColors(index, 1),

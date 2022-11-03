@@ -5,7 +5,7 @@ import { getApi } from "../../../utils/api-facade";
 import { useState, useEffect } from "react";
 import { formatDate } from "../../../utils/date";
 
-import "./Videos.css";
+import css from "./Videos.module.css";
 
 interface IVideosProps {
   date: Date;

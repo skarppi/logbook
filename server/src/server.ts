@@ -3,7 +3,6 @@ import * as bodyParser from "body-parser";
 import { flightsRouter } from "./routes/flights-router";
 import { videosRouter } from "./routes/videos-router";
 import { staticsRouter } from "./routes/statics-router";
-import { staticsDevRouter } from "./routes/statics-dev-router";
 import * as config from "./config";
 
 const { postgraphile } = require("postgraphile");
@@ -29,10 +28,7 @@ app.use(
   })
 );
 
-app.use(
-  publicPath,
-  config.IS_PRODUCTION ? staticsRouter() : staticsDevRouter()
-);
+app.use(publicPath, staticsRouter());
 
 app.use(function (err, req, res, next) {
   console.log(err, err.stack);

@@ -62,6 +62,7 @@ export interface Segment {
 }
 
 export interface SegmentItem {
+  [key: string]: any;
   Date: string;
   Thr: string;
   Time: string; // "12:00:26.600"

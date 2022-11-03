@@ -1,7 +1,5 @@
 import * as React from "react";
 
-import { styled } from "@mui/material/styles";
-
 import MenuItem from "@mui/material/MenuItem";
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
@@ -23,19 +21,6 @@ import { DashboardUnit } from "../../../shared/dashboard";
 import { GraphOverTime, ITotalRows } from "./GraphOverTime";
 import gql from "graphql-tag";
 import { useQuery } from "urql";
-
-const PREFIX = "Dashboard";
-
-const classes = {
-  flights: `${PREFIX}-flights`,
-};
-
-const StyledGrid = styled(Grid)({
-  [`& .${classes.flights}`]: {
-    height: "60vh",
-    position: "relative",
-  },
-});
 
 function defaultSize(unit: DashboardUnit) {
   if (unit === DashboardUnit.day) {
@@ -163,7 +148,12 @@ export const Dashboard = () => {
             <MenuItem value={DashboardUnit.year}>Years</MenuItem>
           </Select>
 
-          <div className={classes.flights}>
+          <div
+            style={{
+              height: "60vh",
+              position: "relative",
+            }}
+          >
             <GraphOverTime rows={flights.nodes} unit={unit} />
           </div>
         </CardContent>

@@ -10,24 +10,6 @@ import { Link, LinkProps } from "react-router-dom";
 
 import AddIcon from "@mui/icons-material/Add";
 
-const PREFIX = "ListTemplate";
-
-const classes = {
-  action: `${PREFIX}-action`,
-  selectedRow: `${PREFIX}-selectedRow`,
-};
-
-const StyledGrid = styled(Grid)({
-  [`& .${classes.action}`]: {
-    marginRight: 0,
-  },
-  [`& .${classes.selectedRow}`]: {
-    "& > *": {
-      borderBottom: "unset",
-    },
-  },
-});
-
 interface IProps {
   type?: string;
   title: string;
@@ -57,7 +39,6 @@ export const ListTemplate = ({
       <Card>
         <CardHeader
           title={title}
-          classes={{ action: classes.action }}
           action={
             (createNewAction || path) && (
               <Tooltip title={`Add new ${type}`}>

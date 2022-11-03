@@ -1,19 +1,17 @@
 {
   "name": "opentx-logbook",
-  "sideEffects": false,
+  "private": true,
   "version": "1.0.0",
   "description": "Flight logbook from OpenTX logs",
-  "main": "index.js",
-  "engines": {
-    "node": ">=6.9.5"
-  },
+  "workspaces": [
+    "client",
+    "server"
+  ],
   "scripts": {
     "clean": "rimraf server/dist",
-    "lint": "tslint -c tslint.json 'src/**/*.ts' 'src/**/*.tsx'",
-    "install": "concurrently --prefix \"[{name}]\" --names \"SERVER,CLIENT\" -c \"bgBlue.bold,bgGreen.bold\" \"cd server && npm install\" \"cd client && npm install\"",
-    "build": "npm run clean && concurrently --prefix \"[{name}]\" --names \"SERVER,CLIENT\" -c \"bgBlue.bold,bgGreen.bold\" \"cd server && npm run build\" \"cd client && npm run build\"",
-    "start:prod": "NODE_ENV=production node ./server/dist/server/src/server.js",
-    "start": "npm run clean && concurrently --prefix \"[{name}]\" --names \"SERVER,CLIENT\" -c \"bgBlue.bold,bgGreen.bold\" \"cd server && npm start\" \"cd client && npm start\""
+    "build": "yarn run clean && yarn workspaces foreach --parallel --verbose run build",
+    "prod": "NODE_ENV=production node PORT=3000 ./server/dist/server/src/server.js",
+    "dev": "yarn run clean && yarn workspaces foreach --parallel --interlaced --verbose run dev"
   },
   "keywords": [
     "typescript",
@@ -31,10 +29,9 @@
   },
   "license": "MIT",
   "author": "Juho Kolehmainen",
-  "dependencies": {},
   "devDependencies": {
     "concurrently": "^3.6.1",
-    "rimraf": "^2.6.2",
-    "tslint": "^5.12.0"
-  }
+    "rimraf": "^2.6.2"
+  },
+  "packageManager": "yarn@3.1.1"
 }

@@ -1,5 +1,4 @@
 import Table from "@mui/material/Table";
-import { styled } from "@mui/material/styles";
 import TableRow from "@mui/material/TableRow";
 import TableCell from "@mui/material/TableCell";
 import TableHead from "@mui/material/TableHead";
@@ -24,20 +23,6 @@ import { formatDate, formatMonth } from "../../../utils/date";
 import TableSortLabel from "@mui/material/TableSortLabel";
 import { useScroll } from "../../../common/useScroll";
 import { ListTemplate } from "../../../common/ListTemplate";
-
-const PREFIX = "FlightDays";
-
-const classes = {
-  selectedRow: `${PREFIX}-selectedRow`,
-};
-
-const StyledListTemplate = styled(ListTemplate)({
-  [`& .${classes.selectedRow}`]: {
-    "& > *": {
-      borderBottom: "unset",
-    },
-  },
-});
 
 const Query = gql`
   query ($orderBy: [FlightsByDaysOrderBy!]) {
@@ -147,7 +132,13 @@ export const FlightDays = () => {
           selected={isCurrent}
           hover={true}
           id={totals.day}
-          className={isCurrent ? classes.selectedRow : ""}
+          sx={{
+            ...(isCurrent && {
+              "> *": {
+                borderBottom: "unset",
+              },
+            }),
+          }}
         >
           <TableCell>
             {(isCurrent && (
@@ -219,7 +210,7 @@ export const FlightDays = () => {
   );
 
   return (
-    <StyledListTemplate
+    <ListTemplate
       title="Flights List"
       search={
         <TextField
@@ -260,6 +251,6 @@ export const FlightDays = () => {
           {monthRows}
         </TableBody>
       </Table>
-    </StyledListTemplate>
+    </ListTemplate>
   );
 };

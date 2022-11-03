@@ -1,5 +1,5 @@
 {
-  "name": "opentx-logbook-server",
+  "name": "server",
   "sideEffects": false,
   "version": "1.0.0",
   "description": "Flight logbook from OpenTX logs",
@@ -9,20 +9,9 @@
   },
   "scripts": {
     "build": "tsc -p ./src",
-    "start:prod": "NODE_ENV=production node dist/server/src/server.js",
-    "start": "tsc-watch -p ./src --onSuccess \"node dist/server/src/server.js\""
+    "prod": "NODE_ENV=production node dist/server/src/server.js",
+    "dev": "tsc-watch -p ./src --onSuccess \"node dist/server/src/server.js\""
   },
-  "keywords": [
-    "express",
-    "express4",
-    "node"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/skarppi/logbook.git"
-  },
-  "license": "MIT",
-  "author": "Juho Kolehmainen",
   "dependencies": {
     "@graphile-contrib/pg-simplify-inflector": "^6.1.0",
     "body-parser": "^1.19.0",
@@ -45,5 +34,6 @@
     "tsc-watch": "^4.2.9",
     "tslint": "^6.1.3",
     "typescript": "^4.0.2"
-  }
+  },
+  "packageManager": "yarn@3.1.1"
 }

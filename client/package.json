@@ -1,5 +1,5 @@
 {
-  "name": "opentx-logbook-client",
+  "name": "client",
   "description": "Flight logbook from OpenTX logs",
   "version": "0.1.0",
   "private": true,
@@ -49,5 +49,6 @@
     "@vitejs/plugin-react": "^2.2.0",
     "typescript": "*",
     "vite": "^3.2.0"
-  }
+  },
+  "packageManager": "yarn@3.1.1"
 }

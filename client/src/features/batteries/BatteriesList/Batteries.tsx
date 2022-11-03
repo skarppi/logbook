@@ -1,5 +1,4 @@
 import Table from "@mui/material/Table";
-import { styled } from "@mui/material/styles";
 import TableRow from "@mui/material/TableRow";
 import TableCell from "@mui/material/TableCell";
 import TableHead from "@mui/material/TableHead";
@@ -25,20 +24,6 @@ import gql from "graphql-tag";
 import { useQuery, useMutation } from "urql";
 import { CREATE_BATTERY_CYCLE } from "../Battery/BatteryCycle";
 import { ListTemplate } from "../../../common/ListTemplate";
-
-const PREFIX = "BatteriesList";
-
-const classes = {
-  selectedRow: `${PREFIX}-selectedRow`,
-};
-
-const StyledListTemplate = styled(ListTemplate)({
-  [`& .${classes.selectedRow}`]: {
-    "& > *": {
-      borderBottom: "unset",
-    },
-  },
-});
 
 const Query = gql`
   query {
@@ -167,7 +152,15 @@ export const BatteriesList = () => {
     const isCurrent = id === String(battery.id);
     return (
       <React.Fragment key={String(battery.id)}>
-        <TableRow className={isCurrent ? classes.selectedRow : ""}>
+        <TableRow
+          sx={{
+            ...(isCurrent && {
+              "> *": {
+                borderBottom: "unset",
+              },
+            }),
+          }}
+        >
           <TableCell>
             {(isCurrent && (
               <NavLink to={"/batteries"}>
@@ -194,7 +187,7 @@ export const BatteriesList = () => {
   });
 
   return (
-    <StyledListTemplate type="battery" path="/batteries" title="Batteries">
+    <ListTemplate type="battery" path="/batteries" title="Batteries">
       <Table>
         <TableHead>
           <TableRow>
@@ -214,6 +207,6 @@ export const BatteriesList = () => {
           {rows}
         </TableBody>
       </Table>
-    </StyledListTemplate>
+    </ListTemplate>
   );
 };

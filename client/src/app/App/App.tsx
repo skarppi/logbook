@@ -1,4 +1,3 @@
-import { styled } from "@mui/material/styles";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 // Pages
 import { Header } from "../Header/Header";
@@ -43,8 +42,8 @@ const theme = createTheme(
       MuiTableCell: {
         root: {
           // less empty space when on mobile
-          paddingLeft: "0.2em",
-          paddingRight: "0.2em",
+          paddingLeft: 0,
+          paddingRight: 0,
 
           // links have no decoration
           "& a": {
@@ -91,6 +90,7 @@ export const App = () => {
               <Route path="/batteries/:id" element={<BatteriesList />} />
               <Route path="/locations" element={<LocationsList />} />
               <Route path="/locations/:id" element={<LocationsList />} />
+              <Route path="/upload" element={<FlightsUpload />} />
               <Route path="/upload/:id" element={<FlightsUpload />} />
             </Routes>
           </Container>

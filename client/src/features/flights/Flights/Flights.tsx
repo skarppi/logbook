@@ -1,5 +1,4 @@
 import TableRow from "@mui/material/TableRow";
-import { styled } from "@mui/material/styles";
 import TableCell from "@mui/material/TableCell";
 import * as React from "react";
 import { NavLink, useParams } from "react-router-dom";
@@ -22,31 +21,6 @@ import {
 } from "../../../utils/date";
 import { useScroll } from "../../../common/useScroll";
 import Typography from "@mui/material/Typography";
-
-const PREFIX = "Flights";
-
-const classes = {
-  openedCell: `${PREFIX}-openedCell`,
-  root: `${PREFIX}-root`,
-  cardHeader: `${PREFIX}-cardHeader`,
-};
-
-// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
-const Root = styled("div")(({ theme }) => ({
-  [`& .${classes.openedCell}`]: {
-    padding: 0,
-  },
-
-  [`& .${classes.root}`]: {
-    "& > *": {
-      borderBottom: "unset",
-    },
-  },
-
-  [`& .${classes.cardHeader}`]: {
-    padding: theme.spacing(2),
-  },
-}));
 
 const Query = gql`
   query ($from: Datetime!, $to: Datetime!) {
@@ -129,7 +103,13 @@ export const Flights = () => {
         <TableRow
           selected={false}
           hover={true}
-          className={isCurrent ? classes.root : ""}
+          sx={{
+            ...(isCurrent && {
+              "> *": {
+                borderBottom: "unset",
+              },
+            }),
+          }}
         >
           <TableCell>
             <NavLink to={isCurrent ? path : `${path}/${flight.id}`}>
@@ -147,7 +127,7 @@ export const Flights = () => {
         </TableRow>
         {isCurrent && (
           <TableRow ref={scrollRef}>
-            <TableCell colSpan={5} className={classes.openedCell}>
+            <TableCell colSpan={5} sx={{ padding: 0 }}>
               <FlightDetails
                 entry={flight}
                 path={path}
@@ -162,20 +142,22 @@ export const Flights = () => {
   });
 
   return (
-    <Root>
+    <>
       <LoadingTable spinning={read.fetching} error={read.error} colSpan={5} />
       <TableRow>
         <TableCell colSpan={5}>
           <Typography
             variant="h5"
             component="div"
-            className={classes.cardHeader}
+            sx={{
+              padding: 2,
+            }}
           >
             Flights on {formatDateTimeLong(date)}
           </Typography>
         </TableCell>
       </TableRow>
       {rows}
-    </Root>
+    </>
   );
 };

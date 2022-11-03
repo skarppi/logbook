@@ -1,5 +1,4 @@
 import * as React from "react";
-import { styled } from "@mui/material/styles";
 import TextField from "@mui/material/TextField";
 import FormControl from "@mui/material/FormControl";
 import InputLabel from "@mui/material/InputLabel";
@@ -23,29 +22,6 @@ import gql from "graphql-tag";
 import { useMutation } from "urql";
 import { LoadingIcon } from "../../loading/Loading";
 import { Box } from "@mui/material";
-const PREFIX = "FlightBattery";
-
-const classes = {
-  root: `${PREFIX}-root`,
-  content: `${PREFIX}-content`,
-  details: `${PREFIX}-details`,
-};
-
-const StyledAccordion = styled(Accordion)(({ theme }) => ({
-  [`& .${classes.root}`]: {
-    margin: "0!important",
-    padding: "12px 0",
-  },
-
-  [`& .${classes.content}`]: {
-    margin: "0!important",
-  },
-
-  [`& .${classes.details}`]: {
-    paddingTop: "0",
-    paddingBottom: "0",
-  },
-}));
 
 interface IFlightBatteryProps {
   plane: Plane;
@@ -196,12 +172,15 @@ export const FlightBattery = ({
   };
 
   return (
-    <StyledAccordion
+    <Accordion
       key={cycle.id}
       expanded={cycle.state !== BatteryState.discharged}
-      classes={{ root: classes.root }}
+      sx={{
+        paddingTop: 1,
+        paddingBottom: 1,
+      }}
     >
-      <AccordionSummary classes={{ content: classes.content }}>
+      <AccordionSummary>
         <Box display="flex" flexWrap="wrap">
           <Box>
             <FormControl margin="normal">
@@ -285,7 +264,12 @@ export const FlightBattery = ({
         </Box>
       </AccordionSummary>
 
-      <AccordionDetails classes={{ root: classes.details }}>
+      <AccordionDetails
+        sx={{
+          paddingTop: 0,
+          paddingBottom: 0,
+        }}
+      >
         <TextField
           id="charged"
           label="Charged"
@@ -304,6 +288,6 @@ export const FlightBattery = ({
 
         <Box>{resistances}</Box>
       </AccordionDetails>
-    </StyledAccordion>
+    </Accordion>
   );
 };

@@ -30,7 +30,7 @@ import { BatteryState } from "../../../shared/batteries";
 import { ListTemplate } from "../../../common/ListTemplate";
 import axios from "axios";
 
-import "./FlightsUpload.css";
+import css from "./FlightsUpload.module.css";
 
 const Query = gql`
   query ($lat: Float, $lon: Float) {
@@ -141,7 +141,7 @@ export const FlightsUpload = () => {
 
   React.useEffect(() => {
     if (locations) {
-      setLocationId(locations[0].id);
+      setLocationId(locations?.[0]?.id);
     }
   }, [locations]);
 

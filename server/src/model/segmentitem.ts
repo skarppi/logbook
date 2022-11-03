@@ -9,8 +9,10 @@ export default class SegmentItemImpl implements SegmentItem {
 
   private timezoneOffset: number;
 
+  [key: string]: any;
+
   constructor(timezoneOffset: number, args) {
-    Object.assign(this, args);
+    Object.assign(this.data, args);
     this.timezoneOffset = timezoneOffset;
   }
 
@@ -25,10 +27,10 @@ export default class SegmentItemImpl implements SegmentItem {
   }
 
   num(col: string): number {
-    return this[col] as number;
+    return this.data[col] as number;
   }
   str(col: string): string {
-    return this[col] as string;
+    return this.data[col] as string;
   }
 
   get alt(): number {
