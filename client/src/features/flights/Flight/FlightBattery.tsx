@@ -274,13 +274,13 @@ export const FlightBattery = ({
           id="charged"
           label="Charged"
           placeholder="Charged"
-          style={{ width: 90 }}
+          style={{ width: 100 }}
           value={cycle.charged || ""}
           name={"charged"}
           type="number"
           onChange={changeNumber}
           onBlur={storeBattery}
-          margin="normal"
+          margin="none"
           InputProps={{
             endAdornment: <InputAdornment position="end">mAh</InputAdornment>,
           }}

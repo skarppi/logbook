@@ -142,9 +142,15 @@ export const Flights = () => {
   return (
     <>
       <LoadingTable spinning={read.fetching} error={read.error} colSpan={5} />
-      <TableRow>
+      <TableRow
+        sx={{
+          "> *": {
+            borderBottom: "unset",
+          },
+        }}
+      >
         <TableCell colSpan={5}>
-          <Typography variant="h5">
+          <Typography variant="h6">
             Flights on {formatDateTimeLong(date)}
           </Typography>
         </TableCell>

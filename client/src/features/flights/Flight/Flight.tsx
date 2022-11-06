@@ -294,8 +294,6 @@ export const FlightDetails = ({
 
       <>{flight.stats && <FlightStatistics stats={flight.stats} />}</>
 
-      <Divider variant="middle" />
-
       <FlightBatteries
         flight={flight}
         batteries={read.data?.batteries.nodes || []}

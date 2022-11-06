@@ -1,9 +1,6 @@
-import * as React from "react";
-
 import { Line } from "react-chartjs-2";
 import {
   SegmentItem,
-  Flight,
   Segment,
   FlightStats,
 } from "../../../shared/flights/types";
@@ -17,9 +14,11 @@ import {
   ChartDataset,
   ChartOptions,
   Tooltip,
+  Filler,
 } from "chart.js";
+import "chartjs-adapter-date-fns";
 
-ChartJS.register(Tooltip);
+ChartJS.register(Tooltip, Filler);
 
 const segmentTypeToYAxis = {
   [SegmentType.flying]: 1024,
@@ -114,7 +113,6 @@ const chartOptions = (
           display: true,
         },
         ticks: {
-          // callback: value => formatDuration(value * 60),
           stepSize: 128,
         },
         suggestedMax: 1024,
@@ -138,8 +136,6 @@ const chartOptions = (
     },
   };
 };
-
-// const alwaysIgnoreTelemetries = ['Date', 'Time', 'LSW'];
 
 const axisMappings: Record<string, string> = {
   Ail: "stick",

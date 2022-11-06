@@ -13,8 +13,6 @@ import BatteriesIcon from "@mui/icons-material/BatteryChargingFull";
 import LocationIcon from "@mui/icons-material/LocationOn";
 import UploadIcon from "@mui/icons-material/CloudUpload";
 
-const PREFIX = "Header";
-
 const ToolBarButton = ({
   url,
   text,
@@ -25,17 +23,7 @@ const ToolBarButton = ({
   icon: React.ReactNode;
 }) => {
   return (
-    <Button
-      color="inherit"
-      component={Link}
-      to={url}
-      sx={{
-        width: {
-          xs: "10%",
-          sm: "15%",
-        },
-      }}
-    >
+    <Button color="inherit" component={Link} to={url}>
       {icon}
       <Typography
         variant="button"
@@ -58,16 +46,7 @@ export const Header = () => {
     <>
       <AppBar position="fixed">
         <Container disableGutters={true}>
-          <Toolbar
-            sx={{
-              gutters: {
-                paddingLeft: {
-                  xs: 0,
-                  sm: 1,
-                },
-              },
-            }}
-          >
+          <Toolbar disableGutters={true}>
             <ToolBarButton url="/" text="Home" icon={<HomeIcon />} />
 
             <ToolBarButton

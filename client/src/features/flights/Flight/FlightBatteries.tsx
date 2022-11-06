@@ -9,6 +9,7 @@ import { Battery } from "../../../shared/batteries/types";
 import { useMutation } from "urql";
 import { LoadingIcon } from "../../loading/Loading";
 import { CREATE_BATTERY_CYCLE } from "../../batteries/Battery/BatteryCycle";
+import { InputLabel, Typography } from "@mui/material";
 
 interface IBatteryProps {
   flight: Flight;
@@ -53,22 +54,21 @@ export const FlightBatteries = ({
   );
 
   const batteryControl = (
-    <FormControl margin="normal">
-      <Button onClick={addBattery}>
-        Add battery
-        <AddIcon />
-      </Button>
-      <LoadingIcon spinning={create.fetching} error={create.error} />
-    </FormControl>
+    <Button onClick={addBattery}>
+      Add battery
+      <AddIcon />
+    </Button>
   );
 
   const batterySlots = plane?.batterySlots || 0;
   const showControls = rows.length < batterySlots;
 
   return (
-    <>
+    <FormControl margin="dense">
+      <Typography variant="subtitle1">Batteries</Typography>
       {rows}
       {showControls && batteryControl}
-    </>
+      <LoadingIcon spinning={create.fetching} error={create.error} />
+    </FormControl>
   );
 };

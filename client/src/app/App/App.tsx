@@ -1,5 +1,4 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-// Pages
 import { Header } from "../Header/Header";
 import { Dashboard } from "../../features/dashboard/Home/Home";
 import { FlightDays } from "../../features/flights/Days/FlightDays";
@@ -9,35 +8,13 @@ import { LocationsList } from "../../features/locations/LocationsList/Locations"
 import { FlightsUpload } from "../../features/flights/Upload/FlightsUpload";
 import { Container } from "@mui/material";
 import { StyledEngineProvider } from "@mui/material/styles";
-import { createTheme, adaptV4Theme, ThemeProvider } from "@mui/material/styles";
-const PREFIX = "App";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
+import createBreakpoints from "@mui/system/createTheme/createBreakpoints";
 
-// const classes = {
-//   offset: `${PREFIX}-offset`,
-// };
+const breakpoints = createBreakpoints({});
 
-// const StyledBrowserRouter = styled(BrowserRouter)(({ theme }) => ({
-//   [`& .${classes.offset}`]: theme.mixins.toolbar,
-// }));
-
-// const mobilePaddingNone = {
-//   [breakpoints.down("xs")]: {
-//     padding: 0,
-//   },
-// };
-
-// const mobilePaddingReduced = {
-//   [breakpoints.down("xs")]: {
-//     padding: 10,
-//   },
-// };
-
-const theme = createTheme({
+const logbookTheme = createTheme({
   components: {
-    // MuiCardHeader: { root: mobilePaddingNone },
-    // MuiCardContent: { root: mobilePaddingNone },
-    // MuiAccordionSummary: { root: mobilePaddingReduced },
-    // MuiAccordionDetails: { root: mobilePaddingReduced },
     MuiTableCell: {
       styleOverrides: {
         root: {
@@ -78,6 +55,55 @@ const theme = createTheme({
         variant: "standard",
       },
     },
+    MuiCard: {
+      styleOverrides: {
+        root: {
+          [breakpoints.down("md")]: {
+            border: 0,
+            boxShadow: "none",
+          },
+        },
+      },
+    },
+    MuiCardHeader: {
+      styleOverrides: {
+        root: {
+          [breakpoints.down("md")]: {
+            padding: 0,
+          },
+        },
+      },
+    },
+    MuiCardContent: {
+      styleOverrides: {
+        root: {
+          [breakpoints.down("md")]: {
+            padding: 0,
+          },
+        },
+      },
+    },
+    MuiAccordion: {
+      styleOverrides: {
+        root: {
+          margin: 1,
+        },
+      },
+    },
+    MuiAccordionSummary: {
+      styleOverrides: {
+        root: {
+          [breakpoints.down("md")]: {
+            width: "95%",
+          },
+        },
+        content: {
+          "&.Mui-expanded": {
+            margin: 0,
+          },
+        },
+      },
+    },
   },
 });
 
@@ -85,7 +111,7 @@ export const App = () => {
   return (
     <BrowserRouter basename={import.meta.env.BASE_URL}>
       <StyledEngineProvider injectFirst>
-        <ThemeProvider theme={theme}>
+        <ThemeProvider theme={logbookTheme}>
           <Header />
           <Container disableGutters={true}>
             <Routes>
