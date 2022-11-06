@@ -1,7 +1,12 @@
 import * as React from "react";
 
 import { Line } from "react-chartjs-2";
-import { SegmentItem, Flight } from "../../../shared/flights/types";
+import {
+  SegmentItem,
+  Flight,
+  Segment,
+  FlightStats,
+} from "../../../shared/flights/types";
 import { Plane, Telemetry } from "../../../shared/planes/types";
 import { SegmentType } from "../../../shared/flights";
 import { chartColors } from "../../../utils/charts";
@@ -30,7 +35,9 @@ export interface ITotalRows {
 }
 
 interface IProps {
-  flight: Flight;
+  plane: Plane;
+  segments: Segment[];
+  stats?: FlightStats;
 }
 
 const chartOptions = (
@@ -157,11 +164,8 @@ const axisMappings: Record<string, string> = {
   "Hdg(@)": "stick",
 };
 
-export const FlightGraph = ({ flight }: IProps) => {
-  const segments = flight.segments || [];
-
-  const telemetries: Telemetry[] =
-    (flight.plane && flight.plane.telemetries) || [];
+export const FlightGraph = ({ plane, segments, stats }: IProps) => {
+  const telemetries: Telemetry[] = plane.telemetries || [];
 
   const defaultTelemetries = telemetries
     .filter((telemetry) => telemetry.default)
@@ -214,7 +218,7 @@ export const FlightGraph = ({ flight }: IProps) => {
       hidden,
       yAxisID: axisMappings[field] || "default",
       data: items.map((i) => {
-        const zeroHeight = flight.stats?.zeroHeight ?? 0;
+        const zeroHeight = stats?.zeroHeight ?? 0;
         const value = Number(i[field]);
         if (calibrateAltitude && zeroHeight > 0) {
           return Math.round((value - zeroHeight) * 10) / 10;
@@ -233,7 +237,7 @@ export const FlightGraph = ({ flight }: IProps) => {
     datasets: [flightTimeSet, ...datasets],
   };
 
-  const options = chartOptions(flight.plane);
+  const options = chartOptions(plane);
 
   return <Line data={graph} options={options} />;
 };

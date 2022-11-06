@@ -1,53 +1,50 @@
-import * as React from "react";
 import TextField from "@mui/material/TextField";
-import { Flight } from "../../../shared/flights/types";
+import { FlightStats } from "../../../shared/flights/types";
 import Box from "@mui/material/Box";
 
 interface IFlightStatsProps {
-  flight: Flight;
+  stats: FlightStats;
 }
 
-export const FlightStats = ({ flight }: IFlightStatsProps) => {
-  if (!flight || !flight.stats) {
-    return <></>;
-  }
-
+export const FlightStatistics = ({
+  stats: { zeroHeight, launchHeight, maxHeight },
+}: IFlightStatsProps) => {
   return (
     <Box display="flex">
-      {flight.stats?.zeroHeight && (
+      {zeroHeight && (
         <TextField
           InputProps={{
             readOnly: true,
           }}
           id="zeroHeight"
           label="Zero height"
-          value={flight.stats?.zeroHeight}
+          value={zeroHeight}
           name="zeroHeight"
           margin="normal"
           fullWidth={true}
         />
       )}
-      {flight.stats?.launchHeight && (
+      {launchHeight && (
         <TextField
           InputProps={{
             readOnly: true,
           }}
           id="launchHeight"
           label="Launch height"
-          value={flight.stats?.launchHeight}
+          value={launchHeight}
           name="launchHeight"
           margin="normal"
           fullWidth={true}
         />
       )}
-      {flight.stats?.maxHeight && (
+      {maxHeight && (
         <TextField
           InputProps={{
             readOnly: true,
           }}
           id="maxHeight"
           label="Maximum height"
-          value={flight.stats.maxHeight}
+          value={maxHeight}
           name="maxHeight"
           margin="normal"
           fullWidth={true}

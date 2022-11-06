@@ -6,19 +6,20 @@ import {
   Polyline,
 } from "react-leaflet";
 
-import { Flight } from "../../../shared/flights/types";
+import { Segment } from "../../../shared/flights/types";
 import { renderToStaticMarkup } from "react-dom/server";
-import { divIcon, LatLngExpression, LatLngTuple } from "leaflet";
+import { divIcon, LatLngTuple } from "leaflet";
 
 import LocationIcon from "@mui/icons-material/LocationOn";
-import React from "react";
+import { Location } from "../../../shared/locations/types";
 
 interface IFlightLocationProps {
-  flight: Flight;
+  location: Location;
+  segments: Segment[];
 }
 
-export const FlightTrack = ({ flight }: IFlightLocationProps) => {
-  if (!flight.location?.latitude || !flight.location?.longitude) {
+export const FlightTrack = ({ location, segments }: IFlightLocationProps) => {
+  if (!location?.latitude || !location?.longitude) {
     return <></>;
   }
 
@@ -27,25 +28,26 @@ export const FlightTrack = ({ flight }: IFlightLocationProps) => {
     html: iconMarkup,
   });
 
-  const track = flight.segments
+  const track = segments
     .flatMap((segment) =>
       segment.rows.map((row) => !!row?.["GPS"] && row["GPS"].split(" "))
     )
     .filter((point) => !!point);
 
-  const location = [
-    flight.location.latitude,
-    flight.location.longitude,
-  ] as LatLngTuple;
+  const locationTuple = [location.latitude, location.longitude] as LatLngTuple;
 
   return (
-    <MapContainer center={location} zoom={14}>
+    <MapContainer center={locationTuple} zoom={14}>
       <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
       {location && (
-        <Marker key={"location"} icon={customMarkerIcon} position={location}>
+        <Marker
+          key={"location"}
+          icon={customMarkerIcon}
+          position={locationTuple}
+        >
           <Popup>
-            <span>{flight.location.name}</span>
+            <span>{location.name}</span>
           </Popup>
         </Marker>
       )}

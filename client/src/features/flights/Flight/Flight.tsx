@@ -9,7 +9,7 @@ import { FlightDate } from "./FlightDate";
 import { FlightDuration } from "./FlightDuration";
 import { FlightBatteries } from "./FlightBatteries";
 import { FlightLocation } from "./FlightLocation";
-import { FlightStats } from "./FlightStats";
+import { FlightStatistics } from "./FlightStats";
 
 import { Videos } from "../Videos/Videos";
 import { FlightGraph } from "./FlightGraph";
@@ -161,9 +161,9 @@ export const FlightDetails = ({
     if (read.data) {
       setFlight(read.data.flight);
 
-      if (flight.segments && flight.segments[0]) {
-        const row = flight.segments[0].rows[0];
-        const originalStartDate = new Date(`${row.Date} ${row.Time}`);
+      const firstRow = flight.segments?.[0]?.rows[0];
+      if (firstRow) {
+        const originalStartDate = new Date(`${firstRow.Date} ${firstRow.Time}`);
         const currentStartDate = new Date(flight.startDate);
 
         const offset = -(
@@ -175,6 +175,19 @@ export const FlightDetails = ({
       }
     }
   }, [read.data]);
+
+  const flightGraph = React.useMemo(
+    () =>
+      flight.plane &&
+      flight.segments && (
+        <FlightGraph
+          plane={flight.plane}
+          segments={flight.segments}
+          stats={flight.stats}
+        />
+      ),
+    [flight.plane, flight.segments, flight.stats]
+  );
 
   const flightDate = formatDate(flight.startDate);
 
@@ -279,7 +292,7 @@ export const FlightDetails = ({
 
       <FlightLocation flight={flight} save={updateFlight} />
 
-      <FlightStats flight={flight} />
+      <>{flight.stats && <FlightStatistics stats={flight.stats} />}</>
 
       <Divider variant="middle" />
 
@@ -302,16 +315,24 @@ export const FlightDetails = ({
         fullWidth={true}
       />
 
-      <Box height="500px" width="92vw" maxWidth="1200px">
-        <FlightGraph flight={flight}></FlightGraph>
+      <Box sx={{ height: 500, width: "92vw", maxWidth: 1050 }}>
+        {flightGraph}
       </Box>
 
-      <Accordion defaultExpanded={false}>
+      <Accordion
+        defaultExpanded={false}
+        TransitionProps={{ unmountOnExit: true }}
+      >
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
           Show Map
         </AccordionSummary>
         <AccordionDetails>
-          <FlightTrack flight={flight}></FlightTrack>
+          {flight.location && (
+            <FlightTrack
+              location={flight.location}
+              segments={flight.segments}
+            />
+          )}
         </AccordionDetails>
       </Accordion>
 
