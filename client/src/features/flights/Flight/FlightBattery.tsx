@@ -183,7 +183,7 @@ export const FlightBattery = ({
       <AccordionSummary>
         <Box display="flex" flexWrap="wrap">
           <Box>
-            <FormControl margin="normal">
+            <FormControl margin="normal" variant="standard">
               <InputLabel htmlFor="select-multiple-checkbox" shrink>
                 Battery
               </InputLabel>

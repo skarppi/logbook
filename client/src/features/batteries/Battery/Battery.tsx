@@ -284,7 +284,7 @@ export const BatteryDetails = ({
       </Table>
 
       <Box display="flex" flexWrap="wrap" justifyContent="stretch">
-        <FormControl margin="normal">
+        <FormControl margin="normal" variant="standard">
           <InputLabel htmlFor="select-multiple-checkbox">Type</InputLabel>
           <Select
             value={battery.type}
@@ -301,7 +301,7 @@ export const BatteryDetails = ({
           </Select>
         </FormControl>
 
-        <FormControl margin="normal">
+        <FormControl margin="normal" variant="standard">
           <InputLabel htmlFor="select-multiple-checkbox">Cells</InputLabel>
           <Select
             value={String(battery.cells)}

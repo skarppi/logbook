@@ -75,7 +75,7 @@ export const FlightLocation = ({ flight, save }: IFlightLocationProps) => {
     }
 
     return (
-      <FormControl margin="normal" fullWidth={true}>
+      <FormControl margin="normal" fullWidth={true} variant="standard">
         <InputLabel htmlFor="select-multiple-checkbox" shrink>
           Location
         </InputLabel>

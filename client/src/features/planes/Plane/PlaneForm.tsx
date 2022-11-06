@@ -41,7 +41,7 @@ function RenderLogicalSwitch({
 
   return (
     <Box flex="1">
-      <FormControl margin="normal" fullWidth={true}>
+      <FormControl margin="normal" fullWidth={true} variant="standard">
         <InputLabel htmlFor={mode}>{label}</InputLabel>
         <Select
           value={plane[mode]?.toString() || ""}
@@ -116,7 +116,7 @@ export const PlaneForm = ({ plane, allBatteries, setPlane, save }: IProps) => {
   return (
     <>
       <Box display="flex">
-        <FormControl margin="normal" style={{ width: 150 }}>
+        <FormControl margin="normal" style={{ width: 150 }} variant="standard">
           <InputLabel htmlFor="select-type-checkbox">Type</InputLabel>
           <Select
             value={plane.type}
@@ -135,7 +135,7 @@ export const PlaneForm = ({ plane, allBatteries, setPlane, save }: IProps) => {
           </Select>
         </FormControl>
 
-        <FormControl margin="normal" style={{ width: 100 }}>
+        <FormControl margin="normal" style={{ width: 100 }} variant="standard">
           <InputLabel htmlFor="select-slots-checkbox">Battery Slots</InputLabel>
           <Select
             value={plane.batterySlots.toString()}
@@ -156,7 +156,7 @@ export const PlaneForm = ({ plane, allBatteries, setPlane, save }: IProps) => {
           </Select>
         </FormControl>
 
-        <FormControl margin="normal" fullWidth={true}>
+        <FormControl margin="normal" fullWidth={true} variant="standard">
           <InputLabel htmlFor="select-batteries-chip">
             Available Batteries
           </InputLabel>
@@ -189,7 +189,7 @@ export const PlaneForm = ({ plane, allBatteries, setPlane, save }: IProps) => {
       </Box>
 
       <Box display="flex" justifyContent="stretch">
-        <FormControl margin="normal" fullWidth={true}>
+        <FormControl margin="normal" fullWidth={true} variant="standard">
           <InputLabel htmlFor="select-default-telemetries-chip">
             Default telemetries
           </InputLabel>
@@ -222,7 +222,7 @@ export const PlaneForm = ({ plane, allBatteries, setPlane, save }: IProps) => {
           </Select>
         </FormControl>
 
-        <FormControl margin="normal" fullWidth={true}>
+        <FormControl margin="normal" fullWidth={true} variant="standard">
           <InputLabel htmlFor="select-hidden-telemetries-chip">
             Hidden telemetries
           </InputLabel>
@@ -287,7 +287,11 @@ export const PlaneForm = ({ plane, allBatteries, setPlane, save }: IProps) => {
             changePlane={changePlane}
             save={save}
           />
-          <FormControl margin="normal" style={{ marginTop: 0 }}>
+          <FormControl
+            margin="normal"
+            style={{ marginTop: 0 }}
+            variant="standard"
+          >
             <Select
               value={plane.modeStoppedStartsNewFlight.toString()}
               name={"modeStoppedStartsNewFlight"}

@@ -65,8 +65,6 @@ const renderStats = (flight: Flight) => {
   if (stats) {
     if (stats.launchHeight && stats.launchHeight !== stats.maxHeight) {
       return `${flight.session}: ${stats?.launchHeight} -> ${stats.maxHeight}m`;
-    } else if (stats.maxHeight) {
-      return `${flight.session}: ${stats?.maxHeight}m`;
     } else if (stats.launchHeight) {
       return `${flight.session}: ${stats?.launchHeight}m`;
     }
@@ -146,13 +144,7 @@ export const Flights = () => {
       <LoadingTable spinning={read.fetching} error={read.error} colSpan={5} />
       <TableRow>
         <TableCell colSpan={5}>
-          <Typography
-            variant="h5"
-            component="div"
-            sx={{
-              padding: 2,
-            }}
-          >
+          <Typography variant="h5">
             Flights on {formatDateTimeLong(date)}
           </Typography>
         </TableCell>

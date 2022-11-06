@@ -32,14 +32,14 @@ const PREFIX = "App";
 //   },
 // };
 
-const theme = createTheme(
-  adaptV4Theme({
-    overrides: {
-      // MuiCardHeader: { root: mobilePaddingNone },
-      // MuiCardContent: { root: mobilePaddingNone },
-      // MuiAccordionSummary: { root: mobilePaddingReduced },
-      // MuiAccordionDetails: { root: mobilePaddingReduced },
-      MuiTableCell: {
+const theme = createTheme({
+  components: {
+    // MuiCardHeader: { root: mobilePaddingNone },
+    // MuiCardContent: { root: mobilePaddingNone },
+    // MuiAccordionSummary: { root: mobilePaddingReduced },
+    // MuiAccordionDetails: { root: mobilePaddingReduced },
+    MuiTableCell: {
+      styleOverrides: {
         root: {
           // less empty space when on mobile
           paddingLeft: 0,
@@ -54,23 +54,32 @@ const theme = createTheme(
           },
         },
       },
-      MuiFormControl: {
+    },
+    MuiFormControl: {
+      styleOverrides: {
         root: {
           marginLeft: "0px",
           marginRight: "10px",
         },
       },
-      MuiInputBase: {
+    },
+    MuiInputBase: {
+      styleOverrides: {
         input: {
           "&::-webkit-outer-spin-button, &::-webkit-inner-spin-button": {
-            "-webkit-appearance": "none",
+            WebkitAppearance: "none",
             margin: 0,
           },
         },
       },
     },
-  })
-);
+    MuiTextField: {
+      defaultProps: {
+        variant: "standard",
+      },
+    },
+  },
+});
 
 export const App = () => {
   return (
