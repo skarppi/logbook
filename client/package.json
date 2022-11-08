@@ -1,23 +1,8 @@
 {
-  "name": "opentx-logbook-client",
+  "name": "client",
   "description": "Flight logbook from OpenTX logs",
-  "main": "index.js",
-  "engines": {
-    "node": ">=6.9.5"
-  },
-  "scripts": {
-    "build": "cd ./src && NODE_ENV=production webpack -p",
-    "start": "cd ./src && webpack-dev-server -w",
-    "profile": "cd ./src && NODE_ENV=production webpack -p --json --profile > /tmp/webpack-build-log.json",
-    "analyze": "webpack-bundle-analyzer /tmp/webpack-build-log.json dist/public/"
-  },
-  "keywords": [
-    "typescript",
-    "react",
-    "starter-kit",
-    "webpack",
-    "fullstack"
-  ],
+  "version": "0.1.0",
+  "private": true,
   "repository": {
     "type": "git",
     "url": "https://github.com/skarppi/logbook.git"
@@ -25,43 +10,45 @@
   "license": "MIT",
   "author": "Juho Kolehmainen",
   "dependencies": {
-    "@material-ui/core": "^4.11.0",
-    "@material-ui/icons": "^4.9.1",
-    "@material-ui/styles": "^4.10.0",
-    "axios": "^0.20.0",
-    "chart.js": "^2.9.3",
-    "date-fns": "^2.16.1",
-    "graphql": "^15.3.0",
-    "graphql-tag": "^2.11.0",
-    "leaflet": "^1.7.1",
-    "react": "^16.13.1",
-    "react-chartjs-2": "^2.10.0",
-    "react-dom": "^16.13.1",
-    "react-dropzone": "^11.0.3",
-    "react-hotkeys-hook": "^2.3.0",
-    "react-leaflet": "^2.7.0",
-    "react-router": "^5.2.0",
-    "react-router-dom": "^5.2.0",
-    "urql": "^1.10.0",
-    "video-react": "^0.14.1"
+    "@emotion/react": "^11.10.5",
+    "@emotion/styled": "^11.10.5",
+    "@mui/icons-material": "^5.10.3",
+    "@mui/material": "^5.10.12",
+    "axios": "^0.27.2",
+    "chart.js": "^3.9.1",
+    "chartjs-adapter-date-fns": "^2.0.0",
+    "classnames": "^2.3.2",
+    "date-fns": "^2.29.3",
+    "graphql": "^16.6.0",
+    "graphql-tag": "^2.12.6",
+    "leaflet": "^1.8.0",
+    "react": "^18.2.0",
+    "react-chartjs-2": "^4.3.1",
+    "react-dom": "^18.2.0",
+    "react-dropzone": "^14.2.2",
+    "react-hotkeys-hook": "^3.4.7",
+    "react-leaflet": "^4.0.2",
+    "react-router": "^6.4.0",
+    "react-router-dom": "^6.4.0",
+    "urql": "^3.0.3",
+    "video-react": "^0.15.0"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "lint": "eslint --ext .ts,.tsx src"
   },
   "devDependencies": {
-    "@types/react": "^16.9.49",
-    "@types/react-dom": "^16.9.8",
-    "awesome-typescript-loader": "^5.2.1",
-    "babel-polyfill": "^6.26.0",
-    "css-loader": "^4.2.2",
-    "file-loader": "^6.1.0",
-    "html-webpack-plugin": "^4.4.1",
-    "open-browser-webpack-plugin": "0.0.5",
-    "style-loader": "^1.2.1",
-    "tsc-watch": "^4.2.9",
-    "tslint": "^6.1.3",
-    "typescript": "^4.0.2",
-    "url-loader": "^4.1.0",
-    "webpack": "^4.44.1",
-    "webpack-bundle-analyzer": "^3.8.0",
-    "webpack-cli": "^3.3.12",
-    "webpack-dev-server": "^3.11.0"
-  }
+    "@types/chart.js": "^2.9.37",
+    "@types/leaflet": "^1.9.0",
+    "@types/node": "^16.11.59",
+    "@types/react": "^18.0.20",
+    "@types/react-dom": "^18.0.7",
+    "@types/video-react": "^0.15.1",
+    "@vitejs/plugin-react": "^2.2.0",
+    "typescript": "*",
+    "vite": "^3.2.0"
+  },
+  "packageManager": "yarn@3.1.1"
 }

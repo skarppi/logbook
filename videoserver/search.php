@@ -53,6 +53,7 @@ if (isset($_GET['date'])) {
 }
 
 function filter_dir($file) {
+	global $subdirectories;
 	if (in_array($file, $subdirectories)) {
 		return true;
 	}

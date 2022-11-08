@@ -1,24 +1,31 @@
-import csv from './csv';
-import FlightRepository from '../model/flight';
-import BatteryCycleRepository from '../model/batterycycle';
-import * as config from '../config';
-import SegmentItemImpl from '../model/segmentitem';
-import FlightParser from './flightparser';
-import { Flight } from '../../../shared/flights/types';
+import csv from "./csv";
+import FlightRepository from "../model/flight";
+import BatteryCycleRepository from "../model/batterycycle";
+import * as config from "../config";
+import SegmentItemImpl from "../model/segmentitem";
+import FlightParser from "./flightparser";
+import { Flight } from "../../../client/src/shared/flights/types";
 
 export interface IParserOptions {
   timezoneOffset: number;
   locationId: number;
 }
 
-export function parseFile(filename: string, options: IParserOptions): Promise<Flight[]> {
-  return csv(`${config.CSV_FOLDER}${filename}`).then(items => {
-    const name = filename.substring(0, filename.lastIndexOf('.'));
+export function parseFile(
+  filename: string,
+  options: IParserOptions
+): Promise<Flight[]> {
+  return csv(`${config.CSV_FOLDER}${filename}`).then((items) => {
+    const name = filename.substring(0, filename.lastIndexOf("."));
     return parseData(name, items, options);
   });
 }
 
-export function parseData(id: string, items: object[], options: IParserOptions): Promise<Flight[]> {
+export function parseData(
+  id: string,
+  items: object[],
+  options: IParserOptions
+): Promise<Flight[]> {
   const parser = new FlightParser(id, options);
   return parser.fetchPlane().then(() => {
     const flights = getFlights(parser, items);
@@ -42,13 +49,16 @@ function getFlights(parser: FlightParser, items: object[]): Flight[] {
 
 function storeFlights(flights: Flight[]): Promise<Flight[]> {
   return flights.reduce(
-    (p, flight) => p.then(results => storeFlight(flight).then(result => results.concat([result]))),
+    (p, flight) =>
+      p.then((results) =>
+        storeFlight(flight).then((result) => results.concat([result]))
+      ),
     Promise.resolve([] as Flight[])
   );
 }
 
 function storeFlight(flight: Flight): Promise<Flight> {
-  return FlightRepository.find(flight.id).then(existing => {
+  return FlightRepository.find(flight.id).then((existing) => {
     if (existing) {
       flight.notes = existing.notes;
       flight.locationId = existing.locationId;
@@ -57,8 +67,8 @@ function storeFlight(flight: Flight): Promise<Flight> {
     return FlightRepository.save(flight)
       .then(BatteryCycleRepository.attachUsedBattery)
       .then(BatteryCycleRepository.fillMissingBatteryValues)
-      .catch(err => {
-        console.log('Save failed', err, err.stack);
+      .catch((err) => {
+        console.log("Save failed", err, err.stack);
         throw new Error(
           `Flight ${flight.id} starting ${flight.startDate} failed ${err}`
         );

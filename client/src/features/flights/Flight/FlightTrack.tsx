@@ -1,50 +1,58 @@
-import { Map, Marker, Popup, TileLayer, Polyline } from 'react-leaflet';
+import {
+  MapContainer,
+  Marker,
+  Popup,
+  TileLayer,
+  Polyline,
+} from "react-leaflet";
 
-import * as React from 'react';
-import { Flight } from '../../../../../shared/flights/types';
-import { Location } from '../../../../../shared/locations/types';
-import { renderToStaticMarkup } from 'react-dom/server';
-import { divIcon } from 'leaflet';
+import { Segment } from "../../../shared/flights/types";
+import { renderToStaticMarkup } from "react-dom/server";
+import { divIcon, LatLngTuple } from "leaflet";
 
-import LocationIcon from '@material-ui/icons/LocationOn';
+import LocationIcon from "@mui/icons-material/LocationOn";
+import { Location } from "../../../shared/locations/types";
 
 interface IFlightLocationProps {
-  flight: Flight;
+  location: Location;
+  segments: Segment[];
 }
 
-export const FlightTrack = ({ flight }: IFlightLocationProps) => {
-
-  if (!flight.location?.latitude) {
+export const FlightTrack = ({ location, segments }: IFlightLocationProps) => {
+  if (!location?.latitude || !location?.longitude) {
     return <></>;
   }
 
   const iconMarkup = renderToStaticMarkup(<LocationIcon />);
   const customMarkerIcon = divIcon({
-    html: iconMarkup
+    html: iconMarkup,
   });
 
-  const track = flight.segments.flatMap(segment =>
-    segment.rows
-      .filter(row => row['GPS'])
-      .map(row => row['GPS'].split(' '))
-  ).filter(point => point);
+  const track = segments
+    .flatMap((segment) =>
+      segment.rows.map((row) => !!row?.["GPS"] && row["GPS"].split(" "))
+    )
+    .filter((point) => !!point);
+
+  const locationTuple = [location.latitude, location.longitude] as LatLngTuple;
 
   return (
-    <Map center={[flight.location.latitude, flight.location.longitude]} zoom={14}>
-      <TileLayer
-        url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
-      />
+    <MapContainer center={locationTuple} zoom={14}>
+      <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
-      <Marker
-        key={'location'}
-        icon={customMarkerIcon}
-        position={[flight.location.latitude, flight.location.longitude]}
-      >
-        <Popup>
-          <span>{flight.location.name}</span>
-        </Popup>
-      </Marker>
+      {location && (
+        <Marker
+          key={"location"}
+          icon={customMarkerIcon}
+          position={locationTuple}
+        >
+          <Popup>
+            <span>{location.name}</span>
+          </Popup>
+        </Marker>
+      )}
 
       <Polyline positions={track}></Polyline>
-    </Map>);
+    </MapContainer>
+  );
 };

@@ -26,17 +26,11 @@ final class UserSettings: ObservableObject  {
         targetURL = load(key: "logbookApiUrl", value: $targetURL)
     }
     
-    deinit {
-        cancellables.forEach { $0.cancel() }
-    }
-    
     private func load(key: String, value: Published<String>.Publisher) -> String {
-        cancellables.append(
-            value.debounce(for: 0.5, scheduler: DispatchQueue.main).sink { newText in
-                UserDefaults.standard.set(newText, forKey: key)
-                UserDefaults.standard.synchronize()
-            }
-        )
+        value.debounce(for: 0.5, scheduler: DispatchQueue.main).sink { newText in
+            UserDefaults.standard.set(newText, forKey: key)
+            UserDefaults.standard.synchronize()
+        }.store(in: &cancellables)
         return UserDefaults.standard.string(forKey: key) ?? ""
     }
 

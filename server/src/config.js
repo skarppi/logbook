@@ -4,13 +4,13 @@ if (!PUBLIC_URL.startsWith('http')) {
 }
 
 let url = require('url').parse(PUBLIC_URL);
-const PUBLIC_PATH = url.path === '/' ? '' : url.path;
+const BASE_URL = url.path === '/' ? '' : url.path;
 const PUBLIC_HOST = url.host;
 const PUBLIC_HOSTNAME = url.hostname;
 
 module.exports = {
   IS_PRODUCTION: process.env.NODE_ENV === "production",
-  SERVER_PORT: process.env.PORT || 3000,
+  SERVER_PORT: process.env.PORT || 3001,
   DB_HOST: process.env.DB_HOST || 'localhost',
   CSV_FOLDER: "LOGS/",
   VIDEO_FOLDER: "VIDEOS/",
@@ -18,5 +18,5 @@ module.exports = {
   PUBLIC_URL,
   PUBLIC_HOST,
   PUBLIC_HOSTNAME,
-  PUBLIC_PATH
+  BASE_URL
 };

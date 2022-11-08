@@ -1,8 +1,8 @@
-import { formatDuration } from '../../../shared/utils/date';
-import { Segment } from '../../../shared/flights/types';
-import { SegmentType } from '../../../shared/flights';
-import SegmentItemImpl from './segmentitem';
-import { differenceInSeconds } from 'date-fns';
+import { formatDuration } from "../../../client/src/shared/utils/date";
+import { Segment } from "../../../client/src/shared/flights/types";
+import { SegmentType } from "../../../client/src/shared/flights";
+import SegmentItemImpl from "./segmentitem";
+import { differenceInSeconds } from "date-fns";
 
 export default class SegmentImpl implements Segment {
   public type: SegmentType;

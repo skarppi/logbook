@@ -1,40 +1,39 @@
-import * as React from 'react';
-import TextField from '@material-ui/core/TextField';
-import FormControl from '@material-ui/core/FormControl';
-import InputLabel from '@material-ui/core/InputLabel';
-import Select from '@material-ui/core/Select';
-import Input from '@material-ui/core/Input';
-import MenuItem from '@material-ui/core/MenuItem';
-import IconButton from '@material-ui/core/IconButton';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import Accordion from '@material-ui/core/Accordion';
-import AccordionSummary from '@material-ui/core/AccordionSummary';
-import AccordionDetails from '@material-ui/core/AccordionDetails';
-import { Plane } from '../../../../../shared/planes/types';
-import { Battery, BatteryCycle } from '../../../../../shared/batteries/types';
+import * as React from "react";
+import TextField from "@mui/material/TextField";
+import FormControl from "@mui/material/FormControl";
+import InputLabel from "@mui/material/InputLabel";
+import Select, { SelectChangeEvent } from "@mui/material/Select";
+import Input from "@mui/material/Input";
+import MenuItem from "@mui/material/MenuItem";
+import IconButton from "@mui/material/IconButton";
+import InputAdornment from "@mui/material/InputAdornment";
+import Accordion from "@mui/material/Accordion";
+import AccordionSummary from "@mui/material/AccordionSummary";
+import AccordionDetails from "@mui/material/AccordionDetails";
+import { Plane } from "../../../shared/planes/types";
+import { Battery, BatteryCycle } from "../../../shared/batteries/types";
 
-import FullChargeIcon from '@material-ui/icons/BatteryChargingFull';
-import StorageChargeIcon from '@material-ui/icons/BatteryCharging50';
-import EmptyChargeIcon from '@material-ui/icons/BatteryCharging20Rounded';
-import ClearIcon from '@material-ui/icons/Clear';
-import { BatteryState } from '../../../../../shared/batteries';
-import gql from 'graphql-tag';
-import { useMutation } from 'urql';
-import { LoadingIcon } from '../../loading/Loading';
-import { Box } from '@material-ui/core';
-import makeStyles from '@material-ui/core/styles/makeStyles';
+import FullChargeIcon from "@mui/icons-material/BatteryChargingFull";
+import StorageChargeIcon from "@mui/icons-material/BatteryCharging50";
+import EmptyChargeIcon from "@mui/icons-material/BatteryCharging20Rounded";
+import ClearIcon from "@mui/icons-material/Clear";
+import { BatteryState } from "../../../shared/batteries";
+import gql from "graphql-tag";
+import { useMutation } from "urql";
+import { LoadingIcon } from "../../loading/Loading";
+import { Box } from "@mui/material";
 
 interface IFlightBatteryProps {
   plane: Plane;
   flightCycle: BatteryCycle;
-  battery: Battery;
-  // update: (object) => {};
-  // delete: (object) => {};
+  battery?: Battery;
+  // update: (object: any) => {};
+  // delete: (object: any) => {};
 }
 
 const Update = gql`
-  mutation($id:Int!, $cycle:BatteryCyclePatch!) {
-    updateBatteryCycle(input: {id: $id, patch: $cycle}) {
+  mutation ($id: Int!, $cycle: BatteryCyclePatch!) {
+    updateBatteryCycle(input: { id: $id, patch: $cycle }) {
       batteryCycle {
         id
         date
@@ -48,64 +47,50 @@ const Update = gql`
         charged
       }
     }
-  }`;
+  }
+`;
 
 const Delete = gql`
-  mutation($id:Int!) {
-    deleteBatteryCycle(input: {id: $id}) {
+  mutation ($id: Int!) {
+    deleteBatteryCycle(input: { id: $id }) {
       batteryCycle {
         id
       }
     }
-  }`;
-
-const useStyles = makeStyles(theme => ({
-  root: {
-    margin: '0!important',
-    padding: '12px 0'
-  },
-  content: {
-    margin: '0!important'
-  },
-  details: {
-    paddingTop: '0',
-    paddingBottom: '0',
   }
-}
-));
+`;
 
-
-export const FlightBattery = ({ plane, flightCycle, battery }: IFlightBatteryProps) => {
-
-  if (!plane || !battery) {
-    return <></>;
-  }
-
+export const FlightBattery = ({
+  plane,
+  flightCycle,
+  battery,
+}: IFlightBatteryProps) => {
   const [update, updateCycle] = useMutation(Update);
   const [del, deleteCycle] = useMutation(Delete);
 
   const [cycle, setCycle] = React.useState<BatteryCycle>(flightCycle);
   React.useEffect(() => setCycle(flightCycle), [flightCycle]);
 
-  const css = useStyles();
+  if (!plane || !battery) {
+    return <></>;
+  }
 
   // modify local state
-  const changeNumber = ({ target: { name, value } }) =>
-    setCycle({ ...cycle, [name]: (value.length > 0 ? Number(value) : null) });
+  const changeNumber = ({
+    target: { name, value },
+  }: React.ChangeEvent<HTMLInputElement>) =>
+    setCycle({ ...cycle, [name]: value.length > 0 ? Number(value) : null });
 
-  const changeCycle = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const { name, value } = event.target;
+  const changeCycle = ({ target: { name, value } }: SelectChangeEvent) =>
     setCycle({ ...cycle, [name]: value });
-  };
 
-  const changeCycleResistance = (index, value) => {
-
+  const changeCycleResistance = (index: number, value: string) => {
     const resistances =
       (cycle.resistance && [...cycle.resistance]) ||
-      Array(battery.cells).fill('');
+      Array(battery.cells).fill("");
 
     if (resistances.length < battery.cells) {
-      resistances.push(Array(battery.cells - resistances.length).fill(''));
+      resistances.push(Array(battery.cells - resistances.length).fill(""));
     }
 
     resistances.splice(index, 1, value);
@@ -113,19 +98,18 @@ export const FlightBattery = ({ plane, flightCycle, battery }: IFlightBatteryPro
     setCycle({ ...cycle, resistance: resistances as [number] });
   };
 
-  const storeBatteryState = state => {
+  const storeBatteryState = (state: BatteryState) => {
     updateCycle({ id: cycle.id, cycle: { state } });
   };
 
-  const storeBattery = _ => {
-    delete cycle['__typename'];
+  const storeBattery = () => {
+    delete cycle["__typename"];
     updateCycle({ id: cycle.id, cycle });
   };
 
-  const removeBattery = _ => deleteCycle({ id: cycle.id });
+  const removeBattery = () => deleteCycle({ id: cycle.id });
 
   const renderResistance = (index: number) => {
-
     return (
       <TextField
         key={`resistance-${index}`}
@@ -133,73 +117,84 @@ export const FlightBattery = ({ plane, flightCycle, battery }: IFlightBatteryPro
         placeholder={`Cell ${index + 1}`}
         style={{ width: 75 }}
         value={
-          (cycle.resistance?.length >= index &&
-            cycle.resistance[index]) ||
-          ''
+          (cycle.resistance &&
+            cycle.resistance.length >= index &&
+            cycle.resistance?.[index]) ||
+          ""
         }
-        name={'resistance'}
-        type='number'
-        onChange={e => changeCycleResistance(index, e.target.value)}
+        name={"resistance"}
+        type="number"
+        onChange={(e) => changeCycleResistance(index, e.target.value)}
         onBlur={storeBattery}
-        margin='normal'
+        margin="normal"
         InputProps={{
-          endAdornment: <InputAdornment position='end'>Ω</InputAdornment>
+          endAdornment: <InputAdornment position="end">Ω</InputAdornment>,
         }}
         inputProps={{
           step: 0.1,
-          min: '0'
+          min: "0",
         }}
       />
     );
   };
 
-  const resistances = Array(cycle.state === BatteryState.charged ? battery.cells : 0)
-    .fill('')
+  const resistances = Array(
+    cycle.state === BatteryState.charged ? battery.cells : 0
+  )
+    .fill("")
     .map((_, index) => {
       return renderResistance(index);
     });
 
   const textFieldVolts = (name: string, label: string, value?: number) => {
-    const perCell = battery.cells > 1 ? ` ${Math.round(value / battery.cells * 100) / 100}v` : '';
-    return <TextField
-      id={name}
-      label={label + perCell}
-      style={{ width: 75 }}
-      value={value || ''}
-      name={name}
-      type='number'
-      onChange={changeNumber}
-      onBlur={storeBattery}
-      InputLabelProps={{ shrink: true }}
-      InputProps={{
-        endAdornment: <InputAdornment position='end'>V</InputAdornment>
-      }}
-      inputProps={{ step: 0.01 }}
-      margin='normal'
-    />;
-  }
+    const perCell =
+      value && battery.cells > 1
+        ? ` ${Math.round((value / battery.cells) * 100) / 100}v`
+        : "";
+    return (
+      <TextField
+        id={name}
+        label={label + perCell}
+        style={{ width: 75 }}
+        value={value || ""}
+        name={name}
+        type="number"
+        onChange={changeNumber}
+        onBlur={storeBattery}
+        InputLabelProps={{ shrink: true }}
+        InputProps={{
+          endAdornment: <InputAdornment position="end">V</InputAdornment>,
+        }}
+        inputProps={{ step: 0.01 }}
+        margin="normal"
+      />
+    );
+  };
 
   return (
     <Accordion
       key={cycle.id}
       expanded={cycle.state !== BatteryState.discharged}
-      classes={{ root: css.root }}
+      sx={{
+        paddingTop: 1,
+        paddingBottom: 1,
+      }}
     >
-      <AccordionSummary classes={{ content: css.content }}>
-        <Box display='flex' flexWrap='wrap'>
+      <AccordionSummary>
+        <Box display="flex" flexWrap="wrap">
           <Box>
-            <FormControl margin='normal'>
-              <InputLabel htmlFor='select-multiple-checkbox' shrink>
+            <FormControl margin="normal" variant="standard">
+              <InputLabel htmlFor="select-multiple-checkbox" shrink>
                 Battery
-            </InputLabel>
+              </InputLabel>
               <Select
-                value={cycle.batteryName || ''}
-                name='batteryName'
+                value={cycle.batteryName || ""}
+                name="batteryName"
                 onChange={changeCycle}
                 onBlur={storeBattery}
-                input={<Input id='select-multiple-checkbox' />}
+                input={<Input id="select-multiple-checkbox" />}
               >
-                {plane.planeBatteries.nodes.map(name => (
+                {plane.planeBatteries?.nodes.map((name) => (
                   <MenuItem key={name.batteryName} value={name.batteryName}>
                     {name.batteryName}
                   </MenuItem>
@@ -209,57 +204,56 @@ export const FlightBattery = ({ plane, flightCycle, battery }: IFlightBatteryPro
           </Box>
           <Box>
             <TextField
-              id='discharged'
-              label='Used'
+              id="discharged"
+              label="Used"
               style={{ width: 80 }}
-              value={cycle.discharged || ''}
-              name='discharged'
-              type='number'
+              value={cycle.discharged || ""}
+              name="discharged"
+              type="number"
               onChange={changeNumber}
               onBlur={storeBattery}
               InputLabelProps={{ shrink: true }}
               InputProps={{
-                endAdornment: <InputAdornment position='end'>mAh</InputAdornment>
+                endAdornment: (
+                  <InputAdornment position="end">mAh</InputAdornment>
+                ),
               }}
-              margin='normal'
+              margin="normal"
             />
-            {textFieldVolts('startVoltage', 'From', cycle.startVoltage)}
-            {textFieldVolts('endVoltage', 'To', cycle.endVoltage)}
-            {textFieldVolts('restingVoltage', 'Rest', cycle.restingVoltage)}
+            {textFieldVolts("startVoltage", "From", cycle.startVoltage)}
+            {textFieldVolts("endVoltage", "To", cycle.endVoltage)}
+            {textFieldVolts("restingVoltage", "Rest", cycle.restingVoltage)}
           </Box>
 
-          <Box alignSelf='center'>
+          <Box alignSelf="center">
             <IconButton
-              onClick={_ => storeBatteryState(BatteryState.discharged)}
+              onClick={(_) => storeBatteryState(BatteryState.discharged)}
               color={
-                cycle.state === BatteryState.discharged
-                  ? 'primary'
-                  : 'default'
+                cycle.state === BatteryState.discharged ? "primary" : "default"
               }
+              size="large"
             >
               <EmptyChargeIcon />
             </IconButton>
             <IconButton
-              onClick={_ => storeBatteryState(BatteryState.storage)}
+              onClick={(_) => storeBatteryState(BatteryState.storage)}
               color={
-                cycle.state === BatteryState.storage
-                  ? 'primary'
-                  : 'default'
+                cycle.state === BatteryState.storage ? "primary" : "default"
               }
+              size="large"
             >
               <StorageChargeIcon />
             </IconButton>
             <IconButton
-              onClick={_ => storeBatteryState(BatteryState.charged)}
+              onClick={(_) => storeBatteryState(BatteryState.charged)}
               color={
-                cycle.state === BatteryState.charged
-                  ? 'primary'
-                  : 'default'
+                cycle.state === BatteryState.charged ? "primary" : "default"
               }
+              size="large"
             >
               <FullChargeIcon />
             </IconButton>
-            <IconButton onClick={removeBattery}>
+            <IconButton onClick={removeBattery} size="large">
               <ClearIcon />
             </IconButton>
             <LoadingIcon
@@ -267,30 +261,32 @@ export const FlightBattery = ({ plane, flightCycle, battery }: IFlightBatteryPro
               error={update.error || del.error}
             />
           </Box>
-        </Box >
-      </AccordionSummary >
+        </Box>
+      </AccordionSummary>
 
-      <AccordionDetails classes={{ root: css.details }}>
+      <AccordionDetails
+        sx={{
+          paddingTop: 0,
+          paddingBottom: 0,
+        }}
+      >
         <TextField
-          id='charged'
-          label='Charged'
-          placeholder='Charged'
-          style={{ width: 90 }}
-          value={cycle.charged || ''}
-          name={'charged'}
-          type='number'
+          id="charged"
+          label="Charged"
+          placeholder="Charged"
+          style={{ width: 100 }}
+          value={cycle.charged || ""}
+          name={"charged"}
+          type="number"
           onChange={changeNumber}
           onBlur={storeBattery}
-          margin='normal'
+          margin="none"
           InputProps={{
-            endAdornment: <InputAdornment position='end'>mAh</InputAdornment>
+            endAdornment: <InputAdornment position="end">mAh</InputAdornment>,
           }}
         />
 
-        <Box>
-          {resistances}
-        </Box>
-
+        <Box>{resistances}</Box>
       </AccordionDetails>
     </Accordion>
   );

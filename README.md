@@ -4,21 +4,17 @@ Logbook for radio controlled (RC) flights from OpenTX logs.
 
 ---
 
-Web application to keep track of your RC flights flown with transmitter running [OpenTX firmware](https://www.open-tx.org) such as Taranis X9D. Logbook entries are generated automatically from log files uploaded to the service and can be enriched with additional details manually such as batteries used or journal.
+Web application to keep track of your RC flights flown with transmitter running [OpenTX](https://www.open-tx.org) or [EdgeTX firmware](https://edgetx.org) such as Radiomaster TX16S. Logbook entries are generated automatically from log files uploaded to the service and can be enriched with additional details manually such as batteries used or journal.
 
 Current functionalities include
 
 - Graphs presenting flights and flight times
 - Watch DVR or other related videos for flights
-- Battery cycles and state
-- iOS app for easy syncing of new flights
-
-Ongoing and future ideas
-
 - Visualize full telemetry similar to OpenTX Companion Log Viewer
-- Battery health graphs
+- Battery cycles, state and graphs
 - Manage planes
 - Manage locations
+- iOS app for easy syncing of new flights
 
 ### OpenTX Log Files
 
@@ -26,9 +22,9 @@ In your transmitter setup "SD Logs" Special Function to enable logging of teleme
 
 I use two-stage arming. Switch SA is a safety switch and also turns on the logging, then switch SB arms the quadcopter. Flight timer starts when the quad is armed and throttle is increased. A new flight is created when logging is turned off for more than 30 seconds and restarted again.
 
-After flying is done, connect your transmitter to a computer and drag&drop latest csv files from SD card LOGS directory to Upload-tab of the service. A separate uploader iOS app can be used to automatically upload new files using wireless card reader (Kingston MobileLite Wireless or similar). Check out code at ```uploader``` folder.
+After flying is done, sync new log files automatically using [uploader iOS app](https://github.com/skarppi/logbook/tree/master/uploader) or connect transmitter to computer and drag&drop latest csv files from SD card LOGS directory to Upload-tab of the service. 
 
-For more information read [Working with Log Files](http://open-txu.org/home/special-interests/telemetry/working-with-log-files/).
+For more information read [Working with Log Files](https://open-txu.org/home/special-interests/telemetry/working-with-log-files/).
 
 ### Quick Start
 
@@ -36,25 +32,25 @@ For more information read [Working with Log Files](http://open-txu.org/home/spec
 git clone https://github.com/skarppi/logbook.git <MyProjectName>
 cd <MyProjectName>
 
-npm install
+yarn
 
-createdb logbook
-
-sudo -u postgres psql
+psql
 create database logbook;
 create user logbook with password 'logbook';
 grant all privileges on database logbook to logbook;
 
-psql -d logbook -f init.sql
+psql -d logbook -f 1-init.sql
+psql -d logbook -f 2-locations.sql
+psql -d logbook -f 3-batteries.sql
 
-npm start
+yarn dev
 ```
 
 ### Usage
 
-- `npm start` - Client and server are in watch mode with source maps, opens [http://localhost:3000](http://localhost:3000)
-- `npm run build` - `server/dist` folder will include all the needed files, both client (Bundle) and server.
-- `npm start:prod` - Just runs `node ./server/dist/server/src/server.js`
+- `yarn dev` - Client and server are in development mode [http://localhost:3000](http://localhost:3000)
+- `yarn build` - `server/dist` folder will include all the needed files, both client (Bundle) and server.
+- `yarn prod` - Just runs `node ./server/dist/server/src/server.js`
 
 Upload DVR files from FatShark or similar googles to VIDEOS/ folder. Use flight ID as filename e.g. TWR-2018-10-09-Session1.mov or just TWR-2018-10-09.mov if the video is not specific to any single flight.
 
@@ -87,7 +83,7 @@ Example Apache configuration to proxy requests into Docker container.
 
 #### Requirements
 
-- Node 6+
+- Node 16+
 - Postgres
 
 ---

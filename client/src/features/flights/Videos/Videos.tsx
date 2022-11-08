@@ -1,11 +1,11 @@
-import * as React from 'react';
+import * as React from "react";
 
-import { Player, ControlBar, BigPlayButton } from 'video-react';
-import { getApi } from '../../../utils/api-facade';
-import { useState, useEffect } from 'react';
-import { formatDate } from '../../../utils/date';
+import { Player, ControlBar, BigPlayButton } from "video-react";
+import { getApi } from "../../../utils/api-facade";
+import { useState, useEffect } from "react";
+import { formatDate } from "../../../utils/date";
 
-const css = require('./Videos.css');
+import css from "./Videos.module.css";
 
 interface IVideosProps {
   date: Date;
@@ -14,38 +14,41 @@ interface IVideosProps {
 }
 
 const Overlay = ({ url }: { url: string }) => {
-  const title = url.substr(url.lastIndexOf('/') + 1);
+  const title = url.substr(url.lastIndexOf("/") + 1);
 
   return (
     <div className={css.overlay}>
       <h1>{title}</h1>
     </div>
   );
-}
+};
 
 export const Videos = ({ date, plane, session }: IVideosProps) => {
-
-  const [videos, setVideos] = useState([]);
+  const [videos, setVideos] = useState<string[]>();
 
   const params = {
     date: formatDate(date),
     plane,
-    session
+    session,
   };
 
   useEffect(() => {
-    getApi('videos', params).then(setVideos);
+    getApi<string[]>("videos", params).then(setVideos);
   }, []);
 
   if (!videos) {
     return <></>;
   }
 
-  return (<>{videos.map(video => (
-    <Player key={video} src={video}>
-      <ControlBar autoHide={true} />
-      <BigPlayButton position='center' />
-      <Overlay url={video} />
-    </Player>
-  ))}</>);
-}
+  return (
+    <>
+      {videos.map((video) => (
+        <Player key={video} src={video}>
+          <ControlBar autoHide={true} />
+          <BigPlayButton position="center" />
+          <Overlay url={video} />
+        </Player>
+      ))}
+    </>
+  );
+};

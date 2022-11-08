@@ -1,14 +1,14 @@
-import Segment from '../model/segment';
-import SegmentItem from '../model/segmentitem';
-import SegmentParser from './segmentparser';
-import { Flight } from '../../../shared/flights/types';
-import { Plane, LogicalSwitch } from '../../../shared/planes/types';
-import { SegmentType } from '../../../shared/flights';
-import { LogicalFunction } from '../../../shared/planes';
-import { FlightImpl } from './flight';
-import { IParserOptions } from '.';
-import { SERVER_PORT, PUBLIC_PATH } from '../config';
-import { request } from 'graphql-request';
+import Segment from "../model/segment";
+import SegmentItem from "../model/segmentitem";
+import SegmentParser from "./segmentparser";
+import { Flight } from "../../../client/src/shared/flights/types";
+import { Plane, LogicalSwitch } from "../../../client/src/shared/planes/types";
+import { SegmentType } from "../../../client/src/shared/flights";
+import { LogicalFunction } from "../../../client/src/shared/planes";
+import { FlightImpl } from "./flight";
+import { IParserOptions } from ".";
+import { SERVER_PORT, BASE_URL } from "../config";
+import { request } from "graphql-request";
 
 export default class FlightParser {
   private name: string;
@@ -35,9 +35,15 @@ export default class FlightParser {
   public appendItem(item: SegmentItem) {
     const type = this.currentSegmentType(item);
 
-    const endFlightBecauseStopped = type === SegmentType.stopped && this.currentSegment.type !== SegmentType.stopped && this.plane.modeStoppedStartsNewFlight;
+    const endFlightBecauseStopped =
+      type === SegmentType.stopped &&
+      this.currentSegment.type !== SegmentType.stopped &&
+      this.plane.modeStoppedStartsNewFlight;
 
-    if (endFlightBecauseStopped || this.test(this.plane.logicalSwitchByModeRestart, item)) {
+    if (
+      endFlightBecauseStopped ||
+      this.test(this.plane.logicalSwitchByModeRestart, item)
+    ) {
       this.endFlight();
     } else if (this.currentSegment.type !== type) {
       this.endSegment();
@@ -52,13 +58,19 @@ export default class FlightParser {
     this.sessionCounter++;
 
     if (this.currentSegments.length > 0) {
-      const flight = new FlightImpl(this.name, this.plane, this.sessionCounter, this.currentSegments, this.options.locationId);
+      const flight = new FlightImpl(
+        this.name,
+        this.plane,
+        this.sessionCounter,
+        this.currentSegments,
+        this.options.locationId
+      );
 
       if (flight.flightTime === 0) {
-        console.log('Skipped empty flight', flight);
+        console.log("Skipped empty flight", flight);
       } else {
         this.flights.push(flight);
-        console.log('Ended flight', flight);
+        console.log("Ended flight", flight);
       }
     }
     this.currentSegments = [];
@@ -103,13 +115,16 @@ export default class FlightParser {
       }
     }`;
 
-    console.log(`http://localhost:${SERVER_PORT}/${PUBLIC_PATH}api/graphql`);
+    console.log(`http://localhost:${SERVER_PORT}/${BASE_URL}api/graphql`);
 
     try {
-      const data = await request(`http://localhost:${SERVER_PORT}/${PUBLIC_PATH}api/graphql`, query);
-      console.log(data)
-      console.log(data['plane']);
-      this.plane = data['plane'];
+      const data = await request(
+        `http://localhost:${SERVER_PORT}/${BASE_URL}api/graphql`,
+        query
+      );
+      console.log(data);
+      console.log(data["plane"]);
+      this.plane = data["plane"];
     } catch (err) {
       console.trace(err);
       throw err;
@@ -125,11 +140,11 @@ export default class FlightParser {
       if (this.test(this.plane.logicalSwitchByModeFlying, item)) {
         // started flying
         return SegmentType.flying;
-
       } else if (this.currentSegment.type === SegmentType.flying) {
         // check if we are still flying
-        return this.test(this.plane.logicalSwitchByModeStopped, item) ? SegmentType.stopped : SegmentType.flying;
-
+        return this.test(this.plane.logicalSwitchByModeStopped, item)
+          ? SegmentType.stopped
+          : SegmentType.flying;
       } else {
         return SegmentType.armed;
       }
@@ -140,13 +155,17 @@ export default class FlightParser {
 
   private test(test: LogicalSwitch, item: SegmentItem): boolean {
     if (test.duration > 0) {
-      const items = this.currentSegment.lastSecondsFromEnd(item.timestamp, test.duration)
+      const items = this.currentSegment.lastSecondsFromEnd(
+        item.timestamp,
+        test.duration
+      );
       if (!items) {
-        const firstItem = this.currentSegments.length === 0 && this.currentSegment.isEmpty;
+        const firstItem =
+          this.currentSegments.length === 0 && this.currentSegment.isEmpty;
         return !firstItem && this.testExpectNull(test);
       }
 
-      return !items.find(current => !this.testItem(test, current));
+      return !items.find((current) => !this.testItem(test, current));
     } else {
       return this.testItem(test, item);
     }
@@ -176,7 +195,7 @@ export default class FlightParser {
   }
 
   private get planeName() {
-    return this.name.split('-')[0];
+    return this.name.split("-")[0];
   }
 
   private endSegment() {

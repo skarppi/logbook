@@ -11,9 +11,10 @@ export interface Battery {
   capacity: number;
   lastCycle?: BatteryCycle;
   batteryCycles?: {
-    nodes: BatteryCycle[]
-  },
+    nodes: BatteryCycle[];
+  };
   notes?: string;
+  __typename?: string;
 }
 
 export interface BatteryCycle {
