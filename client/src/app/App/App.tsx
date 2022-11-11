@@ -9,7 +9,7 @@ import { FlightsUpload } from "../../features/flights/Upload/FlightsUpload";
 import { Container } from "@mui/material";
 import { StyledEngineProvider } from "@mui/material/styles";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import createBreakpoints from "@mui/system/createTheme/createBreakpoints";
+import { createBreakpoints } from "@mui/system";
 
 const breakpoints = createBreakpoints({});
 

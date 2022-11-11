@@ -3,17 +3,12 @@
   "description": "Flight logbook from OpenTX logs",
   "version": "0.1.0",
   "private": true,
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/skarppi/logbook.git"
-  },
-  "license": "MIT",
-  "author": "Juho Kolehmainen",
   "dependencies": {
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
     "@mui/icons-material": "^5.10.3",
     "@mui/material": "^5.10.12",
+    "@mui/system": "^5.10.13",
     "axios": "^0.27.2",
     "chart.js": "^3.9.1",
     "chartjs-adapter-date-fns": "^2.0.0",
@@ -49,6 +44,5 @@
     "@vitejs/plugin-react": "^2.2.0",
     "typescript": "*",
     "vite": "^3.2.0"
-  },
-  "packageManager": "yarn@3.1.1"
+  }
 }
