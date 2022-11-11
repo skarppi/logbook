@@ -68,8 +68,6 @@ Example Apache configuration to proxy requests into Docker container.
         Redirect 301 /api/videos https://your.synology.ip/videoserver/search.php
 
         # Service running at the root
-        ProxyPass /sockjs-node ws://localhost:3000/sockjs-node
-        ProxyPassReverse /sockjs-node ws://localhost:3000/sockjs-node
         ProxyPass / http://localhost:3000/
         ProxyPassReverse / http://localhost:3000/
 

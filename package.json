@@ -10,8 +10,8 @@
   "scripts": {
     "clean": "rimraf server/dist",
     "build": "yarn run clean && yarn workspaces foreach --parallel --verbose run build",
-    "prod": "NODE_ENV=production node PORT=3000 ./server/dist/server/src/server.js",
-    "dev": "yarn run clean && yarn workspaces foreach --parallel --interlaced --verbose run dev"
+    "production": "NODE_ENV=production node PORT=3000 ./server/dist/server/src/server.js",
+    "dev": "yarn workspaces foreach --parallel --interlaced --verbose --jobs unlimited run dev"
   },
   "keywords": [
     "typescript",

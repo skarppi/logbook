@@ -1,30 +1,34 @@
-FROM node:11-alpine
-
-LABEL maintainer="juho.kolehmainen@iki.fi"
+FROM node:19-alpine as builder
 
 WORKDIR /app
 
-ADD package*.json /app/
-RUN npm install
+COPY package.json .yarnrc.yml yarn.lock ./
+COPY .yarn ./.yarn
+COPY server/package.json ./server/
+COPY client/package.json ./client/
 
-ADD server/package*.json /app/server/
-ADD client/package*.json /app/client/
-RUN npm run install
+RUN yarn --immutable
 
-ADD /shared /app/shared
-ADD /server/src /app/server/src
-ADD /client/src /app/client/src
-ADD /client/webpack.config.js /app/client
+COPY /server ./server
+COPY /client ./client
 
 ARG PUBLIC_URL
 ENV PUBLIC_URL=$PUBLIC_URL
 
-# start or start:prod
-ARG SCRIPT=start
-ENV SCRIPT=$SCRIPT
+# dev or prod
+ARG NODE_ENV=production
+ENV NODE_ENV=$NODE_ENV
 
-RUN if [ "$SCRIPT" = 'start:prod' ] ; then PUBLIC_URL=$PUBLIC_URL npm run build; else echo '---DEV MODE---'; fi
+RUN if [ "$NODE_ENV" = 'production' ] ; then PUBLIC_URL=$PUBLIC_URL yarn build; else echo '---DEV MODE---'; fi
+
+RUN yarn rebuild
+
+FROM node:19-alpine as runner
+
+WORKDIR /app
+
+COPY --from=builder /app/ ./
 
 EXPOSE 3000
 
-CMD ["/bin/sh", "-c", "npm ${SCRIPT}"]
+CMD ["/bin/sh", "-c", "yarn ${NODE_ENV}"]

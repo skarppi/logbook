@@ -19,8 +19,6 @@ docker run --name=logbook -p 3000:3000  -p 3001:3001 \
     $OPTS \
     -v ${PWD}/LOGS:/app/server/LOGS \
     -v ${PWD}/VIDEOS:/app/server/VIDEOS \
-    -v ${PWD}/shared:/app/shared \
     -v ${PWD}/server/src:/app/server/src \
     -v ${PWD}/client/src:/app/client/src \
-    -v ${PWD}/client/webpack.config.js:/app/client/webpack.config.js \
     -d skarppi/logbook
