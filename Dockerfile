@@ -31,4 +31,4 @@ COPY --from=builder /app/ ./
 
 EXPOSE 3000
 
-CMD ["/bin/sh", "-c", "yarn ${NODE_ENV}"]
+CMD ["yarn", "dev"]
