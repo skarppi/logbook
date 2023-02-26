@@ -234,7 +234,7 @@ export const FlightsUpload = () => {
           </NavLink>
         </TableCell>
         <TableCell>{flights.length - index}</TableCell>
-        <TableCell>{flight.plane.id}</TableCell>
+        <TableCell>{flight.planeId}</TableCell>
         <TableCell>{formatDuration(flight.flightTime)}</TableCell>
         <TableCell>{flight.notes && flight.notes.journal}</TableCell>
       </TableRow>,

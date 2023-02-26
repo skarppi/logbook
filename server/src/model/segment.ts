@@ -1,17 +1,17 @@
 import { formatDuration } from "../../../client/src/shared/utils/date";
 import { Segment } from "../../../client/src/shared/flights/types";
 import { SegmentType } from "../../../client/src/shared/flights";
-import SegmentItemImpl from "./segmentitem";
+import { SegmentItem } from "../../../client/src/shared/flights/types";
 import { differenceInSeconds } from "date-fns";
 
-export default class SegmentImpl implements Segment {
+export class SegmentImpl implements Segment {
   public type: SegmentType;
-  public rows: SegmentItemImpl[];
+  public rows: SegmentItem[];
   public startDate: Date;
   public endDate: Date;
   public duration: number;
 
-  constructor(type: SegmentType, rows: SegmentItemImpl[]) {
+  constructor(type: SegmentType, rows: SegmentItem[]) {
     this.type = type;
     this.rows = rows;
 
@@ -27,11 +27,11 @@ export default class SegmentImpl implements Segment {
     segment duration ${formatDuration(this.duration)}`;
   }
 
-  public get first(): SegmentItemImpl {
+  public get first(): SegmentItem {
     return this.rows[0];
   }
 
-  public get last(): SegmentItemImpl {
+  public get last(): SegmentItem {
     return this.rows[this.rows.length - 1];
   }
 }

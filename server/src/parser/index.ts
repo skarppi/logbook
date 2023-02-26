@@ -2,9 +2,9 @@ import csv from "./csv";
 import FlightRepository from "../model/flight";
 import BatteryCycleRepository from "../model/batterycycle";
 import * as config from "../config";
-import SegmentItemImpl from "../model/segmentitem";
+import SegmentItemParser from "../parser/segmentitem";
 import FlightParser from "./flightparser";
-import { Flight } from "../../../client/src/shared/flights/types";
+import { Flight, SegmentItem } from "../../../client/src/shared/flights/types";
 
 export interface IParserOptions {
   timezoneOffset: number;
@@ -15,7 +15,7 @@ export function parseFile(
   filename: string,
   options: IParserOptions
 ): Promise<Flight[]> {
-  return csv(`${config.CSV_FOLDER}${filename}`).then((items) => {
+  return csv<SegmentItem>(`${config.CSV_FOLDER}${filename}`).then((items) => {
     const name = filename.substring(0, filename.lastIndexOf("."));
     return parseData(name, items, options);
   });
@@ -23,7 +23,7 @@ export function parseFile(
 
 export function parseData(
   id: string,
-  items: object[],
+  items: SegmentItem[],
   options: IParserOptions
 ): Promise<Flight[]> {
   const parser = new FlightParser(id, options);
@@ -33,10 +33,9 @@ export function parseData(
   });
 }
 
-function getFlights(parser: FlightParser, items: object[]): Flight[] {
+function getFlights(parser: FlightParser, items: SegmentItem[]): Flight[] {
   const parsed = items.reduce<FlightParser>((state: FlightParser, i, index) => {
-    const item = new SegmentItemImpl(parser.getOptions().timezoneOffset, i);
-    state.appendItem(item);
+    state.appendItem(i);
 
     if (index === items.length - 1) {
       state.endFlight();

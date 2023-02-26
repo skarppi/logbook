@@ -1,6 +1,6 @@
-import Segment from "../model/segment";
-import SegmentItem from "../model/segmentitem";
+import { SegmentImpl } from "../model/segment";
 import { SegmentType } from "../../../client/src/shared/flights";
+import { SegmentItem } from "../../../client/src/shared/flights/types";
 import { differenceInSeconds } from "date-fns";
 
 export default class SegmentParser {
@@ -27,12 +27,12 @@ export default class SegmentParser {
   }
 
   public endSegment() {
-    let segment: Segment;
+    let segment: SegmentImpl;
     if (this.type && this.items.length > 0) {
       console.log(
         `Ending segment ${this.type} with ${this.items.length} items`
       );
-      segment = new Segment(this.type, this.items);
+      segment = new SegmentImpl(this.type, this.items);
       console.log(`Ended segment ${segment}`);
     }
     this.startSegment(undefined);

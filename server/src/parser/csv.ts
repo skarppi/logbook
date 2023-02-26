@@ -1,7 +1,7 @@
 import * as parse from "csv-parse";
 import { createReadStream } from "fs";
 
-export default function read(filename: string): Promise<object[]> {
+export default function read<T>(filename: string): Promise<T[]> {
   const results: object[] = [];
   return new Promise((resolve, reject) => {
     createReadStream(filename)
@@ -18,7 +18,7 @@ export default function read(filename: string): Promise<object[]> {
         console.log(msg);
       })
       .on("end", () => {
-        resolve(results);
+        resolve(results as T[]);
       });
   });
 }

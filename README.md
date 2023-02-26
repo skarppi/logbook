@@ -36,8 +36,10 @@ yarn
 
 psql
 create database logbook;
-create user logbook with password 'logbook';
+createuser logbook with password 'logbook';
 grant all privileges on database logbook to logbook;
+
+CREATE EXTENSION IF NOT EXISTS earthdistance SCHEMA logbook;
 
 psql -d logbook -f 1-init.sql
 psql -d logbook -f 2-locations.sql

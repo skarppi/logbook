@@ -1,27 +1,30 @@
-import Segment from "../model/segment";
-import SegmentItem from "../model/segmentitem";
+import { SegmentImpl } from "../model/segment";
 import SegmentParser from "./segmentparser";
 import { Flight } from "../../../client/src/shared/flights/types";
 import { Plane, LogicalSwitch } from "../../../client/src/shared/planes/types";
 import { SegmentType } from "../../../client/src/shared/flights";
+import { SegmentItem } from "../../../client/src/shared/flights/types";
 import { LogicalFunction } from "../../../client/src/shared/planes";
 import { FlightImpl } from "./flight";
 import { IParserOptions } from ".";
 import { SERVER_PORT, BASE_URL } from "../config";
 import { request } from "graphql-request";
+import SegmentItemParser from "./segmentitem";
 
 export default class FlightParser {
   private name: string;
   private currentSegment: SegmentParser = new SegmentParser();
-  private currentSegments: Segment[] = [];
+  private currentSegments: SegmentImpl[] = [];
   private sessionCounter: number = 0;
   private options: IParserOptions;
   private flights: Flight[] = [];
   private plane: Plane;
+  private itemParser: SegmentItemParser;
 
   constructor(name: string, options: IParserOptions) {
     this.name = name;
     this.options = options;
+    this.itemParser = new SegmentItemParser(options.timezoneOffset);
   }
 
   public getFlights(): Flight[] {
@@ -33,6 +36,9 @@ export default class FlightParser {
   }
 
   public appendItem(item: SegmentItem) {
+    item.timestamp = this.itemParser.timestamp(item)
+    item.alt = this.itemParser.alt(item)
+
     const type = this.currentSegmentType(item);
 
     const endFlightBecauseStopped =

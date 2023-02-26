@@ -1,4 +1,4 @@
-import Segment from "../model/segment";
+import { SegmentImpl } from "../model/segment";
 import {
   Flight,
   FlightNotes,
@@ -25,14 +25,14 @@ export class FlightImpl implements Flight {
   public notes: FlightNotes = {};
   public stats: FlightStats = {};
   public locationId?: number;
-  public segments: Segment[];
+  public segments: SegmentImpl[];
   public batteries: BatteryCycle[];
 
   constructor(
     name: string,
     plane: Plane,
     session: number,
-    segments: Segment[],
+    segments: SegmentImpl[],
     locationId?: number
   ) {
     if (!name.includes("Session")) {
@@ -67,7 +67,7 @@ export class FlightImpl implements Flight {
   }
 
   private findSlopes = (
-    segment: Segment,
+    segment: SegmentImpl,
     zeroHeight: number
   ): FlightSlope[] => {
     if (segment.type !== SegmentType.flying) {

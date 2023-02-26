@@ -62,10 +62,15 @@ export interface Segment {
 }
 
 export interface SegmentItem {
-  [key: string]: any;
+  // known values
   Date: string;
   Thr: string;
   Time: string; // "12:00:26.600"
-  num(col: string): number;
-  str(col: string): string;
+
+  // computed values
+  timestamp: Date;
+  alt?: number;
+
+  // the rest
+  [key: string]: any;
 }
