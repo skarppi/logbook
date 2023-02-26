@@ -35,10 +35,12 @@ export class FlightImpl implements Flight {
     segments: SegmentImpl[],
     locationId?: number
   ) {
-    if (!name.includes("Session")) {
-      this.id = `${name}-Session${session}`;
-    } else {
+    // EdgeTX uses unique file names: PLANE-YYYY-MM-DD-hhmmss
+    if (name.match(/\d{4}$/) || name.includes("Session")) {
       this.id = name;
+    } else {
+      // append unique session index for OpenTX
+      this.id = `${name}-Session${session}`;
     }
 
     this.planeId = plane.id;
