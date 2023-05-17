@@ -12,20 +12,22 @@ import Foundation
 
 class SdCardService {
     
-    public func query(after: Date) -> Promise<[URL]> {
+    public func query(after: Date) async -> [URL] {
         
         guard let url = Bookmark.read() else {
-            return Promise(error: SambaError(text: "No bookmark"))
+            return []
         }
-        
-        return Promise { seal in
+
+        return await withCheckedContinuation { continuation in
             var error: NSError? = nil
             NSFileCoordinator().coordinate(readingItemAt: url, error: &error) { (folderUrl) in
-                seal.fulfill(listDirectory(url: folderUrl, after: after))
+                let urls = listDirectory(url: folderUrl, after: after)
+                continuation.resume(returning: urls)
             }
             if let error = error {
                 print("\(error)")
             }
+
         }
     }
     

@@ -9,37 +9,34 @@
 import Foundation
 import CoreLocation
 
-class LocationService: NSObject, CLLocationManagerDelegate {
-    
+class LocationManager: NSObject, ObservableObject {
+
+    static let shared = LocationManager()
+
     let manager = CLLocationManager()
-    
-    var fulfill: ((CLLocationCoordinate2D) -> Void)?
-    var reject: ((String) -> Void)?
-    
-    var latest: CLLocationCoordinate2D?
+
+    @Published var latest: CLLocationCoordinate2D?
     
     override init() {
         super.init()
+
+        manager.delegate = self;
+        manager.desiredAccuracy = kCLLocationAccuracyHundredMeters
     }
 
-    func requestLocation(fulfill: @escaping (CLLocationCoordinate2D) -> Void, reject: @escaping (String) -> Void) {
-        self.fulfill = fulfill
-        self.reject = reject
-
+    func requestLocation() {
         if CLLocationManager.locationServicesEnabled() {
-            manager.delegate = self;
-            manager.desiredAccuracy = kCLLocationAccuracyHundredMeters
-            
-            if CLLocationManager.authorizationStatus() == .notDetermined {
+            if manager.authorizationStatus == .notDetermined {
                 manager.requestWhenInUseAuthorization()
             } else {
                 manager.requestLocation()
             }
             print("Location requested")
-        } else {
-            reject("Location not enabled")
         }
     }
+}
+
+extension LocationManager: CLLocationManagerDelegate {
     
     func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
         switch status {
@@ -47,7 +44,7 @@ class LocationService: NSObject, CLLocationManagerDelegate {
             print("Restricted Access to location")
         case CLAuthorizationStatus.denied:
             print("User denied access to location")
-            reject?("Location not allowed")
+            latest = nil
         case CLAuthorizationStatus.notDetermined:
             print("Status not determined")
         default:
@@ -63,15 +60,14 @@ class LocationService: NSObject, CLLocationManagerDelegate {
             print("Got location with accuracy \(location.horizontalAccuracy) is \(howRecent) old");
             
             latest = location.coordinate
-            fulfill?(location.coordinate)
-            
+
             manager.stopUpdatingLocation()
         }
     }
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
         print("Failed to get location", error)
-        reject?("Failed to get location")
+        latest = nil
     }
 }
 

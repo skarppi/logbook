@@ -8,8 +8,7 @@
 
 import SwiftUI
 import MobileCoreServices
-import PromiseKit
-import SMBClient
+import Combine
 import CoreLocation
 
 class Locations: ObservableObject {
@@ -25,14 +24,12 @@ class Locations: ObservableObject {
 
 struct ContentView: View {
     @EnvironmentObject var userSettings: UserSettings
-        
-    private var samba = SambaClient()
-    
+
     private var logbook = LogbookService()
     
     private var sdCard = SdCardService()
     
-    private var location = LocationService()
+    @ObservedObject var locationManager = LocationManager.shared
     
     @State var files: [URL] = []
     
@@ -47,9 +44,9 @@ struct ContentView: View {
     var body: some View {
         VStack {
             VStack(alignment: .leading, spacing: 1.0) {
-                Text("Source folder or host")
+                Text("Source folder")
                 HStack {
-                    TextField("Source or smb://hostname", text: $userSettings.sourceFolder)
+                    TextField("Source", text: $userSettings.sourceFolder)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                         .textContentType(.URL)
                         .keyboardType(.URL)
@@ -92,7 +89,7 @@ struct ContentView: View {
                 Text("Refresh")
                     .padding()
             }
-            Button(action:sync) {
+            Button(action: sync) {
                 Text("Sync")
                     .padding()
             }.disabled(files.isEmpty)
@@ -111,8 +108,14 @@ struct ContentView: View {
         .padding()
         .background(
             Color(.systemBackground).edgesIgnoringSafeArea(.all)
-        ).onAppear(perform: {
-            self.location.requestLocation(fulfill: self.acquiredLocation, reject: self.log)
+        )
+        .onReceive(locationManager.$latest) { coordinate in
+            if let coord = coordinate {
+                self.acquiredLocation(coord: coord)
+            }
+        }
+        .onAppear(perform: {
+            self.locationManager.requestLocation()
         })
     }
     
@@ -131,23 +134,26 @@ struct ContentView: View {
     
     func acquiredLocation(coord: CLLocationCoordinate2D) {
         log("Got location \(coord.latitude), \(coord.longitude)")
-        
-        logbook.fetchLocations(logbookApi: userSettings.targetURL, location: coord).done { locations in
-            self.locations.list = locations
-            
-            if let loc = locations.first {
-                self.log("Closest location is \(loc.name) at \(loc.distance)km")
-                self.locations.selected = loc.id
-            } else {
-                self.log("Location not available")
-                self.locations.selected = nil
-            }
-            
-        }.catch { error in
-            self.log(error.localizedDescription)
-        }.finally {
-            if let lastSync = self.lastSync {
-                self.fetchNewFiles(after: lastSync)
+
+        Task {
+            do {
+                let locations = try await logbook.fetchLocations(logbookApi: userSettings.targetURL, location: coord)
+
+                self.locations.list = locations
+
+                if let loc = locations.first {
+                    self.log("Closest location is \(loc.name) at \(loc.distance)km")
+                    self.locations.selected = loc.id
+                } else {
+                    self.log("Location not available")
+                    self.locations.selected = nil
+                }
+
+                if let lastSync = self.lastSync {
+                    await self.fetchNewFiles(after: lastSync)
+                }
+            } catch {
+                self.log(error.localizedDescription)
             }
         }
     }
@@ -155,15 +161,7 @@ struct ContentView: View {
     func refresh() {
         files = []
         
-        if let smbPath = userSettings.getSmbPath() {
-            log("Connecting to \(smbPath)")
-            if samba.connect(hostname: smbPath) {
-                log("Connected to \(smbPath) (\(samba.server.ipAddressString))")
-            } else {
-                log("Unable to connect to \(smbPath)")
-            }
-            return
-        } else if let bookMark = Bookmark.read() {
+        if let bookMark = Bookmark.read() {
             if bookMark.lastPathComponent != userSettings.sourceFolder {
                 documentPickerViewModel.isPresented = true
             }
@@ -171,65 +169,50 @@ struct ContentView: View {
             documentPickerViewModel.isPresented = true
         }
 
-        logbook.fetchLatestFlight(logbookApi: userSettings.targetURL).done { date in
-            if let date = date {
-                self.log("Last flight", date)
-            } else {
-                self.log("No previous flights")
-            }
+        Task {
+            do {
+                let date = try await logbook.fetchLatestFlight(logbookApi: userSettings.targetURL)
+                if let date = date {
+                    self.log("Last flight", date)
+                } else {
+                    self.log("No previous flights")
+                }
 
-            self.lastSync = date ?? Date(timeIntervalSince1970: 0)
-        }.catch { error in
-            self.log(error.localizedDescription)
-        }.finally {
-            if let lastSync = self.lastSync {
-                self.fetchNewFiles(after: lastSync)
+                self.lastSync = date ?? Date(timeIntervalSince1970: 0)
+
+                if let lastSync = self.lastSync {
+                    await self.fetchNewFiles(after: lastSync)
+                }
+            } catch {
+                self.log(error.localizedDescription)
             }
         }
     }
     
-    private func fetchNewFiles(after: Date) {
+    private func fetchNewFiles(after: Date) async {
         log("Fetching new log files...")
-        
-        if userSettings.getSmbPath() != nil {
-            samba.query(after: after).done { files in
-                guard files.count > 0 else {
-                    self.log("No new flights")
-                    return
-                }
-                
-                let promises = files.compactMap { file in self.download(file: file) }
-                
-                firstly {
-                    when(fulfilled: promises)
-                }.done { files in
-                    self.files = files
-                }
-            }.catch { error in
-                self.log(error.localizedDescription)
+
+        do {
+            let files = await sdCard.query(after: after)
+            guard files.count > 0 else {
+                self.log("No new flights")
+                return
             }
-        } else {
-            sdCard.query(after: after).done { files in
-                guard files.count > 0 else {
-                    self.log("No new flights")
-                    return
+            files.forEach { url in
+                let keys: [URLResourceKey] = [.fileSizeKey, .contentModificationDateKey]
+                guard let resourceValues = try? url.resourceValues(forKeys: Set(keys)),
+                    let size = resourceValues.fileSize,
+                    let date = resourceValues.contentModificationDate
+                    else {
+                        print("No properties for file \(url.path)")
+                        return
                 }
-                files.forEach { url in
-                    let keys: [URLResourceKey] = [.fileSizeKey, .contentModificationDateKey]
-                    guard let resourceValues = try? url.resourceValues(forKeys: Set(keys)),
-                        let size = resourceValues.fileSize,
-                        let date = resourceValues.contentModificationDate
-                        else {
-                            print("No properties for file \(url.path)")
-                            return
-                    }
-                    
-                    self.log(url.lastPathComponent + " [\(size/1000)kb]", date)
-                }
-                self.files = files
-            }.catch { error in
-                self.log(error.localizedDescription)
+
+                self.log(url.lastPathComponent + " [\(size/1000)kb]", date)
             }
+            self.files = files
+        } catch {
+            self.log(error.localizedDescription)
         }
     }
     
@@ -241,22 +224,17 @@ struct ContentView: View {
         print("\(file) \(current)")
         output = output.replacingOccurrences(of: "(\(file) \\[)([0-9]+)(\\s)", with: "$1\(Int(current/1000))$3", options: [.regularExpression])
     }
-    
-    private func download(file: SMBFile) -> Promise<URL> {
-        newFile(file: file.name, size: file.fileSize)
-        
-        return samba.download(file: file, progress: { (bytes) in
-            self.fileProgress(file: file.name, current: bytes)
-        })
-    }
-    
+
     func sync() {
         log("Uploading flights...")
-        logbook.upload(logbookApi: userSettings.targetURL, files: files, locationId: locations.selected).done { flights in
-            self.log(flights.joined(separator: "\n"))
-            self.log("DONE")
-        }.catch { err in
-            self.log(err.localizedDescription)
+        Task {
+            do {
+                let flights = try await logbook.upload(logbookApi: userSettings.targetURL, files: files, locationId: locations.selected)
+                self.log(flights.joined(separator: "\n"))
+                self.log("DONE")
+            } catch {
+                self.log(error.localizedDescription)
+            }
         }
     }
 }

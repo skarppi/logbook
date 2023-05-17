@@ -7,8 +7,6 @@
 //
 
 import Foundation
-import PromiseKit
-import PMKFoundation
 import SwiftyJSON
 import CoreLocation
 
@@ -37,7 +35,7 @@ class LogbookService {
     }
 
     
-    func fetchLatestFlight(logbookApi: String) -> Promise<Date?> {
+    func fetchLatestFlight(logbookApi: String) async throws -> Date? {
         let query = """
             query {
                 flights(first:1, orderBy:START_DATE_DESC) {
@@ -48,21 +46,22 @@ class LogbookService {
             }
 """
         
-        return fetch(logbookApi: logbookApi, query: query, vars: [:]).map { res -> Date? in
-            if let data:JSON = res?["data"],
-                let lastFlight = data["flights"]["nodes"].array?.first?["endDate"].string{
-                
-                // remove milliseconds and round up so that we don't end up reuploading the last flight
-                let withoutMilliseconds = lastFlight.replacingOccurrences(of: "\\.\\d+", with: "", options: .regularExpression)
-                return self.dateFormatter.date(from: withoutMilliseconds)?.addingTimeInterval(TimeInterval(1))
-            } else if let error = res?["errors"].arrayValue.first?["message"].string {
-                throw LogbookError(text: error)
-            }
+        let res = try await fetch(logbookApi: logbookApi, query: query, vars: [:])
+
+        if let data:JSON = res?["data"],
+            let lastFlight = data["flights"]["nodes"].array?.first?["endDate"].string{
+
+            // remove milliseconds and round up so that we don't end up reuploading the last flight
+            let withoutMilliseconds = lastFlight.replacingOccurrences(of: "\\.\\d+", with: "", options: .regularExpression)
+            return self.dateFormatter.date(from: withoutMilliseconds)?.addingTimeInterval(TimeInterval(1))
+        } else if let error = res?["errors"].arrayValue.first?["message"].string {
+            throw LogbookError(text: error)
+        } else {
             return nil
         }
     }
     
-    func fetchLocations(logbookApi: String, location: CLLocationCoordinate2D) -> Promise<[LogbookLocation]> {
+    func fetchLocations(logbookApi: String, location: CLLocationCoordinate2D) async throws -> [LogbookLocation] {
         let query = """
             query($lat:Float, $lon:Float) {
                 locationsByCoordinate(lat: $lat, lon: $lon) {
@@ -75,25 +74,26 @@ class LogbookService {
             }
 """
         
-        return fetch(logbookApi: logbookApi, query: query, vars: ["lat": String(location.latitude), "lon": String(location.longitude) ]).map { res -> [LogbookLocation] in
-            if let locations = res?["data"]["locationsByCoordinate"]["nodes"].array {
-                return locations.compactMap { (elem) in
-                    if let id = elem["id"].int,
-                        let name = elem["name"].string,
-                        let distance = elem["distance"].float {
-                        return LogbookLocation(id: id, name: name, distance: round(distance/100) / 10)
-                    } else {
-                        return nil
-                    }
+        let res = try await fetch(logbookApi: logbookApi, query: query, vars: ["lat": String(location.latitude), "lon": String(location.longitude) ])
+
+        if let locations = res?["data"]["locationsByCoordinate"]["nodes"].array {
+            return locations.compactMap { (elem) in
+                if let id = elem["id"].int,
+                    let name = elem["name"].string,
+                    let distance = elem["distance"].float {
+                    return LogbookLocation(id: id, name: name, distance: round(distance/100) / 10)
+                } else {
+                    return nil
                 }
-            } else if let error = res?["errors"].arrayValue.first?["message"].string {
-                throw LogbookError(text: error)
             }
+        } else if let error = res?["errors"].arrayValue.first?["message"].string {
+            throw LogbookError(text: error)
+        } else {
             return []
         }
     }
     
-    private func fetch(logbookApi: String, query: String, vars: [String: String]) -> Promise<JSON?> {
+    private func fetch(logbookApi: String, query: String, vars: [String: String]) async throws -> JSON? {
         let varStr: [String] = vars.map { (key: String, value: String) -> String in
             "\"\(key)\": \(value)"
         }
@@ -114,13 +114,14 @@ class LogbookService {
         rq.httpMethod = "POST"
         rq.httpBody = body.data(using: String.Encoding.utf8)
         rq.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        
-        return URLSession.shared.dataTask(.promise, with: rq).map { data, _ -> JSON in
-            return try JSON(data: data)
-        }
+
+        let (data, v)  = try await URLSession.shared.data(for: rq)
+        print(v)
+
+        return try JSON(data: data)
     }
     
-    func upload(logbookApi: String, files: [URL], locationId: Int?) -> Promise<[String]> {
+    func upload(logbookApi: String, files: [URL], locationId: Int?) async throws -> [String] {
         let url = URL(string: apiUrl(logbookApi: logbookApi) + "flights")!
         var rq = URLRequest(url: url)
         rq.httpMethod = "POST"
@@ -147,12 +148,10 @@ class LogbookService {
         rq.httpBody = body as Data
         
         print("Fetching data from \(url)")
-        return URLSession.shared.dataTask(.promise, with: rq).map { (arg) in
-            
-            let (data, _) = arg
-            return try JSON(data: data).arrayValue.map { item in
-                item["id"].stringValue
-            }
+        let (data, _) = try await URLSession.shared.upload(for: rq, from: body as Data)
+
+        return try JSON(data: data).arrayValue.map { item in
+            item["id"].stringValue
         }
     }
 }

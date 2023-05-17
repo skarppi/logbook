@@ -16,9 +16,7 @@ final class UserSettings: ObservableObject  {
     
     private let targetURLKey = "logbookApiUrl"
     @Published var targetURL = ""
-    
-    private let SMB_PREFIX = "smb://"
-    
+
     private var cancellables: [AnyCancellable] = []
     
     init() {
@@ -32,12 +30,5 @@ final class UserSettings: ObservableObject  {
             UserDefaults.standard.synchronize()
         }.store(in: &cancellables)
         return UserDefaults.standard.string(forKey: key) ?? ""
-    }
-
-    func getSmbPath() -> String? {
-        guard sourceFolder.starts(with: SMB_PREFIX) else {
-            return nil
-        }
-        return String(sourceFolder.dropFirst(SMB_PREFIX.count))
     }
 }

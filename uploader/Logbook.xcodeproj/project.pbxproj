@@ -17,15 +17,10 @@
 		C042D2692521CF3900BE52F8 /* Bookmark.swift in Sources */ = {isa = PBXBuildFile; fileRef = C042D2672521CF3900BE52F8 /* Bookmark.swift */; };
 		C042D26A2521CF3900BE52F8 /* UserSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = C042D2682521CF3900BE52F8 /* UserSettings.swift */; };
 		C042D2732521CF4900BE52F8 /* LogbookService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C042D26F2521CF4900BE52F8 /* LogbookService.swift */; };
-		C042D2752521CF4900BE52F8 /* LocationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C042D2712521CF4900BE52F8 /* LocationService.swift */; };
-		C042D27F2521D03A00BE52F8 /* PromiseKit in Frameworks */ = {isa = PBXBuildFile; productRef = C042D27E2521D03A00BE52F8 /* PromiseKit */; };
+		C042D2752521CF4900BE52F8 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C042D2712521CF4900BE52F8 /* LocationManager.swift */; };
 		C042D2852521D05900BE52F8 /* SwiftyJSON in Frameworks */ = {isa = PBXBuildFile; productRef = C042D2842521D05900BE52F8 /* SwiftyJSON */; };
-		C042D28B2521D07200BE52F8 /* PMKFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = C042D28A2521D07200BE52F8 /* PMKFoundation */; };
 		C042D2BA2522746000BE52F8 /* SdCardService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C042D2B82522746000BE52F8 /* SdCardService.swift */; };
-		C042D2BB2522746000BE52F8 /* SambaClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = C042D2B92522746000BE52F8 /* SambaClient.swift */; };
-		C042D2C1252276B300BE52F8 /* SMBClient.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C042D2C0252276B300BE52F8 /* SMBClient.framework */; };
 		C042D2CF2522791100BE52F8 /* DocumentPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = C042D2CE2522791100BE52F8 /* DocumentPicker.swift */; };
-		C0D654DF2522840A00EDFDD6 /* Cartfile in Resources */ = {isa = PBXBuildFile; fileRef = C0D654DE2522840A00EDFDD6 /* Cartfile */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -45,6 +40,19 @@
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		8936496F2A13BD1300BCCFB1 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		C01D76B62521C48700009725 /* Logbook.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Logbook.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C01D76B92521C48700009725 /* LogbookApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogbookApp.swift; sourceTree = "<group>"; };
@@ -62,12 +70,9 @@
 		C042D2672521CF3900BE52F8 /* Bookmark.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Bookmark.swift; sourceTree = "<group>"; };
 		C042D2682521CF3900BE52F8 /* UserSettings.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserSettings.swift; sourceTree = "<group>"; };
 		C042D26F2521CF4900BE52F8 /* LogbookService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LogbookService.swift; sourceTree = "<group>"; };
-		C042D2712521CF4900BE52F8 /* LocationService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocationService.swift; sourceTree = "<group>"; };
+		C042D2712521CF4900BE52F8 /* LocationManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
 		C042D2B82522746000BE52F8 /* SdCardService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SdCardService.swift; sourceTree = "<group>"; };
-		C042D2B92522746000BE52F8 /* SambaClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SambaClient.swift; sourceTree = "<group>"; };
-		C042D2C0252276B300BE52F8 /* SMBClient.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SMBClient.framework; path = Carthage/Build/iOS/SMBClient.framework; sourceTree = "<group>"; };
 		C042D2CE2522791100BE52F8 /* DocumentPicker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DocumentPicker.swift; sourceTree = "<group>"; };
-		C0D654DE2522840A00EDFDD6 /* Cartfile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Cartfile; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -75,10 +80,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C042D2C1252276B300BE52F8 /* SMBClient.framework in Frameworks */,
 				C042D2852521D05900BE52F8 /* SwiftyJSON in Frameworks */,
-				C042D27F2521D03A00BE52F8 /* PromiseKit in Frameworks */,
-				C042D28B2521D07200BE52F8 /* PMKFoundation in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -102,7 +104,6 @@
 		C01D76AD2521C48700009725 = {
 			isa = PBXGroup;
 			children = (
-				C0D654DE2522840A00EDFDD6 /* Cartfile */,
 				C042D2502521CE2100BE52F8 /* README.md */,
 				C01D76B82521C48700009725 /* Logbook */,
 				C01D76CA2521C48900009725 /* LogbookTests */,
@@ -175,10 +176,9 @@
 		C042D26E2521CF4900BE52F8 /* Services */ = {
 			isa = PBXGroup;
 			children = (
-				C042D2B92522746000BE52F8 /* SambaClient.swift */,
 				C042D2B82522746000BE52F8 /* SdCardService.swift */,
 				C042D26F2521CF4900BE52F8 /* LogbookService.swift */,
-				C042D2712521CF4900BE52F8 /* LocationService.swift */,
+				C042D2712521CF4900BE52F8 /* LocationManager.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -186,7 +186,6 @@
 		C042D2BF252276B300BE52F8 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				C042D2C0252276B300BE52F8 /* SMBClient.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -201,7 +200,7 @@
 				C01D76B22521C48700009725 /* Sources */,
 				C01D76B32521C48700009725 /* Frameworks */,
 				C01D76B42521C48700009725 /* Resources */,
-				C042D2CA252276FC00BE52F8 /* ShellScript */,
+				8936496F2A13BD1300BCCFB1 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -209,9 +208,7 @@
 			);
 			name = Logbook;
 			packageProductDependencies = (
-				C042D27E2521D03A00BE52F8 /* PromiseKit */,
 				C042D2842521D05900BE52F8 /* SwiftyJSON */,
-				C042D28A2521D07200BE52F8 /* PMKFoundation */,
 			);
 			productName = Logbook;
 			productReference = C01D76B62521C48700009725 /* Logbook.app */;
@@ -285,9 +282,7 @@
 			);
 			mainGroup = C01D76AD2521C48700009725;
 			packageReferences = (
-				C042D27D2521D03A00BE52F8 /* XCRemoteSwiftPackageReference "PromiseKit" */,
 				C042D2832521D05900BE52F8 /* XCRemoteSwiftPackageReference "SwiftyJSON" */,
-				C042D2892521D07200BE52F8 /* XCRemoteSwiftPackageReference "Foundation" */,
 			);
 			productRefGroup = C01D76B72521C48700009725 /* Products */;
 			projectDirPath = "";
@@ -307,7 +302,6 @@
 			files = (
 				C042D2522521CE2100BE52F8 /* README.md in Resources */,
 				C01D76C12521C48800009725 /* Preview Assets.xcassets in Resources */,
-				C0D654DF2522840A00EDFDD6 /* Cartfile in Resources */,
 				C01D76BE2521C48800009725 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -328,34 +322,12 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
-/* Begin PBXShellScriptBuildPhase section */
-		C042D2CA252276FC00BE52F8 /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"$(SRCROOT)/Carthage/Build/iOS/SMBClient.framework",
-			);
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/SMBClient.framework",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\n/usr/local/bin/carthage copy-frameworks\n";
-		};
-/* End PBXShellScriptBuildPhase section */
-
 /* Begin PBXSourcesBuildPhase section */
 		C01D76B22521C48700009725 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C042D2752521CF4900BE52F8 /* LocationService.swift in Sources */,
+				C042D2752521CF4900BE52F8 /* LocationManager.swift in Sources */,
 				C042D2BA2522746000BE52F8 /* SdCardService.swift in Sources */,
 				C01D76BC2521C48700009725 /* ContentView.swift in Sources */,
 				C042D26A2521CF3900BE52F8 /* UserSettings.swift in Sources */,
@@ -363,7 +335,6 @@
 				C042D2732521CF4900BE52F8 /* LogbookService.swift in Sources */,
 				C01D76BA2521C48700009725 /* LogbookApp.swift in Sources */,
 				C042D2692521CF3900BE52F8 /* Bookmark.swift in Sources */,
-				C042D2BB2522746000BE52F8 /* SambaClient.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -525,10 +496,7 @@
 				DEVELOPMENT_TEAM = 3WE3J68227;
 				ENABLE_PREVIEWS = YES;
 				EXCLUDED_ARCHS = "";
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build/iOS",
-				);
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = Logbook/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -552,10 +520,7 @@
 				DEVELOPMENT_TEAM = 3WE3J68227;
 				ENABLE_PREVIEWS = YES;
 				EXCLUDED_ARCHS = "";
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build/iOS",
-				);
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = Logbook/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -695,14 +660,6 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		C042D27D2521D03A00BE52F8 /* XCRemoteSwiftPackageReference "PromiseKit" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/mxcl/PromiseKit";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 6.13.3;
-			};
-		};
 		C042D2832521D05900BE52F8 /* XCRemoteSwiftPackageReference "SwiftyJSON" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/SwiftyJSON/SwiftyJSON.git";
@@ -711,31 +668,13 @@
 				minimumVersion = 5.0.0;
 			};
 		};
-		C042D2892521D07200BE52F8 /* XCRemoteSwiftPackageReference "Foundation" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/PromiseKit/Foundation.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 3.3.4;
-			};
-		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		C042D27E2521D03A00BE52F8 /* PromiseKit */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = C042D27D2521D03A00BE52F8 /* XCRemoteSwiftPackageReference "PromiseKit" */;
-			productName = PromiseKit;
-		};
 		C042D2842521D05900BE52F8 /* SwiftyJSON */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = C042D2832521D05900BE52F8 /* XCRemoteSwiftPackageReference "SwiftyJSON" */;
 			productName = SwiftyJSON;
-		};
-		C042D28A2521D07200BE52F8 /* PMKFoundation */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = C042D2892521D07200BE52F8 /* XCRemoteSwiftPackageReference "Foundation" */;
-			productName = PMKFoundation;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
