@@ -10,23 +10,23 @@
     "@mui/material": "^5.10.12",
     "@mui/system": "^5.10.13",
     "axios": "^0.27.2",
-    "chart.js": "^3.9.1",
-    "chartjs-adapter-date-fns": "^2.0.0",
+    "chart.js": "^4.4.0",
+    "chartjs-adapter-date-fns": "^3.0.0",
     "classnames": "^2.3.2",
     "date-fns": "^2.29.3",
     "graphql": "^16.6.0",
     "graphql-tag": "^2.12.6",
-    "leaflet": "^1.8.0",
-    "react": "^18.2.0",
-    "react-chartjs-2": "^4.3.1",
-    "react-dom": "^18.2.0",
+    "leaflet": "^1.9.0",
+    "react": "^19.0.0",
+    "react-chartjs-2": "^5.2.0",
+    "react-dom": "^19.0.0",
     "react-dropzone": "^14.2.2",
-    "react-hotkeys-hook": "^3.4.7",
-    "react-leaflet": "^4.0.2",
+    "react-hotkeys-hook": "^4.5.0",
+    "react-leaflet": "^5.0.0",
     "react-router": "^6.4.0",
     "react-router-dom": "^6.4.0",
     "urql": "^3.0.3",
-    "video-react": "^0.15.0"
+    "video-react": "^0.16.0"
   },
   "scripts": {
     "dev": "vite --host",
@@ -35,14 +35,13 @@
     "lint": "eslint --ext .ts,.tsx src"
   },
   "devDependencies": {
-    "@types/chart.js": "^2.9.37",
     "@types/leaflet": "^1.9.0",
-    "@types/node": "^16.11.59",
-    "@types/react": "^18.0.20",
-    "@types/react-dom": "^18.0.7",
+    "@types/node": "^20.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
     "@types/video-react": "^0.15.1",
-    "@vitejs/plugin-react": "^2.2.0",
+    "@vitejs/plugin-react": "^4.3.0",
     "typescript": "*",
-    "vite": "^3.2.0"
+    "vite": "^5.4.0"
   }
 }

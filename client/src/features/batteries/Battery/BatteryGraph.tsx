@@ -4,64 +4,30 @@ import type {
   ChartData,
   ChartDataset,
   ChartOptions,
-  ChartTypeRegistry,
-  ScaleOptionsByType,
+  TooltipItem,
 } from "chart.js";
 import { Bar } from "react-chartjs-2";
 import { chartColors } from "../../../utils/charts";
 import { BatteryCycle } from "../../../shared/batteries/types";
 import { formatDuration } from "../../../shared/utils/date";
 import { fi } from "date-fns/locale";
-import { _DeepPartialObject } from "chart.js/types/utils";
 
 interface IProps {
   cycles: BatteryCycle[];
 }
 
-const xAxes: _DeepPartialObject<
-  ScaleOptionsByType<ChartTypeRegistry["bar"]["scales"]>
-> = {
-  type: "time",
-  adapters: {
-    date: {
-      locale: fi,
-    },
-  },
-  time: {
-    unit: "day",
-    tooltipFormat: "D MMMM YYYY",
-  },
-  ticks: {
-    autoSkip: true,
-    maxTicksLimit: 20,
-  },
-  stacked: true,
-};
-
-const yAxes: _DeepPartialObject<
-  ScaleOptionsByType<ChartTypeRegistry["bar"]["scales"]>
-> = {
-  ticks: {
-    callback: (value: string | number) =>
-      formatDuration(typeof value === "string" ? parseInt(value) : value),
-    stepSize: 60,
-  },
-  min: 0,
-  stacked: true,
-};
-
-const chartOptions = (): _DeepPartialObject<ChartOptions<"bar">> => {
+const chartOptions = (): ChartOptions<"bar"> => {
   return {
     plugins: {
       tooltip: {
         mode: "index",
         intersect: false,
         callbacks: {
-          label: (context) => {
+          label: (context: TooltipItem<"bar">) => {
             const data = context.dataset;
             let label = data.label || "";
 
-            return `${label}: ${formatDuration(context.parsed.y)}`;
+            return `${label}: ${formatDuration(context.parsed.y ?? 0)}`;
           },
         },
       },
@@ -77,8 +43,32 @@ const chartOptions = (): _DeepPartialObject<ChartOptions<"bar">> => {
       },
     },
     scales: {
-      x: xAxes,
-      time: yAxes,
+      x: {
+        type: "time" as const,
+        adapters: {
+          date: {
+            locale: fi,
+          },
+        },
+        time: {
+          unit: "day" as const,
+          tooltipFormat: "d MMMM yyyy",
+        },
+        ticks: {
+          autoSkip: true,
+          maxTicksLimit: 20,
+        },
+        stacked: true,
+      },
+      time: {
+        ticks: {
+          callback: (value: string | number) =>
+            formatDuration(typeof value === "string" ? parseInt(value) : value),
+          stepSize: 60,
+        },
+        min: 0,
+        stacked: true,
+      },
     },
   };
 };

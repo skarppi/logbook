@@ -4,19 +4,19 @@ import {
   ChartDataset,
   ChartOptions,
   Tooltip,
+  TooltipItem,
 } from "chart.js";
 import { Bar } from "react-chartjs-2";
 import { chartColors } from "../../../utils/charts";
 import { BatteryCycle } from "../../../shared/batteries/types";
 import { formatDuration } from "../../../shared/utils/date";
-import { _DeepPartialObject } from "chart.js/types/utils";
 
 ChartJS.register(Tooltip);
 interface IProps {
   cycles: BatteryCycle[];
 }
 
-const chartOptions = (): _DeepPartialObject<ChartOptions<"bar">> => {
+const chartOptions = (): ChartOptions<"bar"> => {
   return {
     //offset: true,
     plugins: {
@@ -24,11 +24,11 @@ const chartOptions = (): _DeepPartialObject<ChartOptions<"bar">> => {
         mode: "index",
         intersect: false,
         callbacks: {
-          label: function (context) {
+          label: function (context: TooltipItem<"bar">) {
             const data = context.dataset;
             let label = data.label || "";
 
-            return `${label}: ${formatDuration(context.parsed.y)}`;
+            return `${label}: ${formatDuration(context.parsed.y ?? 0)}`;
           },
         },
       },
@@ -50,7 +50,7 @@ const chartOptions = (): _DeepPartialObject<ChartOptions<"bar">> => {
           unit: "day",
           // unitStepSize: 1,
           round: "day",
-          tooltipFormat: "D MMMM YYYY",
+          tooltipFormat: "d MMMM yyyy",
         },
         ticks: {
           source: "labels",
@@ -68,7 +68,7 @@ const chartOptions = (): _DeepPartialObject<ChartOptions<"bar">> => {
           display: true,
         },
         ticks: {
-          callback: (value) =>
+          callback: (value: string | number) =>
             formatDuration(typeof value === "string" ? parseInt(value) : value),
           stepSize: 60,
         },

@@ -8,16 +8,17 @@ import {
   ChartDataset,
   ChartOptions,
   Legend,
+  LegendItem,
   LinearScale,
   LineElement,
   PointElement,
   TimeScale,
   Tooltip,
+  TooltipItem,
 } from "chart.js";
 import { formatDuration } from "../../../shared/utils/date";
 import { DashboardUnit } from "../../../shared/dashboard";
 import { chartColors } from "../../../utils/charts";
-import { _DeepPartialObject } from "chart.js/types/utils";
 import "chartjs-adapter-date-fns";
 
 //ChartJS.defaults.elements.line.fill = false;
@@ -62,7 +63,7 @@ function colorize(datasets: ChartDataset<"bar">[]): ChartDataset<"bar">[] {
 const chartOptions = (
   max: number,
   unit: DashboardUnit
-): _DeepPartialObject<ChartOptions<"bar">> => {
+): ChartOptions<"bar"> => {
   return {
     //offset: true,
     plugins: {
@@ -70,7 +71,7 @@ const chartOptions = (
         mode: "point",
         intersect: false,
         callbacks: {
-          label: function (context) {
+          label: function (context: TooltipItem<"bar">) {
             const data = context.dataset;
 
             var label = data.label || "";
@@ -79,7 +80,7 @@ const chartOptions = (
               label += ": ";
             }
             if (label.toLowerCase().indexOf("time") !== -1) {
-              label += formatDuration(context.parsed.y * 60);
+              label += formatDuration((context.parsed.y ?? 0) * 60);
             } else {
               label += context.parsed.y;
             }
@@ -90,8 +91,8 @@ const chartOptions = (
       legend: {
         labels: {
           // show legend only once per plane
-          filter: (item) => (item.datasetIndex ?? 0) % 2 === 0,
-          generateLabels: (chart) => {
+          filter: (item: LegendItem) => (item.datasetIndex ?? 0) % 2 === 0,
+          generateLabels: (chart: ChartJS) => {
             // show only plane name
             // const item = cloneDeep(item2);
             if (chart.data) {
@@ -129,12 +130,11 @@ const chartOptions = (
     },
     scales: {
       x: {
-        type: "time",
+        type: "time" as const,
         time: {
           unit,
-          stepSize: 1,
           round: unit,
-          tooltipFormat: "D MMMM YYYY",
+          tooltipFormat: "d MMMM yyyy",
           displayFormats: {},
         },
         ticks: {
@@ -155,7 +155,7 @@ const chartOptions = (
           text: "Flight time",
         },
         ticks: {
-          callback: (value) =>
+          callback: (value: string | number) =>
             formatDuration(
               (typeof value === "string" ? parseInt(value) : value) * 60
             ),

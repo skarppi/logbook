@@ -7,7 +7,6 @@ import {
 import { Plane, Telemetry } from "../../../shared/planes/types";
 import { SegmentType } from "../../../shared/flights";
 import { chartColors } from "../../../utils/charts";
-import { _DeepPartialObject } from "chart.js/types/utils";
 import {
   Chart as ChartJS,
   ChartData,
@@ -15,6 +14,7 @@ import {
   ChartOptions,
   Tooltip,
   Filler,
+  TooltipItem,
 } from "chart.js";
 import "chartjs-adapter-date-fns";
 
@@ -41,7 +41,7 @@ interface IProps {
 
 const chartOptions = (
   plane: Plane
-): _DeepPartialObject<ChartOptions<"line">> => {
+): ChartOptions<"line"> => {
   return {
     //offset: true,
     plugins: {
@@ -49,14 +49,15 @@ const chartOptions = (
         mode: "index",
         intersect: false,
         callbacks: {
-          label: function (context) {
+          label: function (context: TooltipItem<"line">) {
             const data = context.dataset;
             const label = data.label || "";
+            const yValue = context.parsed.y ?? 0;
             if (label === "Timer") {
               const currentType = Object.keys(segmentTypeToYAxis).find(
                 (type) => {
                   return (
-                    segmentTypeToYAxis[type as SegmentType] === context.parsed.y
+                    segmentTypeToYAxis[type as SegmentType] === yValue
                   );
                 }
               );
@@ -64,11 +65,11 @@ const chartOptions = (
             } else if (
               label === "FM" &&
               plane.flightModes &&
-              plane.flightModes.length > context.parsed.y
+              plane.flightModes.length > yValue
             ) {
-              return `${label}: ${plane.flightModes[context.parsed.y]}`;
+              return `${label}: ${plane.flightModes[yValue]}`;
             } else {
-              return `${label}: ${context.parsed.y}`;
+              return `${label}: ${yValue}`;
             }
           },
         },
