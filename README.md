@@ -32,7 +32,7 @@ For more information read [Working with Log Files](https://open-txu.org/home/spe
 git clone https://github.com/skarppi/logbook.git <MyProjectName>
 cd <MyProjectName>
 
-yarn
+pnpm install
 
 psql
 create database logbook;
@@ -45,14 +45,14 @@ psql -d logbook -f 1-init.sql
 psql -d logbook -f 2-locations.sql
 psql -d logbook -f 3-batteries.sql
 
-yarn dev
+pnpm dev
 ```
 
 ### Usage
 
-- `yarn dev` - Client and server are in development mode [http://localhost:3000](http://localhost:3000)
-- `yarn build` - `server/dist` folder will include all the needed files, both client (Bundle) and server.
-- `yarn prod` - Just runs `node ./server/dist/server/src/server.js`
+- `pnpm dev` - Client and server are in development mode [http://localhost:3000](http://localhost:3000)
+- `pnpm build` - `server/dist` folder will include all the needed files, both client (Bundle) and server.
+- `pnpm production` - Just runs `node ./server/dist/server/src/server.js`
 
 Upload DVR files from FatShark or similar googles to VIDEOS/ folder. Use flight ID as filename e.g. TWR-2018-10-09-Session1.mov or just TWR-2018-10-09.mov if the video is not specific to any single flight.
 
