@@ -1,14 +1,14 @@
-import { IMain, IDatabase } from 'pg-promise';
-import * as pgPromise from 'pg-promise';
-import { DB_HOST } from './config';
+import { IMain, IDatabase } from "pg-promise";
+import * as pgPromise from "pg-promise";
+import { DB_HOST, DB_USER, DB_PASSWORD, DB_NAME } from "./config";
 
 const pgOptions = {
-  receive: data => {
+  receive: (data) => {
     camelizeColumns(data);
-  }
+  },
 };
 
-const camelizeColumns = data => {
+const camelizeColumns = (data) => {
   const template = data[0];
   for (let prop in template) {
     const camel = pgPromise.utils.camelize(prop);
@@ -24,7 +24,7 @@ const camelizeColumns = data => {
 
 const pgp: IMain = pgPromise(pgOptions);
 
-const url = `postgres://${DB_HOST}:5432/logbook`;
+const url = `postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:5432/${DB_NAME}`;
 
 console.log(url);
 

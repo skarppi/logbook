@@ -35,5 +35,7 @@ dist-ssr
 /LOGS
 /VIDEOS
 /db
+/sql
 server/LOGS
+server/schema.gql
 all.sh

@@ -20,7 +20,7 @@ app.use(`${publicPath}/api/videos`, videosRouter());
 
 app.use(
   `${publicPath}/api/`,
-  postgraphile(`postgres://${config.DB_HOST}:5432/logbook`, {
+  postgraphile(`postgres://${config.DB_USER}:${config.DB_PASSWORD}@${config.DB_HOST}:5432/${config.DB_NAME}`, {
     appendPlugins: [ConnectionFilterPlugin, PgSimplifyInflectorPlugin],
     exportGqlSchemaPath: "./schema.gql",
     watchPg: !config.IS_PRODUCTION,

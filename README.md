@@ -22,7 +22,7 @@ In your transmitter setup "SD Logs" Special Function to enable logging of teleme
 
 I use two-stage arming. Switch SA is a safety switch and also turns on the logging, then switch SB arms the quadcopter. Flight timer starts when the quad is armed and throttle is increased. A new flight is created when logging is turned off for more than 30 seconds and restarted again.
 
-After flying is done, sync new log files automatically using [uploader iOS app](https://github.com/skarppi/logbook/tree/master/uploader) or connect transmitter to computer and drag&drop latest csv files from SD card LOGS directory to Upload-tab of the service. 
+After flying is done, sync new log files automatically using [uploader iOS app](https://github.com/skarppi/logbook/tree/master/uploader) or connect transmitter to computer and drag&drop latest csv files from SD card LOGS directory to Upload-tab of the service.
 
 For more information read [Working with Log Files](https://open-txu.org/home/special-interests/telemetry/working-with-log-files/).
 
@@ -36,8 +36,9 @@ pnpm install
 
 psql
 create database logbook;
-createuser logbook with password 'logbook';
+create user logbook with password 'logbook';
 grant all privileges on database logbook to logbook;
+ALTER DATABASE logbook OWNER TO logbook;
 
 CREATE EXTENSION IF NOT EXISTS earthdistance SCHEMA logbook;
 
@@ -56,18 +57,17 @@ pnpm dev
 
 Upload DVR files from FatShark or similar googles to VIDEOS/ folder. Use flight ID as filename e.g. TWR-2018-10-09-Session1.mov or just TWR-2018-10-09.mov if the video is not specific to any single flight.
 
-Videos can also be stored in another server configured with VIDEO_SERVER env variable. See example PHP implementation at ```src/videoserver``` for Synology NAS running Web Station.
+Videos can also be stored in another server configured with VIDEO_SERVER env variable. See example PHP implementation at `src/videoserver` for Synology NAS running Web Station.
 
 ### Deployments
 
-Run ```docker-build.sh [dev/prod] http://host/path``` and ```docker-run.sh``` scripts. Set public url if your service is not running at the default https://localhost:3000.
+Run `docker-build.sh [dev/prod] http://host/path` and `docker-run.sh` scripts. Set public url if your service is not running at the default https://localhost:3000.
 
 Example Apache configuration to proxy requests into Docker container.
 
-<VirtualHost *:443>
-        # Host videos from another server
-        ProxyPass /api/videos !
-        Redirect 301 /api/videos https://your.synology.ip/videoserver/search.php
+<VirtualHost \*:443> # Host videos from another server
+ProxyPass /api/videos !
+Redirect 301 /api/videos https://your.synology.ip/videoserver/search.php
 
         # Service running at the root
         ProxyPass / http://localhost:3000/
