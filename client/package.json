@@ -9,7 +9,7 @@
     "@mui/icons-material": "^5.10.3",
     "@mui/material": "^5.10.12",
     "@mui/system": "^5.10.13",
-    "axios": "^0.27.2",
+    "axios": "^1.7.0",
     "chart.js": "^4.4.0",
     "chartjs-adapter-date-fns": "^3.0.0",
     "classnames": "^2.3.2",
