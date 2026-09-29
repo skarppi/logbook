@@ -17,7 +17,7 @@ module.exports = {
   DB_NAME: process.env.DB_NAME || 'logbook',
   CSV_FOLDER: "LOGS/",
   VIDEO_FOLDER: "VIDEOS/",
-  VIDEO_SERVER: process.env.VIDEO_SERVER || '/',
+  VIDEO_SERVER: process.env.VIDEO_SERVER || '',
   PUBLIC_URL,
   PUBLIC_HOST,
   PUBLIC_HOSTNAME,
