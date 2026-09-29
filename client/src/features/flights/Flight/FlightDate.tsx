@@ -12,11 +12,13 @@ interface IFlightDateProps {
 export function FlightDate({ flight }: IFlightDateProps) {
   return (
     <>
-      <Box display="flex" flexGrow="1">
+      <Box sx={{ display: "flex", flexGrow: "1" }}>
         <TextField
           required
-          InputProps={{
-            readOnly: true,
+          slotProps={{
+            input: {
+              readOnly: true,
+            },
           }}
           id="date"
           type="date"
@@ -26,11 +28,13 @@ export function FlightDate({ flight }: IFlightDateProps) {
           margin="normal"
         />
       </Box>
-      <Box display="flex" flexGrow="1">
+      <Box sx={{ display: "flex", flexGrow: "1" }}>
         <TextField
           required
-          InputProps={{
-            readOnly: true,
+          slotProps={{
+            input: {
+              readOnly: true,
+            },
           }}
           id="start_time"
           type="time"
@@ -41,8 +45,10 @@ export function FlightDate({ flight }: IFlightDateProps) {
         />
         <TextField
           required
-          InputProps={{
-            readOnly: true,
+          slotProps={{
+            input: {
+              readOnly: true,
+            },
           }}
           id="end_time"
           type="time"
@@ -54,8 +60,10 @@ export function FlightDate({ flight }: IFlightDateProps) {
 
         <TextField
           required
-          InputProps={{
-            readOnly: true,
+          slotProps={{
+            input: {
+              readOnly: true,
+            },
           }}
           id="duration"
           label="Duration"

@@ -285,7 +285,7 @@ export const FlightDetails = ({
       }
       hidden={false}
     >
-      <Box display="flex" flexWrap="wrap" justifyContent="stretch">
+      <Box sx={{ display: "flex", flexWrap: "wrap", justifyContent: "stretch" }}>
         <FlightDate flight={flight} />
         <FlightDuration flight={flight} save={updateFlight} />
       </Box>
@@ -319,7 +319,7 @@ export const FlightDetails = ({
 
       <Accordion
         defaultExpanded={false}
-        TransitionProps={{ unmountOnExit: true }}
+        slotProps={{ transition: { unmountOnExit: true } }}
       >
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
           Show Map

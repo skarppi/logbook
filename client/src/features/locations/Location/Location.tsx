@@ -135,7 +135,7 @@ export const LocationDetails = ({
       deleteAction={() => location.id !== NEW_LOCATION.id && executeDelete}
       hidden={location.name === ""}
     >
-      <Box display="flex" flexWrap="wrap">
+      <Box sx={{ display: "flex", flexWrap: "wrap" }}>
         <TextField
           type="number"
           id="latitude"

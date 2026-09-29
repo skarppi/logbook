@@ -283,7 +283,7 @@ export const BatteryDetails = ({
         </TableBody>
       </Table>
 
-      <Box display="flex" flexWrap="wrap" justifyContent="stretch">
+      <Box sx={{ display: "flex", flexWrap: "wrap", justifyContent: "stretch" }}>
         <FormControl margin="normal" variant="standard">
           <InputLabel htmlFor="select-multiple-checkbox">Type</InputLabel>
           <Select
@@ -329,12 +329,14 @@ export const BatteryDetails = ({
           onChange={changeNumber}
           onBlur={save}
           margin="normal"
-          InputProps={{
-            endAdornment: <InputAdornment position="end">mAh</InputAdornment>,
-          }}
-          inputProps={{
-            step: 50,
-            min: "0",
+          slotProps={{
+            input: {
+              endAdornment: <InputAdornment position="end">mAh</InputAdornment>,
+            },
+            htmlInput: {
+              step: 50,
+              min: "0",
+            },
           }}
         />
 
@@ -358,8 +360,10 @@ export const BatteryDetails = ({
           onChange={changeDate}
           onBlur={save}
           margin="normal"
-          InputLabelProps={{
-            shrink: true,
+          slotProps={{
+            inputLabel: {
+              shrink: true,
+            },
           }}
         />
       </Box>
@@ -377,7 +381,7 @@ export const BatteryDetails = ({
         fullWidth={true}
       />
 
-      <Box height="400px" width="92vw" maxWidth="1200px">
+      <Box sx={{ height: "400px", width: "92vw", maxWidth: "1200px" }}>
         <BatteryGraph cycles={cycles}></BatteryGraph>
       </Box>
 

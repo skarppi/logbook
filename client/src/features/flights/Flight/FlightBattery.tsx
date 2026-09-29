@@ -127,12 +127,14 @@ export const FlightBattery = ({
         onChange={(e) => changeCycleResistance(index, e.target.value)}
         onBlur={storeBattery}
         margin="normal"
-        InputProps={{
-          endAdornment: <InputAdornment position="end">Ω</InputAdornment>,
-        }}
-        inputProps={{
-          step: 0.1,
-          min: "0",
+        slotProps={{
+          input: {
+            endAdornment: <InputAdornment position="end">Ω</InputAdornment>,
+          },
+          htmlInput: {
+            step: 0.1,
+            min: "0",
+          },
         }}
       />
     );
@@ -161,11 +163,13 @@ export const FlightBattery = ({
         type="number"
         onChange={changeNumber}
         onBlur={storeBattery}
-        InputLabelProps={{ shrink: true }}
-        InputProps={{
-          endAdornment: <InputAdornment position="end">V</InputAdornment>,
+        slotProps={{
+          inputLabel: { shrink: true },
+          input: {
+            endAdornment: <InputAdornment position="end">V</InputAdornment>,
+          },
+          htmlInput: { step: 0.01 },
         }}
-        inputProps={{ step: 0.01 }}
         margin="normal"
       />
     );
@@ -181,7 +185,7 @@ export const FlightBattery = ({
       }}
     >
       <AccordionSummary>
-        <Box display="flex" flexWrap="wrap">
+        <Box sx={{ display: "flex", flexWrap: "wrap" }}>
           <Box>
             <FormControl margin="normal" variant="standard">
               <InputLabel htmlFor="select-multiple-checkbox" shrink>
@@ -212,11 +216,13 @@ export const FlightBattery = ({
               type="number"
               onChange={changeNumber}
               onBlur={storeBattery}
-              InputLabelProps={{ shrink: true }}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">mAh</InputAdornment>
-                ),
+              slotProps={{
+                inputLabel: { shrink: true },
+                input: {
+                  endAdornment: (
+                    <InputAdornment position="end">mAh</InputAdornment>
+                  ),
+                },
               }}
               margin="normal"
             />
@@ -225,7 +231,7 @@ export const FlightBattery = ({
             {textFieldVolts("restingVoltage", "Rest", cycle.restingVoltage)}
           </Box>
 
-          <Box alignSelf="center">
+          <Box sx={{ alignSelf: "center" }}>
             <IconButton
               onClick={(_) => storeBatteryState(BatteryState.discharged)}
               color={
@@ -281,8 +287,10 @@ export const FlightBattery = ({
           onChange={changeNumber}
           onBlur={storeBattery}
           margin="none"
-          InputProps={{
-            endAdornment: <InputAdornment position="end">mAh</InputAdornment>,
+          slotProps={{
+            input: {
+              endAdornment: <InputAdornment position="end">mAh</InputAdornment>,
+            },
           }}
         />
 

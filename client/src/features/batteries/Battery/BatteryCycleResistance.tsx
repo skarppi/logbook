@@ -51,12 +51,14 @@ export const BatteryCycleResistance = ({
         }
         style={{ width: 75 }}
         type="number"
-        InputProps={{
-          endAdornment: <InputAdornment position="end">Ω</InputAdornment>,
-        }}
-        inputProps={{
-          step: 0.1,
-          min: "0",
+        slotProps={{
+          input: {
+            endAdornment: <InputAdornment position="end">Ω</InputAdornment>,
+          },
+          htmlInput: {
+            step: 0.1,
+            min: "0",
+          },
         }}
       />
     );

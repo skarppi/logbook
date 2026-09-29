@@ -131,12 +131,14 @@ export const BatteryCycleRow = ({
         onChange={changeNumber}
         type="number"
         style={{ width: 75 }}
-        InputProps={{
-          endAdornment: <InputAdornment position="end">{unit}</InputAdornment>,
-        }}
-        inputProps={{
-          step: unit === "V" ? 0.01 : 1,
-          min: "0",
+        slotProps={{
+          input: {
+            endAdornment: <InputAdornment position="end">{unit}</InputAdornment>,
+          },
+          htmlInput: {
+            step: unit === "V" ? 0.01 : 1,
+            min: "0",
+          },
         }}
       />
     ) : (

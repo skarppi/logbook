@@ -10,11 +10,13 @@ export const FlightStatistics = ({
   stats: { zeroHeight, launchHeight, maxHeight },
 }: IFlightStatsProps) => {
   return (
-    <Box display="flex">
+    <Box sx={{ display: "flex" }}>
       {zeroHeight && (
         <TextField
-          InputProps={{
-            readOnly: true,
+          slotProps={{
+            input: {
+              readOnly: true,
+            },
           }}
           id="zeroHeight"
           label="Zero height"
@@ -26,8 +28,10 @@ export const FlightStatistics = ({
       )}
       {launchHeight && (
         <TextField
-          InputProps={{
-            readOnly: true,
+          slotProps={{
+            input: {
+              readOnly: true,
+            },
           }}
           id="launchHeight"
           label="Launch height"
@@ -39,8 +43,10 @@ export const FlightStatistics = ({
       )}
       {maxHeight && (
         <TextField
-          InputProps={{
-            readOnly: true,
+          slotProps={{
+            input: {
+              readOnly: true,
+            },
           }}
           id="maxHeight"
           label="Maximum height"

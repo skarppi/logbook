@@ -241,7 +241,7 @@ export const PlaneDetails = ({
 
       <Divider variant="middle" />
 
-      <Box height="500px" width="92vw" maxWidth="1200px">
+      <Box sx={{ height: "500px", width: "92vw", maxWidth: "1200px" }}>
         <PlaneGraph cycles={[]}></PlaneGraph>
       </Box>
     </DetailsTemplate>

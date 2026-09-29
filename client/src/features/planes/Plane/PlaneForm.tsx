@@ -40,7 +40,7 @@ function RenderLogicalSwitch({
   const { logicalSwitches } = useContext(PlanesContext);
 
   return (
-    <Box flex="1">
+    <Box sx={{ flex: "1" }}>
       <FormControl margin="normal" fullWidth={true} variant="standard">
         <InputLabel htmlFor={mode}>{label}</InputLabel>
         <Select
@@ -115,7 +115,7 @@ export const PlaneForm = ({ plane, allBatteries, setPlane, save }: IProps) => {
 
   return (
     <>
-      <Box display="flex">
+      <Box sx={{ display: "flex" }}>
         <FormControl margin="normal" style={{ width: 150 }} variant="standard">
           <InputLabel htmlFor="select-type-checkbox">Type</InputLabel>
           <Select
@@ -168,7 +168,7 @@ export const PlaneForm = ({ plane, allBatteries, setPlane, save }: IProps) => {
             onBlur={save}
             input={<Input id="select-batteries-chip" />}
             renderValue={(selected) => (
-              <Box display="flex" flexWrap="wrap">
+              <Box sx={{ display: "flex", flexWrap: "wrap" }}>
                 {(selected as string[]).map((battery) => (
                   <Chip key={battery} label={battery} />
                 ))}
@@ -188,7 +188,7 @@ export const PlaneForm = ({ plane, allBatteries, setPlane, save }: IProps) => {
         </FormControl>
       </Box>
 
-      <Box display="flex" justifyContent="stretch">
+      <Box sx={{ display: "flex", justifyContent: "stretch" }}>
         <FormControl margin="normal" fullWidth={true} variant="standard">
           <InputLabel htmlFor="select-default-telemetries-chip">
             Default telemetries
@@ -201,7 +201,7 @@ export const PlaneForm = ({ plane, allBatteries, setPlane, save }: IProps) => {
             onBlur={save}
             input={<Input id="select-default-telemetries-chip" />}
             renderValue={(selected) => (
-              <Box display="flex" flexWrap="wrap">
+              <Box sx={{ display: "flex", flexWrap: "wrap" }}>
                 {(selected as string[]).map((id) => (
                   <Chip key={id} label={id} />
                 ))}
@@ -234,7 +234,7 @@ export const PlaneForm = ({ plane, allBatteries, setPlane, save }: IProps) => {
             onBlur={save}
             input={<Input id="select-hidden-telemetries-chip" />}
             renderValue={(selected) => (
-              <Box display="flex" flexWrap="wrap">
+              <Box sx={{ display: "flex", flexWrap: "wrap" }}>
                 {(selected as string[]).map((id) => (
                   <Chip key={id} label={id} />
                 ))}
@@ -254,7 +254,7 @@ export const PlaneForm = ({ plane, allBatteries, setPlane, save }: IProps) => {
         </FormControl>
       </Box>
 
-      <Box display="flex" flexWrap="wrap">
+      <Box sx={{ display: "flex", flexWrap: "wrap" }}>
         <RenderLogicalSwitch
           mode="modeArmed"
           label="Arm switch"
@@ -279,7 +279,7 @@ export const PlaneForm = ({ plane, allBatteries, setPlane, save }: IProps) => {
           save={save}
         />
 
-        <Box display="flex" flexDirection="column">
+        <Box sx={{ display: "flex", flexDirection: "column" }}>
           <RenderLogicalSwitch
             mode="modeRestart"
             label="Restart flight"

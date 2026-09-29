@@ -120,7 +120,7 @@ export const LogicalSwitches = () => {
               value={editing.id || ""}
               name="id"
               onChange={changeString}
-              inputProps={{ maxLength: 3 }}
+              slotProps={{ htmlInput: { maxLength: 3 } }}
             />
           </TableCell>
           <TableCell>
@@ -202,7 +202,7 @@ export const LogicalSwitches = () => {
               value={editing.delay || ""}
               name="delay"
               onChange={changeString}
-              inputProps={{ maxLength: 4 }}
+              slotProps={{ htmlInput: { maxLength: 4 } }}
             />
           </TableCell>
           <TableCell>

@@ -124,7 +124,7 @@ export const Dashboard = () => {
   const flights = data?.[currentResource(unit)] || EMPTY;
 
   return (
-    <Grid item xs={12}>
+    <Grid size={12}>
       <Card>
         <CardHeader title="Flights Over Time" />
         <CardContent>
