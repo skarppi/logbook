@@ -18,7 +18,7 @@ export default class FlightParser {
   private sessionCounter: number = 0;
   private options: IParserOptions;
   private flights: Flight[] = [];
-  private plane: Plane;
+  private plane!: Plane;
   private itemParser: SegmentItemParser;
 
   constructor(name: string, options: IParserOptions) {
@@ -46,9 +46,10 @@ export default class FlightParser {
       this.currentSegment.type !== SegmentType.stopped &&
       this.plane.modeStoppedStartsNewFlight;
 
+    const restartSwitch = this.plane.logicalSwitchByModeRestart;
     if (
       endFlightBecauseStopped ||
-      this.test(this.plane.logicalSwitchByModeRestart, item)
+      (restartSwitch && this.test(restartSwitch, item))
     ) {
       this.endFlight();
     } else if (this.currentSegment.type !== type) {
@@ -129,8 +130,8 @@ export default class FlightParser {
         query
       );
       console.log(data);
-      console.log(data["plane"]);
-      this.plane = data["plane"];
+      console.log((data as Record<string, unknown>)["plane"]);
+      this.plane = (data as Record<string, unknown>)["plane"] as Plane;
     } catch (err) {
       console.trace(err);
       throw err;
@@ -142,13 +143,17 @@ export default class FlightParser {
   }
 
   private currentSegmentType(item: SegmentItem): SegmentType {
-    if (this.test(this.plane.logicalSwitchByModeArmed, item)) {
-      if (this.test(this.plane.logicalSwitchByModeFlying, item)) {
+    const armedSwitch = this.plane.logicalSwitchByModeArmed;
+    const flyingSwitch = this.plane.logicalSwitchByModeFlying;
+    const stoppedSwitch = this.plane.logicalSwitchByModeStopped;
+
+    if (armedSwitch && this.test(armedSwitch, item)) {
+      if (flyingSwitch && this.test(flyingSwitch, item)) {
         // started flying
         return SegmentType.flying;
       } else if (this.currentSegment.type === SegmentType.flying) {
         // check if we are still flying
-        return this.test(this.plane.logicalSwitchByModeStopped, item)
+        return (stoppedSwitch && this.test(stoppedSwitch, item))
           ? SegmentType.stopped
           : SegmentType.flying;
       } else {
@@ -160,14 +165,15 @@ export default class FlightParser {
   }
 
   private test(test: LogicalSwitch, item: SegmentItem): boolean {
-    if (test.duration > 0) {
+    const duration = test.duration ?? 0;
+    if (duration > 0) {
       const items = this.currentSegment.lastSecondsFromEnd(
         item.timestamp,
-        test.duration
+        duration
       );
       if (!items) {
         const firstItem =
-          this.currentSegments.length === 0 && this.currentSegment.isEmpty;
+          this.currentSegments.length === 0 && this.currentSegment.isEmpty();
         return !firstItem && this.testExpectNull(test);
       }
 
@@ -186,7 +192,7 @@ export default class FlightParser {
       return this.testExpectNull(test);
     }
 
-    const v1 = item[test.v1];
+    const v1 = (item as Record<string, unknown>)[test.v1 as string] as number;
     const v2 = Number(test.v2);
 
     if (test.func === LogicalFunction.greaterThan) {
@@ -198,6 +204,7 @@ export default class FlightParser {
     } else if (test.func === LogicalFunction.not) {
       return v1 !== v2;
     }
+    return false;
   }
 
   private get planeName() {

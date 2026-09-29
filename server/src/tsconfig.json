@@ -1,19 +1,22 @@
 {
   "compilerOptions": {
-    "target": "es6",
+    "target": "es2022",
     "sourceMap": true,
-    "module": "commonjs",
+    "module": "CommonJS",
     "importHelpers": true,
     "allowJs": true,
     "outDir": "../dist",
+    "rootDir": "../..",
     "lib": [
-      "es2016",
+      "es2022",
       "dom"
     ],
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "types": [
       "node"
-    ]
+    ],
+    "esModuleInterop": true,
+    "skipLibCheck": true
   },
   "files": [
     "./server.ts"

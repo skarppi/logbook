@@ -1,4 +1,4 @@
-import * as parse from "csv-parse";
+import parse from "csv-parse";
 import { createReadStream } from "fs";
 
 export default function read<T>(filename: string): Promise<T[]> {
@@ -13,7 +13,7 @@ export default function read<T>(filename: string): Promise<T[]> {
         })
       )
       .on("data", (data: object) => results.push(data))
-      .on("error", msg => {
+      .on("error", (msg: Error) => {
         reject(msg);
         console.log(msg);
       })

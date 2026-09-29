@@ -26,8 +26,8 @@ export default class SegmentParser {
     }
   }
 
-  public endSegment() {
-    let segment: SegmentImpl;
+  public endSegment(): SegmentImpl | undefined {
+    let segment: SegmentImpl | undefined;
     if (this.type && this.items.length > 0) {
       console.log(
         `Ending segment ${this.type} with ${this.items.length} items`
@@ -46,7 +46,7 @@ export default class SegmentParser {
     this.items.push(item);
   }
 
-  private startSegment(type: SegmentType) {
+  private startSegment(type: SegmentType | undefined) {
     this.items = [];
     this.type = type;
   }

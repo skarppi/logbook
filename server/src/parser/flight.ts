@@ -51,7 +51,7 @@ export class FlightImpl implements Flight {
     this.endDate = segments[segments.length - 1].endDate;
     this.duration = differenceInSeconds(this.endDate, this.startDate);
 
-    if (locationId >= 0) {
+    if (locationId !== undefined && locationId >= 0) {
       this.locationId = locationId;
     }
 
@@ -63,9 +63,9 @@ export class FlightImpl implements Flight {
       .filter((segment) => segment.type === SegmentType.flying)
       .reduce((sum, segment) => sum + segment.duration, 0);
 
-    this.stats = this.generateStats();
+    this.stats = this.generateStats() ?? {};
 
-    this.batteries = [cycleFromFlight(this, null)];
+    this.batteries = [cycleFromFlight(this, null!)];
   }
 
   private findSlopes = (
@@ -78,40 +78,44 @@ export class FlightImpl implements Flight {
 
     const items = segment.rows.reduce(
       ({ slopes, current }, item) => {
-        const height = Math.round((item.alt - zeroHeight) * 10) / 10;
+        const alt = item.alt ?? 0;
+        const height = Math.round((alt - zeroHeight) * 10) / 10;
 
-        if (current.direction > 0) {
+        const direction = current?.direction ?? 0;
+        if (direction > 0) {
           // going up
-          if (height >= current.maxHeight) {
-            current.maxHeight = height;
+          const maxHeight = current?.maxHeight ?? 0;
+          if (height >= maxHeight) {
+            current!.maxHeight = height;
             return { current, slopes };
           } else {
             // new peak found
             return {
               current: { minHeight: height, maxHeight: height, direction: -1 },
-              slopes: [...slopes, current],
+              slopes: [...slopes, current!],
             };
           }
-        } else if (current.direction < 0) {
+        } else if (direction < 0) {
           // goind down
-          if (height <= current.minHeight) {
-            current.minHeight = height;
+          const minHeight = current?.minHeight ?? 0;
+          if (height <= minHeight) {
+            current!.minHeight = height;
             return { current, slopes };
           } else {
             // new minimum found
             return {
               current: { minHeight: height, maxHeight: height, direction: 1 },
-              slopes: [...slopes, current],
+              slopes: [...slopes, current!],
             };
           }
         } else {
           // direction still unknown
           if (height > zeroHeight) {
-            current.direction = 1;
+            current!.direction = 1;
           } else if (height < zeroHeight) {
-            current.direction = -1;
+            current!.direction = -1;
           }
-          current.minHeight = current.maxHeight = height;
+          current!.minHeight = current!.maxHeight = height;
           return { current, slopes };
         }
       },
@@ -120,14 +124,14 @@ export class FlightImpl implements Flight {
           minHeight: zeroHeight,
           maxHeight: zeroHeight,
           direction: 0,
-        } as FlightSlope,
+        } as FlightSlope | undefined,
         slopes: [] as FlightSlope[],
       }
     );
     return items.slopes;
   };
 
-  private generateStats = () => {
+  private generateStats = (): FlightStats | null => {
     const launchSegment = this.segments.findIndex(
       (segment) => segment.type === SegmentType.flying
     );
@@ -137,7 +141,7 @@ export class FlightImpl implements Flight {
     }
 
     const zeroHeight =
-      launchSegment > 0 ? this.segments[launchSegment - 1].last.alt : null;
+      launchSegment > 0 ? this.segments[launchSegment - 1].last?.alt ?? 0 : 0;
 
     const slopes = this.segments
       .slice(launchSegment)
@@ -145,13 +149,14 @@ export class FlightImpl implements Flight {
         return [...result, ...this.findSlopes(current, zeroHeight)];
       }, [] as FlightSlope[]);
 
-    const launchHeight =
-      this.plane.type === PlaneType.glider ? slopes[1].maxHeight : null;
+    const launchHeight: number | null | undefined =
+      this.plane.type === PlaneType.glider && slopes[1] ? slopes[1].maxHeight : null;
 
-    const maxHeight = slopes.reduce((current, item) => {
-      return item.maxHeight > current ? item.maxHeight : current;
+    const maxHeight = slopes.reduce((currentMax, item) => {
+      const itemMax = item.maxHeight ?? 0;
+      return itemMax > (currentMax ?? 0) ? itemMax : currentMax;
     }, zeroHeight);
 
-    return { zeroHeight, launchHeight, maxHeight, slopes };
+    return { zeroHeight, launchHeight: launchHeight ?? undefined, maxHeight, slopes };
   };
 }

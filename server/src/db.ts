@@ -1,14 +1,14 @@
 import { IMain, IDatabase } from "pg-promise";
-import * as pgPromise from "pg-promise";
+import pgPromise from "pg-promise";
 import { DB_HOST, DB_USER, DB_PASSWORD, DB_NAME } from "./config";
 
 const pgOptions = {
-  receive: (data) => {
+  receive: (data: Record<string, unknown>[]) => {
     camelizeColumns(data);
   },
 };
 
-const camelizeColumns = (data) => {
+const camelizeColumns = (data: Record<string, unknown>[]) => {
   const template = data[0];
   for (let prop in template) {
     const camel = pgPromise.utils.camelize(prop);

@@ -6,6 +6,7 @@ import { BatteryCycle } from "../../../client/src/shared/batteries/types";
 export default class BatteryCycleRepository {
   public static attachUsedBattery(flight: Flight): Promise<Flight> {
     console.log("attaching cycle", flight.batteries);
+    const firstBattery = flight.batteries?.[0];
     return db
       .any(
         "UPDATE battery_cycles SET flight_id=${id}," +
@@ -21,9 +22,9 @@ export default class BatteryCycleRepository {
         {
           id: flight.id,
           planeId: flight.planeId,
-          discharged: flight.batteries[0].discharged,
-          startVoltage: flight.batteries[0].startVoltage,
-          endVoltage: flight.batteries[0].endVoltage,
+          discharged: firstBattery?.discharged,
+          startVoltage: firstBattery?.startVoltage,
+          endVoltage: firstBattery?.endVoltage,
         }
       )
       .then((saved) => {
@@ -34,6 +35,7 @@ export default class BatteryCycleRepository {
 
   public static fillMissingBatteryValues(flight: Flight): Promise<Flight> {
     console.log("fixing missing cycle", flight.batteries);
+    const firstBattery = flight.batteries?.[0];
     return db
       .any(
         "UPDATE battery_cycles SET " +
@@ -43,9 +45,9 @@ export default class BatteryCycleRepository {
           "WHERE flight_id=${id} AND (discharged is NULL OR start_voltage IS NULL or end_voltage IS NULL)",
         {
           id: flight.id,
-          discharged: flight.batteries[0].discharged,
-          startVoltage: flight.batteries[0].startVoltage,
-          endVoltage: flight.batteries[0].endVoltage,
+          discharged: firstBattery?.discharged,
+          startVoltage: firstBattery?.startVoltage,
+          endVoltage: firstBattery?.endVoltage,
         }
       )
       .then((saved) => {

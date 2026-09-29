@@ -8,7 +8,7 @@ import { Flight, SegmentItem } from "../../../client/src/shared/flights/types";
 
 export interface IParserOptions {
   timezoneOffset: number;
-  locationId: number;
+  locationId?: number;
 }
 
 export function parseFile(

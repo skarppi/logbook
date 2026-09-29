@@ -1,5 +1,5 @@
-import * as express from "express";
-import * as bodyParser from "body-parser";
+import express, { Request, Response, NextFunction } from "express";
+import bodyParser from "body-parser";
 import { flightsRouter } from "./routes/flights-router";
 import { videosRouter } from "./routes/videos-router";
 import { staticsRouter } from "./routes/statics-router";
@@ -13,7 +13,7 @@ const app = express();
 
 app.use(bodyParser.json());
 
-const publicPath = config.BASE_URL;
+const publicPath = config.BASE_URL || "";
 
 app.use(`${publicPath}/api/flights`, flightsRouter());
 app.use(`${publicPath}/api/videos`, videosRouter());
@@ -28,9 +28,9 @@ app.use(
   })
 );
 
-app.use(publicPath, staticsRouter());
+app.use(publicPath || "/", staticsRouter());
 
-app.use(function (err, req, res, next) {
+app.use(function (err: Error, req: Request, res: Response, next: NextFunction) {
   console.log(err, err.stack);
   res.status(500).send(String(err));
 });
