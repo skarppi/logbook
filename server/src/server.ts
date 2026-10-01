@@ -20,12 +20,24 @@ app.use(`${publicPath}/api/videos`, videosRouter());
 
 app.use(
   `${publicPath}/api/`,
-  postgraphile(`postgres://${config.DB_USER}:${config.DB_PASSWORD}@${config.DB_HOST}:5432/${config.DB_NAME}`, {
-    appendPlugins: [ConnectionFilterPlugin, PgSimplifyInflectorPlugin],
-    exportGqlSchemaPath: "./schema.gql",
-    watchPg: !config.IS_PRODUCTION,
-    dynamicJson: true,
-  })
+  postgraphile(
+    {
+      host: config.DB_HOST,
+      port: 5432,
+      database: config.DB_NAME,
+      user: config.DB_USER,
+      password: config.DB_PASSWORD,
+      // Match db.ts: enable SSL when Postgres requires it, allowing
+      // self-signed certs (libpq sslmode=require semantics).
+      ssl: config.DB_SSL ? { rejectUnauthorized: false } : false,
+    },
+    {
+      appendPlugins: [ConnectionFilterPlugin, PgSimplifyInflectorPlugin],
+      exportGqlSchemaPath: "./schema.gql",
+      watchPg: !config.IS_PRODUCTION,
+      dynamicJson: true,
+    }
+  )
 );
 
 app.use(publicPath || "/", staticsRouter());

@@ -11,6 +11,8 @@ docker rm logbook
 DB_USER="${DB_USER:-logbook}"
 DB_PASSWORD="${DB_PASSWORD:-logbook}"
 DB_NAME="${DB_NAME:-logbook}"
+# Set to 'true' when Postgres requires SSL (ssl = on + hostssl in pg_hba.conf).
+DB_SSL="${DB_SSL:-false}"
 
 OPTS=""
 if [ `uname` = "Darwin" ]; then
@@ -27,6 +29,7 @@ docker run --name=logbook -p 3000:3000  -p 3001:3001 \
     -e DB_USER=$DB_USER \
     -e DB_PASSWORD=$DB_PASSWORD \
     -e DB_NAME=$DB_NAME \
+    -e DB_SSL=$DB_SSL \
     $OPTS \
     -v ${PWD}/LOGS:/app/server/LOGS \
     -v ${PWD}/VIDEOS:/app/server/VIDEOS \
