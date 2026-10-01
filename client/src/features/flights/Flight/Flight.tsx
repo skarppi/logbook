@@ -337,7 +337,7 @@ export const FlightDetails = ({
       <Videos
         date={flight.startDate}
         plane={flight.planeId}
-        session={flight.session}
+        session={flight.id.match(/\d{6}/)?.[0] ?? (flight.id.includes("Session") ? `Session${flight.session}` : flight.id.substr(-6, 6))}
       />
     </DetailsTemplate>
   );

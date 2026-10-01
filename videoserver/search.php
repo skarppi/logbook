@@ -61,7 +61,7 @@ function filter_dir($file) {
 }
 
 function filter_file($file) {
-	if (match_keys($file, ['date' => '', 'plane' => '', 'session' => 'Session'])) {
+	if (match_keys($file, ['date' => '', 'plane' => '', 'session' => ''])) {
 		return in_array(substr(strtolower($file), -3), ['mov', 'mp4']);	
 	}
 	return false;

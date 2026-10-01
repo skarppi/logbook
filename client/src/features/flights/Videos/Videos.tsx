@@ -10,7 +10,7 @@ import css from "./Videos.module.css";
 interface IVideosProps {
   date: Date;
   plane?: string;
-  session?: number;
+  session?: string | number;
 }
 
 const Overlay = ({ url }: { url: string }) => {
