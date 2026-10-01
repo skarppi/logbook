@@ -69,6 +69,12 @@ Example Apache configuration to proxy requests into Docker container.
 ProxyPass /api/videos !
 Redirect 301 /api/videos https://your.synology.ip/videoserver/search.php
 
+        # Dev mode only: forward Vite HMR WebSocket (see note below)
+        RewriteEngine On
+        RewriteCond %{HTTP:Upgrade} websocket [NC]
+        RewriteCond %{HTTP:Connection} upgrade [NC]
+        RewriteRule ^/?(.*) "ws://localhost:3000/$1" [P,L]
+
         # Service running at the root
         ProxyPass / http://localhost:3000/
         ProxyPassReverse / http://localhost:3000/
@@ -78,6 +84,20 @@ Redirect 301 /api/videos https://your.synology.ip/videoserver/search.php
         # ProxyPassReverse /logbook http://localhost:3000/logbook
 
 </VirtualHost>
+
+When running the **dev** container behind a TLS reverse proxy, the browser
+cannot reach Vite's HMR WebSocket on `localhost`. Point the HMR client at the
+public host by setting these env vars for the client (e.g. in `client/.env` or
+passed to the container):
+
+```
+VITE_HMR_HOST=public.host.name
+VITE_HMR_PROTOCOL=wss
+VITE_HMR_CLIENT_PORT=443
+```
+
+These are only needed for dev-mode HMR behind a proxy; plain local dev and
+production builds work without them.
 
 ---
 

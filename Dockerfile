@@ -31,6 +31,15 @@ WORKDIR /app
 
 COPY --from=builder /app/ ./
 
+# Vite HMR WebSocket settings for dev mode behind a reverse proxy.
+# Consumed by client/vite.config.mts at dev-server runtime (pnpm dev).
+ARG VITE_HMR_HOST
+ARG VITE_HMR_PROTOCOL
+ARG VITE_HMR_CLIENT_PORT
+ENV VITE_HMR_HOST=$VITE_HMR_HOST
+ENV VITE_HMR_PROTOCOL=$VITE_HMR_PROTOCOL
+ENV VITE_HMR_CLIENT_PORT=$VITE_HMR_CLIENT_PORT
+
 EXPOSE 3000
 
 CMD ["pnpm", "dev"]

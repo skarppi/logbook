@@ -1,11 +1,33 @@
-import { defineConfig } from "vite";
+import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react";
 
 // https://vitejs.dev/config/
-export default defineConfig({
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, process.cwd(), "");
+
+  // When the dev server runs behind a TLS reverse proxy (e.g. Apache
+  // forwarding https://public.host.name -> localhost:3000), the browser
+  // can't reach the HMR WebSocket on localhost. Point the HMR client at the
+  // public host/port instead. Leave these unset for plain local dev.
+  //   VITE_HMR_HOST=public.host.name
+  //   VITE_HMR_PROTOCOL=wss
+  //   VITE_HMR_CLIENT_PORT=443
+  const hmrHost = env.VITE_HMR_HOST;
+  const hmr = hmrHost
+    ? {
+        host: hmrHost,
+        protocol: env.VITE_HMR_PROTOCOL || "wss",
+        clientPort: env.VITE_HMR_CLIENT_PORT
+          ? Number(env.VITE_HMR_CLIENT_PORT)
+          : 443,
+      }
+    : undefined;
+
+  return {
   plugins: [react()],
   server: {
     port: 3000,
+    hmr,
     proxy: {
       "/api": "http://localhost:3001",
     },
@@ -49,4 +71,5 @@ export default defineConfig({
       },
     },
   },
+  };
 });
