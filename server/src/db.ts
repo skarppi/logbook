@@ -26,6 +26,7 @@ const pgp: IMain = pgPromise(pgOptions);
 
 const url = `postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:5432/${DB_NAME}`;
 
-console.log(url);
+// Avoid logging the password - log the connection target only.
+console.log(`Connecting to postgres://${DB_USER}@${DB_HOST}:5432/${DB_NAME}`);
 
 export const db: IDatabase<any> = pgp(url);
