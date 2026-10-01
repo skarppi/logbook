@@ -1,15 +1,42 @@
+import { lazy, Suspense } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Header } from "../Header/Header";
-import { Dashboard } from "../../features/dashboard/Home/Home";
-import { FlightDays } from "../../features/flights/Days/FlightDays";
-import { PlanesList } from "../../features/planes/PlanesList/Planes";
-import { BatteriesList } from "../../features/batteries/BatteriesList/Batteries";
-import { LocationsList } from "../../features/locations/LocationsList/Locations";
-import { FlightsUpload } from "../../features/flights/Upload/FlightsUpload";
 import { Container } from "@mui/material";
+import CircularProgress from "@mui/material/CircularProgress";
 import { StyledEngineProvider } from "@mui/material/styles";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { createBreakpoints } from "@mui/system";
+
+const Dashboard = lazy(() =>
+  import("../../features/dashboard/Home/Home").then((m) => ({
+    default: m.Dashboard,
+  }))
+);
+const FlightDays = lazy(() =>
+  import("../../features/flights/Days/FlightDays").then((m) => ({
+    default: m.FlightDays,
+  }))
+);
+const PlanesList = lazy(() =>
+  import("../../features/planes/PlanesList/Planes").then((m) => ({
+    default: m.PlanesList,
+  }))
+);
+const BatteriesList = lazy(() =>
+  import("../../features/batteries/BatteriesList/Batteries").then((m) => ({
+    default: m.BatteriesList,
+  }))
+);
+const LocationsList = lazy(() =>
+  import("../../features/locations/LocationsList/Locations").then((m) => ({
+    default: m.LocationsList,
+  }))
+);
+const FlightsUpload = lazy(() =>
+  import("../../features/flights/Upload/FlightsUpload").then((m) => ({
+    default: m.FlightsUpload,
+  }))
+);
 
 const breakpoints = createBreakpoints({});
 
@@ -114,20 +141,34 @@ export const App = () => {
         <ThemeProvider theme={logbookTheme}>
           <Header />
           <Container disableGutters={true}>
-            <Routes>
-              <Route path="/" element={<Dashboard />} />
-              <Route path="/flights" element={<FlightDays />} />
-              <Route path="/flights/:date" element={<FlightDays />} />
-              <Route path="/flights/:date/:id" element={<FlightDays />} />
-              <Route path="/planes" element={<PlanesList />} />
-              <Route path="/planes/:id" element={<PlanesList />} />
-              <Route path="/batteries" element={<BatteriesList />} />
-              <Route path="/batteries/:id" element={<BatteriesList />} />
-              <Route path="/locations" element={<LocationsList />} />
-              <Route path="/locations/:id" element={<LocationsList />} />
-              <Route path="/upload" element={<FlightsUpload />} />
-              <Route path="/upload/:id" element={<FlightsUpload />} />
-            </Routes>
+            <Suspense
+              fallback={
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    padding: 40,
+                  }}
+                >
+                  <CircularProgress />
+                </div>
+              }
+            >
+              <Routes>
+                <Route path="/" element={<Dashboard />} />
+                <Route path="/flights" element={<FlightDays />} />
+                <Route path="/flights/:date" element={<FlightDays />} />
+                <Route path="/flights/:date/:id" element={<FlightDays />} />
+                <Route path="/planes" element={<PlanesList />} />
+                <Route path="/planes/:id" element={<PlanesList />} />
+                <Route path="/batteries" element={<BatteriesList />} />
+                <Route path="/batteries/:id" element={<BatteriesList />} />
+                <Route path="/locations" element={<LocationsList />} />
+                <Route path="/locations/:id" element={<LocationsList />} />
+                <Route path="/upload" element={<FlightsUpload />} />
+                <Route path="/upload/:id" element={<FlightsUpload />} />
+              </Routes>
+            </Suspense>
           </Container>
         </ThemeProvider>
       </StyledEngineProvider>
