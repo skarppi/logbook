@@ -1,9 +1,11 @@
 /.git
 /db
 /LOGS
+node_modules
 */node_modules
 /sql
 /uploader
 /VIDEOS
 /videoserver
+dist
 */dist

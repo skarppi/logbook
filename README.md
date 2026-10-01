@@ -83,7 +83,8 @@ Redirect 301 /api/videos https://your.synology.ip/videoserver/search.php
 
 #### Requirements
 
-- Node 16+
+- Node 22+
+- pnpm 10+
 - Postgres
 
 ---
