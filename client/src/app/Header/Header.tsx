@@ -23,7 +23,7 @@ const ToolBarButton = ({
   icon: React.ReactNode;
 }) => {
   return (
-    <Button color="inherit" component={Link} to={url}>
+    <Button color="inherit" component={Link} to={url} nativeButton={false}>
       {icon}
       <Typography
         variant="button"

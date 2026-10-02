@@ -47,7 +47,11 @@ export const ListTemplate = ({
                     <AddIcon />
                   </IconButton>
                 ) : (
-                  <IconButton component={AddLink} size="large">
+                  <IconButton
+                    component={AddLink}
+                    size="large"
+                    nativeButton={false}
+                  >
                     <AddIcon />
                   </IconButton>
                 )}
