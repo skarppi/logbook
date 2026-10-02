@@ -1,8 +1,11 @@
 import {
+  BarElement,
   Chart as ChartJS,
   ChartData,
   ChartDataset,
   ChartOptions,
+  LinearScale,
+  TimeScale,
   Tooltip,
   TooltipItem,
 } from "chart.js";
@@ -10,8 +13,14 @@ import { Bar } from "react-chartjs-2";
 import { chartColors } from "../../../utils/charts";
 import { BatteryCycle } from "../../../shared/batteries/types";
 import { formatDuration } from "../../../shared/utils/date";
+import "chartjs-adapter-date-fns";
 
-ChartJS.register(Tooltip);
+// chart.js v4 requires explicit registration. PlaneGraph renders a bar chart
+// with a time x-axis and linear y-axis, so it must register these itself -
+// otherwise rendering throws ("time"/"linear" scale or bar element not
+// registered) whenever this chart is shown on a page that hasn't already
+// loaded another chart (e.g. /planes/add). register() is idempotent.
+ChartJS.register(Tooltip, LinearScale, TimeScale, BarElement);
 interface IProps {
   cycles: BatteryCycle[];
 }

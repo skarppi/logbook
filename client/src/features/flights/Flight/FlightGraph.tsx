@@ -15,10 +15,24 @@ import {
   Tooltip,
   Filler,
   TooltipItem,
+  LineElement,
+  PointElement,
+  LinearScale,
+  TimeScale,
 } from "chart.js";
 import "chartjs-adapter-date-fns";
 
-ChartJS.register(Tooltip, Filler);
+// chart.js v4 requires explicit registration. This line chart uses a time
+// x-axis and linear y-axes, so register them here instead of relying on
+// another chart module having been loaded first. register() is idempotent.
+ChartJS.register(
+  Tooltip,
+  Filler,
+  LineElement,
+  PointElement,
+  LinearScale,
+  TimeScale
+);
 
 const segmentTypeToYAxis = {
   [SegmentType.flying]: 1024,
