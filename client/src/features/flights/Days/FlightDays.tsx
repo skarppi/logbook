@@ -6,7 +6,9 @@ import TableBody from "@mui/material/TableBody";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
-import InputAdornment from "@mui/material/InputAdornment";
+import MenuItem from "@mui/material/MenuItem";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Checkbox from "@mui/material/Checkbox";
 import * as React from "react";
 import { NavLink } from "react-router-dom";
 import { useParams } from "react-router-dom";
@@ -16,7 +18,6 @@ import { Flights } from "../Flights/Flights";
 
 import ClosedIcon from "@mui/icons-material/ChevronRight";
 import OpenedIcon from "@mui/icons-material/ExpandMore";
-import SearchIcon from "@mui/icons-material/Search";
 import { LoadingTable } from "../../loading/Loading";
 import { useQuery } from "urql";
 import { ITotalRows } from "../../dashboard/Home/GraphOverTime";
@@ -28,16 +29,34 @@ import { ListTemplate } from "../../../common/ListTemplate";
 
 const PAGE_SIZE = 60; // Load 60 days at a time (roughly 2 months)
 
+const PlanesQuery = gql`
+  query {
+    planes(orderBy: ID_ASC) {
+      nodes {
+        id
+      }
+    }
+  }
+`;
+
+interface IPlanesResponse {
+  planes: {
+    nodes: { id: string }[];
+  };
+}
+
 const Query = gql`
   query (
     $orderBy: [FlightsByDaysOrderBy!]
     $first: Int
     $after: Cursor
+    $filter: FlightsByDayFilter
   ) {
     flightsByDays(
       orderBy: $orderBy
       first: $first
       after: $after
+      filter: $filter
     ) {
       pageInfo {
         hasNextPage
@@ -133,6 +152,38 @@ export const FlightDays = () => {
   const [orderBy, setOrderBy] = React.useState("DATE_DESC");
   const [allNodes, setAllNodes] = React.useState<ITotalRows[]>([]);
   const [cursor, setCursor] = React.useState<string | null>(null);
+  
+  // Filter states
+  const [selectedPlane, setSelectedPlane] = React.useState<string>("");
+  const [fromDate, setFromDate] = React.useState<string>("");
+  const [toDate, setToDate] = React.useState<string>("");
+  const [favoritesOnly, setFavoritesOnly] = React.useState(false);
+
+  // Fetch planes for dropdown
+  const [planesResult] = useQuery<IPlanesResponse>({
+    query: PlanesQuery,
+  });
+  const planes = planesResult.data?.planes.nodes || [];
+
+  // Build filter for server-side query
+  const filter = React.useMemo(() => {
+    const conditions: Record<string, unknown> = {};
+    
+    if (selectedPlane) {
+      conditions.planeId = { equalTo: selectedPlane };
+    }
+    if (fromDate) {
+      conditions.date = { ...conditions.date as object, greaterThanOrEqualTo: fromDate };
+    }
+    if (toDate) {
+      conditions.date = { ...conditions.date as object, lessThanOrEqualTo: toDate };
+    }
+    if (favoritesOnly) {
+      conditions.favorites = { greaterThan: 0 };
+    }
+    
+    return Object.keys(conditions).length > 0 ? conditions : undefined;
+  }, [selectedPlane, fromDate, toDate, favoritesOnly]);
 
   const [read] = useQuery<IQueryResponse>({
     query: Query,
@@ -140,15 +191,16 @@ export const FlightDays = () => {
       orderBy,
       first: PAGE_SIZE,
       after: cursor,
+      filter,
     },
     requestPolicy: "cache-and-network",
   });
 
-  // Reset accumulated nodes when order changes
+  // Reset accumulated nodes when order or filter changes
   React.useEffect(() => {
     setAllNodes([]);
     setCursor(null);
-  }, [orderBy]);
+  }, [orderBy, selectedPlane, fromDate, toDate, favoritesOnly]);
 
   // Accumulate nodes from paginated results
   React.useEffect(() => {
@@ -275,21 +327,51 @@ export const FlightDays = () => {
     <ListTemplate
       title="Flights List"
       extraActions={
-        <TextField
-          id="search"
-          placeholder="Search"
-          type="search"
-          size="small"
-          slotProps={{
-            input: {
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon />
-                </InputAdornment>
-              ),
-            },
-          }}
-        />
+        <Box sx={{ display: "flex", gap: 2, alignItems: "center", flexWrap: "wrap" }}>
+          <TextField
+            select
+            label="Plane"
+            size="small"
+            value={selectedPlane}
+            onChange={(e) => setSelectedPlane(e.target.value)}
+            sx={{ minWidth: 120 }}
+          >
+            <MenuItem value="">All planes</MenuItem>
+            {planes.map((plane) => (
+              <MenuItem key={plane.id} value={plane.id}>
+                {plane.id}
+              </MenuItem>
+            ))}
+          </TextField>
+          <TextField
+            label="From"
+            type="date"
+            size="small"
+            value={fromDate}
+            onChange={(e) => setFromDate(e.target.value)}
+            slotProps={{ inputLabel: { shrink: true } }}
+            sx={{ width: 150 }}
+          />
+          <TextField
+            label="To"
+            type="date"
+            size="small"
+            value={toDate}
+            onChange={(e) => setToDate(e.target.value)}
+            slotProps={{ inputLabel: { shrink: true } }}
+            sx={{ width: 150 }}
+          />
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={favoritesOnly}
+                onChange={(e) => setFavoritesOnly(e.target.checked)}
+                size="small"
+              />
+            }
+            label="Favorites"
+          />
+        </Box>
       }
     >
       <Table>
