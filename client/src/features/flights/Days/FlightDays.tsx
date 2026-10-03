@@ -3,6 +3,8 @@ import TableRow from "@mui/material/TableRow";
 import TableCell from "@mui/material/TableCell";
 import TableHead from "@mui/material/TableHead";
 import TableBody from "@mui/material/TableBody";
+import Button from "@mui/material/Button";
+import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import InputAdornment from "@mui/material/InputAdornment";
 import * as React from "react";
@@ -24,9 +26,23 @@ import TableSortLabel from "@mui/material/TableSortLabel";
 import { useScroll } from "../../../common/useScroll";
 import { ListTemplate } from "../../../common/ListTemplate";
 
+const PAGE_SIZE = 60; // Load 60 days at a time (roughly 2 months)
+
 const Query = gql`
-  query ($orderBy: [FlightsByDaysOrderBy!]) {
-    flightsByDays(orderBy: $orderBy) {
+  query (
+    $orderBy: [FlightsByDaysOrderBy!]
+    $first: Int
+    $after: Cursor
+  ) {
+    flightsByDays(
+      orderBy: $orderBy
+      first: $first
+      after: $after
+    ) {
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
       nodes {
         date
         planeId
@@ -40,6 +56,10 @@ const Query = gql`
 
 interface IQueryResponse {
   flightsByDays: {
+    pageInfo: {
+      hasNextPage: boolean;
+      endCursor: string | null;
+    };
     nodes: ITotalRows[];
   };
 }
@@ -111,14 +131,56 @@ export const FlightDays = () => {
   const { date } = useParams();
 
   const [orderBy, setOrderBy] = React.useState("DATE_DESC");
+  const [allNodes, setAllNodes] = React.useState<ITotalRows[]>([]);
+  const [cursor, setCursor] = React.useState<string | null>(null);
 
-  const [read, reload] = useQuery<IQueryResponse>({
+  const [read] = useQuery<IQueryResponse>({
     query: Query,
-    variables: { orderBy },
+    variables: {
+      orderBy,
+      first: PAGE_SIZE,
+      after: cursor,
+    },
     requestPolicy: "cache-and-network",
   });
 
-  const groupedFlights = groupFlightsPerMonthAndDay(read.data);
+  // Reset accumulated nodes when order changes
+  React.useEffect(() => {
+    setAllNodes([]);
+    setCursor(null);
+  }, [orderBy]);
+
+  // Accumulate nodes from paginated results
+  React.useEffect(() => {
+    if (read.data?.flightsByDays.nodes) {
+      setAllNodes((prev) => {
+        // If cursor is null, this is a fresh query - replace all
+        if (cursor === null) {
+          return read.data!.flightsByDays.nodes;
+        }
+        // Otherwise append new nodes
+        const newNodes = read.data!.flightsByDays.nodes;
+        const existingDates = new Set(prev.map((n) => n.date + n.planeId));
+        const uniqueNewNodes = newNodes.filter(
+          (n) => !existingDates.has(n.date + n.planeId)
+        );
+        return [...prev, ...uniqueNewNodes];
+      });
+    }
+  }, [read.data, cursor]);
+
+  const hasNextPage = read.data?.flightsByDays.pageInfo.hasNextPage ?? false;
+  const endCursor = read.data?.flightsByDays.pageInfo.endCursor ?? null;
+
+  const loadMore = () => {
+    if (hasNextPage && endCursor) {
+      setCursor(endCursor);
+    }
+  };
+
+  const groupedFlights = groupFlightsPerMonthAndDay({
+    flightsByDays: { pageInfo: { hasNextPage: false, endCursor: null }, nodes: allNodes },
+  });
   const totalsPerMonthDays = calculateTotalsPerMonthAndDay(groupedFlights);
 
   const scrollRef = useScroll<HTMLTableRowElement>([date, read.fetching]);
@@ -212,12 +274,12 @@ export const FlightDays = () => {
   return (
     <ListTemplate
       title="Flights List"
-      search={
+      extraActions={
         <TextField
           id="search"
           placeholder="Search"
           type="search"
-          margin="normal"
+          size="small"
           slotProps={{
             input: {
               startAdornment: (
@@ -246,11 +308,26 @@ export const FlightDays = () => {
         </TableHead>
         <TableBody>
           <LoadingTable
-            spinning={read.fetching}
+            spinning={read.fetching && allNodes.length === 0}
             error={read.error}
             colSpan={5}
           />
           {monthRows}
+          {(hasNextPage || read.fetching) && (
+            <TableRow>
+              <TableCell colSpan={5}>
+                <Box sx={{ display: "flex", justifyContent: "center", py: 2 }}>
+                  <Button
+                    variant="outlined"
+                    onClick={loadMore}
+                    disabled={read.fetching}
+                  >
+                    {read.fetching ? "Loading..." : "Load More"}
+                  </Button>
+                </Box>
+              </TableCell>
+            </TableRow>
+          )}
         </TableBody>
       </Table>
     </ListTemplate>
