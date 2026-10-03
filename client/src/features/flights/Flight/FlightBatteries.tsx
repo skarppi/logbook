@@ -1,7 +1,7 @@
 import * as React from "react";
 import Button from "@mui/material/Button";
 import FormControl from "@mui/material/FormControl";
-import { Flight } from "../../../shared/flights/types";
+import { Flight, Segment } from "../../../shared/flights/types";
 import { FlightBattery } from "./FlightBattery";
 import AddIcon from "@mui/icons-material/Add";
 import { cycleFromFlight } from "../../../shared/batteries";
@@ -10,6 +10,7 @@ import { useMutation } from "urql";
 import { LoadingIcon } from "../../loading/Loading";
 import { CREATE_BATTERY_CYCLE } from "../../batteries/Battery/BatteryCycle";
 import { InputLabel, Typography } from "@mui/material";
+import { getApi } from "../../../utils/api-facade";
 
 interface IBatteryProps {
   flight: Flight;
@@ -28,7 +29,7 @@ export const FlightBatteries = ({
 
   const [create, createCycle] = useMutation(CREATE_BATTERY_CYCLE);
 
-  const addBattery = () => {
+  const addBattery = async () => {
     const usedBatteries = cycles.map((c) => c.batteryName);
 
     const nextBatteryName = plane?.planeBatteries?.nodes.find(
@@ -37,7 +38,11 @@ export const FlightBatteries = ({
 
     const battery = batteries.find((b) => b.name === nextBatteryName);
 
-    const cycle = cycleFromFlight(flight, battery?.name ?? "-");
+    // Segments are no longer part of the main flight query (loaded lazily),
+    // so fetch them on demand to compute the battery cycle voltages/capacity.
+    const segments = await getApi<Segment[]>(`flights/${flight.id}/segments`);
+
+    const cycle = cycleFromFlight(flight, battery?.name ?? "-", segments);
     createCycle({ cycle }).then(refreshFlight);
   };
 

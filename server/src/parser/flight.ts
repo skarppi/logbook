@@ -65,7 +65,7 @@ export class FlightImpl implements Flight {
 
     this.stats = this.generateStats() ?? {};
 
-    this.batteries = [cycleFromFlight(this, null!)];
+    this.batteries = [cycleFromFlight(this, null!, this.segments)];
   }
 
   private findSlopes = (

@@ -1,4 +1,4 @@
-import { Flight } from "../flights/types";
+import { Flight, Segment } from "../flights/types";
 import { BatteryCycle } from "./types";
 import { Telemetry } from "../utils/telemetry";
 
@@ -11,11 +11,12 @@ export enum BatteryState {
 export const cycleFromFlight = (
   flight: Flight,
   batteryName: string,
+  segments: Segment[],
 ): BatteryCycle => {
-  const firstSegment = flight.segments[0];
+  const firstSegment = segments[0];
   const firstTelemetry = firstSegment.rows[0];
 
-  const lastSegment = flight.segments.slice(-1)[0];
+  const lastSegment = segments.slice(-1)[0];
   const lastTelemetry = lastSegment.rows.slice(-1)[0];
 
   const startVoltage = Telemetry.voltage(firstTelemetry);
