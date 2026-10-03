@@ -30,7 +30,7 @@
     "node": ">=22"
   },
   "devDependencies": {
-    "concurrently": "^3.6.1",
+    "concurrently": "^10.0.5",
     "prettier": "^2.7.1",
     "rimraf": "^2.6.2",
     "ts-node": "^10.9.1",
