@@ -1,4 +1,5 @@
 import { Line } from "react-chartjs-2";
+import * as React from "react";
 import {
   SegmentItem,
   Segment,
@@ -13,6 +14,7 @@ import {
   ChartDataset,
   ChartOptions,
   Tooltip,
+  Legend,
   Filler,
   TooltipItem,
   LineElement,
@@ -27,6 +29,7 @@ import "chartjs-adapter-date-fns";
 // another chart module having been loaded first. register() is idempotent.
 ChartJS.register(
   Tooltip,
+  Legend,
   Filler,
   LineElement,
   PointElement,
@@ -248,7 +251,23 @@ export const FlightGraph = ({ plane, segments, stats }: IProps) => {
     datasets: [flightTimeSet, ...datasets],
   };
 
-  const options = chartOptions(plane);
+  // Memoize options so its identity is stable across renders. react-chartjs-2
+  // reacts to a new options reference by destroying and re-creating the chart
+  // via a deferred setTimeout(renderChart); under React StrictMode's
+  // double-invoke this races and throws "Canvas is already in use".
+  const options = React.useMemo(() => chartOptions(plane), [plane]);
 
-  return <Line data={graph} options={options} />;
+  // Nothing valid to plot - render nothing rather than mounting a chart with
+  // an empty/invalid time axis.
+  if (items.length === 0) {
+    return null;
+  }
+
+  // A stable key tied to the dataset forces react-chartjs-2 to mount a fresh
+  // canvas when the flight/segments change, avoiding Chart.js "Canvas is
+  // already in use" errors caused by React reusing the canvas DOM node before
+  // the previous Chart instance is destroyed.
+  const chartKey = `${labels[0] ?? ""}-${labels.length}-${fields.length}`;
+
+  return <Line key={chartKey} data={graph} options={options} />;
 };

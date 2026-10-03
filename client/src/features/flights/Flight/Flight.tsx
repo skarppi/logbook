@@ -1,8 +1,9 @@
 import IconButton from "@mui/material/IconButton";
 import TextField from "@mui/material/TextField";
 import Divider from "@mui/material/Divider";
+import CircularProgress from "@mui/material/CircularProgress";
 import * as React from "react";
-import { Flight } from "../../../shared/flights/types";
+import { Flight, Segment } from "../../../shared/flights/types";
 import { useNavigate } from "react-router-dom";
 
 import { FlightDate } from "./FlightDate";
@@ -26,7 +27,7 @@ import { useQuery, useMutation } from "urql";
 import gql from "graphql-tag";
 import { Battery } from "../../../shared/batteries/types";
 import { formatDate } from "../../../utils/date";
-import { putApi } from "../../../utils/api-facade";
+import { getApi, putApi } from "../../../utils/api-facade";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import ListItemIcon from "@mui/material/ListItemIcon";
@@ -58,7 +59,6 @@ const Query = gql`
         longitude
       }
       favorite
-      segments
       batteryCycles {
         nodes {
           id
@@ -147,6 +147,7 @@ export const FlightDetails = ({
     -new Date().getTimezoneOffset() / 60
   );
   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement>();
+  const [telemetryExpanded, setTelemetryExpanded] = React.useState(false);
 
   const [read, refreshFlight] = useQuery<IQueryResponse>({
     query: Query,
@@ -155,38 +156,54 @@ export const FlightDetails = ({
   const [update, updateFlight] = useMutation(Update);
   const [del, deleteFlight] = useMutation(Delete);
 
+  // Lazy load segments via REST (server filters out ignored telemetries)
+  const [segments, setSegments] = React.useState<Segment[] | null>(null);
+  const [segmentsLoading, setSegmentsLoading] = React.useState(false);
+
+  React.useEffect(() => {
+    if (telemetryExpanded && !segments && !segmentsLoading) {
+      setSegmentsLoading(true);
+      getApi<Segment[]>(`flights/${entry.id}/segments`)
+        .then(setSegments)
+        .finally(() => setSegmentsLoading(false));
+    }
+  }, [telemetryExpanded, entry.id, segments, segmentsLoading]);
+
   // local state
   const [flight, setFlight] = React.useState<Flight>(entry);
   React.useEffect(() => {
     if (read.data) {
       setFlight(read.data.flight);
-
-      const firstRow = flight.segments?.[0]?.rows[0];
-      if (firstRow) {
-        const originalStartDate = new Date(`${firstRow.Date} ${firstRow.Time}`);
-        const currentStartDate = new Date(flight.startDate);
-
-        const offset = -(
-          originalStartDate.getTimezoneOffset() / 60 +
-          differenceInHours(currentStartDate, originalStartDate)
-        );
-
-        setTimezoneOffset(offset);
-      }
     }
   }, [read.data]);
+
+  // Update timezone offset when segments load
+  React.useEffect(() => {
+    if (segments?.[0]?.rows[0]) {
+      const firstRow = segments[0].rows[0];
+      const originalStartDate = new Date(`${firstRow.Date} ${firstRow.Time}`);
+      const currentStartDate = new Date(flight.startDate);
+
+      const offset = -(
+        originalStartDate.getTimezoneOffset() / 60 +
+        differenceInHours(currentStartDate, originalStartDate)
+      );
+
+      setTimezoneOffset(offset);
+    }
+  }, [segments, flight.startDate]);
 
   const flightGraph = React.useMemo(
     () =>
       flight.plane &&
-      flight.segments && (
+      segments && (
         <FlightGraph
           plane={flight.plane}
-          segments={flight.segments}
+          segments={segments}
           stats={flight.stats}
         />
       ),
-    [flight.plane, flight.segments, flight.stats]
+    [flight.plane, segments, flight.stats]
   );
 
   const flightDate = formatDate(flight.startDate);
@@ -313,23 +330,47 @@ export const FlightDetails = ({
         fullWidth={true}
       />
 
-      <Box sx={{ height: 500, width: "92vw", maxWidth: 1050 }}>
-        {flightGraph}
-      </Box>
+      <Accordion
+        expanded={telemetryExpanded}
+        onChange={(_, expanded) => setTelemetryExpanded(expanded)}
+        slotProps={{ transition: { unmountOnExit: true } }}
+      >
+        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+          Telemetry
+        </AccordionSummary>
+        <AccordionDetails>
+          {segmentsLoading ? (
+            <Box sx={{ display: "flex", justifyContent: "center", py: 4 }}>
+              <CircularProgress />
+            </Box>
+          ) : (
+            <Box sx={{ height: 500, width: "100%", maxWidth: 1050 }}>
+              {flightGraph}
+            </Box>
+          )}
+        </AccordionDetails>
+      </Accordion>
 
       <Accordion
         defaultExpanded={false}
         slotProps={{ transition: { unmountOnExit: true } }}
       >
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-          Show Map
+          Map
         </AccordionSummary>
         <AccordionDetails>
-          {flight.location && (
-            <FlightTrack
-              location={flight.location}
-              segments={flight.segments}
-            />
+          {!telemetryExpanded ? (
+            <Box sx={{ color: "text.secondary" }}>
+              Expand Telemetry first to load GPS data
+            </Box>
+          ) : segmentsLoading ? (
+            <Box sx={{ display: "flex", justifyContent: "center", py: 4 }}>
+              <CircularProgress />
+            </Box>
+          ) : (
+            flight.location && segments && (
+              <FlightTrack location={flight.location} segments={segments} />
+            )
           )}
         </AccordionDetails>
       </Accordion>

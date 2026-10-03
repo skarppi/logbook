@@ -4,6 +4,13 @@ import multer, { FileFilterCallback } from "multer";
 import { parseFile, parseData, IParserOptions } from "../parser";
 import FlightRepository from "../model/flight";
 import { Flight, Segment, SegmentItem } from "../../../client/src/shared/flights/types";
+import { db } from "../db";
+
+interface Telemetry {
+  id: string;
+  default: boolean;
+  ignore: boolean;
+}
 
 function parseFiles(
   filenames: string[],
@@ -20,6 +27,62 @@ function parseFiles(
 
 export function flightsRouter() {
   const router = Router();
+
+  // Get filtered segments for a flight (excludes ignored telemetries)
+  router.get("/:id/segments", async (req, res, next) => {
+    try {
+      const { id } = req.params;
+
+      // Get flight with plane's telemetries in one query
+      const result = await db.oneOrNone<{
+        segments: Segment[];
+        telemetries: Telemetry[] | null;
+      }>(
+        `SELECT f.segments, p.telemetries 
+         FROM flights f 
+         JOIN planes p ON f.plane_id = p.id 
+         WHERE f.id = $1`,
+        id
+      );
+
+      if (!result) {
+        return res.status(404).json({ error: "Flight not found" });
+      }
+
+      const { segments, telemetries } = result;
+
+      // Structural fields the client always needs (time axis, etc.) must never
+      // be stripped, regardless of per-plane telemetry config.
+      const protectedFields = new Set(["Date", "Time", "timestamp"]);
+
+      // Get list of telemetry IDs to ignore
+      const ignoredFields = new Set(
+        (telemetries || [])
+          .filter((t) => t.ignore)
+          .map((t) => t.id)
+          .filter((id) => !protectedFields.has(id))
+      );
+
+      // If nothing to filter, return segments as-is
+      if (ignoredFields.size === 0) {
+        return res.json(segments);
+      }
+
+      // Filter out ignored fields from each row
+      const filteredSegments = segments.map((segment) => ({
+        ...segment,
+        rows: segment.rows.map((row) =>
+          Object.fromEntries(
+            Object.entries(row).filter(([key]) => !ignoredFields.has(key))
+          ) as SegmentItem
+        ),
+      }));
+
+      res.json(filteredSegments);
+    } catch (err) {
+      next(err);
+    }
+  });
 
   router.put("/:day/:id/reset", (req, res, next) => {
     const id = req.params.id;
