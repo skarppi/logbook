@@ -1,8 +1,5 @@
-import * as React from "react";
-
-import { Player, ControlBar, BigPlayButton } from "video-react";
-import { getApi } from "../../../utils/api-facade";
 import { useState, useEffect } from "react";
+import { getApi } from "../../../utils/api-facade";
 import { formatDate } from "../../../utils/date";
 
 import css from "./Videos.module.css";
@@ -13,15 +10,7 @@ interface IVideosProps {
   session?: string | number;
 }
 
-const Overlay = ({ url }: { url: string }) => {
-  const title = url.substr(url.lastIndexOf("/") + 1);
-
-  return (
-    <div className={css.overlay}>
-      <h1>{title}</h1>
-    </div>
-  );
-};
+const getVideoTitle = (url: string) => url.substring(url.lastIndexOf("/") + 1);
 
 export const Videos = ({ date, plane, session }: IVideosProps) => {
   const [videos, setVideos] = useState<string[]>();
@@ -43,11 +32,14 @@ export const Videos = ({ date, plane, session }: IVideosProps) => {
   return (
     <>
       {videos.map((video) => (
-        <Player key={video} src={video}>
-          <ControlBar autoHide={true} />
-          <BigPlayButton position="center" />
-          <Overlay url={video} />
-        </Player>
+        <div key={video} className={css.videoContainer}>
+          <div className={css.overlay}>
+            <h1>{getVideoTitle(video)}</h1>
+          </div>
+          <video src={video} controls className={css.video}>
+            Your browser does not support the video tag.
+          </video>
+        </div>
       ))}
     </>
   );

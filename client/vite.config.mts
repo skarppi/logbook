@@ -45,9 +45,6 @@ export default defineConfig(({ mode }) => {
           if (id.includes("chart.js") || id.includes("react-chartjs-2")) {
             return "charts";
           }
-          if (id.includes("video-react")) {
-            return "video";
-          }
           if (id.includes("@mui") || id.includes("@emotion")) {
             return "mui";
           }

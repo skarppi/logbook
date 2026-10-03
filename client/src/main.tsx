@@ -3,7 +3,6 @@ import ReactDOM from "react-dom/client";
 import { App } from "./app/App/App";
 import { Provider, createClient } from "urql";
 
-import "video-react/dist/video-react.css";
 import "leaflet/dist/leaflet.css";
 import "./common/global-leaflet.css";
 

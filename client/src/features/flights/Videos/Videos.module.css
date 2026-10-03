@@ -1,3 +1,14 @@
+.videoContainer {
+  position: relative;
+  background: #000;
+  margin-bottom: 1em;
+}
+
+.video {
+  display: block;
+  width: 100%;
+}
+
 .overlay {
   position: absolute;
   top: 0;
@@ -6,9 +17,11 @@
   width: 100%;
   background: linear-gradient(180deg, rgba(0, 0, 0, 0.7) 50%, transparent 100%);
   z-index: 100;
+  pointer-events: none;
 }
 
 .overlay h1 {
   margin-left: 1em;
   font-weight: 400;
+  color: #fff;
 }
