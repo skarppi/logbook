@@ -1,9 +1,14 @@
 import * as React from "react";
 
-import type {
+import {
+  BarElement,
+  Chart as ChartJS,
   ChartData,
   ChartDataset,
   ChartOptions,
+  LinearScale,
+  TimeScale,
+  Tooltip,
   TooltipItem,
 } from "chart.js";
 import { Bar } from "react-chartjs-2";
@@ -11,6 +16,10 @@ import { chartColors } from "../../../utils/charts";
 import { BatteryCycle } from "../../../shared/batteries/types";
 import { formatDuration } from "../../../shared/utils/date";
 import { fi } from "date-fns/locale";
+import "chartjs-adapter-date-fns";
+
+// chart.js v4 requires explicit registration
+ChartJS.register(Tooltip, LinearScale, TimeScale, BarElement);
 
 interface IProps {
   cycles: BatteryCycle[];

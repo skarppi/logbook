@@ -384,7 +384,7 @@ export const BatteryDetails = ({
       />
 
       <Box sx={{ height: "400px", width: "92vw", maxWidth: "1200px" }}>
-        <BatteryGraph cycles={cycles}></BatteryGraph>
+        <BatteryGraph key={battery.id} cycles={cycles}></BatteryGraph>
       </Box>
 
       <Accordion key={battery.id} defaultExpanded={false}>
