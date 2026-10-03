@@ -231,8 +231,9 @@ export const FlightBattery = ({
             {textFieldVolts("restingVoltage", "Rest", cycle.restingVoltage)}
           </Box>
 
-          <Box sx={{ alignSelf: "center" }}>
+          <Box sx={{ alignSelf: "center" }} onClick={(e) => e.stopPropagation()}>
             <IconButton
+              component="span"
               onClick={(_) => storeBatteryState(BatteryState.discharged)}
               color={
                 cycle.state === BatteryState.discharged ? "primary" : "default"
@@ -242,6 +243,7 @@ export const FlightBattery = ({
               <EmptyChargeIcon />
             </IconButton>
             <IconButton
+              component="span"
               onClick={(_) => storeBatteryState(BatteryState.storage)}
               color={
                 cycle.state === BatteryState.storage ? "primary" : "default"
@@ -251,6 +253,7 @@ export const FlightBattery = ({
               <StorageChargeIcon />
             </IconButton>
             <IconButton
+              component="span"
               onClick={(_) => storeBatteryState(BatteryState.charged)}
               color={
                 cycle.state === BatteryState.charged ? "primary" : "default"
@@ -259,7 +262,7 @@ export const FlightBattery = ({
             >
               <FullChargeIcon />
             </IconButton>
-            <IconButton onClick={removeBattery} size="large">
+            <IconButton component="span" onClick={removeBattery} size="large">
               <ClearIcon />
             </IconButton>
             <LoadingIcon
