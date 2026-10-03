@@ -14,13 +14,8 @@ import gql from "graphql-tag";
 import { Flight } from "../../../shared/flights/types";
 import { useQuery } from "urql";
 import { addDays } from "date-fns";
-import {
-  formatTime,
-  formatDate,
-  formatDateTimeLong,
-} from "../../../utils/date";
+import { formatTime, formatDate } from "../../../utils/date";
 import { useScroll } from "../../../common/useScroll";
-import Typography from "@mui/material/Typography";
 
 const Query = gql`
   query ($from: Datetime!, $to: Datetime!) {
@@ -102,6 +97,10 @@ export const Flights = () => {
           selected={false}
           hover={true}
           sx={{
+            backgroundColor: "grey.200",
+            "&:hover": {
+              backgroundColor: "action.hover",
+            },
             ...(isCurrent && {
               "> *": {
                 borderBottom: "unset",
@@ -109,7 +108,7 @@ export const Flights = () => {
             }),
           }}
         >
-          <TableCell>
+          <TableCell sx={{ pl: 6 }}>
             <NavLink to={isCurrent ? path : `${path}/${flight.id}`}>
               {(isCurrent && <OpenedIcon />) || <ClosedIcon />}
               {formatTime(flight.startDate)}{" "}
@@ -142,19 +141,6 @@ export const Flights = () => {
   return (
     <>
       <LoadingTable spinning={read.fetching} error={read.error} colSpan={5} />
-      <TableRow
-        sx={{
-          "> *": {
-            borderBottom: "unset",
-          },
-        }}
-      >
-        <TableCell colSpan={5}>
-          <Typography variant="h6">
-            Flights on {formatDateTimeLong(date)}
-          </Typography>
-        </TableCell>
-      </TableRow>
       {rows}
     </>
   );
