@@ -41,7 +41,7 @@ export const FlightLocation = ({ flight, save }: IFlightLocationProps) => {
   const [query] = useQuery<IQueryResponse>({ query: Query });
 
   const [locationId, setLocationId] = useStateAndListenChanges(
-    flight.location?.id
+    flight.location?.id,
   );
 
   const [createNew, setCreateNew] = useState(false);

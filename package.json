@@ -7,7 +7,9 @@
     "clean": "rimraf server/dist",
     "build": "pnpm run clean && pnpm -r run build",
     "production": "NODE_ENV=production node PORT=3000 ./server/dist/server/src/server.js",
-    "dev": "pnpm -r --parallel run dev"
+    "dev": "pnpm -r --parallel run dev",
+    "format": "prettier --write \"client/src/**/*.{ts,tsx}\" \"server/src/**/*.ts\"",
+    "format:check": "prettier --check \"client/src/**/*.{ts,tsx}\" \"server/src/**/*.ts\""
   },
   "keywords": [
     "typescript",

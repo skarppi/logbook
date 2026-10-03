@@ -1,7 +1,7 @@
 import { useState, useEffect, Dispatch, SetStateAction } from "react";
 
 export const useStateAndListenChanges = (
-  initialValue?: number
+  initialValue?: number,
 ): [number | undefined, Dispatch<SetStateAction<number | undefined>>] => {
   const [value, setValue] = useState(initialValue);
 

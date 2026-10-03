@@ -33,7 +33,7 @@ export class FlightImpl implements Flight {
     plane: Plane,
     session: number,
     segments: SegmentImpl[],
-    locationId?: number
+    locationId?: number,
   ) {
     // EdgeTX uses unique file names: PLANE-YYYY-MM-DD-hhmmss
     if (name.match(/\d{4}$/) || name.includes("Session")) {
@@ -70,7 +70,7 @@ export class FlightImpl implements Flight {
 
   private findSlopes = (
     segment: SegmentImpl,
-    zeroHeight: number
+    zeroHeight: number,
   ): FlightSlope[] => {
     if (segment.type !== SegmentType.flying) {
       return [];
@@ -126,14 +126,14 @@ export class FlightImpl implements Flight {
           direction: 0,
         } as FlightSlope | undefined,
         slopes: [] as FlightSlope[],
-      }
+      },
     );
     return items.slopes;
   };
 
   private generateStats = (): FlightStats | null => {
     const launchSegment = this.segments.findIndex(
-      (segment) => segment.type === SegmentType.flying
+      (segment) => segment.type === SegmentType.flying,
     );
 
     if (launchSegment < 0) {
@@ -141,7 +141,7 @@ export class FlightImpl implements Flight {
     }
 
     const zeroHeight =
-      launchSegment > 0 ? this.segments[launchSegment - 1].last?.alt ?? 0 : 0;
+      launchSegment > 0 ? (this.segments[launchSegment - 1].last?.alt ?? 0) : 0;
 
     const slopes = this.segments
       .slice(launchSegment)
@@ -150,13 +150,20 @@ export class FlightImpl implements Flight {
       }, [] as FlightSlope[]);
 
     const launchHeight: number | null | undefined =
-      this.plane.type === PlaneType.glider && slopes[1] ? slopes[1].maxHeight : null;
+      this.plane.type === PlaneType.glider && slopes[1]
+        ? slopes[1].maxHeight
+        : null;
 
     const maxHeight = slopes.reduce((currentMax, item) => {
       const itemMax = item.maxHeight ?? 0;
       return itemMax > (currentMax ?? 0) ? itemMax : currentMax;
     }, zeroHeight);
 
-    return { zeroHeight, launchHeight: launchHeight ?? undefined, maxHeight, slopes };
+    return {
+      zeroHeight,
+      launchHeight: launchHeight ?? undefined,
+      maxHeight,
+      slopes,
+    };
   };
 }

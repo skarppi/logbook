@@ -10,7 +10,7 @@ export enum BatteryState {
 
 export const cycleFromFlight = (
   flight: Flight,
-  batteryName: string
+  batteryName: string,
 ): BatteryCycle => {
   const firstSegment = flight.segments[0];
   const firstTelemetry = firstSegment.rows[0];

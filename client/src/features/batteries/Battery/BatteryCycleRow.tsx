@@ -54,7 +54,7 @@ export const BatteryCycleRow = ({
 
   // local state
   const [editing, setEditing] = React.useState<BatteryCycle | undefined>(
-    !cycle.id ? cycle : undefined
+    !cycle.id ? cycle : undefined,
   );
 
   const isEditing = editing?.id === cycle.id;
@@ -92,7 +92,7 @@ export const BatteryCycleRow = ({
     const { __typename: _, flight, ...cycle } = editing;
     if (editing?.id) {
       updateCycle({ id: editing.id, cycle }).then(
-        (res) => !res.error && setEditing(undefined)
+        (res) => !res.error && setEditing(undefined),
       );
     } else {
       createCycle({ cycle }).then((res) => !res.error && setEditing(undefined));
@@ -120,7 +120,7 @@ export const BatteryCycleRow = ({
     name: string,
     value: number | undefined,
     unit: string,
-    placeholder: string
+    placeholder: string,
   ) =>
     isEditing ? (
       <TextField
@@ -133,7 +133,9 @@ export const BatteryCycleRow = ({
         style={{ width: 75 }}
         slotProps={{
           input: {
-            endAdornment: <InputAdornment position="end">{unit}</InputAdornment>,
+            endAdornment: (
+              <InputAdornment position="end">{unit}</InputAdornment>
+            ),
           },
           htmlInput: {
             step: unit === "V" ? 0.01 : 1,

@@ -28,15 +28,15 @@ export const LocationMap = ({ locations }: IFlightLocationProps) => {
   const minLat = filtered.reduce((prev, l) => Math.min(prev, l.latitude!!), 90);
   const maxLat = filtered.reduce(
     (prev, l) => Math.max(prev, l.latitude!!),
-    -90
+    -90,
   );
   const minLon = filtered.reduce(
     (prev, l) => Math.min(prev, l.longitude!!),
-    180
+    180,
   );
   const maxLon = filtered.reduce(
     (prev, l) => Math.max(prev, l.longitude!!),
-    -180
+    -180,
   );
 
   const markers = filtered

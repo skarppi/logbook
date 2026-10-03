@@ -12,7 +12,7 @@ export interface IParserOptions {
 
 export function parseFile(
   filename: string,
-  options: IParserOptions
+  options: IParserOptions,
 ): Promise<Flight[]> {
   return csv<SegmentItem>(`${config.CSV_FOLDER}${filename}`).then((items) => {
     const name = filename.substring(0, filename.lastIndexOf("."));
@@ -23,7 +23,7 @@ export function parseFile(
 export function parseData(
   id: string,
   items: SegmentItem[],
-  options: IParserOptions
+  options: IParserOptions,
 ): Promise<Flight[]> {
   const parser = new FlightParser(id, options);
   return parser.fetchPlane().then(() => {
@@ -49,9 +49,9 @@ function storeFlights(flights: Flight[]): Promise<Flight[]> {
   return flights.reduce(
     (p, flight) =>
       p.then((results) =>
-        storeFlight(flight).then((result) => results.concat([result]))
+        storeFlight(flight).then((result) => results.concat([result])),
       ),
-    Promise.resolve([] as Flight[])
+    Promise.resolve([] as Flight[]),
   );
 }
 
@@ -68,7 +68,7 @@ function storeFlight(flight: Flight): Promise<Flight> {
       .catch((err) => {
         console.log("Save failed", err, err.stack);
         throw new Error(
-          `Flight ${flight.id} starting ${flight.startDate} failed ${err}`
+          `Flight ${flight.id} starting ${flight.startDate} failed ${err}`,
         );
       });
   });

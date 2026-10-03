@@ -26,7 +26,7 @@ export default class FlightRepository {
           " location_id = ${locationId}," +
           " segments = ${segments:json} " +
           "RETURNING *",
-        flight
+        flight,
       )
       .then((saved) => {
         saved.batteries = flight.batteries;

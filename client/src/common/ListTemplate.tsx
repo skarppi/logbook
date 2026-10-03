@@ -15,7 +15,7 @@ interface IProps {
   title: string;
   path?: string;
   createNewAction?: (
-    _: React.MouseEvent<HTMLButtonElement, MouseEvent>
+    _: React.MouseEvent<HTMLButtonElement, MouseEvent>,
   ) => void;
   extraActions?: React.ReactNode;
   search?: React.ReactNode;

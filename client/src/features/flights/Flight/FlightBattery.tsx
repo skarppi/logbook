@@ -141,7 +141,7 @@ export const FlightBattery = ({
   };
 
   const resistances = Array(
-    cycle.state === BatteryState.charged ? battery.cells : 0
+    cycle.state === BatteryState.charged ? battery.cells : 0,
   )
     .fill("")
     .map((_, index) => {
@@ -231,7 +231,10 @@ export const FlightBattery = ({
             {textFieldVolts("restingVoltage", "Rest", cycle.restingVoltage)}
           </Box>
 
-          <Box sx={{ alignSelf: "center" }} onClick={(e) => e.stopPropagation()}>
+          <Box
+            sx={{ alignSelf: "center" }}
+            onClick={(e) => e.stopPropagation()}
+          >
             <IconButton
               component="span"
               onClick={(_) => storeBatteryState(BatteryState.discharged)}

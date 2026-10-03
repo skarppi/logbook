@@ -32,7 +32,7 @@ export const FlightBatteries = ({
     const usedBatteries = cycles.map((c) => c.batteryName);
 
     const nextBatteryName = plane?.planeBatteries?.nodes.find(
-      (name) => usedBatteries.indexOf(name.batteryName) === -1
+      (name) => usedBatteries.indexOf(name.batteryName) === -1,
     )?.batteryName;
 
     const battery = batteries.find((b) => b.name === nextBatteryName);
@@ -50,7 +50,7 @@ export const FlightBatteries = ({
           flightCycle={cycle}
           battery={batteries.find((b) => b.name === cycle.batteryName)}
         />
-      )
+      ),
   );
 
   const batteryControl = (

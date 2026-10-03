@@ -105,7 +105,7 @@ const mergePlaneTelemetries = (plane: Plane) => {
       if (plane.telemetries) {
         // preserve old values
         const oldTelemetry = plane.telemetries.find(
-          (telemetry) => telemetry.id === id
+          (telemetry) => telemetry.id === id,
         );
         if (oldTelemetry) {
           return oldTelemetry;

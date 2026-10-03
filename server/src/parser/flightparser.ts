@@ -36,8 +36,8 @@ export default class FlightParser {
   }
 
   public appendItem(item: SegmentItem) {
-    item.timestamp = this.itemParser.timestamp(item)
-    item.alt = this.itemParser.alt(item)
+    item.timestamp = this.itemParser.timestamp(item);
+    item.alt = this.itemParser.alt(item);
 
     const type = this.currentSegmentType(item);
 
@@ -70,7 +70,7 @@ export default class FlightParser {
         this.plane,
         this.sessionCounter,
         this.currentSegments,
-        this.options.locationId
+        this.options.locationId,
       );
 
       if (flight.flightTime === 0) {
@@ -127,7 +127,7 @@ export default class FlightParser {
     try {
       const data = await request(
         `http://localhost:${SERVER_PORT}/${BASE_URL}api/graphql`,
-        query
+        query,
       );
       console.log(data);
       console.log((data as Record<string, unknown>)["plane"]);
@@ -153,7 +153,7 @@ export default class FlightParser {
         return SegmentType.flying;
       } else if (this.currentSegment.type === SegmentType.flying) {
         // check if we are still flying
-        return (stoppedSwitch && this.test(stoppedSwitch, item))
+        return stoppedSwitch && this.test(stoppedSwitch, item)
           ? SegmentType.stopped
           : SegmentType.flying;
       } else {
@@ -169,7 +169,7 @@ export default class FlightParser {
     if (duration > 0) {
       const items = this.currentSegment.lastSecondsFromEnd(
         item.timestamp,
-        duration
+        duration,
       );
       if (!items) {
         const firstItem =

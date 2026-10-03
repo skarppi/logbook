@@ -57,7 +57,7 @@ export function batteriesRouter() {
         res.setHeader("Content-Type", "text/plain");
         res.setHeader(
           "Content-Disposition",
-          'attachment; filename="batteries.lua"'
+          'attachment; filename="batteries.lua"',
         );
         res.send(lua);
       }
@@ -81,7 +81,7 @@ export function batteriesRouter() {
  *   }
  */
 function generateLuaExport(
-  byPlane: Record<string, Array<{ id: number; name: string }>>
+  byPlane: Record<string, Array<{ id: number; name: string }>>,
 ): string {
   const lines: string[] = [
     "-- Battery data exported from Logbook",
@@ -94,7 +94,9 @@ function generateLuaExport(
   for (const [planeId, batteries] of Object.entries(byPlane)) {
     lines.push(`  ["${escapeLuaString(planeId)}"] = {`);
     for (const bat of batteries) {
-      lines.push(`    { id = ${bat.id}, name = "${escapeLuaString(bat.name)}" },`);
+      lines.push(
+        `    { id = ${bat.id}, name = "${escapeLuaString(bat.name)}" },`,
+      );
     }
     lines.push("  },");
   }

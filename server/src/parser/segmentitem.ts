@@ -1,7 +1,6 @@
 import { SegmentItem } from "../../../client/src/shared/flights/types";
 
 export default class SegmentItemParser {
-
   private timezoneOffset: number;
 
   constructor(timezoneOffset: number) {
@@ -11,7 +10,7 @@ export default class SegmentItemParser {
   timestamp(item: SegmentItem): Date {
     const plusMinus = this.timezoneOffset >= 0 ? "+" : "-";
     const hoursWithLeadingZero = ("00" + Math.abs(this.timezoneOffset)).slice(
-      -2
+      -2,
     );
 
     const tz = `GMT${plusMinus}${hoursWithLeadingZero}00`;
@@ -19,6 +18,6 @@ export default class SegmentItemParser {
   }
 
   alt(item: SegmentItem): number | undefined {
-    return item["GAlt(m)"] as number ?? item["Alt(m)"] as number;
+    return (item["GAlt(m)"] as number) ?? (item["Alt(m)"] as number);
   }
 }

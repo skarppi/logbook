@@ -29,7 +29,7 @@ ChartJS.register(
   BarElement,
   LineElement,
   PointElement,
-  TimeScale
+  TimeScale,
 );
 
 function yAxisStepSize(max: number) {
@@ -62,7 +62,7 @@ function colorize(datasets: ChartDataset<"bar">[]): ChartDataset<"bar">[] {
 
 const chartOptions = (
   max: number,
-  unit: DashboardUnit
+  unit: DashboardUnit,
 ): ChartOptions<"bar"> => {
   return {
     //offset: true,
@@ -112,7 +112,7 @@ const chartOptions = (
               return labels;
             } else {
               return ChartJS.defaults.plugins.legend.labels.generateLabels(
-                chart
+                chart,
               );
             }
           },
@@ -157,7 +157,7 @@ const chartOptions = (
         ticks: {
           callback: (value: string | number) =>
             formatDuration(
-              (typeof value === "string" ? parseInt(value) : value) * 60
+              (typeof value === "string" ? parseInt(value) : value) * 60,
             ),
           stepSize: yAxisStepSize(max),
         },
@@ -204,15 +204,18 @@ export const GraphOverTime = ({ rows, unit }: IProps) => {
         total += row.totalTime;
       }
       return total;
-    }, 0)
+    }, 0),
   );
 
-  const planes = rows.reduce((groups, row) => {
-    const values = groups[row.planeId] || [];
-    values.push(row);
-    groups[row.planeId] = values;
-    return groups;
-  }, {} as { [key: string]: ITotalRows[] });
+  const planes = rows.reduce(
+    (groups, row) => {
+      const values = groups[row.planeId] || [];
+      values.push(row);
+      groups[row.planeId] = values;
+      return groups;
+    },
+    {} as { [key: string]: ITotalRows[] },
+  );
 
   const datasets: ChartDataset<"bar">[] = [];
 

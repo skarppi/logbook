@@ -9,8 +9,8 @@ export default function read<T>(filename: string): Promise<T[]> {
         parse({
           skip_empty_lines: true,
           columns: true,
-          delimiter: ","
-        })
+          delimiter: ",",
+        }),
       )
       .on("data", (data: object) => results.push(data))
       .on("error", (msg: Error) => {

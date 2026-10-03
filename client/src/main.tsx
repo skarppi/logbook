@@ -11,12 +11,12 @@ const client = createClient({
 });
 
 const root = ReactDOM.createRoot(
-  document.getElementById("root") as HTMLElement
+  document.getElementById("root") as HTMLElement,
 );
 root.render(
   <React.StrictMode>
     <Provider value={client}>
       <App />
     </Provider>
-  </React.StrictMode>
+  </React.StrictMode>,
 );

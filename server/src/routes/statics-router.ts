@@ -12,7 +12,7 @@ export function staticsRouter() {
     "..",
     "..",
     "client",
-    "dist"
+    "dist",
   );
 
   // All the assets are in "assets" folder
@@ -20,7 +20,7 @@ export function staticsRouter() {
 
   // Any route should render the web app html
   router.get("*", (req, res) =>
-    res.sendFile(path.join(clientPath, "index.html"))
+    res.sendFile(path.join(clientPath, "index.html")),
   );
 
   return router;

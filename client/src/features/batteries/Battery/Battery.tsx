@@ -168,7 +168,7 @@ export const BatteryDetails = ({
   const changeBattery = (
     event:
       | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-      | SelectChangeEvent
+      | SelectChangeEvent,
   ) => {
     const { name, value } = event.target;
     name && setBattery({ ...battery, [name]: value });
@@ -206,7 +206,7 @@ export const BatteryDetails = ({
   const totalFlights = cycles.filter((c) => c.flight).length;
   const totalFlightTime = cycles.reduce(
     (sum, c) => sum + (c.flight ? c.flight.flightTime : 0),
-    0
+    0,
   );
 
   return (
@@ -261,7 +261,7 @@ export const BatteryDetails = ({
             <TableCell>
               {
                 cycles.filter(
-                  (c) => c.flight || c.state === BatteryState.storage
+                  (c) => c.flight || c.state === BatteryState.storage,
                 ).length
               }
             </TableCell>
@@ -274,10 +274,10 @@ export const BatteryDetails = ({
                 ? Math.round(
                     (voltages.reduce(
                       (sum, c) => sum + Number(c.restingVoltage),
-                      0
+                      0,
                     ) /
                       voltages.length) *
-                      100
+                      100,
                   ) / 100
                 : "-"}
             </TableCell>
@@ -285,7 +285,9 @@ export const BatteryDetails = ({
         </TableBody>
       </Table>
 
-      <Box sx={{ display: "flex", flexWrap: "wrap", justifyContent: "stretch" }}>
+      <Box
+        sx={{ display: "flex", flexWrap: "wrap", justifyContent: "stretch" }}
+      >
         <FormControl margin="normal" variant="standard">
           <InputLabel htmlFor="select-multiple-checkbox">Type</InputLabel>
           <Select

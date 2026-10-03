@@ -108,7 +108,7 @@ export const PlaneGraph = ({ cycles }: IProps) => {
       type: "bar",
       yAxisID: "time",
       data: flights.map(
-        (c) => (c.flight && c.flight.armedTime - c.flight.flightTime) ?? 0
+        (c) => (c.flight && c.flight.armedTime - c.flight.flightTime) ?? 0,
       ),
       borderColor: chartColors(1, 1),
       backgroundColor: chartColors(0, 0.5),

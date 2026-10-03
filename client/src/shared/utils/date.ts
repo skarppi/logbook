@@ -15,7 +15,7 @@ export const formatDuration = (seconds: number): string => {
 
 export function parseDurationIntoSeconds(str: string): number | undefined {
   const res = str.match(
-    /^((\d+)d){0,1}\s*((\d+)h){0,1}\s*((\d+)m){0,1}\s*((\d+)s){0,1}$/
+    /^((\d+)d){0,1}\s*((\d+)h){0,1}\s*((\d+)m){0,1}\s*((\d+)s){0,1}$/,
   );
 
   if (res && res.length > 0) {

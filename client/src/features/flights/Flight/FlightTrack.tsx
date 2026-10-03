@@ -30,7 +30,7 @@ export const FlightTrack = ({ location, segments }: IFlightLocationProps) => {
 
   const track = segments
     .flatMap((segment) =>
-      segment.rows.map((row) => !!row?.["GPS"] && row["GPS"].split(" "))
+      segment.rows.map((row) => !!row?.["GPS"] && row["GPS"].split(" ")),
     )
     .filter((point) => !!point);
 

@@ -77,7 +77,7 @@ export const BatteryCycleResistance = ({
   } else {
     const sum = cycle.resistance?.reduce(
       (prev, current) => prev + Number(current),
-      0
+      0,
     );
     if (cells === 1) {
       return <>{cycle.resistance?.join(" ")}</>;

@@ -38,8 +38,8 @@ app.use(
       exportGqlSchemaPath: "./schema.gql",
       watchPg: !config.IS_PRODUCTION,
       dynamicJson: true,
-    }
-  )
+    },
+  ),
 );
 
 app.use(publicPath || "/", staticsRouter());
@@ -51,6 +51,6 @@ app.use(function (err: Error, req: Request, res: Response, next: NextFunction) {
 
 app.listen(config.SERVER_PORT, () => {
   console.log(
-    `App listening on port=${config.SERVER_PORT}, path=${config.BASE_URL} at ${config.PUBLIC_URL}!`
+    `App listening on port=${config.SERVER_PORT}, path=${config.BASE_URL} at ${config.PUBLIC_URL}!`,
   );
 });

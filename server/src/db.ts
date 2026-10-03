@@ -35,6 +35,8 @@ const connection = {
   ssl: DB_SSL ? { rejectUnauthorized: false } : false,
 };
 
-console.log(`Connecting to postgres://${DB_USER}@${DB_HOST}:5432/${DB_NAME} (ssl=${DB_SSL})`);
+console.log(
+  `Connecting to postgres://${DB_USER}@${DB_HOST}:5432/${DB_NAME} (ssl=${DB_SSL})`,
+);
 
 export const db: IDatabase<any> = pgp(connection);

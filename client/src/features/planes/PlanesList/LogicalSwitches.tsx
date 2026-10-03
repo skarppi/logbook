@@ -102,7 +102,7 @@ export const LogicalSwitches = () => {
       createSwitch({ ls }).then(() => setEditing(undefined));
     } else {
       updateSwitch({ id: editing.id, patch: ls }).then(() =>
-        setEditing(undefined)
+        setEditing(undefined),
       );
     }
   };

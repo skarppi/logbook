@@ -1,7 +1,7 @@
 import axios, { AxiosResponse } from "axios";
 import { Flight } from "../shared/flights/types";
 
-const apiPath = import.meta.env.BASE_URL + 'api';
+const apiPath = import.meta.env.BASE_URL + "api";
 
 export function getApi<T>(path: string, params: object = {}): Promise<T> {
   return axios
@@ -12,7 +12,7 @@ export function getApi<T>(path: string, params: object = {}): Promise<T> {
 export function putApi<T>(
   path: string,
   body?: any,
-  headers: any = {}
+  headers: any = {},
 ): Promise<T> {
   return axios
     .put(`${apiPath}/${path}`, body, {
@@ -33,7 +33,7 @@ export function uploadFlightsAPI(
   data: FormData,
   timezoneOffset: number,
   locationId: number,
-  onUploadProgress: (progressEvent: any) => void
+  onUploadProgress: (progressEvent: any) => void,
 ): Promise<AxiosResponse<Flight[]>> {
   return axios.post(`${apiPath}/flights`, data, {
     headers: {

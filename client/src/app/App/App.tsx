@@ -10,32 +10,32 @@ import { createBreakpoints } from "@mui/system";
 const Dashboard = lazy(() =>
   import("../../features/dashboard/Home/Home").then((m) => ({
     default: m.Dashboard,
-  }))
+  })),
 );
 const FlightDays = lazy(() =>
   import("../../features/flights/Days/FlightDays").then((m) => ({
     default: m.FlightDays,
-  }))
+  })),
 );
 const PlanesList = lazy(() =>
   import("../../features/planes/PlanesList/Planes").then((m) => ({
     default: m.PlanesList,
-  }))
+  })),
 );
 const BatteriesList = lazy(() =>
   import("../../features/batteries/BatteriesList/Batteries").then((m) => ({
     default: m.BatteriesList,
-  }))
+  })),
 );
 const LocationsList = lazy(() =>
   import("../../features/locations/LocationsList/Locations").then((m) => ({
     default: m.LocationsList,
-  }))
+  })),
 );
 const FlightsUpload = lazy(() =>
   import("../../features/flights/Upload/FlightsUpload").then((m) => ({
     default: m.FlightsUpload,
-  }))
+  })),
 );
 
 const breakpoints = createBreakpoints({});

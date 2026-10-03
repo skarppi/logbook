@@ -34,7 +34,7 @@ ChartJS.register(
   LineElement,
   PointElement,
   LinearScale,
-  TimeScale
+  TimeScale,
 );
 
 const segmentTypeToYAxis = {
@@ -56,9 +56,7 @@ interface IProps {
   stats?: FlightStats;
 }
 
-const chartOptions = (
-  plane: Plane
-): ChartOptions<"line"> => {
+const chartOptions = (plane: Plane): ChartOptions<"line"> => {
   return {
     //offset: true,
     plugins: {
@@ -73,10 +71,8 @@ const chartOptions = (
             if (label === "Timer") {
               const currentType = Object.keys(segmentTypeToYAxis).find(
                 (type) => {
-                  return (
-                    segmentTypeToYAxis[type as SegmentType] === yValue
-                  );
-                }
+                  return segmentTypeToYAxis[type as SegmentType] === yValue;
+                },
               );
               return `${label}: ${currentType}`;
             } else if (
@@ -191,11 +187,11 @@ export const FlightGraph = ({ plane, segments, stats }: IProps) => {
 
   const items = segments.reduce<SegmentItem[]>(
     (prev, cur) => [...prev, ...cur.rows],
-    []
+    [],
   );
 
   const fields = Object.keys(items[0] || {}).filter(
-    (field) => ignoreTelemetries.indexOf(field) === -1
+    (field) => ignoreTelemetries.indexOf(field) === -1,
   );
 
   const labels = items.map((row) => row.Date + " " + row.Time);
@@ -208,7 +204,7 @@ export const FlightGraph = ({ plane, segments, stats }: IProps) => {
     data: items.map((i) => {
       const now = new Date(`${i.Date} ${i.Time}`);
       const current = segments.find(
-        (seg) => new Date(seg.startDate) <= now && new Date(seg.endDate) >= now
+        (seg) => new Date(seg.startDate) <= now && new Date(seg.endDate) >= now,
       );
       return (
         (current && segmentTypeToYAxis[current.type]) ||

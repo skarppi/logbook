@@ -144,7 +144,7 @@ export const FlightDetails = ({
   const navigate = useNavigate();
 
   const [timezoneOffset, setTimezoneOffset] = React.useState(
-    -new Date().getTimezoneOffset() / 60
+    -new Date().getTimezoneOffset() / 60,
   );
   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement>();
   const [telemetryExpanded, setTelemetryExpanded] = React.useState(false);
@@ -203,7 +203,7 @@ export const FlightDetails = ({
           stats={flight.stats}
         />
       ),
-    [flight.plane, segments, flight.stats]
+    [flight.plane, segments, flight.stats],
   );
 
   const flightDate = formatDate(flight.startDate);
@@ -302,7 +302,9 @@ export const FlightDetails = ({
       }
       hidden={false}
     >
-      <Box sx={{ display: "flex", flexWrap: "wrap", justifyContent: "stretch" }}>
+      <Box
+        sx={{ display: "flex", flexWrap: "wrap", justifyContent: "stretch" }}
+      >
         <FlightDate flight={flight} />
         <FlightDuration flight={flight} save={updateFlight} />
       </Box>
@@ -355,9 +357,7 @@ export const FlightDetails = ({
         defaultExpanded={false}
         slotProps={{ transition: { unmountOnExit: true } }}
       >
-        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-          Map
-        </AccordionSummary>
+        <AccordionSummary expandIcon={<ExpandMoreIcon />}>Map</AccordionSummary>
         <AccordionDetails>
           {!telemetryExpanded ? (
             <Box sx={{ color: "text.secondary" }}>
@@ -368,7 +368,8 @@ export const FlightDetails = ({
               <CircularProgress />
             </Box>
           ) : (
-            flight.location && segments && (
+            flight.location &&
+            segments && (
               <FlightTrack location={flight.location} segments={segments} />
             )
           )}
@@ -378,7 +379,12 @@ export const FlightDetails = ({
       <Videos
         date={flight.startDate}
         plane={flight.planeId}
-        session={flight.id.match(/\d{6}/)?.[0] ?? (flight.id.includes("Session") ? `Session${flight.session}` : flight.id.substr(-6, 6))}
+        session={
+          flight.id.match(/\d{6}/)?.[0] ??
+          (flight.id.includes("Session")
+            ? `Session${flight.session}`
+            : flight.id.substr(-6, 6))
+        }
       />
     </DetailsTemplate>
   );

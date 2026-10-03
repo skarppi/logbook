@@ -102,22 +102,25 @@ export interface IDayTotals {
 const groupFlightsPerMonthAndDay = (queryResponse?: IQueryResponse) => {
   const flightsByDays = queryResponse?.flightsByDays.nodes || [];
 
-  return flightsByDays.reduce((acc, obj) => {
-    const month = formatMonth(obj.date);
-    const day = formatDate(obj.date);
+  return flightsByDays.reduce(
+    (acc, obj) => {
+      const month = formatMonth(obj.date);
+      const day = formatDate(obj.date);
 
-    const days = acc[month] || {};
+      const days = acc[month] || {};
 
-    days[day] = (days[day] || []).concat(obj);
+      days[day] = (days[day] || []).concat(obj);
 
-    acc[month] = days;
-    return acc;
-  }, {} as Record<string, Record<string, ITotalRows[]>>);
+      acc[month] = days;
+      return acc;
+    },
+    {} as Record<string, Record<string, ITotalRows[]>>,
+  );
 };
 
 const calculateTotalsPerDay = ([day, flights]: [
   string,
-  ITotalRows[]
+  ITotalRows[],
 ]): IDayTotals => {
   return {
     day,
@@ -129,11 +132,11 @@ const calculateTotalsPerDay = ([day, flights]: [
 };
 
 const calculateTotalsPerMonthAndDay = (
-  flightsPerMonthAndDay: Record<string, Record<string, ITotalRows[]>>
+  flightsPerMonthAndDay: Record<string, Record<string, ITotalRows[]>>,
 ): IMonthTotals[] => {
   return Object.entries(flightsPerMonthAndDay).map(([month, flightsPerDay]) => {
     const totalsPerDay = Object.entries(flightsPerDay).map(
-      calculateTotalsPerDay
+      calculateTotalsPerDay,
     );
 
     return {
@@ -152,7 +155,7 @@ export const FlightDays = () => {
   const [orderBy, setOrderBy] = React.useState("DATE_DESC");
   const [allNodes, setAllNodes] = React.useState<ITotalRows[]>([]);
   const [cursor, setCursor] = React.useState<string | null>(null);
-  
+
   // Filter states
   const [selectedPlane, setSelectedPlane] = React.useState<string>("");
   const [fromDate, setFromDate] = React.useState<string>("");
@@ -168,20 +171,26 @@ export const FlightDays = () => {
   // Build filter for server-side query
   const filter = React.useMemo(() => {
     const conditions: Record<string, unknown> = {};
-    
+
     if (selectedPlane) {
       conditions.planeId = { equalTo: selectedPlane };
     }
     if (fromDate) {
-      conditions.date = { ...conditions.date as object, greaterThanOrEqualTo: fromDate };
+      conditions.date = {
+        ...(conditions.date as object),
+        greaterThanOrEqualTo: fromDate,
+      };
     }
     if (toDate) {
-      conditions.date = { ...conditions.date as object, lessThanOrEqualTo: toDate };
+      conditions.date = {
+        ...(conditions.date as object),
+        lessThanOrEqualTo: toDate,
+      };
     }
     if (favoritesOnly) {
       conditions.favorites = { greaterThan: 0 };
     }
-    
+
     return Object.keys(conditions).length > 0 ? conditions : undefined;
   }, [selectedPlane, fromDate, toDate, favoritesOnly]);
 
@@ -214,7 +223,7 @@ export const FlightDays = () => {
         const newNodes = read.data!.flightsByDays.nodes;
         const existingDates = new Set(prev.map((n) => n.date + n.planeId));
         const uniqueNewNodes = newNodes.filter(
-          (n) => !existingDates.has(n.date + n.planeId)
+          (n) => !existingDates.has(n.date + n.planeId),
         );
         return [...prev, ...uniqueNewNodes];
       });
@@ -231,7 +240,10 @@ export const FlightDays = () => {
   };
 
   const groupedFlights = groupFlightsPerMonthAndDay({
-    flightsByDays: { pageInfo: { hasNextPage: false, endCursor: null }, nodes: allNodes },
+    flightsByDays: {
+      pageInfo: { hasNextPage: false, endCursor: null },
+      nodes: allNodes,
+    },
   });
   const totalsPerMonthDays = calculateTotalsPerMonthAndDay(groupedFlights);
 
@@ -327,7 +339,14 @@ export const FlightDays = () => {
     <ListTemplate
       title="Flights List"
       extraActions={
-        <Box sx={{ display: "flex", gap: 2, alignItems: "center", flexWrap: "wrap" }}>
+        <Box
+          sx={{
+            display: "flex",
+            gap: 2,
+            alignItems: "center",
+            flexWrap: "wrap",
+          }}
+        >
           <TextField
             select
             label="Plane"

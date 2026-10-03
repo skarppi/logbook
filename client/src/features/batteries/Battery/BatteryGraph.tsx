@@ -109,7 +109,7 @@ export const BatteryGraph = ({ cycles }: IProps) => {
       type: "bar",
       yAxisID: "time",
       data: flights.map(
-        (c) => (c.flight?.armedTime ?? 0) - (c.flight?.flightTime ?? 0)
+        (c) => (c.flight?.armedTime ?? 0) - (c.flight?.flightTime ?? 0),
       ),
       borderColor: chartColors(1, 1),
       backgroundColor: chartColors(1, 0.5),

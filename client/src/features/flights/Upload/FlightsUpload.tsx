@@ -100,7 +100,7 @@ export const FlightsUpload = () => {
 
   const context = useMemo(
     () => ({ additionalTypenames: ["BatteryCycle"] }),
-    []
+    [],
   );
 
   const [usedBatteriesResponse] = useQuery<IBatteryCycleQueryResponse>({
@@ -119,10 +119,10 @@ export const FlightsUpload = () => {
   }, [usedBatteries]);
 
   const [timezoneOffset, setTimezoneOffset] = React.useState(
-    -new Date().getTimezoneOffset() / 60
+    -new Date().getTimezoneOffset() / 60,
   );
   const [locationId, setLocationId] = React.useState<number | undefined>(
-    undefined
+    undefined,
   );
 
   const [currentLocation, setCurrentLocation] = useState<{
@@ -152,7 +152,7 @@ export const FlightsUpload = () => {
         lon: position.coords.longitude,
       });
     },
-    (err) => console.log(err)
+    (err) => console.log(err),
   );
 
   const dropRendered = (state: DropzoneState) => {
@@ -256,18 +256,18 @@ export const FlightsUpload = () => {
         locationId!!,
         (progressEvent: any) => {
           setLoaded((progressEvent.loaded / progressEvent.total) * 100);
-        }
+        },
       );
       setFlights(
         res.data.map((f) => {
           f.notes = { journal: res.statusText };
           return f;
-        })
+        }),
       );
     } catch (error) {
       if (axios.isAxiosError(error)) {
         setError(
-          (error.response && (error.response.data as string)) || error.message
+          (error.response && (error.response.data as string)) || error.message,
         );
       } else {
         setError(error as string);
@@ -348,8 +348,8 @@ export const FlightsUpload = () => {
                 {formatDuration(
                   flights.reduce(
                     (total, flight) => total + flight.flightTime,
-                    0
-                  )
+                    0,
+                  ),
                 )}
               </TableCell>
               <TableCell />
