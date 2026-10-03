@@ -17,6 +17,8 @@ import OpenedIcon from "@mui/icons-material/KeyboardArrowDown";
 
 import FullChargeIcon from "@mui/icons-material/BatteryChargingFull";
 import StorageChargeIcon from "@mui/icons-material/BatteryCharging50";
+import DownloadIcon from "@mui/icons-material/Download";
+import Tooltip from "@mui/material/Tooltip";
 import { BatteryState } from "../../../shared/batteries";
 import { useScroll } from "../../../common/useScroll";
 
@@ -136,6 +138,10 @@ export const BatteriesList = () => {
 
   const scrollRef = useScroll<HTMLTableRowElement>([id, res.fetching]);
 
+  const downloadBatteries = () => {
+    window.location.href = `${import.meta.env.BASE_URL}api/batteries/export`;
+  };
+
   const details = (id: number, index: number) => (
     <TableRow ref={scrollRef}>
       <TableCell colSpan={5}>
@@ -187,7 +193,18 @@ export const BatteriesList = () => {
   });
 
   return (
-    <ListTemplate type="battery" path="/batteries" title="Batteries">
+    <ListTemplate
+      type="battery"
+      path="/batteries"
+      title="Batteries"
+      extraActions={
+        <Tooltip title="Export for EdgeTX widget">
+          <IconButton onClick={downloadBatteries} size="large">
+            <DownloadIcon />
+          </IconButton>
+        </Tooltip>
+      }
+    >
       <Table>
         <TableHead>
           <TableRow>

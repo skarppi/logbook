@@ -3,6 +3,7 @@ import bodyParser from "body-parser";
 import { flightsRouter } from "./routes/flights-router";
 import { videosRouter } from "./routes/videos-router";
 import { staticsRouter } from "./routes/statics-router";
+import { batteriesRouter } from "./routes/batteries-router";
 import * as config from "./config";
 
 const { postgraphile } = require("postgraphile");
@@ -17,6 +18,7 @@ const publicPath = config.BASE_URL || "";
 
 app.use(`${publicPath}/api/flights`, flightsRouter());
 app.use(`${publicPath}/api/videos`, videosRouter());
+app.use(`${publicPath}/api/batteries`, batteriesRouter());
 
 app.use(
   `${publicPath}/api/`,

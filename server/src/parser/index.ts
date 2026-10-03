@@ -2,7 +2,6 @@ import csv from "./csv";
 import FlightRepository from "../model/flight";
 import BatteryCycleRepository from "../model/batterycycle";
 import * as config from "../config";
-import SegmentItemParser from "../parser/segmentitem";
 import FlightParser from "./flightparser";
 import { Flight, SegmentItem } from "../../../client/src/shared/flights/types";
 

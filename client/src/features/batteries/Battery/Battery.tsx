@@ -177,16 +177,18 @@ export const BatteryDetails = ({
   // update to server
   const save = () => {
     if (battery.id === NEW_BATTERY.id) {
-      delete battery.id;
-      createBattery({ battery }).then((res) => {
+      const newBattery = { ...battery };
+      delete newBattery.id;
+      createBattery({ battery: newBattery }).then((res) => {
         if (!res.error) {
           navigate(`/batteries/${res.data.createBattery.battery.id}`);
         }
       });
     } else {
-      delete battery["__typename"];
-      delete battery.batteryCycles;
-      updateBattery({ id: battery.id, battery });
+      const updateData = { ...battery };
+      delete updateData["__typename"];
+      delete updateData.batteryCycles;
+      updateBattery({ id: battery.id, battery: updateData });
     }
   };
   const executeDelete = () => {

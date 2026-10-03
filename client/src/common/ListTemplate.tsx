@@ -17,6 +17,7 @@ interface IProps {
   createNewAction?: (
     _: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => void;
+  extraActions?: React.ReactNode;
   search?: React.ReactNode;
   children: React.ReactElement | React.ReactElement[];
 }
@@ -28,6 +29,7 @@ export const ListTemplate = ({
   title,
   path,
   createNewAction,
+  extraActions,
   children,
 }: IProps) => {
   const AddLink = React.forwardRef<any, Omit<LinkProps, "to">>((props, ref) => (
@@ -40,23 +42,26 @@ export const ListTemplate = ({
         <CardHeader
           title={title}
           action={
-            (createNewAction || path) && (
-              <Tooltip title={`Add new ${type}`}>
-                {createNewAction ? (
-                  <IconButton onClick={createNewAction} size="large">
-                    <AddIcon />
-                  </IconButton>
-                ) : (
-                  <IconButton
-                    component={AddLink}
-                    size="large"
-                    nativeButton={false}
-                  >
-                    <AddIcon />
-                  </IconButton>
-                )}
-              </Tooltip>
-            )
+            <>
+              {extraActions}
+              {(createNewAction || path) && (
+                <Tooltip title={`Add new ${type}`}>
+                  {createNewAction ? (
+                    <IconButton onClick={createNewAction} size="large">
+                      <AddIcon />
+                    </IconButton>
+                  ) : (
+                    <IconButton
+                      component={AddLink}
+                      size="large"
+                      nativeButton={false}
+                    >
+                      <AddIcon />
+                    </IconButton>
+                  )}
+                </Tooltip>
+              )}
+            </>
           }
         />
         <CardContent>{children}</CardContent>

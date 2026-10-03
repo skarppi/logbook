@@ -21,6 +21,8 @@ export interface BatteryCycle {
   id?: number;
   date: string;
   batteryName: string;
+  /** Battery database ID from EdgeTX widget telemetry - used only during import */
+  batteryId?: number;
   state: BatteryState;
   flightId?: string;
   restingVoltage?: number;

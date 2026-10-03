@@ -25,9 +25,13 @@ export const cycleFromFlight = (
     endVoltage && flight.plane.batterySlots > 1 && endVoltage > 4.5;
   const divider = multipleBatteries ? flight.plane.batterySlots : 1;
 
+  // Extract battery database ID from EdgeTX BatteryID widget telemetry
+  const batteryId = Telemetry.batteryId(firstTelemetry);
+
   return {
     date: flight.startDate.toString(),
     batteryName: batteryName,
+    batteryId: batteryId,
     flightId: flight.id,
     state: BatteryState.discharged,
     restingVoltage: endVoltage && endVoltage / divider,
