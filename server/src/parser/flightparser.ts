@@ -74,10 +74,10 @@ export default class FlightParser {
       );
 
       if (flight.flightTime === 0) {
-        console.log("Skipped empty flight", flight);
+        console.log(`Skipped empty flight ${flight.id}`);
       } else {
         this.flights.push(flight);
-        console.log("Ended flight", flight);
+        console.log(`Ended flight ${flight.id}`);
       }
     }
     this.currentSegments = [];
@@ -129,9 +129,8 @@ export default class FlightParser {
         `http://localhost:${SERVER_PORT}/${BASE_URL}api/graphql`,
         query,
       );
-      console.log(data);
-      console.log((data as Record<string, unknown>)["plane"]);
       this.plane = (data as Record<string, unknown>)["plane"] as Plane;
+      console.log(`Fetched plane ${this.plane?.id}`);
     } catch (err) {
       console.trace(err);
       throw err;

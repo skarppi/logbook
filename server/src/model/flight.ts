@@ -8,7 +8,7 @@ export default class FlightRepository {
   }
 
   public static save(flight: Flight): Promise<Flight> {
-    console.log(flight);
+    console.log(`Saving flight ${flight.id}`);
     return db
       .one(
         "INSERT INTO flights (id, plane_id, session, start_date, end_date,  duration, armed_time, flight_time, notes, stats, location_id, segments) " +

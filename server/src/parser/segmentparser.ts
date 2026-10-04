@@ -33,7 +33,7 @@ export default class SegmentParser {
         `Ending segment ${this.type} with ${this.items.length} items`,
       );
       segment = new SegmentImpl(this.type, this.items);
-      console.log(`Ended segment ${segment}`);
+      console.log(`Ended segment ${segment.type}`);
     }
     this.startSegment(undefined);
     return segment;
