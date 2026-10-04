@@ -48,9 +48,11 @@ ENV VITE_HMR_CLIENT_PORT=$VITE_HMR_CLIENT_PORT
 EXPOSE 3000
 
 # In production serve the compiled server on port 3000; otherwise start the
-# dev servers with live reload.
+# dev servers with live reload. Run from the server/ directory so relative
+# paths like LOGS/ and VIDEOS/ resolve to /app/server/LOGS (where the volumes
+# are mounted), matching the dev server's working directory.
 CMD if [ "$NODE_ENV" = "production" ]; then \
-      PORT=3000 node ./server/dist/server/src/server.js; \
+      cd server && PORT=3000 node ./dist/server/src/server.js; \
     else \
       pnpm dev; \
     fi
