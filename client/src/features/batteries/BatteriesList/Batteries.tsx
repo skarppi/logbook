@@ -6,7 +6,7 @@ import TableBody from "@mui/material/TableBody";
 import IconButton from "@mui/material/IconButton";
 
 import * as React from "react";
-import { NavLink, useParams } from "react-router-dom";
+import { NavLink, useParams, useNavigate } from "react-router-dom";
 import { formatDate, formatDateTime } from "../../../utils/date";
 import { Battery, BatteryCycle } from "../../../shared/batteries/types";
 import { LoadingIcon, LoadingTable } from "../../loading/Loading";
@@ -60,6 +60,7 @@ const NEWID = "add";
 
 export const BatteriesList = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
 
   function lastState(battery: Battery) {
     if (battery.retirementDate) {
@@ -159,7 +160,13 @@ export const BatteriesList = () => {
     return (
       <React.Fragment key={String(battery.id)}>
         <TableRow
+          hover={true}
+          selected={isCurrent}
+          onClick={() =>
+            navigate(isCurrent ? "/batteries" : `/batteries/${battery.id}`)
+          }
           sx={{
+            cursor: "pointer",
             ...(isCurrent && {
               "> *": {
                 borderBottom: "unset",
@@ -168,24 +175,17 @@ export const BatteriesList = () => {
           }}
         >
           <TableCell>
-            {(isCurrent && (
-              <NavLink to={"/batteries"}>
-                <OpenedIcon />
-                {battery.name}
-              </NavLink>
-            )) || (
-              <NavLink to={`/batteries/${battery.id}`}>
-                <ClosedIcon />
-                {battery.name}
-              </NavLink>
-            )}
+            {isCurrent ? <OpenedIcon /> : <ClosedIcon />}
+            {battery.name}
           </TableCell>
           <TableCell>
             {battery.type} {battery.cells}s {battery.capacity}mAh
           </TableCell>
           <TableCell>{lastState(battery)}</TableCell>
           <TableCell>{lastUsed(battery.batteryCycles)}</TableCell>
-          <TableCell>{batteryOps(battery)}</TableCell>
+          <TableCell onClick={(e) => e.stopPropagation()}>
+            {batteryOps(battery)}
+          </TableCell>
         </TableRow>
         {battery.id && id === String(battery.id) && details(battery.id, index)}
       </React.Fragment>

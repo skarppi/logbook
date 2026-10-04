@@ -4,11 +4,11 @@ import TableCell from "@mui/material/TableCell";
 import TableHead from "@mui/material/TableHead";
 import TableBody from "@mui/material/TableBody";
 import * as React from "react";
-import { NavLink, Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import { formatDate, formatDateTime } from "../../../utils/date";
 import { LocationDetails } from "../Location/Location";
 
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 
 import gql from "graphql-tag";
 import { useQuery } from "urql";
@@ -60,6 +60,7 @@ export const LocationsContext = React.createContext<ILocationsContext>({
 
 export const LocationsList = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
 
   function lastUsed(flight?: Flight) {
     if (!flight) {
@@ -98,19 +99,17 @@ export const LocationsList = () => {
     const current = id === String(location.id);
     return (
       <React.Fragment key={String(location.id)}>
-        <TableRow>
+        <TableRow
+          hover={true}
+          selected={current}
+          onClick={() =>
+            navigate(current ? "/locations" : `/locations/${location.id}`)
+          }
+          sx={{ cursor: "pointer" }}
+        >
           <TableCell>
-            {(current && (
-              <NavLink to={"/locations"}>
-                <OpenedIcon />
-                {location.name}
-              </NavLink>
-            )) || (
-              <NavLink to={`/locations/${location.id}`}>
-                <ClosedIcon />
-                {location.name}
-              </NavLink>
-            )}
+            {current ? <OpenedIcon /> : <ClosedIcon />}
+            {location.name}
           </TableCell>
           <TableCell>{location.flights?.totalCount}</TableCell>
           <TableCell>{lastUsed(location.flights?.nodes?.[0])}</TableCell>

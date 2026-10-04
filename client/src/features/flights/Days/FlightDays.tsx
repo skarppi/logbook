@@ -10,7 +10,7 @@ import MenuItem from "@mui/material/MenuItem";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
 import * as React from "react";
-import { NavLink } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import { formatDuration } from "../../../shared/utils/date";
 
@@ -151,6 +151,7 @@ const calculateTotalsPerMonthAndDay = (
 
 export const FlightDays = () => {
   const { date } = useParams();
+  const navigate = useNavigate();
 
   const [orderBy, setOrderBy] = React.useState("DATE_DESC");
   const [allNodes, setAllNodes] = React.useState<ITotalRows[]>([]);
@@ -258,7 +259,9 @@ export const FlightDays = () => {
           selected={isCurrent}
           hover={true}
           id={totals.day}
+          onClick={() => navigate(isCurrent ? "/flights" : `/flights/${totals.day}`)}
           sx={{
+            cursor: "pointer",
             ...(isCurrent && {
               "> *": {
                 borderBottom: "unset",
@@ -267,17 +270,8 @@ export const FlightDays = () => {
           }}
         >
           <TableCell>
-            {(isCurrent && (
-              <NavLink to={"/flights"}>
-                <OpenedIcon />
-                {totals.day}
-              </NavLink>
-            )) || (
-              <NavLink to={`/flights/${totals.day}`}>
-                <ClosedIcon />
-                {totals.day}
-              </NavLink>
-            )}
+            {isCurrent ? <OpenedIcon /> : <ClosedIcon />}
+            {totals.day}
           </TableCell>
           <TableCell>{totals.flights}</TableCell>
           <TableCell>{totals.favorites > 0 ? totals.favorites : ""}</TableCell>

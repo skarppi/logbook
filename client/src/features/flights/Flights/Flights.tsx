@@ -1,7 +1,7 @@
 import TableRow from "@mui/material/TableRow";
 import TableCell from "@mui/material/TableCell";
 import * as React from "react";
-import { NavLink, useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { formatDuration } from "../../../shared/utils/date";
 import { FlightDetails } from "../Flight/Flight";
 
@@ -105,7 +105,11 @@ export const Flights = () => {
         <TableRow
           selected={false}
           hover={true}
+          onClick={() =>
+            navigate(isCurrent ? path : `${path}/${flight.id}`)
+          }
           sx={{
+            cursor: "pointer",
             backgroundColor: "grey.200",
             "&:hover": {
               backgroundColor: "action.hover",
@@ -118,11 +122,9 @@ export const Flights = () => {
           }}
         >
           <TableCell sx={{ pl: 6 }}>
-            <NavLink to={isCurrent ? path : `${path}/${flight.id}`}>
-              {(isCurrent && <OpenedIcon />) || <ClosedIcon />}
-              {formatTime(flight.startDate)}{" "}
-              {flight.location && `(${flight.location.name})`}
-            </NavLink>
+            {(isCurrent && <OpenedIcon />) || <ClosedIcon />}
+            {formatTime(flight.startDate)}{" "}
+            {flight.location && `(${flight.location.name})`}
           </TableCell>
           <TableCell>{renderStats(flight)}</TableCell>
           <TableCell>{flight.favorite === 1 && <FavoriteIcon />}</TableCell>

@@ -13,7 +13,7 @@ import Tooltip from "@mui/material/Tooltip";
 import { useParams } from "react-router-dom";
 
 import * as React from "react";
-import { NavLink, Link } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { formatDuration } from "../../../shared/utils/date";
 import { Plane, LogicalSwitch } from "../../../shared/planes/types";
 import { LoadingTable } from "../../loading/Loading";
@@ -100,6 +100,7 @@ export const PlanesContext = React.createContext<IPlanesContext>({
 
 export const PlanesList = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
 
   const [res] = useQuery<IQueryResponse>({ query: Query });
 
@@ -141,19 +142,15 @@ export const PlanesList = () => {
     const current = id === plane.id;
     return (
       <React.Fragment key={plane.id}>
-        <TableRow>
+        <TableRow
+          hover={true}
+          selected={current}
+          onClick={() => navigate(current ? "/planes" : `/planes/${plane.id}`)}
+          sx={{ cursor: "pointer" }}
+        >
           <TableCell>
-            {(current && (
-              <NavLink to={"/planes"}>
-                <OpenedIcon />
-                {plane.id}
-              </NavLink>
-            )) || (
-              <NavLink to={`/planes/${plane.id}`}>
-                <ClosedIcon />
-                {plane.id}
-              </NavLink>
-            )}
+            {current ? <OpenedIcon /> : <ClosedIcon />}
+            {plane.id}
           </TableCell>
           <TableCell>{plane.type}</TableCell>
           <TableCell>
