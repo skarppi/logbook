@@ -32,13 +32,38 @@ app.use(
       // Match db.ts: enable SSL when Postgres requires it, allowing
       // self-signed certs (libpq sslmode=require semantics).
       ssl: config.DB_SSL ? { rejectUnauthorized: false } : false,
+      // PostGraphile forwards this config straight to `new pg.Pool(...)`.
+      // Bound the pool so a burst of concurrent/segment-heavy GraphQL queries
+      // cannot open an unbounded number of connections and spike memory.
+      max: config.IS_PRODUCTION ? 10 : 5,
+      idleTimeoutMillis: 30000,
+      connectionTimeoutMillis: 10000,
     },
-    {
-      appendPlugins: [ConnectionFilterPlugin, PgSimplifyInflectorPlugin],
-      exportGqlSchemaPath: "./schema.gql",
-      watchPg: !config.IS_PRODUCTION,
-      dynamicJson: true,
-    },
+    "public",
+    config.IS_PRODUCTION
+      ? {
+          appendPlugins: [ConnectionFilterPlugin, PgSimplifyInflectorPlugin],
+          dynamicJson: true,
+          // Production hardening:
+          watchPg: false, // no schema-watch overhead
+          graphiql: false, // no GraphiQL UI / introspection playground
+          enhanceGraphiql: false,
+          disableQueryLog: true, // don't log every query (memory + noise)
+          retryOnInitFail: true, // survive transient DB unavailability at boot
+          enableQueryBatching: true,
+          extendedErrors: ["errcode"], // minimal error info, no stack traces
+          showErrorStack: false,
+        }
+      : {
+          appendPlugins: [ConnectionFilterPlugin, PgSimplifyInflectorPlugin],
+          dynamicJson: true,
+          watchPg: true,
+          graphiql: true,
+          enhanceGraphiql: true,
+          exportGqlSchemaPath: "./schema.gql",
+          showErrorStack: "json",
+          extendedErrors: ["hint", "detail", "errcode"],
+        },
   ),
 );
 
