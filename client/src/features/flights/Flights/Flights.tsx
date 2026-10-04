@@ -1,7 +1,7 @@
 import TableRow from "@mui/material/TableRow";
 import TableCell from "@mui/material/TableCell";
 import * as React from "react";
-import { NavLink, useParams } from "react-router-dom";
+import { NavLink, useParams, useNavigate } from "react-router-dom";
 import { formatDuration } from "../../../shared/utils/date";
 import { FlightDetails } from "../Flight/Flight";
 
@@ -69,6 +69,7 @@ const renderStats = (flight: Flight) => {
 
 export const Flights = () => {
   const { date, id } = useParams();
+  const navigate = useNavigate();
 
   const [read] = useQuery<IQueryResponse>({
     query: Query,
@@ -81,6 +82,14 @@ export const Flights = () => {
   const path = `/flights/${date}`;
 
   const flights = (read.data && read.data.flights.nodes) || [];
+
+  // When a day has exactly one flight and none is explicitly selected, open
+  // that flight directly instead of showing a one-row list.
+  React.useEffect(() => {
+    if (!id && !read.fetching && flights.length === 1) {
+      navigate(`${path}/${flights[0].id}`, { replace: true });
+    }
+  }, [id, read.fetching, flights, path, navigate]);
 
   const scrollRef = useScroll<HTMLTableRowElement>([id, read.fetching]);
 
