@@ -10,24 +10,25 @@ import MenuItem from "@mui/material/MenuItem";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
 import * as React from "react";
-import { useNavigate } from "react-router-dom";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { formatDuration } from "../../../shared/utils/date";
-
-import { Flights } from "../Flights/Flights";
+import { FlightDetails } from "../Flight/Flight";
 
 import ClosedIcon from "@mui/icons-material/ChevronRight";
 import OpenedIcon from "@mui/icons-material/ExpandMore";
+import ClosedFlightIcon from "@mui/icons-material/ArrowRight";
+import OpenedFlightIcon from "@mui/icons-material/ArrowDropDown";
+import FavoriteIcon from "@mui/icons-material/FavoriteBorder";
 import { LoadingTable } from "../../loading/Loading";
 import { useQuery } from "urql";
-import { ITotalRows } from "../../dashboard/Home/GraphOverTime";
 import gql from "graphql-tag";
-import { formatDate, formatMonth } from "../../../utils/date";
+import { formatDate, formatMonth, formatTime } from "../../../utils/date";
 import TableSortLabel from "@mui/material/TableSortLabel";
 import { useScroll } from "../../../common/useScroll";
 import { ListTemplate } from "../../../common/ListTemplate";
+import { Flight } from "../../../shared/flights/types";
 
-const PAGE_SIZE = 60; // Load 60 days at a time (roughly 2 months)
+const PAGE_SIZE = 100; // Load 100 flights at a time
 
 const PlanesQuery = gql`
   query {
@@ -45,116 +46,123 @@ interface IPlanesResponse {
   };
 }
 
+// Fetch flights directly; daily/monthly grouping is done on the frontend.
 const Query = gql`
-  query (
-    $orderBy: [FlightsByDaysOrderBy!]
-    $first: Int
-    $after: Cursor
-    $filter: FlightsByDayFilter
-  ) {
-    flightsByDays(
-      orderBy: $orderBy
-      first: $first
-      after: $after
-      filter: $filter
-    ) {
+  query ($orderBy: [FlightsOrderBy!], $first: Int, $after: Cursor, $filter: FlightFilter) {
+    flights(orderBy: $orderBy, first: $first, after: $after, filter: $filter) {
       pageInfo {
         hasNextPage
         endCursor
       }
       nodes {
-        date
+        id
         planeId
-        flights
-        totalTime
-        favorites
+        session
+        startDate
+        endDate
+        duration
+        armedTime
+        flightTime
+        location {
+          id
+          name
+        }
+        favorite
+        stats
+        batteryCycles {
+          nodes {
+            batteryName
+          }
+        }
       }
     }
   }
 `;
 
 interface IQueryResponse {
-  flightsByDays: {
+  flights: {
     pageInfo: {
       hasNextPage: boolean;
       endCursor: string | null;
     };
-    nodes: ITotalRows[];
+    nodes: Flight[];
   };
 }
 
-export interface IMonthTotals {
-  month: string;
-  flights: number;
-  totalTime: number;
-  favorites: number;
-  days: IDayTotals[];
-}
-
-export interface IDayTotals {
+interface IDayGroup {
   day: string;
+  flights: Flight[];
   planes: string;
-  flights: number;
+  flightCount: number;
   totalTime: number;
   favorites: number;
 }
 
-const groupFlightsPerMonthAndDay = (queryResponse?: IQueryResponse) => {
-  const flightsByDays = queryResponse?.flightsByDays.nodes || [];
+interface IMonthGroup {
+  month: string;
+  flightCount: number;
+  totalTime: number;
+  favorites: number;
+  days: IDayGroup[];
+}
 
-  return flightsByDays.reduce(
-    (acc, obj) => {
-      const month = formatMonth(obj.date);
-      const day = formatDate(obj.date);
-
-      const days = acc[month] || {};
-
-      days[day] = (days[day] || []).concat(obj);
-
-      acc[month] = days;
-      return acc;
-    },
-    {} as Record<string, Record<string, ITotalRows[]>>,
+// Group items by a key while preserving the order in which keys first appear.
+const groupBy = <T,>(items: T[], key: (item: T) => string): [string, T[]][] =>
+  Array.from(
+    items
+      .reduce((groups, item) => {
+        const k = key(item);
+        return groups.set(k, [...(groups.get(k) ?? []), item]);
+      }, new Map<string, T[]>())
+      .entries(),
   );
-};
 
-const calculateTotalsPerDay = ([day, flights]: [
-  string,
-  ITotalRows[],
-]): IDayTotals => {
+const sum = (values: number[]): number => values.reduce((a, b) => a + b, 0);
+
+const toDayGroup = ([day, flights]: [string, Flight[]]): IDayGroup => ({
+  day,
+  flights,
+  planes: Array.from(new Set(flights.map((f) => f.planeId))).join(", "),
+  flightCount: flights.length,
+  totalTime: sum(flights.map((f) => f.flightTime ?? 0)),
+  favorites: flights.filter((f) => f.favorite === 1).length,
+});
+
+const toMonthGroup = ([month, flights]: [string, Flight[]]): IMonthGroup => {
+  const days = groupBy(flights, (f) => formatDate(f.startDate)).map(toDayGroup);
   return {
-    day,
-    planes: flights.map((flight) => flight.planeId).join(", "),
-    flights: flights.reduce((sum, flight) => sum + flight.flights, 0),
-    totalTime: flights.reduce((sum, flight) => sum + flight.totalTime, 0),
-    favorites: flights.reduce((sum, flight) => sum + flight.favorites, 0),
+    month,
+    days,
+    flightCount: sum(days.map((d) => d.flightCount)),
+    totalTime: sum(days.map((d) => d.totalTime)),
+    favorites: sum(days.map((d) => d.favorites)),
   };
 };
 
-const calculateTotalsPerMonthAndDay = (
-  flightsPerMonthAndDay: Record<string, Record<string, ITotalRows[]>>,
-): IMonthTotals[] => {
-  return Object.entries(flightsPerMonthAndDay).map(([month, flightsPerDay]) => {
-    const totalsPerDay = Object.entries(flightsPerDay).map(
-      calculateTotalsPerDay,
-    );
+// Group a flat flight list into months -> days, preserving the input order
+// (the server returns flights already ordered by date).
+const groupByMonthAndDay = (flights: Flight[]): IMonthGroup[] =>
+  groupBy(flights, (f) => formatMonth(f.startDate)).map(toMonthGroup);
 
-    return {
-      month,
-      flights: totalsPerDay.reduce((sum, row) => sum + row.flights, 0),
-      totalTime: totalsPerDay.reduce((sum, row) => sum + row.totalTime, 0),
-      favorites: totalsPerDay.reduce((sum, row) => sum + row.favorites, 0),
-      days: totalsPerDay,
-    };
-  });
+
+const renderStats = (flight: Flight) => {
+  const stats = flight.stats;
+  if (stats) {
+    if (stats.launchHeight && stats.launchHeight !== stats.maxHeight) {
+      return `${flight.session}: ${stats?.launchHeight} -> ${stats.maxHeight}m`;
+    } else if (stats.launchHeight) {
+      return `${flight.session}: ${stats?.launchHeight}m`;
+    }
+  }
+  return flight.session;
 };
 
 export const FlightDays = () => {
-  const { date } = useParams();
+  const { date, id } = useParams();
   const navigate = useNavigate();
 
   const [orderBy, setOrderBy] = React.useState("DATE_DESC");
-  const [allNodes, setAllNodes] = React.useState<ITotalRows[]>([]);
+  const [allFlights, setAllFlights] = React.useState<Flight[]>([]);
   const [cursor, setCursor] = React.useState<string | null>(null);
 
   // Filter states
@@ -169,7 +177,7 @@ export const FlightDays = () => {
   });
   const planes = planesResult.data?.planes.nodes || [];
 
-  // Build filter for server-side query
+  // Server-side filter on the flights connection.
   const filter = React.useMemo(() => {
     const conditions: Record<string, unknown> = {};
 
@@ -177,28 +185,37 @@ export const FlightDays = () => {
       conditions.planeId = { equalTo: selectedPlane };
     }
     if (fromDate) {
-      conditions.date = {
-        ...(conditions.date as object),
+      conditions.startDate = {
+        ...(conditions.startDate as object),
         greaterThanOrEqualTo: fromDate,
       };
     }
     if (toDate) {
-      conditions.date = {
-        ...(conditions.date as object),
-        lessThanOrEqualTo: toDate,
+      // Include the whole "to" day by comparing against the next day.
+      conditions.startDate = {
+        ...(conditions.startDate as object),
+        lessThan: formatDate(
+          new Date(new Date(toDate).getTime() + 24 * 60 * 60 * 1000),
+        ),
       };
     }
     if (favoritesOnly) {
-      conditions.favorites = { greaterThan: 0 };
+      conditions.favorite = { greaterThan: 0 };
     }
 
     return Object.keys(conditions).length > 0 ? conditions : undefined;
   }, [selectedPlane, fromDate, toDate, favoritesOnly]);
 
+  // The DATE column controls server ordering (so pagination groups
+  // contiguously by day). FLIGHTS / TOTAL_TIME re-sort months on the client.
+  const serverOrderBy = orderBy.endsWith("_ASC")
+    ? "START_DATE_ASC"
+    : "START_DATE_DESC";
+
   const [read] = useQuery<IQueryResponse>({
     query: Query,
     variables: {
-      orderBy,
+      orderBy: serverOrderBy,
       first: PAGE_SIZE,
       after: cursor,
       filter,
@@ -206,33 +223,29 @@ export const FlightDays = () => {
     requestPolicy: "cache-and-network",
   });
 
-  // Reset accumulated nodes when order or filter changes
+  // Reset accumulated flights when order or filter changes.
   React.useEffect(() => {
-    setAllNodes([]);
+    setAllFlights([]);
     setCursor(null);
-  }, [orderBy, selectedPlane, fromDate, toDate, favoritesOnly]);
+  }, [serverOrderBy, selectedPlane, fromDate, toDate, favoritesOnly]);
 
-  // Accumulate nodes from paginated results
+  // Accumulate flights from paginated results.
   React.useEffect(() => {
-    if (read.data?.flightsByDays.nodes) {
-      setAllNodes((prev) => {
-        // If cursor is null, this is a fresh query - replace all
+    if (read.data?.flights.nodes) {
+      setAllFlights((prev) => {
         if (cursor === null) {
-          return read.data!.flightsByDays.nodes;
+          return read.data!.flights.nodes;
         }
-        // Otherwise append new nodes
-        const newNodes = read.data!.flightsByDays.nodes;
-        const existingDates = new Set(prev.map((n) => n.date + n.planeId));
-        const uniqueNewNodes = newNodes.filter(
-          (n) => !existingDates.has(n.date + n.planeId),
-        );
-        return [...prev, ...uniqueNewNodes];
+        const newNodes = read.data!.flights.nodes;
+        const existingIds = new Set(prev.map((f) => f.id));
+        const uniqueNew = newNodes.filter((f) => !existingIds.has(f.id));
+        return [...prev, ...uniqueNew];
       });
     }
   }, [read.data, cursor]);
 
-  const hasNextPage = read.data?.flightsByDays.pageInfo.hasNextPage ?? false;
-  const endCursor = read.data?.flightsByDays.pageInfo.endCursor ?? null;
+  const hasNextPage = read.data?.flights.pageInfo.hasNextPage ?? false;
+  const endCursor = read.data?.flights.pageInfo.endCursor ?? null;
 
   const loadMore = () => {
     if (hasNextPage && endCursor) {
@@ -240,26 +253,91 @@ export const FlightDays = () => {
     }
   };
 
-  const groupedFlights = groupFlightsPerMonthAndDay({
-    flightsByDays: {
-      pageInfo: { hasNextPage: false, endCursor: null },
-      nodes: allNodes,
-    },
-  });
-  const totalsPerMonthDays = calculateTotalsPerMonthAndDay(groupedFlights);
+  const months = React.useMemo(
+    () => groupByMonthAndDay(allFlights),
+    [allFlights],
+  );
 
-  const scrollRef = useScroll<HTMLTableRowElement>([date, read.fetching]);
-  const dayRows = (totals: IDayTotals) => {
-    const isCurrent = date === totals.day;
+  // When a day has exactly one flight and none is explicitly selected, open
+  // that flight directly instead of showing a one-row list.
+  React.useEffect(() => {
+    if (date && !id) {
+      const day = months
+        .flatMap((m) => m.days)
+        .find((d) => d.day === date);
+      if (day && day.flights.length === 1) {
+        navigate(`/flights/${date}/${day.flights[0].id}`, { replace: true });
+      }
+    }
+  }, [date, id, months, navigate]);
+
+  const dayScrollRef = useScroll<HTMLTableRowElement>([date, read.fetching]);
+  const flightScrollRef = useScroll<HTMLTableRowElement>([id, read.fetching]);
+
+  const flightRows = (day: IDayGroup) => {
+    const path = `/flights/${day.day}`;
+    return day.flights.map((flight) => {
+      const isCurrent = id === flight.id;
+      const batteries = flight.batteryCycles?.nodes
+        .map((b) => b.batteryName)
+        .join(",");
+
+      return (
+        <React.Fragment key={flight.id}>
+          <TableRow
+            selected={false}
+            hover={true}
+            onClick={() => navigate(isCurrent ? path : `${path}/${flight.id}`)}
+            sx={{
+              cursor: "pointer",
+              backgroundColor: "grey.200",
+              "&:hover": {
+                backgroundColor: "action.hover",
+              },
+              ...(isCurrent && {
+                "> *": {
+                  borderBottom: "unset",
+                },
+              }),
+            }}
+          >
+            <TableCell sx={{ pl: 6 }}>
+              {(isCurrent && <OpenedFlightIcon />) || <ClosedFlightIcon />}
+              {formatTime(flight.startDate)}{" "}
+              {flight.location && `(${flight.location.name})`}
+            </TableCell>
+            <TableCell>{renderStats(flight)}</TableCell>
+            <TableCell>{flight.favorite === 1 && <FavoriteIcon />}</TableCell>
+            <TableCell>
+              {flight.planeId} {batteries && `(${batteries})`}
+            </TableCell>
+            <TableCell>{formatDuration(flight.flightTime)}</TableCell>
+          </TableRow>
+          {isCurrent && (
+            <TableRow ref={flightScrollRef}>
+              <TableCell colSpan={5} sx={{ padding: 0 }}>
+                <FlightDetails entry={flight} path={path} />
+              </TableCell>
+            </TableRow>
+          )}
+        </React.Fragment>
+      );
+    });
+  };
+
+  const dayRows = (day: IDayGroup) => {
+    const isCurrent = date === day.day;
 
     return (
-      <React.Fragment key={totals.day + "-day"}>
+      <React.Fragment key={day.day + "-day"}>
         <TableRow
-          ref={isCurrent ? scrollRef : null}
+          ref={isCurrent ? dayScrollRef : null}
           selected={isCurrent}
           hover={true}
-          id={totals.day}
-          onClick={() => navigate(isCurrent ? "/flights" : `/flights/${totals.day}`)}
+          id={day.day}
+          onClick={() =>
+            navigate(isCurrent ? "/flights" : `/flights/${day.day}`)
+          }
           sx={{
             cursor: "pointer",
             ...(isCurrent && {
@@ -271,14 +349,14 @@ export const FlightDays = () => {
         >
           <TableCell>
             {isCurrent ? <OpenedIcon /> : <ClosedIcon />}
-            {totals.day}
+            {day.day}
           </TableCell>
-          <TableCell>{totals.flights}</TableCell>
-          <TableCell>{totals.favorites > 0 ? totals.favorites : ""}</TableCell>
-          <TableCell>{totals.planes}</TableCell>
-          <TableCell>{formatDuration(totals.totalTime)}</TableCell>
+          <TableCell>{day.flightCount}</TableCell>
+          <TableCell>{day.favorites > 0 ? day.favorites : ""}</TableCell>
+          <TableCell>{day.planes}</TableCell>
+          <TableCell>{formatDuration(day.totalTime)}</TableCell>
         </TableRow>
-        {isCurrent && <Flights />}
+        {isCurrent && flightRows(day)}
       </React.Fragment>
     );
   };
@@ -288,31 +366,31 @@ export const FlightDays = () => {
     const DOWN = orderBy.endsWith("_DESC") ? -1 : 1;
 
     if (orderBy.startsWith("FLIGHTS_")) {
-      return (a: IMonthTotals, b: IMonthTotals) =>
-        a.flights > b.flights ? DOWN : UP;
+      return (a: IMonthGroup, b: IMonthGroup) =>
+        a.flightCount > b.flightCount ? DOWN : UP;
     } else if (orderBy.startsWith("TOTAL_TIME_")) {
-      return (a: IMonthTotals, b: IMonthTotals) =>
+      return (a: IMonthGroup, b: IMonthGroup) =>
         a.totalTime > b.totalTime ? DOWN : UP;
     } else {
       return () => 0;
     }
   };
 
-  const monthRows = totalsPerMonthDays.sort(getSorting()).map((monthTotals) => {
+  const monthRows = [...months].sort(getSorting()).map((month) => {
     return (
-      <React.Fragment key={monthTotals.month + "-month"}>
+      <React.Fragment key={month.month + "-month"}>
         <TableRow>
           <TableCell style={{ fontWeight: "bold", height: 50 }}>
-            {monthTotals.month}
+            {month.month}
           </TableCell>
           <TableCell style={{ fontWeight: "bold" }} colSpan={3}>
-            {monthTotals.flights}
+            {month.flightCount}
           </TableCell>
           <TableCell style={{ fontWeight: "bold" }}>
-            {formatDuration(monthTotals.totalTime)}
+            {formatDuration(month.totalTime)}
           </TableCell>
         </TableRow>
-        {monthTotals.days.map(dayRows)}
+        {month.days.map(dayRows)}
       </React.Fragment>
     );
   });
@@ -403,7 +481,7 @@ export const FlightDays = () => {
         </TableHead>
         <TableBody>
           <LoadingTable
-            spinning={read.fetching && allNodes.length === 0}
+            spinning={read.fetching && allFlights.length === 0}
             error={read.error}
             colSpan={5}
           />
