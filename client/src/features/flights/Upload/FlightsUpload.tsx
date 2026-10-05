@@ -215,12 +215,7 @@ export const FlightsUpload = () => {
     const detailsRow = current && (
       <TableRow key={flight.id + "-details"}>
         <TableCell colSpan={5}>
-          <FlightDetails
-            entry={flight}
-            path={path}
-            nextLink={flights?.[index - 1]}
-            previousLink={flights?.[index + 1]}
-          />
+          <FlightDetails entry={flight} path={path} />
         </TableCell>
       </TableRow>
     );

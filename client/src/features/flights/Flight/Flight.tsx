@@ -96,6 +96,38 @@ const Query = gql`
   }
 `;
 
+// Fetch the chronologically adjacent flights (1 newer, 1 older) to enable
+// cross-day prev/next navigation from within a flight's detail view.
+const NeighborQuery = gql`
+  query ($startDate: Datetime!) {
+    next: flights(
+      filter: { startDate: { greaterThan: $startDate } }
+      orderBy: START_DATE_ASC
+      first: 1
+    ) {
+      nodes {
+        id
+        startDate
+      }
+    }
+    previous: flights(
+      filter: { startDate: { lessThan: $startDate } }
+      orderBy: START_DATE_DESC
+      first: 1
+    ) {
+      nodes {
+        id
+        startDate
+      }
+    }
+  }
+`;
+
+interface INeighborResponse {
+  next: { nodes: { id: string; startDate: string }[] };
+  previous: { nodes: { id: string; startDate: string }[] };
+}
+
 const Update = gql`
   mutation ($id: String!, $patch: FlightPatch!) {
     updateFlight(input: { id: $id, patch: $patch }) {
@@ -133,13 +165,9 @@ interface IQueryResponse {
 export const FlightDetails = ({
   entry,
   path,
-  nextLink,
-  previousLink,
 }: {
   entry: Flight;
   path: string;
-  nextLink?: { id: string };
-  previousLink?: { id: string };
 }) => {
   const navigate = useNavigate();
 
@@ -155,6 +183,24 @@ export const FlightDetails = ({
   });
   const [update, updateFlight] = useMutation(Update);
   const [del, deleteFlight] = useMutation(Delete);
+
+  // Fetch chronologically adjacent flights so prev/next works across days.
+  const [neighbors] = useQuery<INeighborResponse>({
+    query: NeighborQuery,
+    variables: { startDate: entry.startDate },
+  });
+
+  const nextFlight = neighbors.data?.next.nodes[0];
+  const previousFlight = neighbors.data?.previous.nodes[0];
+
+  // Build full URLs (/flights/<date>/<id>) so navigation can cross day
+  // boundaries, since each flight lives under its own date path.
+  const nextLink = nextFlight
+    ? `/flights/${formatDate(nextFlight.startDate)}/${nextFlight.id}`
+    : undefined;
+  const previousLink = previousFlight
+    ? `/flights/${formatDate(previousFlight.startDate)}/${previousFlight.id}`
+    : undefined;
 
   // Lazy load segments via REST (server filters out ignored telemetries)
   const [segments, setSegments] = React.useState<Segment[] | null>(null);

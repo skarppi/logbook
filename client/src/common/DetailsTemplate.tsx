@@ -15,8 +15,8 @@ import { NavigatePreviousNext } from "./NavigatePreviousNext";
 interface IProps {
   type: string;
   path: string;
-  previousLink?: { id?: string | number };
-  nextLink?: { id?: string | number };
+  previousLink?: { id?: string | number } | string;
+  nextLink?: { id?: string | number } | string;
   title?: React.ReactNode;
   deleteAction?: (_: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
   action?: React.ReactNode;
@@ -54,8 +54,20 @@ export const DetailsTemplate = ({
             {action}
 
             <NavigatePreviousNext
-              nextLink={nextLink && `${path}/${nextLink.id}`}
-              previousLink={previousLink && `${path}/${previousLink.id}`}
+              nextLink={
+                typeof nextLink === "string"
+                  ? nextLink
+                  : nextLink
+                    ? `${path}/${nextLink.id}`
+                    : undefined
+              }
+              previousLink={
+                typeof previousLink === "string"
+                  ? previousLink
+                  : previousLink
+                    ? `${path}/${previousLink.id}`
+                    : undefined
+              }
             />
 
             {deleteAction && (

@@ -136,12 +136,7 @@ export const Flights = () => {
         {isCurrent && (
           <TableRow ref={scrollRef}>
             <TableCell colSpan={5} sx={{ padding: 0 }}>
-              <FlightDetails
-                entry={flight}
-                path={path}
-                nextLink={flights?.[index - 1]}
-                previousLink={flights?.[index + 1]}
-              />
+              <FlightDetails entry={flight} path={path} />
             </TableCell>
           </TableRow>
         )}
