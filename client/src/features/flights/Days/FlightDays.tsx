@@ -5,6 +5,7 @@ import TableHead from "@mui/material/TableHead";
 import TableBody from "@mui/material/TableBody";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
 import MenuItem from "@mui/material/MenuItem";
 import FormControlLabel from "@mui/material/FormControlLabel";
@@ -14,15 +15,13 @@ import { useNavigate, useParams } from "react-router-dom";
 import { formatDuration } from "../../../shared/utils/date";
 import { FlightDetails } from "../Flight/Flight";
 
-import ClosedIcon from "@mui/icons-material/ChevronRight";
-import OpenedIcon from "@mui/icons-material/ExpandMore";
 import ClosedFlightIcon from "@mui/icons-material/ArrowRight";
 import OpenedFlightIcon from "@mui/icons-material/ArrowDropDown";
 import FavoriteIcon from "@mui/icons-material/FavoriteBorder";
 import { LoadingTable } from "../../loading/Loading";
 import { useQuery } from "urql";
 import gql from "graphql-tag";
-import { formatDate, formatMonth, formatTime } from "../../../utils/date";
+import { formatDate, formatTime } from "../../../utils/date";
 import TableSortLabel from "@mui/material/TableSortLabel";
 import { useScroll } from "../../../common/useScroll";
 import { ListTemplate } from "../../../common/ListTemplate";
@@ -98,14 +97,6 @@ interface IDayGroup {
   favorites: number;
 }
 
-interface IMonthGroup {
-  month: string;
-  flightCount: number;
-  totalTime: number;
-  favorites: number;
-  days: IDayGroup[];
-}
-
 // Group items by a key while preserving the order in which keys first appear.
 const groupBy = <T,>(items: T[], key: (item: T) => string): [string, T[]][] =>
   Array.from(
@@ -128,37 +119,26 @@ const toDayGroup = ([day, flights]: [string, Flight[]]): IDayGroup => ({
   favorites: flights.filter((f) => f.favorite === 1).length,
 });
 
-const toMonthGroup = ([month, flights]: [string, Flight[]]): IMonthGroup => {
-  const days = groupBy(flights, (f) => formatDate(f.startDate)).map(toDayGroup);
-  return {
-    month,
-    days,
-    flightCount: sum(days.map((d) => d.flightCount)),
-    totalTime: sum(days.map((d) => d.totalTime)),
-    favorites: sum(days.map((d) => d.favorites)),
-  };
-};
-
-// Group a flat flight list into months -> days, preserving the input order
-// (the server returns flights already ordered by date).
-const groupByMonthAndDay = (flights: Flight[]): IMonthGroup[] =>
-  groupBy(flights, (f) => formatMonth(f.startDate)).map(toMonthGroup);
+// Group a flat flight list into days, preserving the input order (the server
+// returns flights already ordered by date).
+const groupByDay = (flights: Flight[]): IDayGroup[] =>
+  groupBy(flights, (f) => formatDate(f.startDate)).map(toDayGroup);
 
 
 const renderStats = (flight: Flight) => {
   const stats = flight.stats;
   if (stats) {
     if (stats.launchHeight && stats.launchHeight !== stats.maxHeight) {
-      return `${flight.session}: ${stats?.launchHeight} -> ${stats.maxHeight}m`;
+      return `${stats.launchHeight} -> ${stats.maxHeight}m`;
     } else if (stats.launchHeight) {
-      return `${flight.session}: ${stats?.launchHeight}m`;
+      return `${stats.launchHeight}m`;
     }
   }
-  return flight.session;
+  return "";
 };
 
 export const FlightDays = () => {
-  const { date, id } = useParams();
+  const { id } = useParams();
   const navigate = useNavigate();
 
   const [orderBy, setOrderBy] = React.useState("DATE_DESC");
@@ -253,91 +233,26 @@ export const FlightDays = () => {
     }
   };
 
-  const months = React.useMemo(
-    () => groupByMonthAndDay(allFlights),
-    [allFlights],
-  );
+  const days = React.useMemo(() => groupByDay(allFlights), [allFlights]);
 
-  // When a day has exactly one flight and none is explicitly selected, open
-  // that flight directly instead of showing a one-row list.
-  React.useEffect(() => {
-    if (date && !id) {
-      const day = months
-        .flatMap((m) => m.days)
-        .find((d) => d.day === date);
-      if (day && day.flights.length === 1) {
-        navigate(`/flights/${date}/${day.flights[0].id}`, { replace: true });
-      }
-    }
-  }, [date, id, months, navigate]);
-
-  const dayScrollRef = useScroll<HTMLTableRowElement>([date, read.fetching]);
   const flightScrollRef = useScroll<HTMLTableRowElement>([id, read.fetching]);
 
-  const flightRows = (day: IDayGroup) => {
-    const path = `/flights/${day.day}`;
-    return day.flights.map((flight) => {
-      const isCurrent = id === flight.id;
-      const batteries = flight.batteryCycles?.nodes
-        .map((b) => b.batteryName)
-        .join(",");
-
-      return (
-        <React.Fragment key={flight.id}>
-          <TableRow
-            selected={false}
-            hover={true}
-            onClick={() => navigate(isCurrent ? path : `${path}/${flight.id}`)}
-            sx={{
-              cursor: "pointer",
-              backgroundColor: "grey.200",
-              "&:hover": {
-                backgroundColor: "action.hover",
-              },
-              ...(isCurrent && {
-                "> *": {
-                  borderBottom: "unset",
-                },
-              }),
-            }}
-          >
-            <TableCell sx={{ pl: 6 }}>
-              {(isCurrent && <OpenedFlightIcon />) || <ClosedFlightIcon />}
-              {formatTime(flight.startDate)}{" "}
-              {flight.location && `(${flight.location.name})`}
-            </TableCell>
-            <TableCell>{renderStats(flight)}</TableCell>
-            <TableCell>{flight.favorite === 1 && <FavoriteIcon />}</TableCell>
-            <TableCell>
-              {flight.planeId} {batteries && `(${batteries})`}
-            </TableCell>
-            <TableCell>{formatDuration(flight.flightTime)}</TableCell>
-          </TableRow>
-          {isCurrent && (
-            <TableRow ref={flightScrollRef}>
-              <TableCell colSpan={5} sx={{ padding: 0 }}>
-                <FlightDetails entry={flight} path={path} />
-              </TableCell>
-            </TableRow>
-          )}
-        </React.Fragment>
-      );
-    });
-  };
-
-  const dayRows = (day: IDayGroup) => {
-    const isCurrent = date === day.day;
+  // Flat layout: every flight is a row and opens its detail directly. The day
+  // is a non-interactive subheader carrying its totals.
+  const flightRow = (flight: Flight, day: string) => {
+    const path = `/flights/${day}`;
+    const isCurrent = id === flight.id;
+    const batteries = flight.batteryCycles?.nodes
+      .map((b) => b.batteryName)
+      .join(",");
 
     return (
-      <React.Fragment key={day.day + "-day"}>
+      <React.Fragment key={flight.id}>
         <TableRow
-          ref={isCurrent ? dayScrollRef : null}
+          ref={isCurrent ? flightScrollRef : null}
           selected={isCurrent}
           hover={true}
-          id={day.day}
-          onClick={() =>
-            navigate(isCurrent ? "/flights" : `/flights/${day.day}`)
-          }
+          onClick={() => navigate(isCurrent ? "/flights" : `${path}/${flight.id}`)}
           sx={{
             cursor: "pointer",
             ...(isCurrent && {
@@ -347,53 +262,95 @@ export const FlightDays = () => {
             }),
           }}
         >
-          <TableCell>
-            {isCurrent ? <OpenedIcon /> : <ClosedIcon />}
-            {day.day}
+          <TableCell sx={{ pl: 4 }}>
+            {(isCurrent && <OpenedFlightIcon />) || <ClosedFlightIcon />}
+            {formatTime(flight.startDate)}{" "}
+            {flight.location && `(${flight.location.name})`}
           </TableCell>
-          <TableCell>{day.flightCount}</TableCell>
-          <TableCell>{day.favorites > 0 ? day.favorites : ""}</TableCell>
-          <TableCell>{day.planes}</TableCell>
-          <TableCell>{formatDuration(day.totalTime)}</TableCell>
+          <TableCell>
+            {flight.favorite === 1 ? (
+              <FavoriteIcon fontSize="small" />
+            ) : (
+              renderStats(flight)
+            )}
+          </TableCell>
+          <TableCell>
+            {flight.planeId} {batteries && `(${batteries})`}
+          </TableCell>
+          <TableCell>{formatDuration(flight.flightTime)}</TableCell>
         </TableRow>
-        {isCurrent && flightRows(day)}
+        {isCurrent && (
+          <TableRow>
+            <TableCell colSpan={4} sx={{ padding: 0 }}>
+              <FlightDetails entry={flight} path={path} />
+            </TableCell>
+          </TableRow>
+        )}
       </React.Fragment>
     );
   };
+
+  const dayGroup = (day: IDayGroup) => (
+    <React.Fragment key={day.day + "-day"}>
+      <TableRow
+        id={day.day}
+        sx={{ backgroundColor: "grey.50" }}
+      >
+        <TableCell sx={{ color: "text.secondary" }}>
+          <Box
+            sx={{ display: "flex", alignItems: "baseline", gap: 1 }}
+          >
+            <Typography
+              component="span"
+              sx={{ fontSize: "1.5rem", fontWeight: 700, color: "text.primary", lineHeight: 1 }}
+            >
+              {formatDate(day.day, "d")}
+            </Typography>
+            <Box sx={{ display: "flex", flexDirection: "column" }}>
+              <Typography
+                component="span"
+                sx={{ fontSize: "0.95rem", fontWeight: 600, color: "text.primary", lineHeight: 1.1 }}
+              >
+                {formatDate(day.day, "MMMM yyyy")}
+              </Typography>
+              <Typography
+                component="span"
+                sx={{ fontSize: "0.75rem", color: "text.secondary", lineHeight: 1.1 }}
+              >
+                {formatDate(day.day, "EEEE")}
+              </Typography>
+            </Box>
+          </Box>
+        </TableCell>
+        <TableCell sx={{ color: "text.secondary" }}>
+          {day.flightCount}
+        </TableCell>
+        <TableCell sx={{ color: "text.secondary" }}>{day.planes}</TableCell>
+        <TableCell sx={{ color: "text.secondary" }}>
+          {formatDuration(day.totalTime)}
+        </TableCell>
+      </TableRow>
+      {day.flights.map((flight) => flightRow(flight, day.day))}
+    </React.Fragment>
+  );
+
 
   const getSorting = () => {
     const UP = orderBy.endsWith("_ASC") ? -1 : 1;
     const DOWN = orderBy.endsWith("_DESC") ? -1 : 1;
 
     if (orderBy.startsWith("FLIGHTS_")) {
-      return (a: IMonthGroup, b: IMonthGroup) =>
+      return (a: IDayGroup, b: IDayGroup) =>
         a.flightCount > b.flightCount ? DOWN : UP;
     } else if (orderBy.startsWith("TOTAL_TIME_")) {
-      return (a: IMonthGroup, b: IMonthGroup) =>
+      return (a: IDayGroup, b: IDayGroup) =>
         a.totalTime > b.totalTime ? DOWN : UP;
     } else {
       return () => 0;
     }
   };
 
-  const monthRows = [...months].sort(getSorting()).map((month) => {
-    return (
-      <React.Fragment key={month.month + "-month"}>
-        <TableRow>
-          <TableCell style={{ fontWeight: "bold", height: 50 }}>
-            {month.month}
-          </TableCell>
-          <TableCell style={{ fontWeight: "bold" }} colSpan={3}>
-            {month.flightCount}
-          </TableCell>
-          <TableCell style={{ fontWeight: "bold" }}>
-            {formatDuration(month.totalTime)}
-          </TableCell>
-        </TableRow>
-        {month.days.map(dayRows)}
-      </React.Fragment>
-    );
-  });
+  const dayRows = [...days].sort(getSorting()).map(dayGroup);
 
   const sortLabel = (col: string, title: string) => (
     <TableSortLabel
@@ -472,7 +429,6 @@ export const FlightDays = () => {
             <TableCell style={{ maxWidth: "1em" }}>
               {sortLabel("FLIGHTS", "Flights")}
             </TableCell>
-            <TableCell style={{ maxWidth: "1em" }}>Favorite</TableCell>
             <TableCell style={{ maxWidth: "2em" }}>Plane</TableCell>
             <TableCell style={{ maxWidth: "2em" }}>
               {sortLabel("TOTAL_TIME", "Flight Time")}
@@ -483,12 +439,12 @@ export const FlightDays = () => {
           <LoadingTable
             spinning={read.fetching && allFlights.length === 0}
             error={read.error}
-            colSpan={5}
+            colSpan={4}
           />
-          {monthRows}
+          {dayRows}
           {(hasNextPage || read.fetching) && (
             <TableRow>
-              <TableCell colSpan={5}>
+              <TableCell colSpan={4}>
                 <Box sx={{ display: "flex", justifyContent: "center", py: 2 }}>
                   <Button
                     variant="outlined"
